@@ -3,7 +3,13 @@
 -include .env
 
 # deps
-install:; forge install
+install:
+	@command -v pnpm >/dev/null 2>&1 || npm i -g pnpm
+	@echo
+	@pnpm i
+	@echo
+	@forge install
+	@echo
 update:; forge update
 
 # Build & test

@@ -6,7 +6,7 @@ import { EnumerableSet } from '@solidstate-solidity/data/EnumerableSet.sol';
 
 library PoolStorage {
     struct Layout {
-        mapping(address collection => uint256 status) whitelistedCollections;
+        mapping(address collection => bool status) whitelistedCollections;
         mapping(address collection => EnumerableSet.UintSet tokenIds) poolAssets; //perhaps rename
     }
 

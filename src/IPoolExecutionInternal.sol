@@ -32,4 +32,11 @@ interface IPoolExecutionInternal {
      * @param lpAmount amount of INLP received
      */
     event ShardSwap(uint256 lpAmount);
+
+    /**
+     * @notice emitted when unclaimed shards are claimed for ETH
+     * @param collection address of underlyin ERC721 collection of shards
+     * @param amount amount of shards claimed
+     */
+    event ShardClaim(address collection, uint256 amount);
 }

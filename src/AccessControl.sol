@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.20;
 
-import { OwnableInternal } from '@solidstate-solidity/access/ownable/OwnableInternal.sol';
+import {OwnableInternal} from "@solidstate-solidity/access/ownable/OwnableInternal.sol";
 
-import { Errors } from './Errors.sol';
-import { ExecutorInternal } from './ExecutorInternal.sol';
+import {Errors} from "./Errors.sol";
+import {ExecutorInternal} from "./ExecutorInternal.sol";
 
 abstract contract AccessControl is OwnableInternal, ExecutorInternal {
     /**
@@ -42,14 +42,13 @@ abstract contract AccessControl is OwnableInternal, ExecutorInternal {
         }
     }
 
-     /**
+    /**
      * @notice check if an account is the executor, reverts if not
      * @param account to check
      */
     function _onlyExecutor(address account) internal view {
-       if (account != _executor()) {
-           revert Errors.INLP__NotExecutor();
-       }
+        if (account != _executor()) {
+            revert Errors.INLP__NotExecutor();
+        }
     }
-
 }

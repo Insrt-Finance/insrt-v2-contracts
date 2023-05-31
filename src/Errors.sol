@@ -32,7 +32,12 @@ library Errors {
     error INLP__InsufficientUnclaimedShards();
 
     /**
-     * @notice thrown when attempted to claim shards with incorrect ETH value sent
+     * @notice thrown when attempting to claim shards with incorrect ETH value sent
      */
     error INLP__IncorrectETHReceived();
+
+    /**
+     * @notice thrown when attempting to set a shard ID which is already occupied by another collection
+     */
+    error INLP__ShardIDOccupied();
 }

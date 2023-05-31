@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.20;
 
-import { EnumerableSet } from '@solidstate-solidity/data/EnumerableSet.sol';
+import {EnumerableSet} from "@solidstate-solidity/data/EnumerableSet.sol";
 
 library PoolStorage {
     struct Layout {
@@ -14,8 +14,7 @@ library PoolStorage {
         EnumerableSet.AddressSet whitelistedCollections;
     }
 
-    bytes32 internal constant STORAGE_SLOT =
-        keccak256('insrt.contracts.storage.INLP');
+    bytes32 internal constant STORAGE_SLOT = keccak256("insrt.contracts.storage.INLP");
 
     function layout() internal pure returns (Layout storage l) {
         bytes32 slot = STORAGE_SLOT;

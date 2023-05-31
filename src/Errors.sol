@@ -7,6 +7,16 @@ pragma solidity ^0.8.20;
  */
 library Errors {
     /**
+     * @notice thrown when calling a function only allowed to be called by the protocol owner
+     */
+    error INLP__NotProtocolOwner();
+
+    /**
+     * @notice thrown when calling a function only allowed to be called by executor
+     */
+    error INLP__NotExecutor();
+
+    /**
      * @notice thrown when interaction with non-whitelisted collection attempted
      */
     error INLP__OnlyWhitelistedCollections();
@@ -20,4 +30,9 @@ library Errors {
      * @notice thrown when attempting to claim more shards than amount of unclaimed shards
      */
     error INLP__InsufficientUnclaimedShards();
+
+    /**
+     * @notice thrown when attempted to claim shards with incorrect ETH value sent
+     */
+    error INLP__IncorrectETHReceived();
 }

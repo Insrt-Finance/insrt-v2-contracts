@@ -1,6 +1,6 @@
-# insrt-lp-contracts
+# insrt-v2-contracts
 
-INSRT LP Solidity Smart Contracts
+Insrt V2 Solidity Smart Contracts
 
 ## Prerequisites
 

@@ -1,10 +1,10 @@
 {
-  "name": "insrt-lp-contracts",
+  "name": "insrt-v2-contracts",
   "version": "0.1.0",
   "private": true,
   "author": "Insrt Labs",
   "license": "UNLICENSED",
-  "description": "INSRT LP Solidity smart contracts",
+  "description": "Insrt V2 Solidity smart contracts",
   "keywords": [
     "blockchain",
     "ethereum",
@@ -13,7 +13,7 @@
     "insrt",
     "Insrt Finance",
     "Insrt Labs",
-    "INSRT LP",
+    "Insrt V2",
     "smart-contracts",
     "solidity"
   ],

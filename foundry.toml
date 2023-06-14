@@ -5,7 +5,7 @@ fuzz_runs = 256
 optimizer = true
 optimizer_runs = 1_000_000
 remappings = [
-  "@solidstate-solidity/=lib/solidstate-solidity/contracts/",
+  "@solidstate/contracts/=lib/solidstate-solidity/contracts/",
   "@solidstate/layerzero-client/=lib/layerzero-client/contracts/",
   "forge-std/=lib/forge-std/src/"
 ]

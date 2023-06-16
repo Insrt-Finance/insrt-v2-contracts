@@ -19,7 +19,6 @@ library PayloadEncoder {
     /// @param tokenIds Array of token ids.
     /// @param amounts Array of amounts, corresponding to the token ids.
     /// @return payload The encoded payload.
-    /// @dev Uses abi.encodePacked for tighter packing of the payload.
     function encodeStakeERC1155AssetsPayload(
         address staker,
         address collection,
@@ -27,7 +26,7 @@ library PayloadEncoder {
         uint256[] calldata amounts
     ) internal pure returns (bytes memory payload) {
         // Pack the parameters into a dynamically-sized byte array
-        payload = abi.encodePacked(
+        payload = abi.encode(
             Prefix.ERC1155,
             staker,
             collection,
@@ -41,14 +40,13 @@ library PayloadEncoder {
     /// @param collection Address of the collection.
     /// @param tokenIds Array of token ids.
     /// @return payload The encoded payload.
-    /// @dev Uses abi.encodePacked for tighter packing of the payload.
     function encodeStakeERC721AssetsPayload(
         address staker,
         address collection,
         uint256[] calldata tokenIds
     ) internal pure returns (bytes memory payload) {
         // Pack the parameters into a dynamically-sized byte array
-        payload = abi.encodePacked(Prefix.ERC721, staker, collection, tokenIds);
+        payload = abi.encode(Prefix.ERC721, staker, collection, tokenIds);
     }
 
     /// @notice Encodes the payload for unstaking ERC-1155 assets cross-chain.
@@ -57,14 +55,13 @@ library PayloadEncoder {
     /// @param tokenIds Array of token ids.
     /// @param amounts Array of amounts, corresponding to the token ids.
     /// @return payload The encoded payload.
-    /// @dev Uses abi.encodePacked for tighter packing of the payload.
     function encodeUnstakeERC1155AssetsPayload(
         address staker,
         address collection,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts
     ) internal pure returns (bytes memory payload) {
-        payload = abi.encodePacked(
+        payload = abi.encode(
             Prefix.ERC1155,
             staker,
             collection,
@@ -78,12 +75,11 @@ library PayloadEncoder {
     /// @param collection Address of the collection.
     /// @param tokenIds Array of token ids.
     /// @return payload The encoded payload.
-    /// @dev Uses abi.encodePacked for tighter packing of the payload.
     function encodeUnstakeERC721AssetsPayload(
         address staker,
         address collection,
         uint256[] calldata tokenIds
     ) internal pure returns (bytes memory payload) {
-        payload = abi.encodePacked(Prefix.ERC721, staker, collection, tokenIds);
+        payload = abi.encode(Prefix.ERC721, staker, collection, tokenIds);
     }
 }

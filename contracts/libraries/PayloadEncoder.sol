@@ -6,11 +6,12 @@ pragma solidity 0.8.20;
 /// @dev Utility library for encoding stake and unstake NFT asset payloads.
 /// Used to relay cross-chain messages using LayerZero.
 library PayloadEncoder {
-    /// @dev Prefix for ERC1155-related operations. Used to distinguish ERC1155 operations in payload.
-    string private constant ERC1155_PREFIX = "ERC1155";
-
-    /// @dev Prefix for ERC721-related operations. Used to distinguish ERC721 operations in payload.
-    string private constant ERC721_PREFIX = "ERC721";
+    /// @notice Used to distinguish between different types of operations in the payload.
+    /// @dev Each type of operation (ERC1155 or ERC721) is represented by an enum value.
+    enum Prefix {
+        ERC1155,
+        ERC721
+    }
 
     /// @notice Encodes the payload for staking ERC-1155 assets cross-chain.
     /// @param staker Address of the staker.
@@ -27,7 +28,7 @@ library PayloadEncoder {
     ) internal pure returns (bytes memory payload) {
         // Pack the parameters into a dynamically-sized byte array
         payload = abi.encodePacked(
-            ERC1155_PREFIX,
+            Prefix.ERC1155,
             staker,
             collection,
             tokenIds,
@@ -47,7 +48,7 @@ library PayloadEncoder {
         uint256[] calldata tokenIds
     ) internal pure returns (bytes memory payload) {
         // Pack the parameters into a dynamically-sized byte array
-        payload = abi.encodePacked(ERC721_PREFIX, staker, collection, tokenIds);
+        payload = abi.encodePacked(Prefix.ERC721, staker, collection, tokenIds);
     }
 
     /// @notice Encodes the payload for unstaking ERC-1155 assets cross-chain.
@@ -64,7 +65,7 @@ library PayloadEncoder {
         uint256[] calldata amounts
     ) internal pure returns (bytes memory payload) {
         payload = abi.encodePacked(
-            ERC1155_PREFIX,
+            Prefix.ERC1155,
             staker,
             collection,
             tokenIds,
@@ -83,6 +84,6 @@ library PayloadEncoder {
         address collection,
         uint256[] calldata tokenIds
     ) internal pure returns (bytes memory payload) {
-        payload = abi.encodePacked(ERC721_PREFIX, staker, collection, tokenIds);
+        payload = abi.encodePacked(Prefix.ERC721, staker, collection, tokenIds);
     }
 }

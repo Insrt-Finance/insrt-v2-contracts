@@ -127,7 +127,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         address collection,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts
-    ) internal {
+    ) private {
         _lzSend(
             Storage.layout().DESTINATION_LAYER_ZERO_CHAIN_ID,
             PayloadEncoder.encodeStakeERC1155AssetsPayload(
@@ -150,7 +150,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
     function _stakeERC721Assets(
         address collection,
         uint256[] calldata tokenIds
-    ) internal {
+    ) private {
         _lzSend(
             Storage.layout().DESTINATION_LAYER_ZERO_CHAIN_ID,
             PayloadEncoder.encodeStakeERC721AssetsPayload(

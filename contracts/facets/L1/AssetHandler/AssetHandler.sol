@@ -136,6 +136,8 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
                 amounts,
                 ""
             );
+
+            emit ERC1155AssetsUnstaked(sender, collection, tokenIds, amounts);
         } else if (prefix == PayloadEncoder.Prefix.ERC721) {
             // Decode the payload to get the sender, the collection, and the tokenIds
             (
@@ -153,6 +155,8 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
                     ""
                 );
             }
+
+            emit ERC721AssetsUnstaked(sender, collection, tokenIds);
         } else {
             revert InvalidPayloadPrefix();
         }

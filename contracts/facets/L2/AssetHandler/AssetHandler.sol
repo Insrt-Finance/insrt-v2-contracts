@@ -141,6 +141,8 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                     tokenIds[i]
                 ] += amounts[i];
             }
+
+            emit ERC1155AssetsStaked(staker, collection, tokenIds, amounts);
         } else if (prefix == PayloadEncoder.Prefix.ERC721) {
             // Decode the payload to get the staker, the collection, and the tokenIds
             (
@@ -159,6 +161,8 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                     tokenIds[i]
                 );
             }
+
+            emit ERC721AssetsStaked(staker, collection, tokenIds);
         } else {
             // If the prefix is neither ERC1155 nor ERC721, revert
             revert InvalidPayloadPrefix();

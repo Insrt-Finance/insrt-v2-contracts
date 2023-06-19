@@ -1,0 +1,186 @@
+// SPDX-License-Identifier: UNLICENSED
+
+pragma solidity ^0.8.20;
+
+import { VRFConsumerBaseV2 } from "@chainlink/vrf/VRFConsumerBaseV2.sol";
+import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV2Interface.sol";
+import { EnumerableSet } from "@solidstate-solidity/data/EnumerableSet.sol";
+import { ERC721BaseInternal } from "@solidstate-solidity/token/ERC721/base/ERC721BaseInternal.sol";
+
+import { PerpetualMintStorage as s } from "./PerpetualMintStorage.sol";
+
+abstract contract PerpetualMintInternal is
+    VRFConsumerBaseV2,
+    ERC721BaseInternal
+{
+    using EnumerableSet for EnumerableSet.UintSet;
+
+    /**
+     * @notice thrown when an incorrent amount of ETH is received
+     */
+    error IncorrectETHReceived();
+
+    /**
+     * @notice emitted when the outcome of an attempted mint is resolved
+     * @param collection address of collection that attempted mint is for
+     * @param result success status of mint attempt
+     */
+    event OutcomeResolved(address collection, bool result);
+
+    uint32 internal constant BASIS = 1000000;
+
+    bytes32 private immutable KEY_HASH;
+    address private immutable VRF;
+    uint64 private immutable SUBSCRIPTION_ID;
+    uint32 private immutable CALLBACK_GAS_LIMIT;
+    uint16 private immutable MIN_CONFIRMATIONS;
+
+    constructor(
+        bytes32 keyHash,
+        address vrfCoordinator,
+        uint64 subscriptionId,
+        uint16 minConfirmations,
+        uint32 callbackGasLimit
+    ) VRFConsumerBaseV2(vrfCoordinator) {
+        KEY_HASH = keyHash;
+        VRF = vrfCoordinator;
+        SUBSCRIPTION_ID = subscriptionId;
+        CALLBACK_GAS_LIMIT = callbackGasLimit;
+        MIN_CONFIRMATIONS = minConfirmations;
+    }
+
+    /**
+     * @notice internal Chainlink VRF callback
+     * @notice is executed by the ChainlinkVRF Coordinator contract
+     * @param requestId id of chainlinkVRF request
+     * @param randomWords random values return by ChainlinkVRF Coordinator
+     */
+    function _fulfillRandomWords(
+        uint256 requestId,
+        uint256[] memory randomWords
+    ) internal virtual {
+        s.Layout storage l = s.layout();
+
+        _resolveOutcome(
+            l.requestUser[requestId],
+            l.requestCollection[requestId],
+            randomWords
+        );
+    }
+
+    /**
+     * @notice requests random values from Chainlink VRF
+     * @param account address calling this function
+     * @param numWords amount of random values to request
+     */
+    function _requestRandomWords(address account, uint32 numWords) internal {
+        uint256 requestId = VRFCoordinatorV2Interface(VRF).requestRandomWords(
+            KEY_HASH,
+            SUBSCRIPTION_ID,
+            MIN_CONFIRMATIONS,
+            CALLBACK_GAS_LIMIT,
+            numWords
+        );
+
+        s.layout().requestUser[requestId] = account;
+    }
+
+    /**
+     * @notice attempts to mint a token from a collection for an account
+     * @param account address of account minting
+     * @param collection address of collection which token may be minted from
+     */
+    function _attemptMint(address account, address collection) internal {
+        s.Layout storage l = s.layout();
+
+        if (msg.value != l.collectionMintPrice[collection]) {
+            revert IncorrectETHReceived();
+        }
+
+        uint256 mintFee = (msg.value * l.mintFeeBP) / BASIS;
+        uint256 protocolFee = (mintFee * l.protocolFeeBP) / BASIS;
+        l.totalFees += mintFee;
+        l.protocolFees += protocolFee;
+        l.collectionFees[collection] += msg.value - mintFee + protocolFee;
+
+        _requestRandomWords(account, 1);
+    }
+
+    /**
+     * @notice resolves the outcome of an attempted mint
+     * @param account address attempting the mint
+     * @param collection address of collection which token may be minted from
+     * @param randomWords random values relating to attempt
+     */
+    function _resolveOutcome(
+        address account,
+        address collection,
+        uint256[] memory randomWords
+    ) private {
+        s.Layout storage l = s.layout();
+
+        //can chunk x2 instead for optimal efficiency - need clarity on game mechanism
+        bytes4[8] memory randomValues = _chunkBytes32(bytes32(randomWords[0]));
+
+        bool result = l.collectionRisks[collection] >
+            _normalizeValue(uint32(randomValues[0]));
+
+        if (!result) {
+            _mint(account, l.id);
+            ++l.id;
+        }
+
+        //accounts only for ERC721 tokens
+        //TODO: add ERC1155 support
+        if (result) {
+            uint256 tokenAmount = l.escrowedERC721TokenIds[collection].length();
+            uint256 wonAssetIndex = _normalizeValue(uint32(randomValues[1])) %
+                tokenAmount;
+            uint256 wonTokenId = l.escrowedERC721TokenIds[collection].at(
+                wonAssetIndex
+            );
+            address previousOwner = l.stakedERC721TokenOwner[collection][
+                wonTokenId
+            ];
+            l.collectionUserFees[collection][previousOwner] +=
+                (l.totalFees *
+                    l.stakedERC721TokenAmount[previousOwner][collection]) /
+                tokenAmount -
+                l.collectionUserDeductions[collection][previousOwner];
+
+            --l.stakedERC721TokenAmount[previousOwner][collection];
+            ++l.stakedERC721TokenAmount[account][collection];
+
+            l.stakedERC721TokenOwner[collection][wonTokenId] = account;
+        }
+
+        emit OutcomeResolved(collection, result);
+    }
+
+    /**
+     * @notice splits a bytes32 value into 8 bytes4 values
+     * @param value bytes32 value
+     * @return chunks array of 8 bytes4 values
+     */
+    function _chunkBytes32(
+        bytes32 value
+    ) private pure returns (bytes4[8] memory chunks) {
+        unchecked {
+            for (uint256 i = 0; i < 8; ++i) {
+                bytes4 chunk = bytes4(value << (i * 32));
+                chunks[i] = chunk;
+            }
+        }
+    }
+
+    /**
+     * @notice ensures a value is within the BASIS range
+     * @param value value to normalize
+     * @return normalizedValue value after normalization
+     */
+    function _normalizeValue(
+        uint32 value
+    ) private pure returns (uint32 normalizedValue) {
+        normalizedValue = value % BASIS;
+    }
+}

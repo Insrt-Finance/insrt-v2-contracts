@@ -2,37 +2,11 @@
 
 pragma solidity 0.8.20;
 
+import { IAssetHandler } from "../../../interfaces/IAssetHandler.sol";
+
 /// @title IL1AssetHandler
-/// @dev Defines methods for the L1AssetHandler contract.
-interface IL1AssetHandler {
-    /// @notice Thrown when the length of the `tokenIds` array and the `amounts` array are not equal in the `stakeERC1155Assets` function.
-    error ERC1155TokenIdsAndAmountsLengthMismatch();
-
-    /// @notice Thrown when a payload prefix is invalid and not supported.
-    error InvalidPayloadPrefix();
-
-    /// @notice Emitted when ERC1155 assets are successfully staked.
-    /// @param staker The indexed address of the staker.
-    /// @param collection The indexed address of the ERC1155 collection.
-    /// @param tokenIds Token IDs of the staked ERC1155 assets.
-    /// @param amounts Amount of staked ERC1155 assets for each tokenId.
-    event ERC1155AssetsStaked(
-        address indexed staker,
-        address indexed collection,
-        uint256[] tokenIds,
-        uint256[] amounts
-    );
-
-    /// @notice Emitted when ERC721 assets are successfully staked.
-    /// @param staker The indexed address of the staker.
-    /// @param collection The indexed address of the ERC721 collection.
-    /// @param tokenIds Token IDs of the staked ERC721 assets.
-    event ERC721AssetsStaked(
-        address indexed staker,
-        address indexed collection,
-        uint256[] tokenIds
-    );
-
+/// @dev Defines interface for the L1AssetHandler contract. Extends IAssetHandler.
+interface IL1AssetHandler is IAssetHandler {
     /// @notice Validates receipt of an ERC1155 batch transfer.
     /// @param operator Executor of transfer.
     /// @param from Sender of tokens.
@@ -60,13 +34,6 @@ interface IL1AssetHandler {
         uint256 tokenId,
         bytes calldata data
     ) external pure returns (bytes4);
-
-    /// @notice Sets the LayerZero chain ID destination.
-    /// @dev Only the contract owner can call this function.
-    /// @param newDestinationLayerZeroChainId The new LayerZero chain ID where assets will be staked.
-    function setLayerZeroChainIdDestination(
-        uint16 newDestinationLayerZeroChainId
-    ) external;
 
     /// @notice Used to stake and deposit ERC1155 assets.
     /// @dev Transfers the specified ERC1155 tokens from the user to this contract and deposits them cross-chain.

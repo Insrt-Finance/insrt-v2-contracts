@@ -7,6 +7,7 @@ import { SolidStateLayerZeroClient } from "@solidstate/layerzero-client/SolidSta
 
 import { IL2AssetHandler } from "./IAssetHandler.sol";
 import { L2AssetHandlerStorage as Storage } from "./Storage.sol";
+import { IAssetHandler } from "../../../interfaces/IAssetHandler.sol";
 import { PayloadEncoder } from "../../../libraries/PayloadEncoder.sol";
 
 /// @title L2AssetHandler
@@ -29,7 +30,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         _setOwner(msg.sender);
     }
 
-    /// @inheritdoc IL2AssetHandler
+    /// @inheritdoc IAssetHandler
     function setLayerZeroChainIdDestination(
         uint16 newDestinationLayerZeroChainId
     ) external onlyOwner {

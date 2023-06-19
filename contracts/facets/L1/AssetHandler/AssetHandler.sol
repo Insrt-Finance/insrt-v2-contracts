@@ -8,6 +8,7 @@ import { SolidStateLayerZeroClient } from "@solidstate/layerzero-client/SolidSta
 
 import { IL1AssetHandler } from "./IAssetHandler.sol";
 import { L1AssetHandlerStorage as Storage } from "./Storage.sol";
+import { IAssetHandler } from "../../../interfaces/IAssetHandler.sol";
 import { PayloadEncoder } from "../../../libraries/PayloadEncoder.sol";
 
 /// @title L1AssetHandler
@@ -49,7 +50,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         return this.onERC721Received.selector;
     }
 
-    /// @inheritdoc IL1AssetHandler
+    /// @inheritdoc IAssetHandler
     function setLayerZeroChainIdDestination(
         uint16 newDestinationLayerZeroChainId
     ) external onlyOwner {

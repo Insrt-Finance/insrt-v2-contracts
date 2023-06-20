@@ -8,7 +8,7 @@ pragma solidity 0.8.20;
 library PayloadEncoder {
     /// @notice Used to distinguish between different types of operations in the payload.
     /// @dev Each type of operation (ERC1155 or ERC721) is represented by an enum value.
-    enum Prefix {
+    enum AssetType {
         ERC1155,
         ERC721
     }
@@ -27,7 +27,7 @@ library PayloadEncoder {
     ) internal pure returns (bytes memory payload) {
         // Pack the parameters into a dynamically-sized byte array
         payload = abi.encode(
-            Prefix.ERC1155,
+            AssetType.ERC1155,
             staker,
             collection,
             tokenIds,
@@ -46,7 +46,7 @@ library PayloadEncoder {
         uint256[] calldata tokenIds
     ) internal pure returns (bytes memory payload) {
         // Pack the parameters into a dynamically-sized byte array
-        payload = abi.encode(Prefix.ERC721, staker, collection, tokenIds);
+        payload = abi.encode(AssetType.ERC721, staker, collection, tokenIds);
     }
 
     /// @notice Encodes the payload for unstaking ERC-1155 assets cross-chain.
@@ -62,7 +62,7 @@ library PayloadEncoder {
         uint256[] calldata amounts
     ) internal pure returns (bytes memory payload) {
         payload = abi.encode(
-            Prefix.ERC1155,
+            AssetType.ERC1155,
             staker,
             collection,
             tokenIds,
@@ -80,6 +80,6 @@ library PayloadEncoder {
         address collection,
         uint256[] calldata tokenIds
     ) internal pure returns (bytes memory payload) {
-        payload = abi.encode(Prefix.ERC721, staker, collection, tokenIds);
+        payload = abi.encode(AssetType.ERC721, staker, collection, tokenIds);
     }
 }

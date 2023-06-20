@@ -105,7 +105,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
     }
 
     /// @notice Handles received LayerZero cross-chain messages.
-    /// @dev Overridden from the SolidStateLayerZeroClient contract. It processes data payloads based on the prefix and transfers unstaked NFT assets accordingly.
+    /// @dev Overridden from the SolidStateLayerZeroClient contract. It processes data payloads based on the asset type and transfers unstaked NFT assets accordingly.
     /// @param data The cross-chain message data payload. Decoded based on profix and processed accordingly.
     function _handleLayerZeroMessage(
         uint16,
@@ -113,13 +113,13 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         uint64,
         bytes calldata data
     ) internal override {
-        // Decode the prefix from the payload
-        PayloadEncoder.Prefix prefix = abi.decode(
+        // Decode the asset type from the payload
+        PayloadEncoder.AssetType assetType = abi.decode(
             data,
-            (PayloadEncoder.Prefix)
+            (PayloadEncoder.AssetType)
         );
 
-        if (prefix == PayloadEncoder.Prefix.ERC1155) {
+        if (assetType == PayloadEncoder.AssetType.ERC1155) {
             // Decode the payload to get the sender, the collection, the tokenIds and the amounts for each tokenId
             (
                 address sender,
@@ -138,7 +138,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
             );
 
             emit ERC1155AssetsUnstaked(sender, collection, tokenIds, amounts);
-        } else if (prefix == PayloadEncoder.Prefix.ERC721) {
+        } else if (assetType == PayloadEncoder.AssetType.ERC721) {
             // Decode the payload to get the sender, the collection, and the tokenIds
             (
                 address sender,
@@ -158,7 +158,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
 
             emit ERC721AssetsUnstaked(sender, collection, tokenIds);
         } else {
-            revert InvalidPayloadPrefix();
+            revert InvalidPayloadAssetType();
         }
     }
 

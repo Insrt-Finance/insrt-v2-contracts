@@ -102,7 +102,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     }
 
     /// @notice Handles received LayerZero cross-chain messages.
-    /// @dev Overridden from the SolidStateLayerZeroClient contract. It processes data payloads based on the prefix and updates staked assets accordingly.
+    /// @dev Overridden from the SolidStateLayerZeroClient contract. It processes data payloads based on the asset type and updates staked assets accordingly.
     /// @param data The cross-chain message data payload. Decoded based on profix and processed accordingly.
     function _handleLayerZeroMessage(
         uint16,
@@ -110,13 +110,13 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         uint64,
         bytes calldata data
     ) internal override {
-        // Decode the prefix from the payload
-        PayloadEncoder.Prefix prefix = abi.decode(
+        // Decode the asset type from the payload
+        PayloadEncoder.AssetType assetType = abi.decode(
             data,
-            (PayloadEncoder.Prefix)
+            (PayloadEncoder.AssetType)
         );
 
-        if (prefix == PayloadEncoder.Prefix.ERC1155) {
+        if (assetType == PayloadEncoder.AssetType.ERC1155) {
             // Decode the payload to get the staker, the collection, the tokenIds and the amounts for each tokenId
             (
                 ,
@@ -127,7 +127,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             ) = abi.decode(
                     data,
                     (
-                        PayloadEncoder.Prefix,
+                        PayloadEncoder.AssetType,
                         address,
                         address,
                         uint256[],
@@ -143,7 +143,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             }
 
             emit ERC1155AssetsStaked(staker, collection, tokenIds, amounts);
-        } else if (prefix == PayloadEncoder.Prefix.ERC721) {
+        } else if (assetType == PayloadEncoder.AssetType.ERC721) {
             // Decode the payload to get the staker, the collection, and the tokenIds
             (
                 ,
@@ -152,7 +152,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 uint256[] memory tokenIds
             ) = abi.decode(
                     data,
-                    (PayloadEncoder.Prefix, address, address, uint256[])
+                    (PayloadEncoder.AssetType, address, address, uint256[])
                 );
 
             // Update the staked ERC721 assets in the contract's storage
@@ -164,8 +164,8 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
             emit ERC721AssetsStaked(staker, collection, tokenIds);
         } else {
-            // If the prefix is neither ERC1155 nor ERC721, revert
-            revert InvalidPayloadPrefix();
+            // If the asset type is neither ERC1155 nor ERC721, revert
+            revert InvalidPayloadAssetType();
         }
     }
 

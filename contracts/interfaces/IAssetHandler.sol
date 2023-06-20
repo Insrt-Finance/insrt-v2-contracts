@@ -8,8 +8,8 @@ interface IAssetHandler {
     /// @notice Thrown when the length of the `tokenIds` array and the `amounts` array are not equal in the `stakeERC1155Assets` & `unstakeERC1155Assets` functions.
     error ERC1155TokenIdsAndAmountsLengthMismatch();
 
-    /// @notice Thrown when a payload prefix is invalid and not supported.
-    error InvalidPayloadPrefix();
+    /// @notice Thrown when a payload asset type is invalid and not supported.
+    error InvalidPayloadAssetType();
 
     /// @notice Emitted when ERC1155 assets are successfully staked.
     /// @param staker The indexed address of the staker.

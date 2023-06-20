@@ -19,7 +19,7 @@ library PerpetualMintStorage {
         //
         mapping(address collection => EnumerableSet.UintSet tokenIds) escrowedERC721TokenIds;
         mapping(address collection => uint256 mintPrice) collectionMintPrice;
-        mapping(address collection => uint256 amount) collectionEarnings;
+        mapping(address collection => uint256 amount) totalCollectionEarnings;
         mapping(address collection => mapping(address account => uint256 amount)) collectionUserEarnings;
         mapping(address collection => mapping(address account => uint256 amount)) collectionUserDeductions;
         mapping(address collection => mapping(uint256 tokenId => address account)) escrowedERC721TokenOwner;

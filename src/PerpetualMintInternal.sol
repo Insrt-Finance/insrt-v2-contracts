@@ -100,7 +100,7 @@ abstract contract PerpetualMintInternal is
         uint256 mintFee = (msg.value * l.mintFeeBP) / BASIS;
 
         l.protocolFees += mintFee;
-        l.collectionEarnings[collection] += msg.value - mintFee;
+        l.totalCollectionEarnings[collection] += msg.value - mintFee;
 
         _requestRandomWords(account, 1);
     }
@@ -219,7 +219,7 @@ abstract contract PerpetualMintInternal is
         s.Layout storage l = s.layout();
 
         l.collectionUserEarnings[collection][account] +=
-            (l.collectionEarnings[collection] *
+            (l.totalCollectionEarnings[collection] *
                 l.accountEscrowedERC721TokenAmount[account][collection]) /
             l.escrowedERC721TokenIds[collection].length() -
             l.collectionUserDeductions[collection][account];

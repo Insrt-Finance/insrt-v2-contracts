@@ -106,6 +106,44 @@ abstract contract PerpetualMintInternal is
     }
 
     /**
+     * @notice selects the ERC721 token which was won after a successfull mint attempt
+     * @param collection address of collection
+     * @param randomValue seed used to select the tokenId
+     */
+    function _selectERC721Token(
+        address collection,
+        uint32 randomValue
+    ) internal view returns (uint256 tokenId) {
+        s.Layout storage l = s.layout();
+
+        uint256 tokenIndex;
+        uint256 cumulativeRisk;
+
+        do {
+            cumulativeRisk += l.tokenRisks[collection][
+                l.escrowedERC721TokenIds[collection].at(tokenIndex)
+            ];
+            ++tokenIndex;
+        } while (cumulativeRisk >= randomValue);
+
+        tokenId = l.escrowedERC721TokenIds[collection].at(tokenIndex - 1);
+    }
+
+    /**
+     * @notice calculations the weighted collection-wide risk of an ERC721 collection
+     * @param collection address of collection
+     * @return risk value of collection-wide risk
+     */
+    function _collectionRiskERC721(
+        address collection
+    ) internal view returns (uint256 risk) {
+        s.Layout storage l = s.layout();
+        risk =
+            l.totalCollectionRisk[collection] /
+            l.escrowedERC721TokenIds[collection].length();
+    }
+
+    /**
      * @notice resolves the outcome of an attempted mint
      * @param account address attempting the mint
      * @param collection address of collection which token may be minted from
@@ -157,32 +195,25 @@ abstract contract PerpetualMintInternal is
         emit OutcomeResolved(collection, result);
     }
 
-    function _selectERC721Token(
+    /**
+     * @notice updates the earnings of an account based on current conitions
+     * @param collection address of collection earnings relate to
+     * @param account address of account
+     */
+    function _updateAccountEarnings(
         address collection,
-        uint32 randomValue
-    ) internal view returns (uint256 tokenId) {
+        address account
+    ) private {
         s.Layout storage l = s.layout();
 
-        uint256 tokenIndex;
-        uint256 cumulativeRisk;
+        l.collectionUserEarnings[collection][account] +=
+            (l.totalCollectionEarnings[collection] *
+                l.accountEscrowedERC721TokenAmount[account][collection]) /
+            l.escrowedERC721TokenIds[collection].length() -
+            l.collectionUserDeductions[collection][account];
 
-        do {
-            cumulativeRisk += l.tokenRisks[collection][
-                l.escrowedERC721TokenIds[collection].at(tokenIndex)
-            ];
-            ++tokenIndex;
-        } while (cumulativeRisk >= randomValue);
-
-        tokenId = l.escrowedERC721TokenIds[collection].at(tokenIndex - 1);
-    }
-
-    function _collectionRiskERC721(
-        address collection
-    ) internal view returns (uint256 risk) {
-        s.Layout storage l = s.layout();
-        risk =
-            l.totalCollectionRisk[collection] /
-            l.escrowedERC721TokenIds[collection].length();
+        l.collectionUserDeductions[collection][account] = l
+            .collectionUserEarnings[collection][account];
     }
 
     /**
@@ -210,21 +241,5 @@ abstract contract PerpetualMintInternal is
         uint32 value
     ) private pure returns (uint32 normalizedValue) {
         normalizedValue = value % BASIS;
-    }
-
-    function _updateAccountEarnings(
-        address collection,
-        address account
-    ) private {
-        s.Layout storage l = s.layout();
-
-        l.collectionUserEarnings[collection][account] +=
-            (l.totalCollectionEarnings[collection] *
-                l.accountEscrowedERC721TokenAmount[account][collection]) /
-            l.escrowedERC721TokenIds[collection].length() -
-            l.collectionUserDeductions[collection][account];
-
-        l.collectionUserDeductions[collection][account] = l
-            .collectionUserEarnings[collection][account];
     }
 }

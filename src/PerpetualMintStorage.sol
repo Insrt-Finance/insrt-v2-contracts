@@ -6,21 +6,24 @@ import { EnumerableSet } from "@solidstate-solidity/data/EnumerableSet.sol";
 
 library PerpetualMintStorage {
     struct Layout {
-        uint256 totalFees;
         uint256 protocolFees;
         uint64 id;
         uint32 mintFeeBP;
         uint32 protocolFeeBP;
         mapping(uint256 requestId => address account) requestUser;
         mapping(uint256 requestId => address collection) requestCollection;
-        mapping(address collection => uint32 risk) collectionRisks;
-        mapping(address collection => uint256 mintPrice) collectionMintPrice;
-        mapping(address collection => uint256 amount) collectionFees;
-        mapping(address collection => mapping(address account => uint256 amount)) collectionUserFees;
-        mapping(address collection => mapping(address account => uint256 amount)) collectionUserDeductions;
+        //
+        mapping(address collection => bool isERC721) collectionType;
+        mapping(address collection => uint256 risks) totalCollectionRisk;
+        mapping(address collection => mapping(uint256 tokenId => uint256 risk)) tokenRisks;
+        //
         mapping(address collection => EnumerableSet.UintSet tokenIds) escrowedERC721TokenIds;
-        mapping(address collection => mapping(uint256 tokenId => address account)) stakedERC721TokenOwner;
-        mapping(address collection => mapping(address account => uint256 amount)) stakedERC721TokenAmount;
+        mapping(address collection => uint256 mintPrice) collectionMintPrice;
+        mapping(address collection => uint256 amount) collectionEarnings;
+        mapping(address collection => mapping(address account => uint256 amount)) collectionUserEarnings;
+        mapping(address collection => mapping(address account => uint256 amount)) collectionUserDeductions;
+        mapping(address collection => mapping(uint256 tokenId => address account)) escrowedERC721TokenOwner;
+        mapping(address collection => mapping(address account => uint256 amount)) accountEscrowedERC721TokenAmount; //could onvert to EnumerableSet.UintSet
     }
 
     bytes32 internal constant STORAGE_SLOT =

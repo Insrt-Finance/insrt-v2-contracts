@@ -4,8 +4,8 @@ pragma solidity 0.8.20;
 
 import { SolidStateDiamond } from "@solidstate/contracts/proxy/diamond/SolidStateDiamond.sol";
 
-/// @title L2Core
-/// @dev The L2 Core Diamond.
-contract L2Core is SolidStateDiamond {
+/// @title L1PerpetualMint
+/// @dev The L1 Perpetual Mint Diamond.
+contract L1PerpetualMint is SolidStateDiamond {
 
 }

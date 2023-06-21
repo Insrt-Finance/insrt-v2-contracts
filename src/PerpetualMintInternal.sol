@@ -4,8 +4,8 @@ pragma solidity ^0.8.20;
 
 import { VRFConsumerBaseV2 } from "@chainlink/vrf/VRFConsumerBaseV2.sol";
 import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV2Interface.sol";
-import { EnumerableSet } from "@solidstate-solidity/data/EnumerableSet.sol";
-import { ERC721BaseInternal } from "@solidstate-solidity/token/ERC721/base/ERC721BaseInternal.sol";
+import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
+import { ERC721BaseInternal } from "@solidstate/contracts/token/ERC721/base/ERC721BaseInternal.sol";
 
 import { PerpetualMintStorage as s } from "./PerpetualMintStorage.sol";
 

@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.20;
 
-import { EnumerableSet } from "@solidstate-solidity/data/EnumerableSet.sol";
+import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
 library PerpetualMintStorage {
     struct Layout {

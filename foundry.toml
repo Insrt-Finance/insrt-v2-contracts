@@ -13,6 +13,7 @@ remappings = [
   "@abdk/=lib/abdk-libraries-solidity/"
 ]
 solc_version = '0.8.20'
+evm_version = "shanghai"
 src = "contracts"
 verbosity = 1
 

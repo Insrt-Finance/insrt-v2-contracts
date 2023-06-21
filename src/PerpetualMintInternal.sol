@@ -124,7 +124,7 @@ abstract contract PerpetualMintInternal is
                 l.escrowedERC721TokenIds[collection].at(tokenIndex)
             ];
             ++tokenIndex;
-        } while (cumulativeRisk >= randomValue);
+        } while (cumulativeRisk <= randomValue);
 
         tokenId = l.escrowedERC721TokenIds[collection].at(tokenIndex - 1);
     }

@@ -12,7 +12,7 @@ import { IAssetHandler } from "../../../../contracts/interfaces/IAssetHandler.so
 /// @title L2AssetHandlerHelper
 /// @dev Test helper contract for setting up the L2 Asset Handler facet for diamond cutting and testing.
 contract L2AssetHandlerHelper {
-    L2AssetHandler public L2AssetHandlerImplementation;
+    L2AssetHandler public l2AssetHandlerImplementation;
 
     /// @dev The LayerZero Arbitrum endpoint address.
     address private constant ARBITRUM_LAYER_ZERO_ENDPOINT =
@@ -22,7 +22,7 @@ contract L2AssetHandlerHelper {
 
     /// @dev Deploys a new instance of L2AssetHandler.
     constructor() {
-        L2AssetHandlerImplementation = new L2AssetHandler(
+        l2AssetHandlerImplementation = new L2AssetHandler(
             ARBITRUM_LAYER_ZERO_ENDPOINT,
             DESTINATION_LAYER_ZERO_CHAIN_ID
         );
@@ -45,7 +45,7 @@ contract L2AssetHandlerHelper {
 
         ISolidStateDiamond.FacetCut memory facetCut = IDiamondWritableInternal
             .FacetCut({
-                target: address(L2AssetHandlerImplementation),
+                target: address(l2AssetHandlerImplementation),
                 action: IDiamondWritableInternal.FacetCutAction.ADD,
                 selectors: functionSelectors
             });

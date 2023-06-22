@@ -43,6 +43,7 @@ jobs:
       - name: "Upload coverage report to Codecov"
         uses: "codecov/codecov-action@v3"
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: "./lcov.info"
           name: insrt-lp-contracts
           verbose: true

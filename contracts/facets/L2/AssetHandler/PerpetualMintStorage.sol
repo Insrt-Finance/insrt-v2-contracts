@@ -18,8 +18,13 @@ library PerpetualMintStorage {
         mapping(address collection => EnumerableSet.UintSet tokenIds) escrowedTokenIds;
         mapping(address collection => uint256 mintPrice) collectionMintPrice;
         mapping(address collection => uint256 amount) totalCollectionEarnings;
+        mapping(address collection => mapping(uint256 tokenId => uint256 amount)) totalCollectionTokenEarnings;
         mapping(address collection => mapping(address account => uint256 amount)) collectionUserDeductions;
         mapping(address collection => mapping(uint256 tokenId => address account)) escrowedERC721TokenOwner;
+        mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet accounts)) escrowedERC1155TokenOwners;
+        mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint256 amount))) accountEscrowedERC1155TokenAmount;
+        mapping(address collection => mapping(uint256 tokenId => uint256 amount)) escrowedERC1155TokenAmount;
+        mapping(address collection => mapping(address account => EnumerableSet.UintSet tokenIds)) accountEscrowedERC1155TokenIds;
         mapping(address collection => mapping(address account => uint256 amount)) accountEscrowedERC721TokenAmount; //could onvert to EnumerableSet.UintSet
     }
 

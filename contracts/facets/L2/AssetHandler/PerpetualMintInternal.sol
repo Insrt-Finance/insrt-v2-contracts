@@ -106,18 +106,20 @@ abstract contract PerpetualMintInternal is
     }
 
     /**
-     * @notice selects the ERC721 token which was won after a successfull mint attempt
+     * @notice selects the token which was won after a successfull mint attempt
      * @param collection address of collection
      * @param randomValue seed used to select the tokenId
+     * @return tokenId id of won token
      */
-    function _selectERC721Token(
+    function _selectToken(
         address collection,
         uint128 randomValue
     ) internal view returns (uint256 tokenId) {
         s.Layout storage l = s.layout();
 
-        EnumerableSet.UintSet storage escrowedTokenIds = l
-            .escrowedERC721TokenIds[collection];
+        EnumerableSet.UintSet storage escrowedTokenIds = l.escrowedTokenIds[
+            collection
+        ];
 
         uint256 tokenIndex;
         uint256 cumulativeRisk;
@@ -137,13 +139,13 @@ abstract contract PerpetualMintInternal is
      * @param collection address of collection
      * @return risk value of collection-wide risk
      */
-    function _collectionRiskERC721(
+    function _collectionRisk(
         address collection
     ) internal view returns (uint128 risk) {
         s.Layout storage l = s.layout();
         risk =
             l.totalCollectionRisk[collection] /
-            uint128(l.escrowedERC721TokenIds[collection].length());
+            uint128(l.escrowedTokenIds[collection].length());
     }
 
     /**
@@ -161,64 +163,49 @@ abstract contract PerpetualMintInternal is
 
         bytes16[2] memory randomValues = _chunkBytes32(bytes32(randomWords[0]));
 
-        bool isERC721 = l.collectionType[collection];
-        bool result;
-
-        if (isERC721) {
-            result =
-                _collectionRiskERC721(collection) >
-                _normalizeValue(
-                    uint128(randomValues[0]),
-                    l.totalCollectionRisk[collection]
-                );
-        }
+        bool result = _collectionRisk(collection) >
+            _normalizeValue(
+                uint128(randomValues[0]),
+                l.totalCollectionRisk[collection]
+            );
 
         if (!result) {
             _mint(account, l.id);
             ++l.id;
         }
 
-        //accounts only for ERC721 tokens
-        //TODO: add ERC1155 support
-        if (result && isERC721) {
-            uint256 wonTokenId = _selectERC721Token(
+        if (result) {
+            uint256 wonTokenId = _selectToken(
                 collection,
                 uint128(randomValues[1])
             );
-            address previousOwner = l.escrowedERC721TokenOwner[collection][
-                wonTokenId
-            ];
 
-            _updateAccountEarnings(collection, previousOwner);
+            if (l.collectionType[collection]) {
+                address previousOwner = l.escrowedERC721TokenOwner[collection][
+                    wonTokenId
+                ];
 
-            --l.accountEscrowedERC721TokenAmount[previousOwner][collection];
-            ++l.accountEscrowedERC721TokenAmount[account][collection];
+                --l.accountEscrowedERC721TokenAmount[previousOwner][collection];
+                ++l.accountEscrowedERC721TokenAmount[account][collection];
 
-            l.escrowedERC721TokenOwner[collection][wonTokenId] = account;
+                l.escrowedERC721TokenOwner[collection][wonTokenId] = account;
+            } else {}
         }
 
         emit OutcomeResolved(collection, result);
     }
 
-    /**
-     * @notice updates the earnings of an account based on current conitions
-     * @param collection address of collection earnings relate to
-     * @param account address of account
-     */
-    function _updateAccountEarnings(
+    function _collectionERC721UserEarnings(
         address collection,
         address account
-    ) private {
+    ) internal view returns (uint256 earnings) {
         s.Layout storage l = s.layout();
 
-        l.collectionUserEarnings[collection][account] +=
-            (l.totalCollectionEarnings[collection] *
-                l.accountEscrowedERC721TokenAmount[account][collection]) /
-            l.escrowedERC721TokenIds[collection].length() -
+        earnings =
+            ((l.totalCollectionEarnings[collection] *
+                l.accountEscrowedERC721TokenAmount[collection][account]) /
+                l.escrowedTokenIds[collection].length()) -
             l.collectionUserDeductions[collection][account];
-
-        l.collectionUserDeductions[collection][account] = l
-            .collectionUserEarnings[collection][account];
     }
 
     /**

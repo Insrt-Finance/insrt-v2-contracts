@@ -112,13 +112,12 @@ abstract contract PerpetualMintInternal is
      */
     function _selectERC721Token(
         address collection,
-        uint32 randomValue
+        uint128 randomValue
     ) internal view returns (uint256 tokenId) {
         s.Layout storage l = s.layout();
 
-        EnumerableSet.UintSet escrowedTokenIds = l.escrowedERC721TokenIds[
-            collection
-        ];
+        EnumerableSet.UintSet storage escrowedTokenIds = l
+            .escrowedERC721TokenIds[collection];
 
         uint256 tokenIndex;
         uint256 cumulativeRisk;
@@ -140,11 +139,11 @@ abstract contract PerpetualMintInternal is
      */
     function _collectionRiskERC721(
         address collection
-    ) internal view returns (uint256 risk) {
+    ) internal view returns (uint128 risk) {
         s.Layout storage l = s.layout();
         risk =
             l.totalCollectionRisk[collection] /
-            l.escrowedERC721TokenIds[collection].length();
+            uint128(l.escrowedERC721TokenIds[collection].length());
     }
 
     /**
@@ -160,8 +159,7 @@ abstract contract PerpetualMintInternal is
     ) private {
         s.Layout storage l = s.layout();
 
-        //can chunk x2 instead for optimal efficiency - need clarity on game mechanism
-        bytes4[8] memory randomValues = _chunkBytes32(bytes32(randomWords[0]));
+        bytes16[2] memory randomValues = _chunkBytes32(bytes32(randomWords[0]));
 
         bool isERC721 = l.collectionType[collection];
         bool result;
@@ -169,7 +167,10 @@ abstract contract PerpetualMintInternal is
         if (isERC721) {
             result =
                 _collectionRiskERC721(collection) >
-                _normalizeValue(uint32(randomValues[0]));
+                _normalizeValue(
+                    uint128(randomValues[0]),
+                    l.totalCollectionRisk[collection]
+                );
         }
 
         if (!result) {
@@ -182,7 +183,7 @@ abstract contract PerpetualMintInternal is
         if (result && isERC721) {
             uint256 wonTokenId = _selectERC721Token(
                 collection,
-                uint32(randomValues[1])
+                uint128(randomValues[1])
             );
             address previousOwner = l.escrowedERC721TokenOwner[collection][
                 wonTokenId
@@ -227,11 +228,10 @@ abstract contract PerpetualMintInternal is
      */
     function _chunkBytes32(
         bytes32 value
-    ) private pure returns (bytes4[8] memory chunks) {
+    ) private pure returns (bytes16[2] memory chunks) {
         unchecked {
-            for (uint256 i = 0; i < 8; ++i) {
-                bytes4 chunk = bytes4(value << (i * 32));
-                chunks[i] = chunk;
+            for (uint256 i = 0; i < 2; ++i) {
+                chunks[i] = bytes16(value << (i * 128));
             }
         }
     }
@@ -242,8 +242,9 @@ abstract contract PerpetualMintInternal is
      * @return normalizedValue value after normalization
      */
     function _normalizeValue(
-        uint32 value
-    ) private pure returns (uint32 normalizedValue) {
-        normalizedValue = value % BASIS;
+        uint128 value,
+        uint128 basis
+    ) private pure returns (uint128 normalizedValue) {
+        normalizedValue = value % basis;
     }
 }

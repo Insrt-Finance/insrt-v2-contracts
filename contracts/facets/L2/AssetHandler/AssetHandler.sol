@@ -53,7 +53,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         // For each tokenId, check if staked amount is less than requested unstake amount
         // If it is, revert the transaction with a custom error
         // If not, reduce staked amount by unstake amount
-        for (uint i = 0; i < tokenIds.length; i++) {
+        for (uint256 i = 0; i < tokenIds.length; i++) {
             if (
                 Storage.layout().stakedERC1155Assets[msg.sender][collection][
                     tokenIds[i]
@@ -80,7 +80,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         // For each tokenId, check if token is staked
         // If it's not, revert the transaction with a custom error
         // If it is, remove it from the set of staked tokens
-        for (uint i = 0; i < tokenIds.length; i++) {
+        for (uint256 i = 0; i < tokenIds.length; i++) {
             if (
                 Storage
                 .layout()
@@ -136,7 +136,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 );
 
             // Update the staked ERC1155 assets in the contract's storage
-            for (uint i = 0; i < tokenIds.length; i++) {
+            for (uint256 i = 0; i < tokenIds.length; i++) {
                 Storage.layout().stakedERC1155Assets[staker][collection][
                     tokenIds[i]
                 ] += amounts[i];
@@ -156,7 +156,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 );
 
             // Update the staked ERC721 assets in the contract's storage
-            for (uint i = 0; i < tokenIds.length; i++) {
+            for (uint256 i = 0; i < tokenIds.length; i++) {
                 Storage.layout().stakedERC721Assets[staker][collection].add(
                     tokenIds[i]
                 );

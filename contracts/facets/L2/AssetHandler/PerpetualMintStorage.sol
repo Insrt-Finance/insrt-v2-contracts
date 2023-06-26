@@ -12,15 +12,12 @@ library PerpetualMintStorage {
         uint32 protocolFeeBP;
         mapping(uint256 requestId => address account) requestUser;
         mapping(uint256 requestId => address collection) requestCollection;
-        //
         mapping(address collection => bool isERC721) collectionType;
         mapping(address collection => uint128 risks) totalCollectionRisk;
         mapping(address collection => mapping(uint256 tokenId => uint256 risk)) tokenRisks;
-        //
-        mapping(address collection => EnumerableSet.UintSet tokenIds) escrowedERC721TokenIds;
+        mapping(address collection => EnumerableSet.UintSet tokenIds) escrowedTokenIds;
         mapping(address collection => uint256 mintPrice) collectionMintPrice;
         mapping(address collection => uint256 amount) totalCollectionEarnings;
-        mapping(address collection => mapping(address account => uint256 amount)) collectionUserEarnings;
         mapping(address collection => mapping(address account => uint256 amount)) collectionUserDeductions;
         mapping(address collection => mapping(uint256 tokenId => address account)) escrowedERC721TokenOwner;
         mapping(address collection => mapping(address account => uint256 amount)) accountEscrowedERC721TokenAmount; //could onvert to EnumerableSet.UintSet

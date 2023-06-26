@@ -39,6 +39,14 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             .DESTINATION_LAYER_ZERO_CHAIN_ID = newDestinationLayerZeroChainId;
     }
 
+    /// @inheritdoc IAssetHandler
+    function setLayerZeroTrustedRemoteAddress(
+        uint16 remoteChainId,
+        bytes calldata trustedRemoteAddress
+    ) external onlyOwner {
+        _setTrustedRemoteAddress(remoteChainId, trustedRemoteAddress);
+    }
+
     /// @inheritdoc IL2AssetHandler
     function unstakeERC1155Assets(
         address collection,

@@ -116,17 +116,21 @@ abstract contract PerpetualMintInternal is
     ) internal view returns (uint256 tokenId) {
         s.Layout storage l = s.layout();
 
+        EnumerableSet.UintSet escrowedTokenIds = l.escrowedERC721TokenIds[
+            collection
+        ];
+
         uint256 tokenIndex;
         uint256 cumulativeRisk;
 
         do {
             cumulativeRisk += l.tokenRisks[collection][
-                l.escrowedERC721TokenIds[collection].at(tokenIndex)
+                escrowedTokenIds.at(tokenIndex)
             ];
             ++tokenIndex;
         } while (cumulativeRisk <= randomValue);
 
-        tokenId = l.escrowedERC721TokenIds[collection].at(tokenIndex - 1);
+        tokenId = escrowedTokenIds.at(tokenIndex - 1);
     }
 
     /**

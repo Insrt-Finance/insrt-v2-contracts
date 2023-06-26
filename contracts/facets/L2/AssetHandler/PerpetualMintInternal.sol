@@ -195,19 +195,6 @@ abstract contract PerpetualMintInternal is
         emit OutcomeResolved(collection, result);
     }
 
-    function _collectionERC721UserEarnings(
-        address collection,
-        address account
-    ) internal view returns (uint256 earnings) {
-        s.Layout storage l = s.layout();
-
-        earnings =
-            ((l.totalCollectionERC721Earnings[collection] *
-                l.accountEscrowedERC721TokenAmount[collection][account]) /
-                l.escrowedTokenIds[collection].length()) -
-            l.accountERC721Deductions[collection][account];
-    }
-
     /**
      * @notice splits a bytes32 value into 8 bytes4 values
      * @param value bytes32 value

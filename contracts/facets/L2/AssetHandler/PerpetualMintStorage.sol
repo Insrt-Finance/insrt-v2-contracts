@@ -14,7 +14,7 @@ library PerpetualMintStorage {
         mapping(uint256 requestId => address collection) requestCollection;
         //
         mapping(address collection => bool isERC721) collectionType;
-        mapping(address collection => uint256 risks) totalCollectionRisk;
+        mapping(address collection => uint128 risks) totalCollectionRisk;
         mapping(address collection => mapping(uint256 tokenId => uint256 risk)) tokenRisks;
         //
         mapping(address collection => EnumerableSet.UintSet tokenIds) escrowedERC721TokenIds;

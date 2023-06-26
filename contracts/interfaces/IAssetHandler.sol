@@ -19,4 +19,13 @@ interface IAssetHandler is IAssetHandlerEvents {
     function setLayerZeroChainIdDestination(
         uint16 newDestinationLayerZeroChainId
     ) external;
+
+    /// @notice Sets the LayerZero trusted remote address for a given LayerZero chain ID.
+    /// @dev Only the contract owner can call this function.
+    /// @param remoteChainId LayerZero remote chain ID.
+    /// @param trustedRemoteAddress Trusted remote address encoded as bytes.
+    function setLayerZeroTrustedRemoteAddress(
+        uint16 remoteChainId,
+        bytes calldata trustedRemoteAddress
+    ) external;
 }

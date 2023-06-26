@@ -25,7 +25,7 @@ abstract contract PerpetualMintInternal is
      * @param collection address of collection that attempted mint is for
      * @param result success status of mint attempt
      */
-    event OutcomeResolved(address collection, bool result);
+    event ERC721MintResolved(address collection, bool result);
 
     uint32 internal constant BASIS = 1000000;
 
@@ -61,11 +61,14 @@ abstract contract PerpetualMintInternal is
     ) internal virtual {
         s.Layout storage l = s.layout();
 
-        _resolveOutcome(
-            l.requestAccount[requestId],
-            l.requestCollection[requestId],
-            randomWords
-        );
+        address account = l.requestAccount[requestId];
+        address collection = l.requestCollection[requestId];
+
+        if (l.collectionType[collection]) {
+            _resolveERC721Mint(account, collection, randomWords);
+        } else {
+            _resolveERC1155Mint(account, collection, randomWords);
+        }
     }
 
     /**
@@ -111,15 +114,14 @@ abstract contract PerpetualMintInternal is
      * @param randomValue seed used to select the tokenId
      * @return tokenId id of won token
      */
-    function _selectToken(
+    function _selectERC721Token(
         address collection,
         uint128 randomValue
     ) internal view returns (uint256 tokenId) {
         s.Layout storage l = s.layout();
 
-        EnumerableSet.UintSet storage escrowedTokenIds = l.escrowedTokenIds[
-            collection
-        ];
+        EnumerableSet.UintSet storage escrowedTokenIds = l
+            .escrowedERC721TokenIds[collection];
 
         uint256 tokenIndex;
         uint256 cumulativeRisk;
@@ -145,7 +147,7 @@ abstract contract PerpetualMintInternal is
         s.Layout storage l = s.layout();
         risk =
             l.totalCollectionRisk[collection] /
-            uint128(l.escrowedTokenIds[collection].length());
+            uint128(l.escrowedERC721TokenIds[collection].length());
     }
 
     /**
@@ -154,14 +156,14 @@ abstract contract PerpetualMintInternal is
      * @param collection address of collection which token may be minted from
      * @param randomWords random values relating to attempt
      */
-    function _resolveOutcome(
+    function _resolveERC721Mint(
         address account,
         address collection,
         uint256[] memory randomWords
     ) private {
         s.Layout storage l = s.layout();
 
-        bytes16[2] memory randomValues = _chunkBytes32(bytes32(randomWords[0]));
+        uint128[2] memory randomValues = _chunk256to128(randomWords[0]);
 
         bool result = _collectionRisk(collection) >
             _normalizeValue(
@@ -175,24 +177,51 @@ abstract contract PerpetualMintInternal is
         }
 
         if (result) {
-            uint256 wonTokenId = _selectToken(
+            uint256 wonTokenId = _selectERC721Token(
                 collection,
-                uint128(randomValues[1])
+                randomValues[1]
             );
 
-            if (l.collectionType[collection]) {
-                address previousOwner = l.escrowedERC721TokenOwner[collection][
-                    wonTokenId
-                ];
+            address previousOwner = l.escrowedERC721TokenOwner[collection][
+                wonTokenId
+            ];
 
-                --l.accountEscrowedERC721TokenAmount[previousOwner][collection];
-                ++l.accountEscrowedERC721TokenAmount[account][collection];
+            _updateAccountEarnings(collection, previousOwner);
 
-                l.escrowedERC721TokenOwner[collection][wonTokenId] = account;
-            } else {}
+            --l.accountEscrowedERC721TokenAmount[previousOwner][collection];
+            ++l.accountEscrowedERC721TokenAmount[account][collection];
+
+            l.escrowedERC721TokenOwner[collection][wonTokenId] = account;
         }
 
-        emit OutcomeResolved(collection, result);
+        emit ERC721MintResolved(collection, result);
+    }
+
+    function _resolveERC1155Mint(
+        address account,
+        address collection,
+        uint256[] memory randomWords
+    ) private {}
+
+    /**
+     * @notice updates the earnings of an account based on current conitions
+     * @param collection address of collection earnings relate to
+     * @param account address of account
+     */
+    function _updateAccountEarnings(
+        address collection,
+        address account
+    ) private {
+        s.Layout storage l = s.layout();
+
+        l.collectionAccountEarnings[collection][account] +=
+            (l.totalCollectionERC721Earnings[collection] *
+                l.accountEscrowedERC721TokenAmount[account][collection]) /
+            l.escrowedERC721TokenIds[collection].length() -
+            l.accountERC721Deductions[collection][account];
+
+        l.accountERC721Deductions[collection][account] = l
+            .collectionAccountEarnings[collection][account];
     }
 
     /**
@@ -200,12 +229,12 @@ abstract contract PerpetualMintInternal is
      * @param value bytes32 value
      * @return chunks array of 8 bytes4 values
      */
-    function _chunkBytes32(
-        bytes32 value
-    ) private pure returns (bytes16[2] memory chunks) {
+    function _chunk256to128(
+        uint256 value
+    ) private pure returns (uint128[2] memory chunks) {
         unchecked {
             for (uint256 i = 0; i < 2; ++i) {
-                chunks[i] = bytes16(value << (i * 128));
+                chunks[i] = uint128(value << (i * 128));
             }
         }
     }

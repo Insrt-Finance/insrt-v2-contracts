@@ -13,11 +13,11 @@ interface IAssetHandler is IAssetHandlerEvents {
     /// @notice Thrown when a payload asset type is invalid and not supported.
     error InvalidPayloadAssetType();
 
-    /// @notice Sets the LayerZero chain ID destination.
+    /// @notice Sets the current LayerZero chain ID destination.
     /// @dev Only the contract owner can call this function.
-    /// @param newDestinationLayerZeroChainId The new LayerZero chain ID where assets will be staked.
+    /// @param destinationLayerZeroChainId The LayerZero chain ID where assets will be staked.
     function setLayerZeroChainIdDestination(
-        uint16 newDestinationLayerZeroChainId
+        uint16 destinationLayerZeroChainId
     ) external;
 
     /// @notice Sets the LayerZero trusted remote address for a given LayerZero chain ID.

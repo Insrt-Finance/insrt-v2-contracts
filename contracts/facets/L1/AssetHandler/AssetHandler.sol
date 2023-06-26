@@ -59,6 +59,14 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
             .DESTINATION_LAYER_ZERO_CHAIN_ID = newDestinationLayerZeroChainId;
     }
 
+    /// @inheritdoc IAssetHandler
+    function setLayerZeroTrustedRemoteAddress(
+        uint16 remoteChainId,
+        bytes calldata trustedRemoteAddress
+    ) external onlyOwner {
+        _setTrustedRemoteAddress(remoteChainId, trustedRemoteAddress);
+    }
+
     /// TODO: add support for risk parameter
     /// @inheritdoc IL1AssetHandler
     function stakeERC1155Assets(

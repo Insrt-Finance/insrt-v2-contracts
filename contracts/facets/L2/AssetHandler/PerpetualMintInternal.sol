@@ -62,7 +62,7 @@ abstract contract PerpetualMintInternal is
         s.Layout storage l = s.layout();
 
         _resolveOutcome(
-            l.requestUser[requestId],
+            l.requestAccount[requestId],
             l.requestCollection[requestId],
             randomWords
         );
@@ -82,7 +82,7 @@ abstract contract PerpetualMintInternal is
             numWords
         );
 
-        s.layout().requestUser[requestId] = account;
+        s.layout().requestAccount[requestId] = account;
     }
 
     /**
@@ -100,7 +100,7 @@ abstract contract PerpetualMintInternal is
         uint256 mintFee = (msg.value * l.mintFeeBP) / BASIS;
 
         l.protocolFees += mintFee;
-        l.totalCollectionEarnings[collection] += msg.value - mintFee;
+        l.totalCollectionERC721Earnings[collection] += msg.value - mintFee;
 
         _requestRandomWords(account, 1);
     }
@@ -125,7 +125,7 @@ abstract contract PerpetualMintInternal is
         uint256 cumulativeRisk;
 
         do {
-            cumulativeRisk += l.tokenRisks[collection][
+            cumulativeRisk += l.tokenRisksERC721[collection][
                 escrowedTokenIds.at(tokenIndex)
             ];
             ++tokenIndex;
@@ -202,10 +202,10 @@ abstract contract PerpetualMintInternal is
         s.Layout storage l = s.layout();
 
         earnings =
-            ((l.totalCollectionEarnings[collection] *
+            ((l.totalCollectionERC721Earnings[collection] *
                 l.accountEscrowedERC721TokenAmount[collection][account]) /
                 l.escrowedTokenIds[collection].length()) -
-            l.collectionUserDeductions[collection][account];
+            l.accountERC721Deductions[collection][account];
     }
 
     /**

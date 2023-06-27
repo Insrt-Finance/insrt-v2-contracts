@@ -21,14 +21,12 @@ contract L1AssetHandler_setLayerZeroTrustedRemoteAddress is
     /// @dev Tests setLayerZeroTrustedRemoteAddress functionality.
     function test_setLayerZeroTrustedRemoteAddress() public {
         l1AssetHandler.setLayerZeroTrustedRemoteAddress(
-            TEST_LAYER_ZERO_CHAIN_ID_DESTINATION,
+            DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
 
         bytes memory trustedRemoteAddressInBytes = l1AssetHandler
-            .getLayerZeroTrustedRemoteAddress(
-                TEST_LAYER_ZERO_CHAIN_ID_DESTINATION
-            );
+            .getLayerZeroTrustedRemoteAddress(DESTINATION_LAYER_ZERO_CHAIN_ID);
 
         assertEq(
             trustedRemoteAddressInBytes,
@@ -42,7 +40,7 @@ contract L1AssetHandler_setLayerZeroTrustedRemoteAddress is
     {
         vm.expectEmit();
         emit SetTrustedRemote(
-            TEST_LAYER_ZERO_CHAIN_ID_DESTINATION,
+            DESTINATION_LAYER_ZERO_CHAIN_ID,
             bytes.concat(
                 TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES,
                 bytes20(address(l1AssetHandler))
@@ -50,7 +48,7 @@ contract L1AssetHandler_setLayerZeroTrustedRemoteAddress is
         );
 
         l1AssetHandler.setLayerZeroTrustedRemoteAddress(
-            TEST_LAYER_ZERO_CHAIN_ID_DESTINATION,
+            DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
     }
@@ -63,7 +61,7 @@ contract L1AssetHandler_setLayerZeroTrustedRemoteAddress is
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
         l1AssetHandler.setLayerZeroTrustedRemoteAddress(
-            TEST_LAYER_ZERO_CHAIN_ID_DESTINATION,
+            DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
     }
@@ -79,7 +77,7 @@ contract L1AssetHandler_setLayerZeroTrustedRemoteAddress is
         );
 
         l1AssetHandler.setLayerZeroTrustedRemoteAddress(
-            TEST_LAYER_ZERO_CHAIN_ID_DESTINATION,
+            DESTINATION_LAYER_ZERO_CHAIN_ID,
             ""
         );
     }

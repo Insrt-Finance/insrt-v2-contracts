@@ -20,8 +20,8 @@ abstract contract L1AssetHandlerTest is L1PerpetualMintTest {
     /// @dev Address used to simulate non-owner access.
     address internal immutable NON_OWNER_TEST_ADDRESS = vm.addr(1);
 
-    /// @dev Test LayerZero chain ID used to test contract functionality.
-    uint16 internal constant TEST_LAYER_ZERO_CHAIN_ID_DESTINATION = 666;
+    /// @dev The LayerZero proprietary chain ID for setting Arbitrum as the destination blockchain.
+    uint16 internal constant DESTINATION_LAYER_ZERO_CHAIN_ID = 110;
 
     /// @dev Sets up L1AssetHandler for testing.
     function setUp() public override {

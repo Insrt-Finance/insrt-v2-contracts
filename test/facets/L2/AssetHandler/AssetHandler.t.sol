@@ -13,11 +13,12 @@ import { IL2AssetHandler } from "../../../../contracts/facets/L2/AssetHandler/IA
 abstract contract L2AssetHandlerTest is L2PerpetualMintTest {
     IL2AssetHandler public l2AssetHandler;
 
+    /// @dev The LayerZero Arbitrum endpoint address.
+    address internal constant ARBITRUM_LAYER_ZERO_ENDPOINT =
+        0x3c2269811836af69497E5F486A85D7316753cf62;
+
     /// @dev Address used to simulate non-owner access.
     address internal immutable NON_OWNER_TEST_ADDRESS = vm.addr(1);
-
-    /// @dev Test LayerZero endpoint address.
-    address internal immutable TEST_LAYER_ZERO_ENDPOINT = vm.addr(666);
 
     /// @dev Test LayerZero chain ID used to test contract functionality.
     uint16 internal constant TEST_LAYER_ZERO_CHAIN_ID_DESTINATION = 666;

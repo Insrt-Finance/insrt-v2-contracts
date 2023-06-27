@@ -14,9 +14,6 @@ import { IAssetHandler } from "../../../../contracts/interfaces/IAssetHandler.so
 contract L2AssetHandlerHelper {
     L2AssetHandler public l2AssetHandlerImplementation;
 
-    /// @dev The LayerZero Arbitrum endpoint address.
-    address private constant ARBITRUM_LAYER_ZERO_ENDPOINT =
-        0x3c2269811836af69497E5F486A85D7316753cf62;
     /// @dev The LayerZero proprietary chain ID for setting Ethereum as the destination blockchain.
     uint16 private constant DESTINATION_LAYER_ZERO_CHAIN_ID = 101;
 

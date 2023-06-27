@@ -23,10 +23,6 @@ abstract contract L2AssetHandlerTest is L2PerpetualMintTest {
     /// @dev Test LayerZero chain ID used to test contract functionality.
     uint16 internal constant TEST_LAYER_ZERO_CHAIN_ID_DESTINATION = 666;
 
-    // The slot in contract storage where L2AssetHandler data is stored as Layout struct.
-    bytes32 internal constant STORAGE_SLOT =
-        keccak256("insrt.contracts.storage.L2AssetHandler");
-
     /// @dev Sets up L2AssetHandler for testing.
     function setUp() public override {
         super.setUp();

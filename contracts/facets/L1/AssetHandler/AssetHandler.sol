@@ -67,15 +67,6 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
     }
 
     /// @inheritdoc IAssetHandler
-    function setLayerZeroChainIdDestination(
-        uint16 newDestinationLayerZeroChainId
-    ) external onlyOwner {
-        Storage
-            .layout()
-            .DESTINATION_LAYER_ZERO_CHAIN_ID = newDestinationLayerZeroChainId;
-    }
-
-    /// @inheritdoc IAssetHandler
     function setLayerZeroEndpoint(
         address layerZeroEndpoint
     ) external onlyOwner {

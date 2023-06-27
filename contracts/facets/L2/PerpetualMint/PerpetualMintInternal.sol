@@ -141,7 +141,7 @@ abstract contract PerpetualMintInternal is
      * @param collection address of collection
      * @return risk value of collection-wide risk
      */
-    function _collectionRisk(
+    function _averageERC721CollectionRisk(
         address collection
     ) internal view returns (uint128 risk) {
         s.Layout storage l = s.layout();
@@ -165,7 +165,7 @@ abstract contract PerpetualMintInternal is
 
         uint128[2] memory randomValues = _chunk256to128(randomWords[0]);
 
-        bool result = _collectionRisk(collection) >
+        bool result = _averageERC721CollectionRisk(collection) >
             _normalizeValue(
                 uint128(randomValues[0]),
                 l.totalCollectionRisk[collection]

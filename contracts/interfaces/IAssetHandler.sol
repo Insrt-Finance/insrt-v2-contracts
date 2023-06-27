@@ -13,6 +13,9 @@ interface IAssetHandler is IAssetHandlerEvents {
     /// @notice Thrown when a payload asset type is invalid and not supported.
     error InvalidPayloadAssetType();
 
+    /// @notice Returns the LayerZero trusted remote address for a given LayerZero chain ID.
+    /// @param remoteChainId LayerZero remote chain ID.
+    /// @return trustedRemoteAddress Trusted remote address encoded as bytes.
     function getLayerZeroTrustedRemoteAddress(
         uint16 remoteChainId
     ) external view returns (bytes memory trustedRemoteAddress);

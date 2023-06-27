@@ -11,12 +11,12 @@ import { L1AssetHandlerTest } from "../AssetHandler.t.sol";
 contract L1AssetHandler_setLayerZeroEndpoint is L1AssetHandlerTest {
     /// @dev Tests setLayerZeroEndpoint functionality.
     function test_setLayerZeroEndpoint() public {
-        l1AssetHandler.setLayerZeroEndpoint(TEST_LAYER_ZERO_ENDPOINT);
+        l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
 
         address currentLayerZeroEndpoint = l1AssetHandler
             .getLayerZeroEndpoint();
 
-        assertEq(currentLayerZeroEndpoint, TEST_LAYER_ZERO_ENDPOINT);
+        assertEq(currentLayerZeroEndpoint, MAINNET_LAYER_ZERO_ENDPOINT);
     }
 
     /// @dev Tests that setLayerZeroEndpoint reverts when called by a non-owner address.
@@ -24,6 +24,6 @@ contract L1AssetHandler_setLayerZeroEndpoint is L1AssetHandlerTest {
         vm.prank(NON_OWNER_TEST_ADDRESS);
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
-        l1AssetHandler.setLayerZeroEndpoint(TEST_LAYER_ZERO_ENDPOINT);
+        l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
     }
 }

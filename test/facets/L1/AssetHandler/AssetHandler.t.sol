@@ -16,6 +16,9 @@ abstract contract L1AssetHandlerTest is L1PerpetualMintTest {
     /// @dev Address used to simulate non-owner access.
     address internal immutable NON_OWNER_TEST_ADDRESS = vm.addr(1);
 
+    /// @dev Test LayerZero endpoint address.
+    address internal immutable TEST_LAYER_ZERO_ENDPOINT = vm.addr(666);
+
     /// @dev Test LayerZero chain ID used to test contract functionality.
     uint16 internal constant TEST_LAYER_ZERO_CHAIN_ID_DESTINATION = 666;
 

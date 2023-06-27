@@ -22,9 +22,7 @@ contract L2AssetHandlerHelper {
 
     /// @dev Deploys a new instance of L2AssetHandler.
     constructor() {
-        l2AssetHandlerImplementation = new L2AssetHandler(
-            ARBITRUM_LAYER_ZERO_ENDPOINT
-        );
+        l2AssetHandlerImplementation = new L2AssetHandler();
     }
 
     /// @dev Provides the facet cuts to be used for setting up L2AssetHandler as a facet of the L2PerpetualMint diamond.

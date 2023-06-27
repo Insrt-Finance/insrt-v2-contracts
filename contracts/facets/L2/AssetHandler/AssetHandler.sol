@@ -16,11 +16,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     using EnumerableSet for EnumerableSet.UintSet;
 
     /// @notice Deploys a new instance of the L2AssetHandler contract.
-    /// @param layerZeroEndpoint Address of the LayerZero endpoint.
-    constructor(address layerZeroEndpoint) {
-        // Set the LayerZero endpoint address for this contract
-        _setLayerZeroEndpoint(layerZeroEndpoint);
-
+    constructor() {
         // Set initial ownership of the contract to the deployer
         _setOwner(msg.sender);
     }

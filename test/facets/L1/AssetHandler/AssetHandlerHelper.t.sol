@@ -22,9 +22,7 @@ contract L1AssetHandlerHelper {
 
     /// @dev Deploys a new instance of L1AssetHandler.
     constructor() {
-        l1AssetHandlerImplementation = new L1AssetHandler(
-            MAINNET_LAYER_ZERO_ENDPOINT
-        );
+        l1AssetHandlerImplementation = new L1AssetHandler();
     }
 
     /// @dev Provides the facet cuts to be used for setting up L1AssetHandler as a facet of the L1PerpetualMint diamond.

@@ -14,11 +14,7 @@ import { PayloadEncoder } from "../../../libraries/PayloadEncoder.sol";
 /// @dev Handles NFT assets on mainnet and allows them to be staked & unstaked cross-chain via LayerZero.
 contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
     /// @notice Deploys a new instance of the L1AssetHandler contract.
-    /// @param layerZeroEndpoint Address of the LayerZero endpoint.
-    constructor(address layerZeroEndpoint) {
-        // Set the LayerZero endpoint address for this contract
-        _setLayerZeroEndpoint(layerZeroEndpoint);
-
+    constructor() {
         // Set initial ownership of the contract to the deployer
         _setOwner(msg.sender);
     }

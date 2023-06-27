@@ -18,6 +18,13 @@ interface IAssetHandler is IAssetHandlerEvents {
     //     view
     //     returns (uint16 destinationLayerZeroChainId);
 
+    /// @notice Returns the current LayerZero endpoint address for this contract.
+    /// @return layerZeroEndpoint Address of the LayerZero endpoint.
+    function getLayerZeroEndpoint()
+        external
+        view
+        returns (address layerZeroEndpoint);
+
     /// @notice Returns the LayerZero trusted remote address for a given LayerZero chain ID.
     /// @param remoteChainId LayerZero remote chain ID.
     /// @return trustedRemoteAddress Trusted remote address encoded as bytes.

@@ -31,6 +31,13 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     }
 
     /// @inheritdoc IAssetHandler
+    function getLayerZeroTrustedRemoteAddress(
+        uint16 remoteChainId
+    ) external view returns (bytes memory trustedRemoteAddress) {
+        return _getTrustedRemoteAddress(remoteChainId);
+    }
+
+    /// @inheritdoc IAssetHandler
     function setLayerZeroChainIdDestination(
         uint16 newDestinationLayerZeroChainId
     ) external onlyOwner {

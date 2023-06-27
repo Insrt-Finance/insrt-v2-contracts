@@ -17,12 +17,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
     /// @notice Deploys a new instance of the L2AssetHandler contract.
     /// @param layerZeroEndpoint Address of the LayerZero endpoint.
-    /// @param destinationLayerZeroChainId LayerZero chain ID used to determine the chain where assets will be unstaked.
-    constructor(address layerZeroEndpoint, uint16 destinationLayerZeroChainId) {
-        Storage
-            .layout()
-            .DESTINATION_LAYER_ZERO_CHAIN_ID = destinationLayerZeroChainId;
-
+    constructor(address layerZeroEndpoint) {
         // Set the LayerZero endpoint address for this contract
         _setLayerZeroEndpoint(layerZeroEndpoint);
 

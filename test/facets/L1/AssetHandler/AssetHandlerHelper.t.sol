@@ -23,8 +23,7 @@ contract L1AssetHandlerHelper {
     /// @dev Deploys a new instance of L1AssetHandler.
     constructor() {
         l1AssetHandlerImplementation = new L1AssetHandler(
-            MAINNET_LAYER_ZERO_ENDPOINT,
-            DESTINATION_LAYER_ZERO_CHAIN_ID
+            MAINNET_LAYER_ZERO_ENDPOINT
         );
     }
 

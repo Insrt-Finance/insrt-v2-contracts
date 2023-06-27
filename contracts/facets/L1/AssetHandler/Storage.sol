@@ -6,10 +6,8 @@ pragma solidity 0.8.20;
 /// @dev Defines storage layout for the L1AssetHandler facet.
 library L1AssetHandlerStorage {
     struct Layout {
-        /// @dev The LayerZero proprietary chain ID of the destination blockchain.
-        /// LayerZero uses this ID to route the staked assets to the correct destination.
-        /// This is not the same as the destination blockchain's actual chain ID.
-        uint16 DESTINATION_LAYER_ZERO_CHAIN_ID;
+        /// TODO: Add storage variables here, or remove this contract.
+        uint8 DUMMY_PLACEHOLDER;
     }
 
     // The slot in contract storage where data will be stored. Used to avoid collisions with other variables.

@@ -8,10 +8,6 @@ import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 /// @dev Defines storage layout for the L2AssetHandler facet.
 library L2AssetHandlerStorage {
     struct Layout {
-        /// @dev The LayerZero proprietary chain ID of the destination blockchain.
-        /// LayerZero uses this ID to route the staked assets to the correct destination.
-        /// This is not the same as the destination blockchain's actual chain ID.
-        uint16 DESTINATION_LAYER_ZERO_CHAIN_ID;
         /// @dev Mapping of staker address to collection address to tokenId to amount for ERC1155 assets.
         /// Represents the amount of each specific ERC1155 token that each staker has staked.
         mapping(address staker => mapping(address collection => mapping(uint256 tokenId => uint256 amount))) stakedERC1155Assets;

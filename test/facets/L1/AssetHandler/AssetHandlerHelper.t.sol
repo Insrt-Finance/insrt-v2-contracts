@@ -34,7 +34,7 @@ contract L1AssetHandlerHelper {
         view
         returns (ISolidStateDiamond.FacetCut[] memory)
     {
-        bytes4[] memory functionSelectors = new bytes4[](7);
+        bytes4[] memory functionSelectors = new bytes4[](8);
 
         // Map the function selectors to their respective interfaces.
         functionSelectors[0] = IAssetHandler
@@ -45,11 +45,12 @@ contract L1AssetHandlerHelper {
         functionSelectors[3] = IAssetHandler
             .setLayerZeroChainIdDestination
             .selector;
-        functionSelectors[4] = IAssetHandler
+        functionSelectors[4] = IAssetHandler.setLayerZeroEndpoint.selector;
+        functionSelectors[5] = IAssetHandler
             .setLayerZeroTrustedRemoteAddress
             .selector;
-        functionSelectors[5] = IL1AssetHandler.stakeERC1155Assets.selector;
-        functionSelectors[6] = IL1AssetHandler.stakeERC721Assets.selector;
+        functionSelectors[6] = IL1AssetHandler.stakeERC1155Assets.selector;
+        functionSelectors[7] = IL1AssetHandler.stakeERC721Assets.selector;
 
         ISolidStateDiamond.FacetCut memory facetCut = IDiamondWritableInternal
             .FacetCut({

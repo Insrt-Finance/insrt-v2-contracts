@@ -141,11 +141,21 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         if (assetType == PayloadEncoder.AssetType.ERC1155) {
             // Decode the payload to get the sender, the collection, the tokenIds and the amounts for each tokenId
             (
+                ,
                 address sender,
                 address collection,
                 uint256[] memory tokenIds,
                 uint256[] memory amounts
-            ) = abi.decode(data, (address, address, uint256[], uint256[]));
+            ) = abi.decode(
+                    data,
+                    (
+                        PayloadEncoder.AssetType,
+                        address,
+                        address,
+                        uint256[],
+                        uint256[]
+                    )
+                );
 
             // Transfer the ERC1155 assets to the sender
             IERC1155(collection).safeBatchTransferFrom(
@@ -160,10 +170,14 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         } else if (assetType == PayloadEncoder.AssetType.ERC721) {
             // Decode the payload to get the sender, the collection, and the tokenIds
             (
+                ,
                 address sender,
                 address collection,
                 uint256[] memory tokenIds
-            ) = abi.decode(data, (address, address, uint256[]));
+            ) = abi.decode(
+                    data,
+                    (PayloadEncoder.AssetType, address, address, uint256[])
+                );
 
             // Transfer the ERC721 assets to the sender
             for (uint i = 0; i < tokenIds.length; i++) {

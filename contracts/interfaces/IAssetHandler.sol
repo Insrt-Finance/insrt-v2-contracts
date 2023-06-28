@@ -10,9 +10,6 @@ interface IAssetHandler is IAssetHandlerEvents {
     /// @notice Thrown when the length of the `tokenIds` array and the `amounts` array are not equal in the `stakeERC1155Assets` & `unstakeERC1155Assets` functions.
     error ERC1155TokenIdsAndAmountsLengthMismatch();
 
-    /// @notice Thrown when a payload asset type is invalid and not supported.
-    error InvalidPayloadAssetType();
-
     /// @notice Returns the current LayerZero endpoint address for this contract.
     /// @return layerZeroEndpoint Address of the LayerZero endpoint.
     function getLayerZeroEndpoint()

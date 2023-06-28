@@ -14,9 +14,6 @@ import { IAssetHandler } from "../../../../contracts/interfaces/IAssetHandler.so
 contract L2AssetHandlerHelper {
     L2AssetHandler public l2AssetHandlerImplementation;
 
-    /// @dev The LayerZero proprietary chain ID for setting Ethereum as the destination blockchain.
-    uint16 private constant DESTINATION_LAYER_ZERO_CHAIN_ID = 101;
-
     /// @dev Deploys a new instance of L2AssetHandler.
     constructor() {
         l2AssetHandlerImplementation = new L2AssetHandler();

@@ -132,7 +132,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         uint64,
         bytes calldata data
     ) internal override {
-        // Decode the asset type from the payload
+        // Decode the asset type from the payload. If the asset type is not supported, this call will revert.
         PayloadEncoder.AssetType assetType = abi.decode(
             data,
             (PayloadEncoder.AssetType)
@@ -176,8 +176,6 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
             }
 
             emit ERC721AssetsUnstaked(sender, collection, tokenIds);
-        } else {
-            revert InvalidPayloadAssetType();
         }
     }
 

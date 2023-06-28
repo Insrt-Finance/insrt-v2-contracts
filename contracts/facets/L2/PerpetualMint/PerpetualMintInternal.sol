@@ -14,6 +14,7 @@ abstract contract PerpetualMintInternal is
     ERC721BaseInternal
 {
     using EnumerableSet for EnumerableSet.UintSet;
+    using EnumerableSet for EnumerableSet.AddressSet;
 
     /**
      * @notice thrown when an incorrent amount of ETH is received
@@ -103,7 +104,7 @@ abstract contract PerpetualMintInternal is
         uint256 mintFee = (msg.value * l.mintFeeBP) / BASIS;
 
         l.protocolFees += mintFee;
-        l.totalCollectionERC721Earnings[collection] += msg.value - mintFee;
+        l.collectionEarnings[collection] += msg.value - mintFee;
 
         _requestRandomWords(account, 1);
     }
@@ -114,7 +115,7 @@ abstract contract PerpetualMintInternal is
      * @param randomValue seed used to select the tokenId
      * @return tokenId id of won token
      */
-    function _selectERC721Token(
+    function _selectToken(
         address collection,
         uint128 randomValue
     ) internal view returns (uint256 tokenId) {
@@ -131,9 +132,38 @@ abstract contract PerpetualMintInternal is
                 escrowedTokenIds.at(tokenIndex)
             ];
             ++tokenIndex;
-        } while (cumulativeRisk <= randomValue);
+        } while (
+            cumulativeRisk <= randomValue % l.totalCollectionRisk[collection]
+        );
 
         tokenId = escrowedTokenIds.at(tokenIndex - 1);
+    }
+
+    function _selectERC1155Owner(
+        address collection,
+        uint256 tokenId,
+        uint64 randomValue
+    ) internal view returns (address owner) {
+        s.Layout storage l = s.layout();
+
+        EnumerableSet.AddressSet storage owners = l.escrowedERC1155TokenOwners[
+            collection
+        ][tokenId];
+
+        uint256 cumulativeRisk;
+        uint256 tokenIndex;
+
+        do {
+            cumulativeRisk += l.accountTotalTokenRisk[collection][tokenId][
+                owners.at(tokenIndex)
+            ];
+            ++tokenIndex;
+        } while (
+            cumulativeRisk <=
+                randomValue % l.totalERC1155TokenRisk[collection][tokenId]
+        );
+
+        owner = owners.at(tokenIndex - 1);
     }
 
     /**
@@ -141,13 +171,13 @@ abstract contract PerpetualMintInternal is
      * @param collection address of collection
      * @return risk value of collection-wide risk
      */
-    function _averageERC721CollectionRisk(
+    function _averageCollectionRisk(
         address collection
     ) internal view returns (uint128 risk) {
         s.Layout storage l = s.layout();
         risk =
             l.totalCollectionRisk[collection] /
-            uint128(l.escrowedERC721TokenIds[collection].length());
+            uint128(l.totalEscrowedTokenAmount[collection]);
     }
 
     /**
@@ -165,7 +195,7 @@ abstract contract PerpetualMintInternal is
 
         uint128[2] memory randomValues = _chunk256to128(randomWords[0]);
 
-        bool result = _averageERC721CollectionRisk(collection) >
+        bool result = _averageCollectionRisk(collection) >
             _normalizeValue(
                 uint128(randomValues[0]),
                 l.totalCollectionRisk[collection]
@@ -177,15 +207,13 @@ abstract contract PerpetualMintInternal is
         }
 
         if (result) {
-            uint256 wonTokenId = _selectERC721Token(
-                collection,
-                randomValues[1]
-            );
+            uint256 wonTokenId = _selectToken(collection, randomValues[1]);
 
             address previousOwner = l.escrowedERC721TokenOwner[collection][
                 wonTokenId
             ];
 
+            //add new account update, separate function
             _updateAccountEarnings(collection, previousOwner);
 
             --l.accountEscrowedERC721TokenAmount[previousOwner][collection];
@@ -201,7 +229,51 @@ abstract contract PerpetualMintInternal is
         address account,
         address collection,
         uint256[] memory randomWords
-    ) private {}
+    ) private {
+        s.Layout storage l = s.layout();
+
+        uint128[2] memory randomValues = _chunk256to128(randomWords[0]);
+
+        bool result = _averageCollectionRisk(collection) >
+            _normalizeValue(
+                uint128(randomValues[0]),
+                l.totalCollectionRisk[collection]
+            );
+
+        if (!result) {
+            _mint(account, l.id);
+            ++l.id;
+        }
+
+        if (result) {
+            uint64[2] memory randomValues64 = _chunk128to64(randomValues[1]);
+
+            uint256 tokenId = _selectToken(collection, randomValues64[0]);
+
+            address previousOwner = _selectERC1155Owner(
+                collection,
+                tokenId,
+                randomValues64[1]
+            );
+
+            //update account earnings for both sides
+
+            --l.accountEscrowed1155TokenAmount[collection][tokenId][
+                previousOwner
+            ];
+            ++l.accountEscrowed1155TokenAmount[collection][tokenId][account];
+
+            if (
+                l.accountEscrowed1155TokenAmount[collection][tokenId][
+                    previousOwner
+                ] == 0
+            ) {
+                l.escrowedERC1155TokenOwners[collection][tokenId].remove(
+                    previousOwner
+                );
+            }
+        }
+    }
 
     /**
      * @notice updates the earnings of an account based on current conitions
@@ -215,7 +287,7 @@ abstract contract PerpetualMintInternal is
         s.Layout storage l = s.layout();
 
         l.collectionAccountEarnings[collection][account] +=
-            (l.totalCollectionERC721Earnings[collection] *
+            (l.collectionEarnings[collection] *
                 l.accountEscrowedERC721TokenAmount[account][collection]) /
             l.escrowedERC721TokenIds[collection].length() -
             l.accountERC721Deductions[collection][account];
@@ -225,9 +297,9 @@ abstract contract PerpetualMintInternal is
     }
 
     /**
-     * @notice splits a bytes32 value into 8 bytes4 values
-     * @param value bytes32 value
-     * @return chunks array of 8 bytes4 values
+     * @notice splits a uint256 value into 2 uint128 values
+     * @param value uint256 value
+     * @return chunks array of 2 uint128 values
      */
     function _chunk256to128(
         uint256 value
@@ -235,6 +307,21 @@ abstract contract PerpetualMintInternal is
         unchecked {
             for (uint256 i = 0; i < 2; ++i) {
                 chunks[i] = uint128(value << (i * 128));
+            }
+        }
+    }
+
+    /**
+     * @notice splits a uint128 value into 2 uint64 values
+     * @param value uint128 value
+     * @return chunks array of 2 uint64 values
+     */
+    function _chunk128to64(
+        uint128 value
+    ) private pure returns (uint64[2] memory chunks) {
+        unchecked {
+            for (uint64 i = 0; i < 2; ++i) {
+                chunks[i] = uint64(value << (i * 64));
             }
         }
     }

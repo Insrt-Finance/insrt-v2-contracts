@@ -18,16 +18,15 @@ library PerpetualMintStorage {
         mapping(address collection => uint128 risk) totalCollectionRisk;
         mapping(address collection => mapping(address account => uint256 amount)) accountDeductions;
         mapping(address collection => mapping(address account => uint256 amount)) accountEarnings;
+        mapping(address collection => mapping(address account => uint256 amount)) escrowedTokenAmount;
         //ERC721
         mapping(address collection => EnumerableSet.UintSet tokenIds) escrowedERC721TokenIds;
         mapping(address collection => mapping(uint256 tokenId => uint256 risk)) tokenRisksERC721;
         mapping(address collection => mapping(uint256 tokenId => address account)) escrowedERC721TokenOwner;
-        mapping(address collection => mapping(address account => uint256 amount)) accountEscrowedERC721TokenAmount; //could convert to EnumerableSet.UintSet
         //ERC1155
         mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet accounts)) escrowedERC1155TokenOwners;
         mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint64 risk))) accountTotalTokenRisk;
         mapping(address collection => mapping(uint256 tokenId => uint64 risk)) totalERC1155TokenRisk;
-        mapping(address collection => mapping(address account => uint256 amount)) accountEscrowed1155TokenAmount;
     }
 
     bytes32 internal constant STORAGE_SLOT =

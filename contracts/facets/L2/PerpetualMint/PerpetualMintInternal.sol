@@ -258,15 +258,11 @@ abstract contract PerpetualMintInternal is
 
             //update account earnings for both sides
 
-            --l.accountEscrowed1155TokenAmount[collection][tokenId][
-                previousOwner
-            ];
-            ++l.accountEscrowed1155TokenAmount[collection][tokenId][account];
+            --l.accountEscrowed1155TokenAmount[collection][previousOwner];
+            ++l.accountEscrowed1155TokenAmount[collection][account];
 
             if (
-                l.accountEscrowed1155TokenAmount[collection][tokenId][
-                    previousOwner
-                ] == 0
+                l.accountEscrowed1155TokenAmount[collection][previousOwner] == 0
             ) {
                 l.escrowedERC1155TokenOwners[collection][tokenId].remove(
                     previousOwner
@@ -286,14 +282,31 @@ abstract contract PerpetualMintInternal is
     ) private {
         s.Layout storage l = s.layout();
 
-        l.collectionAccountEarnings[collection][account] +=
+        l.accountEarnings[collection][account] +=
             (l.collectionEarnings[collection] *
                 l.accountEscrowedERC721TokenAmount[account][collection]) /
             l.escrowedERC721TokenIds[collection].length() -
-            l.accountERC721Deductions[collection][account];
+            l.accountDeductions[collection][account];
 
-        l.accountERC721Deductions[collection][account] = l
-            .collectionAccountEarnings[collection][account];
+        l.accountDeductions[collection][account] = l.accountEarnings[
+            collection
+        ][account];
+    }
+
+    function _updateERC1155AccountEarnings(
+        address collection,
+        address account
+    ) private {
+        s.Layout storage l = s.layout();
+
+        l.accountEarnings[collection][account] +=
+            (l.collectionEarnings[collection] *
+                l.accountEscrowed1155TokenAmount[collection][account]) /
+            l.totalEscrowedTokenAmount[collection] -
+            l.accountDeductions[collection][account];
+        l.accountDeductions[collection][account] = l.accountEarnings[
+            collection
+        ][account];
     }
 
     /**

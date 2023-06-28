@@ -16,11 +16,11 @@ library PerpetualMintStorage {
         mapping(address collection => uint256 mintPrice) collectionMintPrice;
         mapping(address collection => uint256 amount) totalEscrowedTokenAmount;
         mapping(address collection => uint128 risk) totalCollectionRisk;
+        mapping(address collection => mapping(address account => uint256 amount)) accountDeductions;
+        mapping(address collection => mapping(address account => uint256 amount)) accountEarnings;
         //ERC721
         mapping(address collection => EnumerableSet.UintSet tokenIds) escrowedERC721TokenIds;
-        mapping(address collection => mapping(address account => uint256 amount)) collectionAccountEarnings;
         mapping(address collection => mapping(uint256 tokenId => uint256 risk)) tokenRisksERC721;
-        mapping(address collection => mapping(address account => uint256 amount)) accountERC721Deductions;
         mapping(address collection => mapping(uint256 tokenId => address account)) escrowedERC721TokenOwner;
         mapping(address collection => mapping(address account => uint256 amount)) accountEscrowedERC721TokenAmount; //could convert to EnumerableSet.UintSet
         //ERC1155

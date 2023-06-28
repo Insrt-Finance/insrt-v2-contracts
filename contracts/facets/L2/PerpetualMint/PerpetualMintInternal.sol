@@ -121,22 +121,18 @@ abstract contract PerpetualMintInternal is
     ) internal view returns (uint256 tokenId) {
         s.Layout storage l = s.layout();
 
-        EnumerableSet.UintSet storage escrowedTokenIds = l
-            .escrowedERC721TokenIds[collection];
+        EnumerableSet.UintSet storage escrowedTokenIds = l.escrowedTokenIds[
+            collection
+        ];
 
         uint256 tokenIndex;
         uint256 cumulativeRisk;
 
         do {
-            cumulativeRisk += l.tokenRisksERC721[collection][
-                escrowedTokenIds.at(tokenIndex)
-            ];
+            tokenId = escrowedTokenIds.at(tokenIndex);
+            cumulativeRisk += l.tokenRisk[collection][tokenId];
             ++tokenIndex;
-        } while (
-            cumulativeRisk <= randomValue % l.totalCollectionRisk[collection]
-        );
-
-        tokenId = escrowedTokenIds.at(tokenIndex - 1);
+        } while (cumulativeRisk <= randomValue % l.totalRisk[collection]);
     }
 
     function _selectERC1155Owner(
@@ -154,16 +150,15 @@ abstract contract PerpetualMintInternal is
         uint256 tokenIndex;
 
         do {
-            cumulativeRisk += l.accountTotalTokenRisk[collection][tokenId][
-                owners.at(tokenIndex)
-            ];
+            owner = owners.at(tokenIndex);
+            cumulativeRisk +=
+                l.accountTokenRisk[collection][tokenId][owner] *
+                l.escrowedERC1155TokenAmount[collection][tokenId][owner];
             ++tokenIndex;
         } while (
             cumulativeRisk <=
                 randomValue % l.totalERC1155TokenRisk[collection][tokenId]
         );
-
-        owner = owners.at(tokenIndex - 1);
     }
 
     /**
@@ -176,7 +171,7 @@ abstract contract PerpetualMintInternal is
     ) internal view returns (uint128 risk) {
         s.Layout storage l = s.layout();
         risk =
-            l.totalCollectionRisk[collection] /
+            l.totalRisk[collection] /
             uint128(l.totalEscrowedTokenAmount[collection]);
     }
 
@@ -196,10 +191,7 @@ abstract contract PerpetualMintInternal is
         uint128[2] memory randomValues = _chunk256to128(randomWords[0]);
 
         bool result = _averageCollectionRisk(collection) >
-            _normalizeValue(
-                uint128(randomValues[0]),
-                l.totalCollectionRisk[collection]
-            );
+            _normalizeValue(uint128(randomValues[0]), l.totalRisk[collection]);
 
         if (!result) {
             _mint(account, l.id);
@@ -235,10 +227,7 @@ abstract contract PerpetualMintInternal is
         uint128[2] memory randomValues = _chunk256to128(randomWords[0]);
 
         bool result = _averageCollectionRisk(collection) >
-            _normalizeValue(
-                uint128(randomValues[0]),
-                l.totalCollectionRisk[collection]
-            );
+            _normalizeValue(uint128(randomValues[0]), l.totalRisk[collection]);
 
         if (!result) {
             _mint(account, l.id);
@@ -262,31 +251,30 @@ abstract contract PerpetualMintInternal is
             --l.escrowedTokenAmount[collection][previousOwner];
             ++l.escrowedTokenAmount[collection][account];
 
-            --l.escrowedERC1155OwnedAmount[collection][tokenId][previousOwner];
-            ++l.escrowedERC1155OwnedAmount[collection][tokenId][account];
+            --l.escrowedERC1155TokenAmount[collection][tokenId][previousOwner];
+            ++l.escrowedERC1155TokenAmount[collection][tokenId][account];
 
             if (
-                l.escrowedERC1155OwnedAmount[collection][tokenId][
+                l.escrowedERC1155TokenAmount[collection][tokenId][account] == 1
+            ) {
+                l.escrowedERC1155TokenOwners[collection][tokenId].add(
+                    previousOwner
+                );
+                l.accountTokenRisk[collection][tokenId][account] = l
+                    .accountTokenRisk[collection][tokenId][previousOwner];
+            }
+
+            if (
+                l.escrowedERC1155TokenAmount[collection][tokenId][
                     previousOwner
                 ] == 0
             ) {
                 l.escrowedERC1155TokenOwners[collection][tokenId].remove(
                     previousOwner
                 );
-            }
 
-            if (
-                l.escrowedERC1155OwnedAmount[collection][tokenId][account] == 1
-            ) {
-                l.escrowedERC1155TokenOwners[collection][tokenId].add(
-                    previousOwner
-                );
+                delete l.accountTokenRisk[collection][tokenId][previousOwner];
             }
-
-            l.accountTotalTokenRisk[collection][tokenId][previousOwner] += l
-                .accountTokenRisk[collection][tokenId][previousOwner];
-            l.accountTotalTokenRisk[collection][tokenId][previousOwner] -= l
-                .accountTokenRisk[collection][tokenId][previousOwner];
         }
     }
 

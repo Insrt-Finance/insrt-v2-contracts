@@ -201,14 +201,12 @@ abstract contract PerpetualMintInternal is
         if (result) {
             uint256 tokenId = _selectToken(collection, randomValues[1]);
 
-            address previousOwner = l.escrowedERC721TokenOwner[collection][
-                tokenId
-            ];
+            address oldOwner = l.escrowedERC721TokenOwner[collection][tokenId];
 
-            _updateAccountEarnings(collection, previousOwner);
+            _updateAccountEarnings(collection, oldOwner);
             _updateAccountEarnings(collection, account);
 
-            --l.escrowedTokenAmount[previousOwner][collection];
+            --l.escrowedTokenAmount[oldOwner][collection];
             ++l.escrowedTokenAmount[account][collection];
 
             l.escrowedERC721TokenOwner[collection][tokenId] = account;
@@ -239,42 +237,44 @@ abstract contract PerpetualMintInternal is
 
             uint256 tokenId = _selectToken(collection, randomValues64[0]);
 
-            address previousOwner = _selectERC1155Owner(
+            address oldOwner = _selectERC1155Owner(
                 collection,
                 tokenId,
                 randomValues64[1]
             );
 
-            _updateAccountEarnings(collection, previousOwner);
+            _updateAccountEarnings(collection, oldOwner);
             _updateAccountEarnings(collection, account);
 
-            --l.escrowedTokenAmount[collection][previousOwner];
-            ++l.escrowedTokenAmount[collection][account];
+            _assignEscrowedAsset(oldOwner, account, collection, tokenId);
+        }
+    }
 
-            --l.escrowedERC1155TokenAmount[collection][tokenId][previousOwner];
-            ++l.escrowedERC1155TokenAmount[collection][tokenId][account];
+    function _assignEscrowedAsset(
+        address from,
+        address to,
+        address collection,
+        uint256 tokenId
+    ) private {
+        s.Layout storage l = s.layout();
 
-            if (
-                l.escrowedERC1155TokenAmount[collection][tokenId][account] == 1
-            ) {
-                l.escrowedERC1155TokenOwners[collection][tokenId].add(
-                    previousOwner
-                );
-                l.accountTokenRisk[collection][tokenId][account] = l
-                    .accountTokenRisk[collection][tokenId][previousOwner];
-            }
+        --l.escrowedTokenAmount[collection][from];
+        ++l.escrowedTokenAmount[collection][to];
 
-            if (
-                l.escrowedERC1155TokenAmount[collection][tokenId][
-                    previousOwner
-                ] == 0
-            ) {
-                l.escrowedERC1155TokenOwners[collection][tokenId].remove(
-                    previousOwner
-                );
+        --l.escrowedERC1155TokenAmount[collection][tokenId][from];
+        ++l.escrowedERC1155TokenAmount[collection][tokenId][to];
 
-                delete l.accountTokenRisk[collection][tokenId][previousOwner];
-            }
+        if (l.escrowedERC1155TokenAmount[collection][tokenId][to] == 1) {
+            l.escrowedERC1155TokenOwners[collection][tokenId].add(from);
+            l.accountTokenRisk[collection][tokenId][to] = l.accountTokenRisk[
+                collection
+            ][tokenId][from];
+        }
+
+        if (l.escrowedERC1155TokenAmount[collection][tokenId][from] == 0) {
+            l.escrowedERC1155TokenOwners[collection][tokenId].remove(from);
+
+            delete l.accountTokenRisk[collection][tokenId][from];
         }
     }
 

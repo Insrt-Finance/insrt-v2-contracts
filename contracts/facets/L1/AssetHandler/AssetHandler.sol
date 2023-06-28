@@ -167,7 +167,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
             );
 
             emit ERC1155AssetsUnstaked(sender, collection, tokenIds, amounts);
-        } else if (assetType == PayloadEncoder.AssetType.ERC721) {
+        } else {
             // Decode the payload to get the sender, the collection, and the tokenIds
             (
                 ,

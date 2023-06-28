@@ -163,7 +163,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             }
 
             emit ERC1155AssetsStaked(staker, collection, tokenIds, amounts);
-        } else if (assetType == PayloadEncoder.AssetType.ERC721) {
+        } else {
             // Decode the payload to get the staker, the collection, and the tokenIds
             (
                 ,

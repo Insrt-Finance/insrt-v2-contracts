@@ -213,8 +213,8 @@ abstract contract PerpetualMintInternal is
                 wonTokenId
             ];
 
-            //add new account update, separate function
             _updateAccountEarnings(collection, previousOwner);
+            _updateAccountEarnings(collection, account);
 
             --l.accountEscrowedERC721TokenAmount[previousOwner][collection];
             ++l.accountEscrowedERC721TokenAmount[account][collection];
@@ -282,15 +282,24 @@ abstract contract PerpetualMintInternal is
     ) private {
         s.Layout storage l = s.layout();
 
-        l.accountEarnings[collection][account] +=
-            (l.collectionEarnings[collection] *
-                l.accountEscrowedERC721TokenAmount[account][collection]) /
-            l.escrowedERC721TokenIds[collection].length() -
-            l.accountDeductions[collection][account];
-
-        l.accountDeductions[collection][account] = l.accountEarnings[
+        uint256 escrowedTokens = l.accountEscrowedERC721TokenAmount[account][
             collection
-        ][account];
+        ];
+
+        if (escrowedTokens != 0) {
+            l.accountEarnings[collection][account] +=
+                ((l.collectionEarnings[collection] * escrowedTokens) /
+                    l.escrowedERC721TokenIds[collection].length()) -
+                l.accountDeductions[collection][account];
+
+            l.accountDeductions[collection][account] = l.accountEarnings[
+                collection
+            ][account];
+        } else {
+            l.accountDeductions[collection][account] = l.collectionEarnings[
+                collection
+            ];
+        }
     }
 
     function _updateERC1155AccountEarnings(

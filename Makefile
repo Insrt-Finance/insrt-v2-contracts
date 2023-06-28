@@ -21,3 +21,5 @@ trace   :; forge test -vvv
 clean  :; forge clean
 snapshot :; forge snapshot
 fmt    :; forge fmt
+prettier    :; pnpm prettier --write contracts/**/**/**/*.sol
+

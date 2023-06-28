@@ -207,10 +207,10 @@ abstract contract PerpetualMintInternal is
         }
 
         if (result) {
-            uint256 wonTokenId = _selectToken(collection, randomValues[1]);
+            uint256 tokenId = _selectToken(collection, randomValues[1]);
 
             address previousOwner = l.escrowedERC721TokenOwner[collection][
-                wonTokenId
+                tokenId
             ];
 
             _updateAccountEarnings(collection, previousOwner);
@@ -219,7 +219,7 @@ abstract contract PerpetualMintInternal is
             --l.escrowedTokenAmount[previousOwner][collection];
             ++l.escrowedTokenAmount[account][collection];
 
-            l.escrowedERC721TokenOwner[collection][wonTokenId] = account;
+            l.escrowedERC721TokenOwner[collection][tokenId] = account;
         }
 
         emit ERC721MintResolved(collection, result);
@@ -261,6 +261,32 @@ abstract contract PerpetualMintInternal is
 
             --l.escrowedTokenAmount[collection][previousOwner];
             ++l.escrowedTokenAmount[collection][account];
+
+            --l.escrowedERC1155OwnedAmount[collection][tokenId][previousOwner];
+            ++l.escrowedERC1155OwnedAmount[collection][tokenId][account];
+
+            if (
+                l.escrowedERC1155OwnedAmount[collection][tokenId][
+                    previousOwner
+                ] == 0
+            ) {
+                l.escrowedERC1155TokenOwners[collection][tokenId].remove(
+                    previousOwner
+                );
+            }
+
+            if (
+                l.escrowedERC1155OwnedAmount[collection][tokenId][account] == 1
+            ) {
+                l.escrowedERC1155TokenOwners[collection][tokenId].add(
+                    previousOwner
+                );
+            }
+
+            l.accountTotalTokenRisk[collection][tokenId][previousOwner] += l
+                .accountTokenRisk[collection][tokenId][previousOwner];
+            l.accountTotalTokenRisk[collection][tokenId][previousOwner] -= l
+                .accountTokenRisk[collection][tokenId][previousOwner];
         }
     }
 

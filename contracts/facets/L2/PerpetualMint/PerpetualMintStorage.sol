@@ -15,20 +15,19 @@ library PerpetualMintStorage {
         mapping(address collection => uint256 amount) collectionEarnings;
         mapping(address collection => uint256 mintPrice) collectionMintPrice;
         mapping(address collection => uint256 amount) totalEscrowedTokenAmount;
-        mapping(address collection => uint128 risk) totalCollectionRisk;
+        mapping(address collection => uint128 risk) totalRisk;
+        mapping(address collection => EnumerableSet.UintSet tokenIds) escrowedTokenIds;
         mapping(address collection => mapping(address account => uint256 amount)) accountDeductions;
         mapping(address collection => mapping(address account => uint256 amount)) accountEarnings;
         mapping(address collection => mapping(address account => uint256 amount)) escrowedTokenAmount;
+        mapping(address collection => mapping(uint256 tokenId => uint256 risk)) tokenRisk;
         //ERC721
-        mapping(address collection => EnumerableSet.UintSet tokenIds) escrowedERC721TokenIds;
-        mapping(address collection => mapping(uint256 tokenId => uint256 risk)) tokenRisksERC721;
         mapping(address collection => mapping(uint256 tokenId => address account)) escrowedERC721TokenOwner;
         //ERC1155
         mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet accounts)) escrowedERC1155TokenOwners;
-        mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint64 risk))) accountTotalTokenRisk;
         mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint64 risk))) accountTokenRisk;
         mapping(address collection => mapping(uint256 tokenId => uint64 risk)) totalERC1155TokenRisk;
-        mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint256 amount))) escrowedERC1155OwnedAmount;
+        mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint256 amount))) escrowedERC1155TokenAmount;
     }
 
     bytes32 internal constant STORAGE_SLOT =

@@ -33,7 +33,7 @@ jobs:
 
       - name: Run Forge tests
         run: |
-          forge test --gas-report
+          MAINNET_RPC_URL=${{ secrets.MAINNET_RPC_URL }} forge test --gas-report
         id: test
 
       - name: "Generate coverage report"

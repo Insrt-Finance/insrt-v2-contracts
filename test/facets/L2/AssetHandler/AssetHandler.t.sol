@@ -17,17 +17,38 @@ abstract contract L2AssetHandlerTest is L2PerpetualMintTest {
     address internal constant ARBITRUM_LAYER_ZERO_ENDPOINT =
         0x3c2269811836af69497E5F486A85D7316753cf62;
 
+    /// @dev Ethereum mainnet Bong Bears contract address.
+    address internal constant BONG_BEARS =
+        0x495f947276749Ce646f68AC8c248420045cb7b5e;
+
+    /// @dev Ethereum mainnet Bored Ape Yacht Club contract address.
+    address internal constant BORED_APE_YACHT_CLUB =
+        0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
+
     /// @dev Address used to simulate non-owner access.
     address internal immutable NON_OWNER_TEST_ADDRESS = vm.addr(1);
 
     /// @dev The LayerZero proprietary chain ID for setting Ethereum as the destination blockchain.
     uint16 internal constant DESTINATION_LAYER_ZERO_CHAIN_ID = 101;
 
+    uint256[] internal boredApeYachtClubTokenIds = new uint256[](1);
+
+    uint256[] internal bongBearTokenIds = new uint256[](1);
+
+    uint256[] internal bongBearTokenAmounts = new uint256[](1);
+
     /// @dev Sets up L2AssetHandler for testing.
     function setUp() public override {
         super.setUp();
 
         initL2AssetHandler();
+
+        bongBearTokenIds[
+            0
+        ] = 66075445032688988859229341194671037535804503065310441849644897861040871571457;
+        bongBearTokenAmounts[0] = 1;
+
+        boredApeYachtClubTokenIds[0] = 1;
 
         l2AssetHandler = IL2AssetHandler(address(l2PerpetualMintDiamond));
     }

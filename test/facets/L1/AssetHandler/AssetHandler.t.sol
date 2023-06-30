@@ -50,6 +50,9 @@ abstract contract L1AssetHandlerTest is
 
     uint256[] internal bongBearTokenAmounts = new uint256[](1);
 
+    /// @dev Required to receive refund Ether from LayerZero _lzSend relay calls.
+    receive() external payable {}
+
     /// @dev Sets up L1AssetHandler for testing.
     function setUp() public override {
         super.setUp();

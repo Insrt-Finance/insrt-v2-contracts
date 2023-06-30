@@ -41,6 +41,9 @@ abstract contract L2AssetHandlerTest is L2PerpetualMintTest {
 
     uint256[] internal bongBearTokenAmounts = new uint256[](1);
 
+    /// @dev Required to receive refund Ether from LayerZero _lzSend relay calls.
+    receive() external payable {}
+
     /// @dev Sets up L2AssetHandler for testing.
     function setUp() public override {
         super.setUp();

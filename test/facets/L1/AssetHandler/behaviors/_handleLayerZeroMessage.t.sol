@@ -33,9 +33,12 @@ contract L1AssetHandler_handleLayerZeroMessage is
             .sig(bongBears.balanceOf.selector)
             .with_key(address(this))
             .with_key(bongBearTokenIds[0])
-            .checked_write(1);
+            .checked_write(bongBearTokenAmounts[0]);
 
-        assert(bongBears.balanceOf(address(this), bongBearTokenIds[0]) == 1);
+        assert(
+            bongBears.balanceOf(address(this), bongBearTokenIds[0]) ==
+                bongBearTokenAmounts[0]
+        );
 
         bytes memory encodedData = abi.encode(
             PayloadEncoder.AssetType.ERC1155,
@@ -52,7 +55,10 @@ contract L1AssetHandler_handleLayerZeroMessage is
             encodedData
         );
 
-        assert(bongBears.balanceOf(msg.sender, bongBearTokenIds[0]) == 1);
+        assert(
+            bongBears.balanceOf(msg.sender, bongBearTokenIds[0]) ==
+                bongBearTokenAmounts[0]
+        );
     }
 
     /// @dev Tests that _handleLayerZeroMessage emits an ERC1155AssetsUnstaked event when unstaking ERC1155 tokens.

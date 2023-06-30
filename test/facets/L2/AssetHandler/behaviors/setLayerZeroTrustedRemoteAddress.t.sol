@@ -14,7 +14,7 @@ contract L2AssetHandler_setLayerZeroTrustedRemoteAddress is
     ILayerZeroClientBaseInternalEvents,
     L2AssetHandlerTest
 {
-    /// @dev Address used to simulate non-owner access. Stored as bytes.
+    /// @dev Address used to simulate trusted remote address. Stored as bytes.
     bytes internal TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES =
         abi.encodePacked(vm.addr(1234));
 

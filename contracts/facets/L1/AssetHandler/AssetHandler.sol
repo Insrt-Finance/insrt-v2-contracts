@@ -215,7 +215,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
             ),
             payable(msg.sender),
             address(0),
-            "0x",
+            "",
             msg.value
         );
     }
@@ -239,7 +239,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
             ),
             payable(msg.sender),
             address(0),
-            "0x",
+            "",
             msg.value
         );
     }

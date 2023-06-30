@@ -207,7 +207,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             ),
             payable(msg.sender),
             address(0),
-            "0x",
+            "",
             msg.value
         );
     }
@@ -230,7 +230,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             ),
             payable(msg.sender),
             address(0),
-            "0x",
+            "",
             msg.value
         );
     }

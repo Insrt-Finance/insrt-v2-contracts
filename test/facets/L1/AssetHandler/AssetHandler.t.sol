@@ -54,7 +54,7 @@ abstract contract L1AssetHandlerTest is
     receive() external payable {}
 
     /// @dev Sets up L1AssetHandler for testing.
-    function setUp() public override {
+    function setUp() public virtual override {
         super.setUp();
 
         initL1AssetHandler();

@@ -45,7 +45,7 @@ abstract contract L2AssetHandlerTest is L2PerpetualMintTest {
     receive() external payable {}
 
     /// @dev Sets up L2AssetHandler for testing.
-    function setUp() public override {
+    function setUp() public virtual override {
         super.setUp();
 
         initL2AssetHandler();

@@ -2,8 +2,6 @@
 
 pragma solidity 0.8.20;
 
-import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
-
 /// @title L2AssetHandlerStorage
 /// @dev Defines storage layout for the L2AssetHandler facet.
 library L2AssetHandlerStorage {
@@ -11,9 +9,9 @@ library L2AssetHandlerStorage {
         /// @dev Mapping of staker address to collection address to tokenId to amount for ERC1155 assets.
         /// Represents the amount of each specific ERC1155 token that each staker has staked.
         mapping(address staker => mapping(address collection => mapping(uint256 tokenId => uint256 amount))) stakedERC1155Assets;
-        /// @dev Mapping of staker address to collection address to a set of tokenIds for ERC721 assets.
+        /// @dev Mapping of staker address to collection address to tokenId to staked check for ERC721 assets.
         /// Represents the specific ERC721 tokens that each staker has staked.
-        mapping(address staker => mapping(address collection => EnumerableSet.UintSet tokenIds)) stakedERC721Assets;
+        mapping(address staker => mapping(address collection => mapping(uint256 tokenIds => bool staked))) stakedERC721Assets;
     }
 
     // The slot in contract storage where data will be stored. Used to avoid collisions with other variables.

@@ -2,7 +2,6 @@
 
 pragma solidity 0.8.20;
 
-import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { SolidStateLayerZeroClient } from "@solidstate/layerzero-client/SolidStateLayerZeroClient.sol";
 
 import { IL2AssetHandler } from "./IAssetHandler.sol";
@@ -13,8 +12,6 @@ import { PayloadEncoder } from "../../../libraries/PayloadEncoder.sol";
 /// @title L2AssetHandler
 /// @dev Handles NFT assets on L2 and allows them to be staked & unstaked cross-chain via LayerZero.
 contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
-    using EnumerableSet for EnumerableSet.UintSet;
-
     /// @notice Deploys a new instance of the L2AssetHandler contract.
     constructor() {
         // Set initial ownership of the contract to the deployer
@@ -102,18 +99,16 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         // If it is, remove it from the set of staked tokens
         for (uint i = 0; i < tokenIds.length; i++) {
             if (
-                Storage
-                .layout()
-                .stakedERC721Assets[msg.sender][collection].contains(
-                        tokenIds[i]
-                    ) == false
+                Storage.layout().stakedERC721Assets[msg.sender][collection][
+                    tokenIds[i]
+                ] == false
             ) {
                 revert ERC721TokenNotStaked();
             }
 
-            Storage.layout().stakedERC721Assets[msg.sender][collection].remove(
+            Storage.layout().stakedERC721Assets[msg.sender][collection][
                 tokenIds[i]
-            );
+            ] = false;
         }
 
         _unstakeERC721Assets(collection, layerZeroDestinationChainId, tokenIds);
@@ -177,9 +172,9 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
             // Update the staked ERC721 assets in the contract's storage
             for (uint i = 0; i < tokenIds.length; i++) {
-                Storage.layout().stakedERC721Assets[staker][collection].add(
+                Storage.layout().stakedERC721Assets[staker][collection][
                     tokenIds[i]
-                );
+                ] = true;
             }
 
             emit ERC721AssetsStaked(staker, collection, tokenIds);

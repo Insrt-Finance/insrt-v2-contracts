@@ -7,10 +7,14 @@ import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidSt
 import { L2AssetHandlerHelper } from "./AssetHandlerHelper.t.sol";
 import { L2PerpetualMintTest } from "../../../diamonds/L2/PerpetualMint.t.sol";
 import { IL2AssetHandler } from "../../../../contracts/facets/L2/AssetHandler/IAssetHandler.sol";
+import { IAssetHandlerEvents } from "../../../../contracts/interfaces/IAssetHandlerEvents.sol";
 
 /// @title L2AssetHandlerTest
 /// @dev L2AssetHandler test helper contract. Configures L2AssetHandler as a facet of the L2PerpetualMint diamond.
-abstract contract L2AssetHandlerTest is L2PerpetualMintTest {
+abstract contract L2AssetHandlerTest is
+    IAssetHandlerEvents,
+    L2PerpetualMintTest
+{
     IL2AssetHandler public l2AssetHandler;
 
     /// @dev The LayerZero Arbitrum endpoint address.

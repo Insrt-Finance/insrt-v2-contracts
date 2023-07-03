@@ -302,7 +302,7 @@ contract L2AssetHandler_unstakeERC1155Assets is
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
         l2AssetHandler.unstakeERC1155Assets{
-            value: LAYER_ZERO_MESSAGE_FEE / 2
+            value: LAYER_ZERO_MESSAGE_FEE / 5
         }( // insufficient message fee
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,

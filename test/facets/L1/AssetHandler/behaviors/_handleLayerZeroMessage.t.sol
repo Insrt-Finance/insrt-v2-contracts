@@ -2,7 +2,6 @@
 
 pragma solidity 0.8.20;
 
-import "@solidstate/contracts/interfaces/IERC1155.sol";
 import "forge-std/Test.sol";
 
 import { L1AssetHandlerTest } from "../AssetHandler.t.sol";

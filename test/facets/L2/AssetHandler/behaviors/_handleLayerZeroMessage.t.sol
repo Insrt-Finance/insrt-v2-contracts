@@ -2,9 +2,6 @@
 
 pragma solidity 0.8.20;
 
-import "@solidstate/contracts/interfaces/IERC1155.sol";
-import "forge-std/Test.sol";
-
 import { L2AssetHandlerTest } from "../AssetHandler.t.sol";
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { L2AssetHandlerMock } from "../../../../mocks/L2AssetHandlerMock.t.sol";
@@ -18,8 +15,6 @@ contract L2AssetHandler_handleLayerZeroMessage is
     L2AssetHandlerTest,
     L2ForkTest
 {
-    using stdStorage for StdStorage;
-
     /// @dev Dummy trusted remote test path.
     bytes internal TEST_PATH =
         bytes.concat(bytes20(vm.addr(1234)), bytes20(vm.addr(5678)));

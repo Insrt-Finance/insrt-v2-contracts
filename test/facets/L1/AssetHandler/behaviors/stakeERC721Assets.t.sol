@@ -6,9 +6,9 @@ import { ILayerZeroClientBaseInternal } from "@solidstate/layerzero-client/base/
 
 import { L1AssetHandlerTest } from "../AssetHandler.t.sol";
 import { ILayerZeroClientBaseInternalEvents } from "../../../../interfaces/ILayerZeroClientBaseInternalEvents.sol";
+import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
 import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
 import { IAssetHandler } from "../../../../../contracts/interfaces/IAssetHandler.sol";
-import { L1ForkTest } from "../../../../../test/L1ForkTest.t.sol";
 
 /// @title L1AssetHandler_stakeERC721Assets
 /// @dev L1AssetHandler test contract for testing expected L1 stakeERC721Assets behavior. Tested on a Mainnet fork.

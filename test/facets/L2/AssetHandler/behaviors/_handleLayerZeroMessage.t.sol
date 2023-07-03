@@ -6,10 +6,10 @@ import "@solidstate/contracts/interfaces/IERC1155.sol";
 import "forge-std/Test.sol";
 
 import { L2AssetHandlerTest } from "../AssetHandler.t.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
+import { L2AssetHandlerMock } from "../../../../mocks/L2AssetHandlerMock.t.sol";
 import { L2AssetHandlerStorage } from "../../../../../contracts/facets/L2/AssetHandler/Storage.sol";
 import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
-import { L2AssetHandlerMock } from "../../../../../test/mocks/L2AssetHandlerMock.t.sol";
-import { L2ForkTest } from "../../../../../test/L2ForkTest.t.sol";
 
 /// @title L2AssetHandler_handleLayerZeroMessage
 /// @dev L2AssetHandler test contract for testing expected L2 _handleLayerZeroMessage behavior. Tested on a Mainnet fork.

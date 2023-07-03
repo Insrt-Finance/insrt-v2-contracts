@@ -7,10 +7,10 @@ import "forge-std/Test.sol";
 import { ILayerZeroClientBaseInternal } from "@solidstate/layerzero-client/base/ILayerZeroClientBaseInternal.sol";
 
 import { L1AssetHandlerTest } from "../AssetHandler.t.sol";
+import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
 import { ILayerZeroClientBaseInternalEvents } from "../../../../interfaces/ILayerZeroClientBaseInternalEvents.sol";
 import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
 import { IAssetHandler } from "../../../../../contracts/interfaces/IAssetHandler.sol";
-import { L1ForkTest } from "../../../../../test/L1ForkTest.t.sol";
 
 /// @title L1AssetHandler_stakeERC1155Assets
 /// @dev L1AssetHandler test contract for testing expected L1 stakeERC1155Assets behavior. Tested on a Mainnet fork.

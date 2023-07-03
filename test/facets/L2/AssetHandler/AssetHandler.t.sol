@@ -56,7 +56,7 @@ abstract contract L2AssetHandlerTest is
 
         bongBearTokenIds[
             0
-        ] = 66075445032688988859229341194671037535804503065310441849644897861040871571457;
+        ] = 66075445032688988859229341194671037535804503065310441849644897861040871571457; // Bong Bear #01
         bongBearTokenAmounts[0] = 1;
 
         boredApeYachtClubTokenIds[0] = 1;

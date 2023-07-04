@@ -136,6 +136,13 @@ abstract contract PerpetualMintInternal is
         } while (cumulativeRisk <= normalizedValue);
     }
 
+    /**
+     * @notice selects the account which will have an ERC1155 reassigned to the successful minter
+     * @param collection address of ERC1155 collection
+     * @param tokenId id of token
+     * @param randomValue random value used for selection
+     * @return owner address of selected account
+     */
     function _selectERC1155Owner(
         address collection,
         uint256 tokenId,
@@ -176,7 +183,7 @@ abstract contract PerpetualMintInternal is
     }
 
     /**
-     * @notice resolves the outcome of an attempted mint
+     * @notice resolves the outcome of an attempted mint of an ERC721 collection
      * @param account address attempting the mint
      * @param collection address of collection which token may be minted from
      * @param randomWords random values relating to attempt
@@ -215,6 +222,12 @@ abstract contract PerpetualMintInternal is
         emit ERC721MintResolved(collection, result);
     }
 
+    /**
+     * @notice resolves the outcome of an attempted mint of an ERC1155 collection
+     * @param account address attempting the mint
+     * @param collection address of collection which token may be minted from
+     * @param randomWords random values relating to attempt
+     */
     function _resolveERC1155Mint(
         address account,
         address collection,
@@ -246,11 +259,19 @@ abstract contract PerpetualMintInternal is
             _updateAccountEarnings(collection, oldOwner);
             _updateAccountEarnings(collection, account);
 
-            _assignEscrowedAsset(oldOwner, account, collection, tokenId);
+            _assignEscrowedERC1155Asset(oldOwner, account, collection, tokenId);
         }
     }
 
-    function _assignEscrowedAsset(
+    /**
+     * @notice assigns an ERC1155 asset from one account to another, updating the required
+     * state variables simultaneously
+     * @param from address asset currently is escrowed for
+     * @param to address that asset will be assigned to
+     * @param collection address of ERC1155 collection
+     * @param tokenId token id
+     */
+    function _assignEscrowedERC1155Asset(
         address from,
         address to,
         address collection,
@@ -349,6 +370,11 @@ abstract contract PerpetualMintInternal is
         normalizedValue = value % basis;
     }
 
+    /**
+     * @notice returns the product of the amount of assets of a collction with the BASIS
+     * @param collection address of collection
+     * @return basis product of the amoutn of assets with the basis
+     */
     function _cumulativeBasis(
         address collection
     ) private view returns (uint256 basis) {

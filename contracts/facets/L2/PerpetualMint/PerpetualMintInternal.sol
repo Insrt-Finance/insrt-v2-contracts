@@ -149,6 +149,8 @@ abstract contract PerpetualMintInternal is
 
         uint256 cumulativeRisk;
         uint256 tokenIndex;
+        uint256 normalizedValue = randomValue %
+            l.totalERC1155TokenRisk[collection][tokenId];
 
         do {
             owner = owners.at(tokenIndex);
@@ -156,10 +158,7 @@ abstract contract PerpetualMintInternal is
                 l.accountTokenRisk[collection][tokenId][owner] *
                 l.escrowedERC1155TokenAmount[collection][tokenId][owner];
             ++tokenIndex;
-        } while (
-            cumulativeRisk <=
-                randomValue % l.totalERC1155TokenRisk[collection][tokenId]
-        );
+        } while (cumulativeRisk <= normalizedValue);
     }
 
     /**

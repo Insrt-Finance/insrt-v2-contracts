@@ -28,6 +28,11 @@ library PerpetualMintStorage {
         mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint64 risk))) accountTokenRisk;
         mapping(address collection => mapping(uint256 tokenId => uint64 risk)) totalERC1155TokenRisk;
         mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint256 amount))) escrowedERC1155TokenAmount;
+        //activity storage
+        mapping(address collection => EnumerableSet.UintSet tokenIds) activeTokenIds;
+        mapping(address collection => uint256 amount) totalActiveTokens;
+        mapping(address collection => mapping(address account => uint256 amount)) inactiveTokens;
+        mapping(address collection => mapping(address account => uint256 amount)) activeTokens;
     }
 
     bytes32 internal constant STORAGE_SLOT =

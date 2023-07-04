@@ -121,21 +121,20 @@ abstract contract PerpetualMintInternal is
     ) internal view returns (uint256 tokenId) {
         s.Layout storage l = s.layout();
 
-        EnumerableSet.UintSet storage escrowedTokenIds = l.escrowedTokenIds[
-            collection
-        ];
+        EnumerableSet.UintSet storage tokenIds = l.activeTokenIds[collection];
 
         uint256 tokenIndex;
         uint256 cumulativeRisk;
         uint256 normalizedValue = randomValue % l.totalRisk[collection];
 
         do {
-            tokenId = escrowedTokenIds.at(tokenIndex);
+            tokenId = tokenIds.at(tokenIndex);
             cumulativeRisk += l.tokenRisk[collection][tokenId];
             ++tokenIndex;
         } while (cumulativeRisk <= normalizedValue);
     }
 
+    //TODOL: MODIFY WITH ACTIVE TOKENS
     /**
      * @notice selects the account which will have an ERC1155 reassigned to the successful minter
      * @param collection address of ERC1155 collection
@@ -179,7 +178,7 @@ abstract contract PerpetualMintInternal is
         s.Layout storage l = s.layout();
         risk =
             l.totalRisk[collection] /
-            uint128(l.totalEscrowedTokenAmount[collection]);
+            uint128(l.totalActiveTokens[collection]);
     }
 
     /**
@@ -200,6 +199,7 @@ abstract contract PerpetualMintInternal is
         bool result = _averageCollectionRisk(collection) >
             _normalizeValue(uint128(randomValues[0]), BASIS);
 
+        //TODO: update based on consolation spec
         if (!result) {
             _mint(account, l.id);
             ++l.id;
@@ -213,8 +213,12 @@ abstract contract PerpetualMintInternal is
             _updateAccountEarnings(collection, oldOwner);
             _updateAccountEarnings(collection, account);
 
-            --l.escrowedTokenAmount[oldOwner][collection];
-            ++l.escrowedTokenAmount[account][collection];
+            ///May be useless now
+            --l.escrowedTokenAmount[collection][oldOwner];
+            ++l.escrowedTokenAmount[collection][account];
+
+            --l.inactiveTokens[collection][oldOwner];
+            ++l.inactiveTokens[collection][account];
 
             l.escrowedERC721TokenOwner[collection][tokenId] = account;
         }
@@ -240,6 +244,7 @@ abstract contract PerpetualMintInternal is
         bool result = _averageCollectionRisk(collection) >
             _normalizeValue(uint128(randomValues[0]), BASIS);
 
+        //TODO: update based on consolation spec
         if (!result) {
             _mint(account, l.id);
             ++l.id;
@@ -310,12 +315,12 @@ abstract contract PerpetualMintInternal is
     ) private {
         s.Layout storage l = s.layout();
 
-        uint256 escrowedTokens = l.escrowedTokenAmount[account][collection];
+        uint256 activeTokens = l.activeTokens[collection][account];
 
-        if (escrowedTokens != 0) {
+        if (activeTokens != 0) {
             l.accountEarnings[collection][account] +=
-                ((l.collectionEarnings[collection] * escrowedTokens) /
-                    l.totalEscrowedTokenAmount[collection]) -
+                ((l.collectionEarnings[collection] * activeTokens) /
+                    l.totalActiveTokens[collection]) -
                 l.accountDeductions[collection][account];
 
             l.accountDeductions[collection][account] = l.accountEarnings[

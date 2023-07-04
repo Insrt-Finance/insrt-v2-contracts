@@ -191,7 +191,7 @@ abstract contract PerpetualMintInternal is
         uint128[2] memory randomValues = _chunk256to128(randomWords[0]);
 
         bool result = _averageCollectionRisk(collection) >
-            _normalizeValue(uint128(randomValues[0]), l.totalRisk[collection]);
+            _normalizeValue(uint128(randomValues[0]), BASIS);
 
         if (!result) {
             _mint(account, l.id);
@@ -225,7 +225,7 @@ abstract contract PerpetualMintInternal is
         uint128[2] memory randomValues = _chunk256to128(randomWords[0]);
 
         bool result = _averageCollectionRisk(collection) >
-            _normalizeValue(uint128(randomValues[0]), l.totalRisk[collection]);
+            _normalizeValue(uint128(randomValues[0]), BASIS);
 
         if (!result) {
             _mint(account, l.id);
@@ -347,5 +347,11 @@ abstract contract PerpetualMintInternal is
         uint128 basis
     ) private pure returns (uint128 normalizedValue) {
         normalizedValue = value % basis;
+    }
+
+    function _cumulativeBasis(
+        address collection
+    ) private view returns (uint256 basis) {
+        basis = s.layout().totalEscrowedTokenAmount[collection] * BASIS;
     }
 }

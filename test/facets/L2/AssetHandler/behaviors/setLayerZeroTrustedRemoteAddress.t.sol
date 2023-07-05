@@ -4,6 +4,7 @@ pragma solidity 0.8.20;
 
 import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableInternal.sol";
 import { ILayerZeroClientBaseInternal } from "@solidstate/layerzero-client/base/ILayerZeroClientBaseInternal.sol";
+import { LayerZeroClientBaseStorage } from "@solidstate/layerzero-client/base/LayerZeroClientBaseStorage.sol";
 
 import { L2AssetHandlerTest } from "../AssetHandler.t.sol";
 import { ILayerZeroClientBaseInternalEvents } from "../../../../interfaces/ILayerZeroClientBaseInternalEvents.sol";
@@ -21,12 +22,25 @@ contract L2AssetHandler_setLayerZeroTrustedRemoteAddress is
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
 
-        bytes memory trustedRemoteAddressInBytes = l2AssetHandler
-            .getLayerZeroTrustedRemoteAddress(DESTINATION_LAYER_ZERO_CHAIN_ID);
+        // trusted remote address records are stored in a mapping, so we need to compute the storage slot
+        bytes32 trustedRemoteAddressInBytesStorageSlot = keccak256(
+            abi.encode(
+                DESTINATION_LAYER_ZERO_CHAIN_ID, // the LayerZero destination chain ID
+                uint256(LayerZeroClientBaseStorage.STORAGE_SLOT) + 1 // the trustedRemotes storage slot
+            )
+        );
+
+        // load the trusted remote address in bytes from storage
+        bytes memory trustedRemoteAddressInBytes = abi.encode(
+            vm.load(
+                address(l2AssetHandler),
+                trustedRemoteAddressInBytesStorageSlot
+            )
+        );
 
         assertEq(
-            trustedRemoteAddressInBytes,
-            TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
+            bytes20(trustedRemoteAddressInBytes), // convert to bytes20 to remove padding
+            bytes20(TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES)
         );
     }
 

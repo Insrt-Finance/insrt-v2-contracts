@@ -28,13 +28,6 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         return _getLayerZeroEndpoint();
     }
 
-    /// @inheritdoc IAssetHandler
-    function getLayerZeroTrustedRemoteAddress(
-        uint16 remoteChainId
-    ) external view returns (bytes memory trustedRemoteAddress) {
-        return _getTrustedRemoteAddress(remoteChainId);
-    }
-
     /// @inheritdoc IL1AssetHandler
     function onERC1155BatchReceived(
         address,

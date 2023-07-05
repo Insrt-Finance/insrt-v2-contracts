@@ -22,6 +22,11 @@ abstract contract PerpetualMintInternal is
     error IncorrectETHReceived();
 
     /**
+     * @notice thrown when attemping to act for a collection which is not whitelisted
+     */
+    error CollectionNotWhitelisted();
+
+    /**
      * @notice emitted when the outcome of an attempted mint is resolved
      * @param collection address of collection that attempted mint is for
      * @param result success status of mint attempt
@@ -75,9 +80,20 @@ abstract contract PerpetualMintInternal is
     /**
      * @notice requests random values from Chainlink VRF
      * @param account address calling this function
+     * @param collection address of collection to attempt mint for
      * @param numWords amount of random values to request
      */
-    function _requestRandomWords(address account, uint32 numWords) internal {
+    function _requestRandomWords(
+        address account,
+        address collection,
+        uint32 numWords
+    ) internal {
+        s.Layout storage l = s.layout();
+
+        if (!l.isWhitelisted[collection]) {
+            revert CollectionNotWhitelisted();
+        }
+
         uint256 requestId = VRFCoordinatorV2Interface(VRF).requestRandomWords(
             KEY_HASH,
             SUBSCRIPTION_ID,
@@ -86,7 +102,8 @@ abstract contract PerpetualMintInternal is
             numWords
         );
 
-        s.layout().requestAccount[requestId] = account;
+        l.requestAccount[requestId] = account;
+        l.requestCollection[requestId] = collection;
     }
 
     /**
@@ -106,7 +123,7 @@ abstract contract PerpetualMintInternal is
         l.protocolFees += mintFee;
         l.collectionEarnings[collection] += msg.value - mintFee;
 
-        _requestRandomWords(account, 1);
+        _requestRandomWords(account, collection, 1);
     }
 
     /**
@@ -212,10 +229,6 @@ abstract contract PerpetualMintInternal is
             _updateAccountEarnings(collection, oldOwner);
             _updateAccountEarnings(collection, account);
 
-            ///May be useless now
-            --l.escrowedTokenAmount[collection][oldOwner];
-            ++l.escrowedTokenAmount[collection][account];
-
             --l.activeTokens[collection][oldOwner];
             ++l.inactiveTokens[collection][account];
 
@@ -283,19 +296,11 @@ abstract contract PerpetualMintInternal is
     ) private {
         s.Layout storage l = s.layout();
 
-        --l.escrowedTokenAmount[collection][from];
-        ++l.escrowedTokenAmount[collection][to];
-
-        --l.escrowedERC1155TokenAmount[collection][tokenId][from];
-        ++l.escrowedERC1155TokenAmount[collection][tokenId][to];
         --l.activeERC1155TokenAmount[collection][tokenId][from];
         ++l.inactiveERC1155TokenAmount[collection][tokenId][to];
 
-        if (l.escrowedERC1155TokenAmount[collection][tokenId][to] == 1) {
+        if (!l.escrowedERC1155TokenOwners[collection][tokenId].contains(to)) {
             l.escrowedERC1155TokenOwners[collection][tokenId].add(from);
-            l.accountTokenRisk[collection][tokenId][to] = l.accountTokenRisk[
-                collection
-            ][tokenId][from];
         }
 
         if (l.activeERC1155TokenAmount[collection][tokenId][from] == 0) {
@@ -384,6 +389,6 @@ abstract contract PerpetualMintInternal is
     function _cumulativeBasis(
         address collection
     ) private view returns (uint256 basis) {
-        basis = s.layout().totalEscrowedTokenAmount[collection] * BASIS;
+        basis = s.layout().totalActiveTokens[collection] * BASIS;
     }
 }

@@ -20,9 +20,6 @@ contract L2AssetHandler_unstakeERC721Assets is
     L2AssetHandlerTest,
     L2ForkTest
 {
-    /// @dev LayerZero message fee.
-    uint256 internal constant LAYER_ZERO_MESSAGE_FEE = 0.02 ether; // Arbitrum ETH
-
     /// @dev LayerZero message fee error message.
     bytes internal constant LAYER_ZERO_MESSAGE_FEE_REVERT =
         "LayerZero: not enough native for fees";

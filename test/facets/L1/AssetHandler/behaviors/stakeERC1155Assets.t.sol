@@ -21,9 +21,6 @@ contract L1AssetHandler_stakeERC1155Assets is
 {
     using stdStorage for StdStorage;
 
-    /// @dev LayerZero message fee.
-    uint256 internal constant LAYER_ZERO_MESSAGE_FEE = 0.001 ether;
-
     /// @dev LayerZero message fee error message.
     bytes internal constant LAYER_ZERO_MESSAGE_FEE_REVERT =
         "LayerZero: not enough native for fees";

@@ -17,9 +17,6 @@ contract L1AssetHandler_stakeERC721Assets is
     L1AssetHandlerTest,
     L1ForkTest
 {
-    /// @dev LayerZero message fee.
-    uint256 internal constant LAYER_ZERO_MESSAGE_FEE = 0.001 ether;
-
     /// @dev LayerZero message fee error message.
     bytes internal constant LAYER_ZERO_MESSAGE_FEE_REVERT =
         "LayerZero: not enough native for fees";

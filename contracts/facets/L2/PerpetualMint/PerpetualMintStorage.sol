@@ -17,24 +17,22 @@ library PerpetualMintStorage {
         mapping(address collection => uint256 amount) collectionEarnings;
         mapping(address collection => uint256 mintPrice) collectionMintPrice;
         mapping(address collection => uint128 risk) totalRisk;
+        mapping(address collection => uint256 amount) totalActiveTokens;
+        mapping(address collection => EnumerableSet.UintSet tokenIds) activeTokenIds;
         mapping(address collection => mapping(address account => uint256 amount)) accountDeductions;
         mapping(address collection => mapping(address account => uint256 amount)) accountEarnings;
-        mapping(address collection => mapping(uint256 tokenId => uint256 risk)) tokenRisk;
-        //ERC721
-        mapping(address collection => mapping(uint256 tokenId => address account)) escrowedERC721TokenOwner;
-        //ERC1155
-        mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet accounts)) escrowedERC1155TokenOwners;
-        mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint64 risk))) accountTokenRisk;
-        mapping(address collection => mapping(uint256 tokenId => uint64 risk)) totalTokenRisk;
-        mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint256 amount))) escrowedERC1155TokenAmount;
-        //activity storage
-        mapping(address collection => EnumerableSet.UintSet tokenIds) activeTokenIds;
-        mapping(address collection => uint256 amount) totalActiveTokens;
         mapping(address collection => mapping(address account => uint256 amount)) inactiveTokens;
         mapping(address collection => mapping(address account => uint256 amount)) activeTokens;
-        mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet accounts)) activeERC1155TokenOwners;
-        mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint256 amount))) activeERC1155TokenAmount;
-        mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint256 amount))) inactiveERC1155TokenAmount;
+        mapping(address collection => mapping(uint256 tokenId => uint256 risk)) tokenRisk;
+        //ERC721
+        mapping(address collection => mapping(uint256 tokenId => address account)) escrowedERC721Owner;
+        //ERC1155
+        mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet accounts)) escrowedERC1155Owners;
+        mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint64 risk))) accountTokenRisk;
+        mapping(address collection => mapping(uint256 tokenId => uint64 risk)) totalTokenRisk;
+        mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet accounts)) activeERC1155Owners;
+        mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint256 amount))) activeERC1155Tokens;
+        mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint256 amount))) inactiveERC1155Tokens;
     }
 
     bytes32 internal constant STORAGE_SLOT =

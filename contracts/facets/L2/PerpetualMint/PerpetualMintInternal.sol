@@ -165,20 +165,20 @@ abstract contract PerpetualMintInternal is
     ) internal view returns (address owner) {
         s.Layout storage l = s.layout();
 
-        EnumerableSet.AddressSet storage owners = l.activeERC1155TokenOwners[
+        EnumerableSet.AddressSet storage owners = l.activeERC1155Owners[
             collection
         ][tokenId];
 
         uint256 cumulativeRisk;
         uint256 tokenIndex;
         uint256 normalizedValue = randomValue %
-            l.totalERC1155TokenRisk[collection][tokenId];
+            l.totalTokenRisk[collection][tokenId];
 
         do {
             owner = owners.at(tokenIndex);
             cumulativeRisk +=
                 l.accountTokenRisk[collection][tokenId][owner] *
-                l.activeERC1155TokenAmount[collection][tokenId][owner];
+                l.activeERC1155Tokens[collection][tokenId][owner];
             ++tokenIndex;
         } while (cumulativeRisk <= normalizedValue);
     }
@@ -224,7 +224,7 @@ abstract contract PerpetualMintInternal is
         if (result) {
             uint256 tokenId = _selectToken(collection, randomValues[1]);
 
-            address oldOwner = l.escrowedERC721TokenOwner[collection][tokenId];
+            address oldOwner = l.escrowedERC721Owner[collection][tokenId];
 
             _updateAccountEarnings(collection, oldOwner);
             _updateAccountEarnings(collection, account);
@@ -233,7 +233,7 @@ abstract contract PerpetualMintInternal is
             ++l.inactiveTokens[collection][account];
 
             l.activeTokenIds[collection].remove(tokenId);
-            l.escrowedERC721TokenOwner[collection][tokenId] = account;
+            l.escrowedERC721Owner[collection][tokenId] = account;
         }
 
         emit ERC721MintResolved(collection, result);
@@ -297,19 +297,19 @@ abstract contract PerpetualMintInternal is
     ) private {
         s.Layout storage l = s.layout();
 
-        --l.activeERC1155TokenAmount[collection][tokenId][from];
-        ++l.inactiveERC1155TokenAmount[collection][tokenId][to];
+        --l.activeERC1155Tokens[collection][tokenId][from];
+        ++l.inactiveERC1155Tokens[collection][tokenId][to];
 
-        if (!l.escrowedERC1155TokenOwners[collection][tokenId].contains(to)) {
-            l.escrowedERC1155TokenOwners[collection][tokenId].add(from);
+        if (!l.escrowedERC1155Owners[collection][tokenId].contains(to)) {
+            l.escrowedERC1155Owners[collection][tokenId].add(from);
         }
 
-        if (l.activeERC1155TokenAmount[collection][tokenId][from] == 0) {
-            l.activeERC1155TokenOwners[collection][tokenId].remove(from);
+        if (l.activeERC1155Tokens[collection][tokenId][from] == 0) {
+            l.activeERC1155Owners[collection][tokenId].remove(from);
             delete l.accountTokenRisk[collection][tokenId][from];
 
-            if (l.inactiveERC1155TokenAmount[collection][tokenId][from] == 0) {
-                l.escrowedERC1155TokenOwners[collection][tokenId].remove(from);
+            if (l.inactiveERC1155Tokens[collection][tokenId][from] == 0) {
+                l.escrowedERC1155Owners[collection][tokenId].remove(from);
             }
         }
     }

@@ -7,31 +7,16 @@ import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { ERC721BaseInternal } from "@solidstate/contracts/token/ERC721/base/ERC721BaseInternal.sol";
 
+import { IPerpetualMint } from "../../../interfaces/IPerpetualMint.sol";
 import { PerpetualMintStorage as s } from "./PerpetualMintStorage.sol";
 
 abstract contract PerpetualMintInternal is
     VRFConsumerBaseV2,
-    ERC721BaseInternal
+    ERC721BaseInternal,
+    IPerpetualMint
 {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.AddressSet;
-
-    /**
-     * @notice thrown when an incorrent amount of ETH is received
-     */
-    error IncorrectETHReceived();
-
-    /**
-     * @notice thrown when attemping to act for a collection which is not whitelisted
-     */
-    error CollectionNotWhitelisted();
-
-    /**
-     * @notice emitted when the outcome of an attempted mint is resolved
-     * @param collection address of collection that attempted mint is for
-     * @param result success status of mint attempt
-     */
-    event ERC721MintResolved(address collection, bool result);
 
     uint32 internal constant BASIS = 1000000;
 
@@ -279,6 +264,8 @@ abstract contract PerpetualMintInternal is
 
             _assignEscrowedERC1155Asset(oldOwner, account, collection, tokenId);
         }
+
+        emit ERC1155MintResolved(collection, result);
     }
 
     /**

@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.20;
 
-interface IPerpetualMint {
+interface IPerpetualMintInternal {
     /**
      * @notice thrown when an incorrent amount of ETH is received
      */

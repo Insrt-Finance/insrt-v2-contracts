@@ -7,13 +7,13 @@ import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { ERC721BaseInternal } from "@solidstate/contracts/token/ERC721/base/ERC721BaseInternal.sol";
 
-import { IPerpetualMint } from "../../../interfaces/IPerpetualMint.sol";
+import { IPerpetualMintInternal } from "../../../interfaces/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as s } from "./PerpetualMintStorage.sol";
 
 abstract contract PerpetualMintInternal is
     VRFConsumerBaseV2,
     ERC721BaseInternal,
-    IPerpetualMint
+    IPerpetualMintInternal
 {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.AddressSet;

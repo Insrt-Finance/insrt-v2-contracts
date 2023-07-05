@@ -232,6 +232,7 @@ abstract contract PerpetualMintInternal is
             --l.activeTokens[collection][oldOwner];
             ++l.inactiveTokens[collection][account];
 
+            l.activeTokenIds[collection].remove(tokenId);
             l.escrowedERC721TokenOwner[collection][tokenId] = account;
         }
 

@@ -134,7 +134,6 @@ abstract contract PerpetualMintInternal is
         } while (cumulativeRisk <= normalizedValue);
     }
 
-    //TODOL: MODIFY WITH ACTIVE TOKENS
     /**
      * @notice selects the account which will have an ERC1155 reassigned to the successful minter
      * @param collection address of ERC1155 collection
@@ -149,7 +148,7 @@ abstract contract PerpetualMintInternal is
     ) internal view returns (address owner) {
         s.Layout storage l = s.layout();
 
-        EnumerableSet.AddressSet storage owners = l.escrowedERC1155TokenOwners[
+        EnumerableSet.AddressSet storage owners = l.activeERC1155TokenOwners[
             collection
         ][tokenId];
 
@@ -162,7 +161,7 @@ abstract contract PerpetualMintInternal is
             owner = owners.at(tokenIndex);
             cumulativeRisk +=
                 l.accountTokenRisk[collection][tokenId][owner] *
-                l.escrowedERC1155TokenAmount[collection][tokenId][owner];
+                l.activeERC1155TokenAmount[collection][tokenId][owner];
             ++tokenIndex;
         } while (cumulativeRisk <= normalizedValue);
     }
@@ -217,7 +216,7 @@ abstract contract PerpetualMintInternal is
             --l.escrowedTokenAmount[collection][oldOwner];
             ++l.escrowedTokenAmount[collection][account];
 
-            --l.inactiveTokens[collection][oldOwner];
+            --l.activeTokens[collection][oldOwner];
             ++l.inactiveTokens[collection][account];
 
             l.escrowedERC721TokenOwner[collection][tokenId] = account;
@@ -289,6 +288,8 @@ abstract contract PerpetualMintInternal is
 
         --l.escrowedERC1155TokenAmount[collection][tokenId][from];
         ++l.escrowedERC1155TokenAmount[collection][tokenId][to];
+        --l.activeERC1155TokenAmount[collection][tokenId][from];
+        ++l.inactiveERC1155TokenAmount[collection][tokenId][to];
 
         if (l.escrowedERC1155TokenAmount[collection][tokenId][to] == 1) {
             l.escrowedERC1155TokenOwners[collection][tokenId].add(from);
@@ -297,8 +298,8 @@ abstract contract PerpetualMintInternal is
             ][tokenId][from];
         }
 
-        if (l.escrowedERC1155TokenAmount[collection][tokenId][from] == 0) {
-            l.escrowedERC1155TokenOwners[collection][tokenId].remove(from);
+        if (l.activeERC1155TokenAmount[collection][tokenId][from] == 0) {
+            l.activeERC1155TokenOwners[collection][tokenId].remove(from);
 
             delete l.accountTokenRisk[collection][tokenId][from];
         }

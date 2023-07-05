@@ -5,6 +5,7 @@ pragma solidity ^0.8.20;
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
 library PerpetualMintStorage {
+    //note: must add whitelist collections mapping
     struct Layout {
         uint256 protocolFees;
         uint64 id;
@@ -33,6 +34,9 @@ library PerpetualMintStorage {
         mapping(address collection => uint256 amount) totalActiveTokens;
         mapping(address collection => mapping(address account => uint256 amount)) inactiveTokens;
         mapping(address collection => mapping(address account => uint256 amount)) activeTokens;
+        mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet accounts)) activeERC1155TokenOwners;
+        mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint256 amount))) activeERC1155TokenAmount;
+        mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint256 amount))) inactiveERC1155TokenAmount;
     }
 
     bytes32 internal constant STORAGE_SLOT =

@@ -25,7 +25,7 @@ library PerpetualMintStorage {
         //ERC1155
         mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet accounts)) escrowedERC1155TokenOwners;
         mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint64 risk))) accountTokenRisk;
-        mapping(address collection => mapping(uint256 tokenId => uint64 risk)) totalERC1155TokenRisk;
+        mapping(address collection => mapping(uint256 tokenId => uint64 risk)) totalTokenRisk;
         mapping(address collection => mapping(uint256 tokenId => mapping(address account => uint256 amount))) escrowedERC1155TokenAmount;
         //activity storage
         mapping(address collection => EnumerableSet.UintSet tokenIds) activeTokenIds;

@@ -7,26 +7,16 @@ import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { ERC721BaseInternal } from "@solidstate/contracts/token/ERC721/base/ERC721BaseInternal.sol";
 
+import { IPerpetualMintInternal } from "../../../interfaces/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as s } from "./PerpetualMintStorage.sol";
 
 abstract contract PerpetualMintInternal is
     VRFConsumerBaseV2,
-    ERC721BaseInternal
+    ERC721BaseInternal,
+    IPerpetualMintInternal
 {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.AddressSet;
-
-    /**
-     * @notice thrown when an incorrent amount of ETH is received
-     */
-    error IncorrectETHReceived();
-
-    /**
-     * @notice emitted when the outcome of an attempted mint is resolved
-     * @param collection address of collection that attempted mint is for
-     * @param result success status of mint attempt
-     */
-    event ERC721MintResolved(address collection, bool result);
 
     uint32 internal constant BASIS = 1000000;
 
@@ -75,9 +65,20 @@ abstract contract PerpetualMintInternal is
     /**
      * @notice requests random values from Chainlink VRF
      * @param account address calling this function
+     * @param collection address of collection to attempt mint for
      * @param numWords amount of random values to request
      */
-    function _requestRandomWords(address account, uint32 numWords) internal {
+    function _requestRandomWords(
+        address account,
+        address collection,
+        uint32 numWords
+    ) internal {
+        s.Layout storage l = s.layout();
+
+        if (!l.isWhitelisted[collection]) {
+            revert CollectionNotWhitelisted();
+        }
+
         uint256 requestId = VRFCoordinatorV2Interface(VRF).requestRandomWords(
             KEY_HASH,
             SUBSCRIPTION_ID,
@@ -86,7 +87,8 @@ abstract contract PerpetualMintInternal is
             numWords
         );
 
-        s.layout().requestAccount[requestId] = account;
+        l.requestAccount[requestId] = account;
+        l.requestCollection[requestId] = collection;
     }
 
     /**
@@ -106,7 +108,7 @@ abstract contract PerpetualMintInternal is
         l.protocolFees += mintFee;
         l.collectionEarnings[collection] += msg.value - mintFee;
 
-        _requestRandomWords(account, 1);
+        _requestRandomWords(account, collection, 1);
     }
 
     /**
@@ -121,16 +123,14 @@ abstract contract PerpetualMintInternal is
     ) internal view returns (uint256 tokenId) {
         s.Layout storage l = s.layout();
 
-        EnumerableSet.UintSet storage escrowedTokenIds = l.escrowedTokenIds[
-            collection
-        ];
+        EnumerableSet.UintSet storage tokenIds = l.activeTokenIds[collection];
 
         uint256 tokenIndex;
         uint256 cumulativeRisk;
         uint256 normalizedValue = randomValue % l.totalRisk[collection];
 
         do {
-            tokenId = escrowedTokenIds.at(tokenIndex);
+            tokenId = tokenIds.at(tokenIndex);
             cumulativeRisk += l.tokenRisk[collection][tokenId];
             ++tokenIndex;
         } while (cumulativeRisk <= normalizedValue);
@@ -150,20 +150,20 @@ abstract contract PerpetualMintInternal is
     ) internal view returns (address owner) {
         s.Layout storage l = s.layout();
 
-        EnumerableSet.AddressSet storage owners = l.escrowedERC1155TokenOwners[
+        EnumerableSet.AddressSet storage owners = l.activeERC1155Owners[
             collection
         ][tokenId];
 
         uint256 cumulativeRisk;
         uint256 tokenIndex;
         uint256 normalizedValue = randomValue %
-            l.totalERC1155TokenRisk[collection][tokenId];
+            l.totalTokenRisk[collection][tokenId];
 
         do {
             owner = owners.at(tokenIndex);
             cumulativeRisk +=
                 l.accountTokenRisk[collection][tokenId][owner] *
-                l.escrowedERC1155TokenAmount[collection][tokenId][owner];
+                l.activeERC1155Tokens[collection][tokenId][owner];
             ++tokenIndex;
         } while (cumulativeRisk <= normalizedValue);
     }
@@ -179,7 +179,7 @@ abstract contract PerpetualMintInternal is
         s.Layout storage l = s.layout();
         risk =
             l.totalRisk[collection] /
-            uint128(l.totalEscrowedTokenAmount[collection]);
+            uint128(l.totalActiveTokens[collection]);
     }
 
     /**
@@ -200,6 +200,7 @@ abstract contract PerpetualMintInternal is
         bool result = _averageCollectionRisk(collection) >
             _normalizeValue(uint128(randomValues[0]), BASIS);
 
+        //TODO: update based on consolation spec
         if (!result) {
             _mint(account, l.id);
             ++l.id;
@@ -208,15 +209,16 @@ abstract contract PerpetualMintInternal is
         if (result) {
             uint256 tokenId = _selectToken(collection, randomValues[1]);
 
-            address oldOwner = l.escrowedERC721TokenOwner[collection][tokenId];
+            address oldOwner = l.escrowedERC721Owner[collection][tokenId];
 
             _updateAccountEarnings(collection, oldOwner);
             _updateAccountEarnings(collection, account);
 
-            --l.escrowedTokenAmount[oldOwner][collection];
-            ++l.escrowedTokenAmount[account][collection];
+            --l.activeTokens[collection][oldOwner];
+            ++l.inactiveTokens[collection][account];
 
-            l.escrowedERC721TokenOwner[collection][tokenId] = account;
+            l.activeTokenIds[collection].remove(tokenId);
+            l.escrowedERC721Owner[collection][tokenId] = account;
         }
 
         emit ERC721MintResolved(collection, result);
@@ -240,6 +242,7 @@ abstract contract PerpetualMintInternal is
         bool result = _averageCollectionRisk(collection) >
             _normalizeValue(uint128(randomValues[0]), BASIS);
 
+        //TODO: update based on consolation spec
         if (!result) {
             _mint(account, l.id);
             ++l.id;
@@ -261,6 +264,8 @@ abstract contract PerpetualMintInternal is
 
             _assignEscrowedERC1155Asset(oldOwner, account, collection, tokenId);
         }
+
+        emit ERC1155MintResolved(collection, result);
     }
 
     /**
@@ -279,23 +284,20 @@ abstract contract PerpetualMintInternal is
     ) private {
         s.Layout storage l = s.layout();
 
-        --l.escrowedTokenAmount[collection][from];
-        ++l.escrowedTokenAmount[collection][to];
+        --l.activeERC1155Tokens[collection][tokenId][from];
+        ++l.inactiveERC1155Tokens[collection][tokenId][to];
 
-        --l.escrowedERC1155TokenAmount[collection][tokenId][from];
-        ++l.escrowedERC1155TokenAmount[collection][tokenId][to];
-
-        if (l.escrowedERC1155TokenAmount[collection][tokenId][to] == 1) {
-            l.escrowedERC1155TokenOwners[collection][tokenId].add(from);
-            l.accountTokenRisk[collection][tokenId][to] = l.accountTokenRisk[
-                collection
-            ][tokenId][from];
+        if (!l.escrowedERC1155Owners[collection][tokenId].contains(to)) {
+            l.escrowedERC1155Owners[collection][tokenId].add(from);
         }
 
-        if (l.escrowedERC1155TokenAmount[collection][tokenId][from] == 0) {
-            l.escrowedERC1155TokenOwners[collection][tokenId].remove(from);
-
+        if (l.activeERC1155Tokens[collection][tokenId][from] == 0) {
+            l.activeERC1155Owners[collection][tokenId].remove(from);
             delete l.accountTokenRisk[collection][tokenId][from];
+
+            if (l.inactiveERC1155Tokens[collection][tokenId][from] == 0) {
+                l.escrowedERC1155Owners[collection][tokenId].remove(from);
+            }
         }
     }
 
@@ -310,12 +312,12 @@ abstract contract PerpetualMintInternal is
     ) private {
         s.Layout storage l = s.layout();
 
-        uint256 escrowedTokens = l.escrowedTokenAmount[account][collection];
+        uint256 activeTokens = l.activeTokens[collection][account];
 
-        if (escrowedTokens != 0) {
+        if (activeTokens != 0) {
             l.accountEarnings[collection][account] +=
-                ((l.collectionEarnings[collection] * escrowedTokens) /
-                    l.totalEscrowedTokenAmount[collection]) -
+                ((l.collectionEarnings[collection] * activeTokens) /
+                    l.totalActiveTokens[collection]) -
                 l.accountDeductions[collection][account];
 
             l.accountDeductions[collection][account] = l.accountEarnings[
@@ -378,6 +380,6 @@ abstract contract PerpetualMintInternal is
     function _cumulativeBasis(
         address collection
     ) private view returns (uint256 basis) {
-        basis = s.layout().totalEscrowedTokenAmount[collection] * BASIS;
+        basis = s.layout().totalActiveTokens[collection] * BASIS;
     }
 }

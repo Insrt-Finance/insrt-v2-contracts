@@ -19,15 +19,6 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         _setOwner(msg.sender);
     }
 
-    /// @inheritdoc IAssetHandler
-    function getLayerZeroEndpoint()
-        external
-        view
-        returns (address layerZeroEndpoint)
-    {
-        return _getLayerZeroEndpoint();
-    }
-
     /// @inheritdoc IL1AssetHandler
     function onERC1155BatchReceived(
         address,

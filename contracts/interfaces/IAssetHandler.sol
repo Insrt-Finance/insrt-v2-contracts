@@ -10,13 +10,6 @@ interface IAssetHandler is IAssetHandlerEvents {
     /// @notice Thrown when the length of the `tokenIds` array and the `amounts` array are not equal in the `stakeERC1155Assets` & `unstakeERC1155Assets` functions.
     error ERC1155TokenIdsAndAmountsLengthMismatch();
 
-    /// @notice Returns the current LayerZero endpoint address for this contract.
-    /// @return layerZeroEndpoint Address of the LayerZero endpoint.
-    function getLayerZeroEndpoint()
-        external
-        view
-        returns (address layerZeroEndpoint);
-
     /// @notice Sets the LayerZero endpoint address for this contract.
     /// @dev Only the contract owner can call this function.
     /// @param layerZeroEndpoint Address of the LayerZero endpoint.

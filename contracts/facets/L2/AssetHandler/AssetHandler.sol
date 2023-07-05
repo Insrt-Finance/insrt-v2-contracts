@@ -19,15 +19,6 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     }
 
     /// @inheritdoc IAssetHandler
-    function getLayerZeroEndpoint()
-        external
-        view
-        returns (address layerZeroEndpoint)
-    {
-        return _getLayerZeroEndpoint();
-    }
-
-    /// @inheritdoc IAssetHandler
     function setLayerZeroEndpoint(
         address layerZeroEndpoint
     ) external onlyOwner {

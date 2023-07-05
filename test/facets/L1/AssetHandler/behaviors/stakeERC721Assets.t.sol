@@ -201,7 +201,7 @@ contract L1AssetHandler_stakeERC721Assets is
 
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
-        l1AssetHandler.stakeERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE / 2 }( // insufficient message fee
+        l1AssetHandler.stakeERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE / 3 }( // insufficient message fee
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds

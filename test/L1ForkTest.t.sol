@@ -8,7 +8,7 @@ import "forge-std/Test.sol";
 /// @dev Base contract for L1 forking test cases.
 abstract contract L1ForkTest is Test {
     /// @dev LayerZero message fee.
-    uint256 internal constant LAYER_ZERO_MESSAGE_FEE = 0.001 ether;
+    uint256 internal constant LAYER_ZERO_MESSAGE_FEE = 0.002 ether;
 
     /// @dev Fetches and stores the Mainnet RPC URL from a local .env file using the passed string as a key.
     string internal MAINNET_RPC_URL = vm.envString("MAINNET_RPC_URL");

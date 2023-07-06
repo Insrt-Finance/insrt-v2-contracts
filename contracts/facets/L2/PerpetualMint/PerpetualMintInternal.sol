@@ -312,12 +312,13 @@ abstract contract PerpetualMintInternal is
     ) private {
         s.Layout storage l = s.layout();
 
-        uint256 activeTokens = l.activeTokens[collection][account];
+        uint256 totalAccountRisk = l.totalAccountRisk[collection][account];
 
-        if (activeTokens != 0) {
+        if (totalAccountRisk != 0) {
             l.accountEarnings[collection][account] +=
-                ((l.collectionEarnings[collection] * activeTokens) /
-                    l.totalActiveTokens[collection]) -
+                ((l.collectionEarnings[collection] *
+                    l.totalAccountRisk[collection][account]) /
+                    l.totalRisk[collection]) -
                 l.accountDeductions[collection][account];
 
             l.accountDeductions[collection][account] = l.accountEarnings[

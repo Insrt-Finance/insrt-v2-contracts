@@ -13,7 +13,7 @@ install:
 update:; forge update
 
 # Build & test
-build  :; forge build
+build  :; forge build --sizes
 .PHONY: test
 test:
 	forge test

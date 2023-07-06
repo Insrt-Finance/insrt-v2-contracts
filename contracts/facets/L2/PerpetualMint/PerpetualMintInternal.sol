@@ -5,6 +5,7 @@ pragma solidity ^0.8.20;
 import { VRFConsumerBaseV2 } from "@chainlink/vrf/VRFConsumerBaseV2.sol";
 import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV2Interface.sol";
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
+import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 import { ERC721BaseInternal } from "@solidstate/contracts/token/ERC721/base/ERC721BaseInternal.sol";
 
 import { IPerpetualMintInternal } from "../../../interfaces/IPerpetualMintInternal.sol";
@@ -17,6 +18,7 @@ abstract contract PerpetualMintInternal is
 {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.AddressSet;
+    using AddressUtils for address payable;
 
     uint32 internal constant BASIS = 1000000000;
 
@@ -108,60 +110,75 @@ abstract contract PerpetualMintInternal is
     }
 
     /**
-     * @notice selects the token which was won after a successfull mint attempt
-     * @param collection address of collection
-     * @param randomValue seed used to select the tokenId
-     * @return tokenId id of won token
+     * @notice claims all earnings across collections of an account
+     * @param account address of account
      */
-    function _selectToken(
-        address collection,
-        uint128 randomValue
-    ) internal view returns (uint256 tokenId) {
-        s.Layout storage l = s.layout();
+    function _claimAllEarnings(address account) internal {
+        EnumerableSet.AddressSet storage collections = s
+            .layout()
+            .activeCollections;
+        uint256 length = collections.length();
 
-        EnumerableSet.UintSet storage tokenIds = l.activeTokenIds[collection];
-
-        uint256 tokenIndex;
-        uint256 cumulativeRisk;
-        uint256 normalizedValue = randomValue % l.totalRisk[collection];
-
-        do {
-            tokenId = tokenIds.at(tokenIndex);
-            cumulativeRisk += l.tokenRisk[collection][tokenId];
-            ++tokenIndex;
-        } while (cumulativeRisk <= normalizedValue);
+        unchecked {
+            for (uint256 i; i < length; ++i) {
+                _claimEarnings(account, collections.at(i));
+            }
+        }
     }
 
     /**
-     * @notice selects the account which will have an ERC1155 reassigned to the successful minter
-     * @param collection address of ERC1155 collection
-     * @param tokenId id of token
-     * @param randomValue random value used for selection
-     * @return owner address of selected account
+     * @notice claims all earnings of a collection for an account
+     * @param account address of acount
+     * @param collection address of collection
      */
-    function _selectERC1155Owner(
-        address collection,
-        uint256 tokenId,
-        uint64 randomValue
-    ) internal view returns (address owner) {
+    function _claimEarnings(address account, address collection) internal {
         s.Layout storage l = s.layout();
 
-        EnumerableSet.AddressSet storage owners = l.activeERC1155Owners[
-            collection
-        ][tokenId];
+        _updateAccountEarnings(collection, account);
+        uint256 earnings = l.accountEarnings[collection][account];
 
-        uint256 cumulativeRisk;
-        uint256 tokenIndex;
-        uint256 normalizedValue = randomValue %
-            l.totalTokenRisk[collection][tokenId];
+        delete l.accountEarnings[collection][account];
+        payable(account).sendValue(earnings);
+    }
 
-        do {
-            owner = owners.at(tokenIndex);
-            cumulativeRisk +=
-                l.accountTokenRisk[collection][tokenId][owner] *
-                l.activeERC1155Tokens[collection][tokenId][owner];
-            ++tokenIndex;
-        } while (cumulativeRisk <= normalizedValue);
+    /**
+     * @notice calculates the available earnings for an account across all collections
+     * @param account address of acount
+     * @return allEarnings amount of available earnings across all collections
+     */
+    function _allAvailableEarnings(
+        address account
+    ) internal view returns (uint256 allEarnings) {
+        EnumerableSet.AddressSet storage collections = s
+            .layout()
+            .activeCollections;
+        uint256 length = collections.length();
+
+        unchecked {
+            for (uint256 i; i < length; ++i) {
+                allEarnings += _availableEarnings(account, collections.at(i));
+            }
+        }
+    }
+
+    /**
+     * @notice calculates the available earnings for an account for a given collection
+     * @param account address of acount
+     * @param collection address of collection
+     * @return earnings amount of available earnings
+     */
+    function _availableEarnings(
+        address account,
+        address collection
+    ) internal view returns (uint256 earnings) {
+        s.Layout storage l = s.layout();
+
+        earnings =
+            l.accountEarnings[collection][account] +
+            ((l.collectionEarnings[collection] *
+                l.totalAccountRisk[collection][account]) /
+                l.totalRisk[collection]) -
+            l.accountDeductions[collection][account];
     }
 
     /**
@@ -325,6 +342,63 @@ abstract contract PerpetualMintInternal is
                 collection
             ];
         }
+    }
+
+    /**
+     * @notice selects the token which was won after a successfull mint attempt
+     * @param collection address of collection
+     * @param randomValue seed used to select the tokenId
+     * @return tokenId id of won token
+     */
+    function _selectToken(
+        address collection,
+        uint128 randomValue
+    ) private view returns (uint256 tokenId) {
+        s.Layout storage l = s.layout();
+
+        EnumerableSet.UintSet storage tokenIds = l.activeTokenIds[collection];
+
+        uint256 tokenIndex;
+        uint256 cumulativeRisk;
+        uint256 normalizedValue = randomValue % l.totalRisk[collection];
+
+        do {
+            tokenId = tokenIds.at(tokenIndex);
+            cumulativeRisk += l.tokenRisk[collection][tokenId];
+            ++tokenIndex;
+        } while (cumulativeRisk <= normalizedValue);
+    }
+
+    /**
+     * @notice selects the account which will have an ERC1155 reassigned to the successful minter
+     * @param collection address of ERC1155 collection
+     * @param tokenId id of token
+     * @param randomValue random value used for selection
+     * @return owner address of selected account
+     */
+    function _selectERC1155Owner(
+        address collection,
+        uint256 tokenId,
+        uint64 randomValue
+    ) private view returns (address owner) {
+        s.Layout storage l = s.layout();
+
+        EnumerableSet.AddressSet storage owners = l.activeERC1155Owners[
+            collection
+        ][tokenId];
+
+        uint256 cumulativeRisk;
+        uint256 tokenIndex;
+        uint256 normalizedValue = randomValue %
+            l.totalTokenRisk[collection][tokenId];
+
+        do {
+            owner = owners.at(tokenIndex);
+            cumulativeRisk +=
+                l.accountTokenRisk[collection][tokenId][owner] *
+                l.activeERC1155Tokens[collection][tokenId][owner];
+            ++tokenIndex;
+        } while (cumulativeRisk <= normalizedValue);
     }
 
     /**

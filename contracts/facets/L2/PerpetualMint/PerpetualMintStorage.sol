@@ -12,7 +12,6 @@ library PerpetualMintStorage {
         EnumerableSet.AddressSet activeCollections; //could possibly convert to mapping specific to account
         mapping(uint256 requestId => address account) requestAccount;
         mapping(uint256 requestId => address collection) requestCollection;
-        mapping(address collection => bool status) isWhitelisted; // is this needed?
         mapping(address collection => bool isERC721) collectionType;
         mapping(address collection => uint256 amount) collectionEarnings;
         mapping(address collection => uint256 mintPrice) collectionMintPrice;

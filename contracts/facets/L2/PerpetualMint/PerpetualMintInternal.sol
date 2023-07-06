@@ -18,7 +18,7 @@ abstract contract PerpetualMintInternal is
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.AddressSet;
 
-    uint32 internal constant BASIS = 1000000;
+    uint32 internal constant BASIS = 1000000000;
 
     bytes32 private immutable KEY_HASH;
     address private immutable VRF;
@@ -74,10 +74,6 @@ abstract contract PerpetualMintInternal is
         uint32 numWords
     ) internal {
         s.Layout storage l = s.layout();
-
-        if (!l.isWhitelisted[collection]) {
-            revert CollectionNotWhitelisted();
-        }
 
         uint256 requestId = VRFCoordinatorV2Interface(VRF).requestRandomWords(
             KEY_HASH,

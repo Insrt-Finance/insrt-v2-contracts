@@ -23,6 +23,7 @@ abstract contract PerpetualMintInternal is
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.AddressSet;
+    using AddressUtils for address payable;
 
     /// @dev denominator used in percentage calculations
     uint32 internal constant BASIS = 1000000000;

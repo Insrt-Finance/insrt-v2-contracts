@@ -5,6 +5,7 @@ pragma solidity ^0.8.21;
 import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV2Interface.sol";
 import { VRFConsumerBaseV2 } from "@chainlink/vrf/VRFConsumerBaseV2.sol";
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
+import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 import { ERC721BaseInternal } from "@solidstate/contracts/token/ERC721/base/ERC721BaseInternal.sol";
 import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 
@@ -23,6 +24,7 @@ abstract contract PerpetualMintInternal is
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.AddressSet;
+    using AddressUtils for address payable;
 
     /// @dev denominator used in percentage calculations
     uint32 internal constant BASIS = 1000000000;

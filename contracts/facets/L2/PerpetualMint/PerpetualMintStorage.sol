@@ -9,6 +9,7 @@ library PerpetualMintStorage {
         uint256 protocolFees;
         uint64 id;
         uint32 mintFeeBP;
+        EnumerableSet.AddressSet activeCollections; //could possibly convert to mapping specific to account
         mapping(uint256 requestId => address account) requestAccount;
         mapping(uint256 requestId => address collection) requestCollection;
         mapping(address collection => bool isERC721) collectionType;

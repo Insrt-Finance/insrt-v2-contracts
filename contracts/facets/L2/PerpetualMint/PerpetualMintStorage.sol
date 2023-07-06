@@ -5,14 +5,13 @@ pragma solidity ^0.8.20;
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
 library PerpetualMintStorage {
-    //note: must add whitelist collections mapping
     struct Layout {
         uint256 protocolFees;
         uint64 id;
         uint32 mintFeeBP;
         mapping(uint256 requestId => address account) requestAccount;
         mapping(uint256 requestId => address collection) requestCollection;
-        mapping(address collection => bool status) isWhitelisted;
+        mapping(address collection => bool status) isWhitelisted; // is this needed?
         mapping(address collection => bool isERC721) collectionType;
         mapping(address collection => uint256 amount) collectionEarnings;
         mapping(address collection => uint256 mintPrice) collectionMintPrice;
@@ -23,6 +22,7 @@ library PerpetualMintStorage {
         mapping(address collection => mapping(address account => uint256 amount)) accountEarnings;
         mapping(address collection => mapping(address account => uint256 amount)) inactiveTokens;
         mapping(address collection => mapping(address account => uint256 amount)) activeTokens;
+        mapping(address collection => mapping(address account => uint256 amount)) totalAccountRisk;
         mapping(address collection => mapping(uint256 tokenId => uint256 risk)) tokenRisk;
         //ERC721
         mapping(address collection => mapping(uint256 tokenId => address account)) escrowedERC721Owner;

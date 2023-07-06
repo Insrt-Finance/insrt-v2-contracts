@@ -9,11 +9,6 @@ interface IPerpetualMintInternal {
     error IncorrectETHReceived();
 
     /**
-     * @notice thrown when attemping to act for a collection which is not whitelisted
-     */
-    error CollectionNotWhitelisted();
-
-    /**
      * @notice emitted when the outcome of an attempted mint is resolved
      * @param collection address of collection that attempted mint is for
      * @param result success status of mint attempt

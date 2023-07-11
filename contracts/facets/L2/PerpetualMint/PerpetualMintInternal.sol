@@ -205,7 +205,7 @@ abstract contract PerpetualMintInternal is
         address account,
         address collection,
         uint256[] memory randomWords
-    ) private {
+    ) internal {
         s.Layout storage l = s.layout();
 
         uint128[2] memory randomValues = _chunk256to128(randomWords[0]);
@@ -247,7 +247,7 @@ abstract contract PerpetualMintInternal is
         address account,
         address collection,
         uint256[] memory randomWords
-    ) private {
+    ) internal {
         s.Layout storage l = s.layout();
 
         uint128[2] memory randomValues = _chunk256to128(randomWords[0]);

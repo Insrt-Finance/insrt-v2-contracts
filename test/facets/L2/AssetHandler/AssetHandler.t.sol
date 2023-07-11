@@ -5,16 +5,13 @@ pragma solidity 0.8.20;
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
 import { L2AssetHandlerHelper } from "./AssetHandlerHelper.t.sol";
-import { L2PerpetualMintTest } from "../../../diamonds/L2/PerpetualMint.t.sol";
+import { L2CoreTest } from "../../../diamonds/L2/Core.t.sol";
 import { IL2AssetHandler } from "../../../../contracts/facets/L2/AssetHandler/IAssetHandler.sol";
 import { IAssetHandlerEvents } from "../../../../contracts/interfaces/IAssetHandlerEvents.sol";
 
 /// @title L2AssetHandlerTest
-/// @dev L2AssetHandler test helper contract. Configures L2AssetHandler as a facet of the L2PerpetualMint diamond.
-abstract contract L2AssetHandlerTest is
-    IAssetHandlerEvents,
-    L2PerpetualMintTest
-{
+/// @dev L2AssetHandler test helper contract. Configures L2AssetHandler as a facet of the L2Core diamond.
+abstract contract L2AssetHandlerTest is IAssetHandlerEvents, L2CoreTest {
     IL2AssetHandler public l2AssetHandler;
 
     /// @dev The LayerZero Arbitrum endpoint address.
@@ -61,16 +58,16 @@ abstract contract L2AssetHandlerTest is
 
         boredApeYachtClubTokenIds[0] = 1;
 
-        l2AssetHandler = IL2AssetHandler(address(l2PerpetualMintDiamond));
+        l2AssetHandler = IL2AssetHandler(address(l2CoreDiamond));
     }
 
-    /// @dev Initializes L2AssetHandler as a facet by executing a diamond cut on the L2PerpetualMintDiamond.
+    /// @dev Initializes L2AssetHandler as a facet by executing a diamond cut on the L2CoreDiamond.
     function initL2AssetHandler() private {
         L2AssetHandlerHelper l2AssetHandlerHelper = new L2AssetHandlerHelper();
 
         ISolidStateDiamond.FacetCut[] memory facetCuts = l2AssetHandlerHelper
             .getFacetCuts();
 
-        l2PerpetualMintDiamond.diamondCut(facetCuts, address(0), "");
+        l2CoreDiamond.diamondCut(facetCuts, address(0), "");
     }
 }

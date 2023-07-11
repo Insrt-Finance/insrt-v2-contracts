@@ -8,16 +8,13 @@ import "@solidstate/contracts/interfaces/IERC721.sol";
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
 import { L1AssetHandlerHelper } from "./AssetHandlerHelper.t.sol";
-import { L1PerpetualMintTest } from "../../../diamonds/L1/PerpetualMint.t.sol";
+import { L1CoreTest } from "../../../diamonds/L1/Core.t.sol";
 import { IL1AssetHandler } from "../../../../contracts/facets/L1/AssetHandler/IAssetHandler.sol";
 import { IAssetHandlerEvents } from "../../../../contracts/interfaces/IAssetHandlerEvents.sol";
 
 /// @title L1AssetHandlerTest
-/// @dev L1AssetHandler test helper contract. Configures L1AssetHandler as a facet of the L1PerpetualMint diamond.
-abstract contract L1AssetHandlerTest is
-    IAssetHandlerEvents,
-    L1PerpetualMintTest
-{
+/// @dev L1AssetHandler test helper contract. Configures L1AssetHandler as a facet of the L1Core diamond.
+abstract contract L1AssetHandlerTest is IAssetHandlerEvents, L1CoreTest {
     IERC1155 public bongBears;
     IERC721 public boredApeYachtClub;
     IL1AssetHandler public l1AssetHandler;
@@ -70,16 +67,16 @@ abstract contract L1AssetHandlerTest is
 
         boredApeYachtClubTokenIds[0] = 0;
 
-        l1AssetHandler = IL1AssetHandler(address(l1PerpetualMintDiamond));
+        l1AssetHandler = IL1AssetHandler(address(l1CoreDiamond));
     }
 
-    /// @dev Initializes L1AssetHandler as a facet by executing a diamond cut on the L1PerpetualMintDiamond.
+    /// @dev Initializes L1AssetHandler as a facet by executing a diamond cut on the L1CoreDiamond.
     function initL1AssetHandler() private {
         L1AssetHandlerHelper l1AssetHandlerHelper = new L1AssetHandlerHelper();
 
         ISolidStateDiamond.FacetCut[] memory facetCuts = l1AssetHandlerHelper
             .getFacetCuts();
 
-        l1PerpetualMintDiamond.diamondCut(facetCuts, address(0), "");
+        l1CoreDiamond.diamondCut(facetCuts, address(0), "");
     }
 }

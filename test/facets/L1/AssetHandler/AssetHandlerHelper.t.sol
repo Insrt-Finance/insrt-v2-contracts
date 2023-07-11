@@ -22,7 +22,7 @@ contract L1AssetHandlerHelper {
         l1AssetHandlerImplementation = new L1AssetHandler();
     }
 
-    /// @dev Provides the facet cuts to be used for setting up L1AssetHandler as a facet of the L1PerpetualMint diamond.
+    /// @dev Provides the facet cuts to be used for setting up L1AssetHandler as a facet of the L1Core diamond.
     function getFacetCuts()
         public
         view

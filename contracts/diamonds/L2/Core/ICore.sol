@@ -4,8 +4,8 @@ pragma solidity 0.8.20;
 
 import { IL2AssetHandler } from "../../../facets/L2/AssetHandler/IAssetHandler.sol";
 
-/// @title IL2PerpetualMint
-/// @dev The L2 Perpetual Mint diamond interface.
-interface IL2PerpetualMint is IL2AssetHandler {
+/// @title IL2Core
+/// @dev The L2 Core diamond interface.
+interface IL2Core is IL2AssetHandler {
 
 }

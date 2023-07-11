@@ -19,7 +19,7 @@ contract L2AssetHandlerHelper {
         l2AssetHandlerImplementation = new L2AssetHandler();
     }
 
-    /// @dev Provides the facet cuts to be used for setting up L2AssetHandler as a facet of the L2PerpetualMint diamond.
+    /// @dev Provides the facet cuts to be used for setting up L2AssetHandler as a facet of the L2Core diamond.
     function getFacetCuts()
         public
         view

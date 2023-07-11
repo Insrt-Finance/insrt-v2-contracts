@@ -2,9 +2,10 @@
 
 pragma solidity ^0.8.20;
 
+import { IPerpetualMint } from "../../../interfaces/IPerpetualMint.sol";
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 
-contract PerpetualMint is PerpetualMintInternal {
+contract PerpetualMint is PerpetualMintInternal, IPerpetualMint {
     constructor(
         bytes32 keyHash,
         address vrf,
@@ -34,10 +35,52 @@ contract PerpetualMint is PerpetualMintInternal {
     }
 
     /**
-     * @notice attempts a mint for the msg.sender from a collection
-     * @param collection address of collection for mint attempt
+     * @inheritdoc IPerpetualMint
      */
     function attemptMint(address collection) external {
         _attemptMint(msg.sender, collection);
+    }
+
+    /**
+     * @inheritdoc IPerpetualMint
+     */
+    function claimAllEarnings() external {
+        _claimAllEarnings(msg.sender);
+    }
+
+    /**
+     * @inheritdoc IPerpetualMint
+     */
+    function claimEarnings(address collection) external {
+        _claimEarnings(msg.sender, collection);
+    }
+
+    /**
+     * @inheritdoc IPerpetualMint
+     */
+    function allAvailableEarnings()
+        external
+        view
+        returns (uint256 allEarnings)
+    {
+        allEarnings = _allAvailableEarnings(msg.sender);
+    }
+
+    /**
+     * @inheritdoc IPerpetualMint
+     */
+    function availableEarnings(
+        address collection
+    ) external view returns (uint256 earnings) {
+        earnings = _availableEarnings(msg.sender, collection);
+    }
+
+    /**
+     * @inheritdoc IPerpetualMint
+     */
+    function averageCollectionRisk(
+        address collection
+    ) external view returns (uint128 risk) {
+        risk = _averageCollectionRisk(collection);
     }
 }

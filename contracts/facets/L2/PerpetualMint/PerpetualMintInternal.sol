@@ -182,7 +182,7 @@ abstract contract PerpetualMintInternal is
     }
 
     /**
-     * @notice calculations the weighted collection-wide risk of an ERC721 collection
+     * @notice calculations the weighted collection-wide risk of a collection
      * @param collection address of collection
      * @return risk value of collection-wide risk
      */
@@ -447,6 +447,7 @@ abstract contract PerpetualMintInternal is
      * @notice returns the product of the amount of assets of a collction with the BASIS
      * @param collection address of collection
      * @return basis product of the amoutn of assets with the basis
+     * Note: May not need
      */
     function _cumulativeBasis(
         address collection

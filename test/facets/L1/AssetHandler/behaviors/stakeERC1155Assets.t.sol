@@ -210,7 +210,7 @@ contract L1AssetHandler_stakeERC1155Assets is
 
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
-        l1AssetHandler.stakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE / 2 }( // insufficient message fee
+        l1AssetHandler.stakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE / 3 }( // insufficient message fee
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,

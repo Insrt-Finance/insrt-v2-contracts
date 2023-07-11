@@ -32,8 +32,8 @@ abstract contract PerpetualMintInternal is
         bytes32 keyHash,
         address vrfCoordinator,
         uint64 subscriptionId,
-        uint16 minConfirmations,
-        uint32 callbackGasLimit
+        uint32 callbackGasLimit,
+        uint16 minConfirmations
     ) VRFConsumerBaseV2(vrfCoordinator) {
         KEY_HASH = keyHash;
         VRF = vrfCoordinator;

@@ -2,8 +2,6 @@
 
 pragma solidity ^0.8.20;
 
-import { VRFConsumerBaseV2 } from "@chainlink/vrf/VRFConsumerBaseV2.sol";
-
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 
 contract PerpetualMint is PerpetualMintInternal {
@@ -11,15 +9,15 @@ contract PerpetualMint is PerpetualMintInternal {
         bytes32 keyHash,
         address vrf,
         uint64 subscriptionId,
-        uint16 minConfirmations,
-        uint32 callbackGasLimit
+        uint32 callbackGasLimit,
+        uint16 minConfirmations
     )
         PerpetualMintInternal(
             keyHash,
             vrf,
             subscriptionId,
-            minConfirmations,
-            callbackGasLimit
+            callbackGasLimit,
+            minConfirmations
         )
     {}
 

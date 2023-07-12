@@ -22,12 +22,21 @@ abstract contract PerpetualMintInternal is
     using EnumerableSet for EnumerableSet.AddressSet;
     using AddressUtils for address payable;
 
+    /// @dev denominator used in percentage calculations
     uint32 internal constant BASIS = 1000000000;
 
+    /// @dev see: https://docs.chain.link/vrf/v2/subscription#set-up-your-contract-and-request
+    /// @dev Chainlink identifier for prioritizing transactions
+    /// different keyhashes have different gas prices thus different priorities
     bytes32 private immutable KEY_HASH;
+    /// @dev address of Cchainlink VRFCoordinatorV2 contract
     address private immutable VRF;
+    /// @dev id of Chainlink subscription to VRF for PerpetualMint contract
+    /// TODO: identify whether this needs to be updated thus be stored in storage
     uint64 private immutable SUBSCRIPTION_ID;
+    /// @dev maximum amount of gas a user is willing to pay for completing the callback VRF function
     uint32 private immutable CALLBACK_GAS_LIMIT;
+    /// @dev number of block confirmations the VRF service will wait to respond
     uint16 private immutable MIN_CONFIRMATIONS;
 
     constructor(
@@ -339,6 +348,8 @@ abstract contract PerpetualMintInternal is
         uint256 cumulativeRisk;
         uint256 normalizedValue = randomValue % l.totalRisk[collection];
 
+        /// @dev identifies the token index at which the the cumulative risk is less than
+        /// the normalized value, in order to select the tokenId at the index
         do {
             tokenId = tokenIds.at(tokenIndex);
             cumulativeRisk += l.tokenRisk[collection][tokenId];
@@ -367,6 +378,8 @@ abstract contract PerpetualMintInternal is
         uint256 normalizedValue = randomValue %
             l.totalTokenRisk[collection][tokenId];
 
+        /// @dev identifies the owner index at which the the cumulative risk is less than
+        /// the normalized value, in order to select the owner at the index
         do {
             owner = owners.at(tokenIndex);
             cumulativeRisk +=

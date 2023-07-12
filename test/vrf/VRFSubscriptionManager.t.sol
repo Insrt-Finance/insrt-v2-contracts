@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.20;
 
-import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV2Interface.sol";
-import { LinkTokenInterface } from "@chainlink/interfaces/LinkTokenInterface.sol";
 import { Ownable } from "@solidstate/contracts/access/ownable/Ownable.sol";
+import { LinkTokenInterface } from "@chainlink/interfaces/LinkTokenInterface.sol";
+import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV2Interface.sol";
 
 contract VRFSubscriptionManager is Ownable {
     address public immutable VRF;
@@ -19,14 +19,30 @@ contract VRFSubscriptionManager is Ownable {
     }
 
     /**
-     * @notice Check to see if there exists a request commitment consumers
-     * for all consumers and keyhashes for a given sub.
+     * @notice Request subscription owner transfer.
      * @param subId - ID of the subscription
-     * @return true if there exists at least one unfulfilled request for the subscription, false
-     * otherwise.
+     * @dev will revert if original owner of subId has
+     * not requested that msg.sender become the new owner.
      */
-    function pendingRequestExists(uint64 subId) external view returns (bool) {
-        return VRFCoordinatorV2Interface(VRF).pendingRequestExists(subId);
+    function acceptSubscriptionOwnerTransfer(uint64 subId) external onlyOwner {
+        VRFCoordinatorV2Interface(VRF).acceptSubscriptionOwnerTransfer(subId);
+    }
+
+    /**
+     * @notice Add a consumer to a VRF subscription.
+     * @param subId - ID of the subscription
+     * @param consumer - New consumer which can use the subscription
+     */
+    function addConsumer(uint64 subId, address consumer) external onlyOwner {
+        VRFCoordinatorV2Interface(VRF).addConsumer(subId, consumer);
+    }
+
+    /**
+     * @notice Cancel a subscription and send remaining link funds to treasury
+     * @param subId - ID of the subscription
+     */
+    function cancelSubscription(uint64 subId) external onlyOwner {
+        VRFCoordinatorV2Interface(VRF).cancelSubscription(subId, TREASURY);
     }
 
     /**
@@ -35,14 +51,6 @@ contract VRFSubscriptionManager is Ownable {
      */
     function createSubscription() external onlyOwner returns (uint64 subId) {
         subId = VRFCoordinatorV2Interface(VRF).createSubscription();
-    }
-
-    /**
-     * @notice Cancel a subscription and send remiaining link funds to treasury
-     * @param subId - ID of the subscription
-     */
-    function cancelSubscription(uint64 subId) external onlyOwner {
-        VRFCoordinatorV2Interface(VRF).cancelSubscription(subId, TREASURY);
     }
 
     /**
@@ -56,24 +64,6 @@ contract VRFSubscriptionManager is Ownable {
             amount,
             abi.encode(subId)
         );
-    }
-
-    /**
-     * @notice Add a consumer to a VRF subscription.
-     * @param subId - ID of the subscription
-     * @param consumer - New consumer which can use the subscription
-     */
-    function addConsumer(uint64 subId, address consumer) external onlyOwner {
-        VRFCoordinatorV2Interface(VRF).addConsumer(subId, consumer);
-    }
-
-    /**
-     * @notice Remove a consumer from a VRF subscription.
-     * @param subId - ID of the subscription
-     * @param consumer - Consumer to remove from the subscription
-     */
-    function removeConsumer(uint64 subId, address consumer) external onlyOwner {
-        VRFCoordinatorV2Interface(VRF).removeConsumer(subId, consumer);
     }
 
     /**
@@ -100,6 +90,26 @@ contract VRFSubscriptionManager is Ownable {
     }
 
     /**
+     * @notice Check to see if there exists a request commitment consumers
+     * for all consumers and keyhashes for a given sub.
+     * @param subId - ID of the subscription
+     * @return true if there exists at least one unfulfilled request for the subscription, false
+     * otherwise.
+     */
+    function pendingRequestExists(uint64 subId) external view returns (bool) {
+        return VRFCoordinatorV2Interface(VRF).pendingRequestExists(subId);
+    }
+
+    /**
+     * @notice Remove a consumer from a VRF subscription.
+     * @param subId - ID of the subscription
+     * @param consumer - Consumer to remove from the subscription
+     */
+    function removeConsumer(uint64 subId, address consumer) external onlyOwner {
+        VRFCoordinatorV2Interface(VRF).removeConsumer(subId, consumer);
+    }
+
+    /**
      * @notice Request subscription owner transfer.
      * @param subId - ID of the subscription
      * @param newOwner - proposed new owner of the subscription
@@ -112,15 +122,5 @@ contract VRFSubscriptionManager is Ownable {
             subId,
             newOwner
         );
-    }
-
-    /**
-     * @notice Request subscription owner transfer.
-     * @param subId - ID of the subscription
-     * @dev will revert if original owner of subId has
-     * not requested that msg.sender become the new owner.
-     */
-    function acceptSubscriptionOwnerTransfer(uint64 subId) external onlyOwner {
-        VRFCoordinatorV2Interface(VRF).acceptSubscriptionOwnerTransfer(subId);
     }
 }

@@ -5,20 +5,13 @@ pragma solidity 0.8.20;
 /// @title IPerpetualMint
 /// @dev interface to PerpetualMint facet
 interface IPerpetualMint {
-    /// @notice attempts a mint for the msg.sender from a collection
-    /// @param collection address of collection for mint attempt
-    function attemptMint(address collection) external;
-
-    /// @notice claims all earnings across collections of the msg.sender
-    function claimAllEarnings() external;
-
-    /// @notice claims all earnings of a collection for the msg.sender
-    /// @param collection address of collection
-    function claimEarnings(address collection) external;
-
     /// @notice calculates the available earnings for the msg.sender across all collections
     /// @return allEarnings amount of available earnings across all collections
     function allAvailableEarnings() external view returns (uint256 allEarnings);
+
+    /// @notice attempts a mint for the msg.sender from a collection
+    /// @param collection address of collection for mint attempt
+    function attemptMint(address collection) external;
 
     /// @notice calculates the available earnings for the msg.sender for a given collection
     /// @param collection address of collection
@@ -33,4 +26,11 @@ interface IPerpetualMint {
     function averageCollectionRisk(
         address collection
     ) external view returns (uint128 risk);
+
+    /// @notice claims all earnings across collections of the msg.sender
+    function claimAllEarnings() external;
+
+    /// @notice claims all earnings of a collection for the msg.sender
+    /// @param collection address of collection
+    function claimEarnings(address collection) external;
 }

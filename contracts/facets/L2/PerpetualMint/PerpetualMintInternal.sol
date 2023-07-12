@@ -135,10 +135,10 @@ abstract contract PerpetualMintInternal is
     function _claimEarnings(address account, address collection) internal {
         s.Layout storage l = s.layout();
 
-        _updateAccountEarnings(collection, account);
-        uint256 earnings = l.accountEarnings[collection][account];
+        _updateDepositorEarnings(account, collection);
+        uint256 earnings = l.depositorEarnings[account][collection];
 
-        delete l.accountEarnings[collection][account];
+        delete l.depositorEarnings[account][collection];
         payable(account).sendValue(earnings);
     }
 
@@ -175,11 +175,11 @@ abstract contract PerpetualMintInternal is
         s.Layout storage l = s.layout();
 
         earnings =
-            l.accountEarnings[collection][account] +
+            l.depositorEarnings[account][collection] +
             ((l.collectionEarnings[collection] *
-                l.totalAccountRisk[collection][account]) /
+                l.totalDepositorRisk[account][collection]) /
                 l.totalRisk[collection]) -
-            l.accountDeductions[collection][account];
+            l.depositorDeductions[account][collection];
     }
 
     /**
@@ -225,11 +225,11 @@ abstract contract PerpetualMintInternal is
 
             address oldOwner = l.escrowedERC721Owner[collection][tokenId];
 
-            _updateAccountEarnings(collection, oldOwner);
-            _updateAccountEarnings(collection, account);
+            _updateDepositorEarnings(oldOwner, collection);
+            _updateDepositorEarnings(account, collection);
 
-            --l.activeTokens[collection][oldOwner];
-            ++l.inactiveTokens[collection][account];
+            --l.activeTokens[oldOwner][collection];
+            ++l.inactiveTokens[account][collection];
 
             l.activeTokenIds[collection].remove(tokenId);
             l.escrowedERC721Owner[collection][tokenId] = account;
@@ -273,8 +273,8 @@ abstract contract PerpetualMintInternal is
                 randomValues64[1]
             );
 
-            _updateAccountEarnings(collection, oldOwner);
-            _updateAccountEarnings(collection, account);
+            _updateDepositorEarnings(oldOwner, collection);
+            _updateDepositorEarnings(account, collection);
 
             _assignEscrowedERC1155Asset(oldOwner, account, collection, tokenId);
         }
@@ -298,48 +298,49 @@ abstract contract PerpetualMintInternal is
     ) private {
         s.Layout storage l = s.layout();
 
-        --l.activeERC1155Tokens[collection][tokenId][from];
-        ++l.inactiveERC1155Tokens[collection][tokenId][to];
+        --l.activeERC1155Tokens[from][collection][tokenId];
+        ++l.inactiveERC1155Tokens[to][collection][tokenId];
 
         if (!l.escrowedERC1155Owners[collection][tokenId].contains(to)) {
             l.escrowedERC1155Owners[collection][tokenId].add(from);
         }
 
-        if (l.activeERC1155Tokens[collection][tokenId][from] == 0) {
+        if (l.activeERC1155Tokens[from][collection][tokenId] == 0) {
             l.activeERC1155Owners[collection][tokenId].remove(from);
-            delete l.accountTokenRisk[collection][tokenId][from];
+            delete l.depositorTokenRisk[from][collection][tokenId];
 
-            if (l.inactiveERC1155Tokens[collection][tokenId][from] == 0) {
+            if (l.inactiveERC1155Tokens[from][collection][tokenId] == 0) {
                 l.escrowedERC1155Owners[collection][tokenId].remove(from);
             }
         }
     }
 
     /**
-     * @notice updates the earnings of an account based on current conitions
+     * @notice updates the earnings of a depositor  based on current conitions
      * @param collection address of collection earnings relate to
-     * @param account address of account
+     * @param depositor address of depositor
      */
-    function _updateAccountEarnings(
-        address collection,
-        address account
+    function _updateDepositorEarnings(
+        address depositor,
+        address collection
     ) private {
         s.Layout storage l = s.layout();
 
-        uint256 totalAccountRisk = l.totalAccountRisk[collection][account];
+        uint256 totalDepositorRisk = l.totalDepositorRisk[depositor][
+            collection
+        ];
 
-        if (totalAccountRisk != 0) {
-            l.accountEarnings[collection][account] +=
-                ((l.collectionEarnings[collection] *
-                    l.totalAccountRisk[collection][account]) /
+        if (totalDepositorRisk != 0) {
+            l.depositorEarnings[depositor][collection] +=
+                ((l.collectionEarnings[collection] * totalDepositorRisk) /
                     l.totalRisk[collection]) -
-                l.accountDeductions[collection][account];
+                l.depositorDeductions[depositor][collection];
 
-            l.accountDeductions[collection][account] = l.accountEarnings[
-                collection
-            ][account];
+            l.depositorDeductions[depositor][collection] = l.depositorEarnings[
+                depositor
+            ][collection];
         } else {
-            l.accountDeductions[collection][account] = l.collectionEarnings[
+            l.depositorDeductions[depositor][collection] = l.collectionEarnings[
                 collection
             ];
         }
@@ -396,8 +397,8 @@ abstract contract PerpetualMintInternal is
         do {
             owner = owners.at(tokenIndex);
             cumulativeRisk +=
-                l.accountTokenRisk[collection][tokenId][owner] *
-                l.activeERC1155Tokens[collection][tokenId][owner];
+                l.depositorTokenRisk[owner][collection][tokenId] *
+                l.activeERC1155Tokens[owner][collection][tokenId];
             ++tokenIndex;
         } while (cumulativeRisk <= normalizedValue);
     }

@@ -8,6 +8,7 @@ import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 import { ERC721BaseInternal } from "@solidstate/contracts/token/ERC721/base/ERC721BaseInternal.sol";
 
+///s => Storage
 import { IPerpetualMintInternal } from "../../../interfaces/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as s } from "./PerpetualMintStorage.sol";
 
@@ -54,24 +55,24 @@ abstract contract PerpetualMintInternal is
     ) internal virtual {
         s.Layout storage l = s.layout();
 
-        address account = l.requestAccount[requestId];
+        address minter = l.requestMinter[requestId];
         address collection = l.requestCollection[requestId];
 
         if (l.collectionType[collection]) {
-            _resolveERC721Mint(account, collection, randomWords);
+            _resolveERC721Mint(minter, collection, randomWords);
         } else {
-            _resolveERC1155Mint(account, collection, randomWords);
+            _resolveERC1155Mint(minter, collection, randomWords);
         }
     }
 
     /**
      * @notice requests random values from Chainlink VRF
-     * @param account address calling this function
+     * @param minter address calling this function
      * @param collection address of collection to attempt mint for
      * @param numWords amount of random values to request
      */
     function _requestRandomWords(
-        address account,
+        address minter,
         address collection,
         uint32 numWords
     ) internal {
@@ -85,7 +86,7 @@ abstract contract PerpetualMintInternal is
             numWords
         );
 
-        l.requestAccount[requestId] = account;
+        l.requestMinter[requestId] = minter;
         l.requestCollection[requestId] = collection;
     }
 

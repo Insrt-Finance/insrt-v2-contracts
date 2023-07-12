@@ -9,7 +9,7 @@ import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 import { ERC721BaseInternal } from "@solidstate/contracts/token/ERC721/base/ERC721BaseInternal.sol";
 
 import { IPerpetualMintInternal } from "../../../interfaces/IPerpetualMintInternal.sol";
-import { PerpetualMintStorage as Storage } from "./PerpetualMintStorage.sol";
+import { PerpetualMintStorage as Storage } from "./Storage.sol";
 
 /// @title PerpetualMintInternal facet contract
 /// @dev defines modularly all logic for the PerpetualMint mechanism in internal functions

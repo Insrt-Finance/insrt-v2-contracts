@@ -5,6 +5,8 @@ pragma solidity ^0.8.20;
 import { IPerpetualMint } from "../../../interfaces/IPerpetualMint.sol";
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 
+/// @title PerpetualMint facet contract
+/// @dev contains all externally called functions
 contract PerpetualMint is PerpetualMintInternal, IPerpetualMint {
     constructor(
         bytes32 keyHash,
@@ -22,11 +24,9 @@ contract PerpetualMint is PerpetualMintInternal, IPerpetualMint {
         )
     {}
 
-    /**
-     * @notice Chainlink VRF Coordinator callback
-     * @param requestId id of request for random values
-     * @param randomWords random values returned from Chainlink VRF coordination
-     */
+    /// @notice Chainlink VRF Coordinator callback
+    /// @param requestId id of request for random values
+    /// @param randomWords random values returned from Chainlink VRF coordination
     function fulfillRandomWords(
         uint256 requestId,
         uint256[] memory randomWords
@@ -34,30 +34,22 @@ contract PerpetualMint is PerpetualMintInternal, IPerpetualMint {
         _fulfillRandomWords(requestId, randomWords);
     }
 
-    /**
-     * @inheritdoc IPerpetualMint
-     */
+    /// @inheritdoc IPerpetualMint
     function attemptMint(address collection) external {
         _attemptMint(msg.sender, collection);
     }
 
-    /**
-     * @inheritdoc IPerpetualMint
-     */
+    /// @inheritdoc IPerpetualMint
     function claimAllEarnings() external {
         _claimAllEarnings(msg.sender);
     }
 
-    /**
-     * @inheritdoc IPerpetualMint
-     */
+    /// @inheritdoc IPerpetualMint
     function claimEarnings(address collection) external {
         _claimEarnings(msg.sender, collection);
     }
 
-    /**
-     * @inheritdoc IPerpetualMint
-     */
+    /// @inheritdoc IPerpetualMint
     function allAvailableEarnings()
         external
         view
@@ -66,18 +58,14 @@ contract PerpetualMint is PerpetualMintInternal, IPerpetualMint {
         allEarnings = _allAvailableEarnings(msg.sender);
     }
 
-    /**
-     * @inheritdoc IPerpetualMint
-     */
+    /// @inheritdoc IPerpetualMint
     function availableEarnings(
         address collection
     ) external view returns (uint256 earnings) {
         earnings = _availableEarnings(msg.sender, collection);
     }
 
-    /**
-     * @inheritdoc IPerpetualMint
-     */
+    /// @inheritdoc IPerpetualMint
     function averageCollectionRisk(
         address collection
     ) external view returns (uint128 risk) {

@@ -4,6 +4,8 @@ pragma solidity ^0.8.20;
 
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
+/// @title PerpetualMintStorage
+/// @dev defines storage layout for the PerpetualMint facet
 library PerpetualMintStorage {
     struct Layout {
         /// @dev amount of protocol fees accrued in ETH (native token) from mint attempts

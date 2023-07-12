@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.20;
 
-import { IPerpetualMint } from "../../../interfaces/IPerpetualMint.sol";
+import { IPerpetualMint } from "./IPerpetualMint.sol";
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 
 /// @title PerpetualMint facet contract

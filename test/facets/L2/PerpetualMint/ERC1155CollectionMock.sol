@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.20;
 
-import { SolidStateERC1155 } from "@solidstate/contracts/token/ERC1155/SolidStateERC1155.sol";
-import { IERC165 } from "@solidstate/contracts/interfaces/IERC165.sol";
 import { IERC1155 } from "@solidstate/contracts/interfaces/IERC1155.sol";
+import { IERC165 } from "@solidstate/contracts/interfaces/IERC165.sol";
+import { SolidStateERC1155 } from "@solidstate/contracts/token/ERC1155/SolidStateERC1155.sol";
 
 contract ERC1155CollectionMock is SolidStateERC1155 {
     constructor() {

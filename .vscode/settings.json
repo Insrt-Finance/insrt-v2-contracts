@@ -15,7 +15,6 @@
     "@solidstate/layerzero-client/=lib/layerzero-client/contracts/",
     "forge-std/=lib/forge-std/src/",
     "@chainlink/vrf/=lib/chainlink/contracts/src/v0.8/vrf/",
-    "@chainlink/interfaces/=lib/chainlink/contracts/src/v0.8/interfaces/",
-    "@abdk/=lib/abdk-libraries-solidity/"
+    "@chainlink/interfaces/=lib/chainlink/contracts/src/v0.8/interfaces/"
   ]
 }

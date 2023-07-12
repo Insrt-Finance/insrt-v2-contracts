@@ -91,11 +91,11 @@ abstract contract PerpetualMintInternal is
     }
 
     /**
-     * @notice attempts to mint a token from a collection for an account
-     * @param account address of account minting
+     * @notice attempts to mint a token from a collection for a minter
+     * @param minter address of minter
      * @param collection address of collection which token may be minted from
      */
-    function _attemptMint(address account, address collection) internal {
+    function _attemptMint(address minter, address collection) internal {
         s.Layout storage l = s.layout();
 
         if (msg.value != l.collectionMintPrice[collection]) {
@@ -107,14 +107,14 @@ abstract contract PerpetualMintInternal is
         l.protocolFees += mintFee;
         l.collectionEarnings[collection] += msg.value - mintFee;
 
-        _requestRandomWords(account, collection, 1);
+        _requestRandomWords(minter, collection, 1);
     }
 
     /**
-     * @notice claims all earnings across collections of an account
-     * @param account address of account
+     * @notice claims all earnings across collections of a depositor
+     * @param depositor address of depositor
      */
-    function _claimAllEarnings(address account) internal {
+    function _claimAllEarnings(address depositor) internal {
         EnumerableSet.AddressSet storage collections = s
             .layout()
             .activeCollections;
@@ -122,33 +122,33 @@ abstract contract PerpetualMintInternal is
 
         unchecked {
             for (uint256 i; i < length; ++i) {
-                _claimEarnings(account, collections.at(i));
+                _claimEarnings(depositor, collections.at(i));
             }
         }
     }
 
     /**
-     * @notice claims all earnings of a collection for an account
-     * @param account address of acount
+     * @notice claims all earnings of a collection for a depositor
+     * @param depositor address of acount
      * @param collection address of collection
      */
-    function _claimEarnings(address account, address collection) internal {
+    function _claimEarnings(address depositor, address collection) internal {
         s.Layout storage l = s.layout();
 
-        _updateDepositorEarnings(account, collection);
-        uint256 earnings = l.depositorEarnings[account][collection];
+        _updateDepositorEarnings(depositor, collection);
+        uint256 earnings = l.depositorEarnings[depositor][collection];
 
-        delete l.depositorEarnings[account][collection];
-        payable(account).sendValue(earnings);
+        delete l.depositorEarnings[depositor][collection];
+        payable(depositor).sendValue(earnings);
     }
 
     /**
-     * @notice calculates the available earnings for an account across all collections
-     * @param account address of acount
+     * @notice calculates the available earnings for a depositor across all collections
+     * @param depositor address of depositor
      * @return allEarnings amount of available earnings across all collections
      */
     function _allAvailableEarnings(
-        address account
+        address depositor
     ) internal view returns (uint256 allEarnings) {
         EnumerableSet.AddressSet storage collections = s
             .layout()
@@ -157,29 +157,29 @@ abstract contract PerpetualMintInternal is
 
         unchecked {
             for (uint256 i; i < length; ++i) {
-                allEarnings += _availableEarnings(account, collections.at(i));
+                allEarnings += _availableEarnings(depositor, collections.at(i));
             }
         }
     }
 
     /**
-     * @notice calculates the available earnings for an account for a given collection
-     * @param account address of acount
+     * @notice calculates the available earnings for a depositor for a given collection
+     * @param depositor address of depositor
      * @param collection address of collection
      * @return earnings amount of available earnings
      */
     function _availableEarnings(
-        address account,
+        address depositor,
         address collection
     ) internal view returns (uint256 earnings) {
         s.Layout storage l = s.layout();
 
         earnings =
-            l.depositorEarnings[account][collection] +
+            l.depositorEarnings[depositor][collection] +
             ((l.collectionEarnings[collection] *
-                l.totalDepositorRisk[account][collection]) /
+                l.totalDepositorRisk[depositor][collection]) /
                 l.totalRisk[collection]) -
-            l.depositorDeductions[account][collection];
+            l.depositorDeductions[depositor][collection];
     }
 
     /**
@@ -198,12 +198,12 @@ abstract contract PerpetualMintInternal is
 
     /**
      * @notice resolves the outcome of an attempted mint of an ERC721 collection
-     * @param account address attempting the mint
+     * @param minter address of minter
      * @param collection address of collection which token may be minted from
      * @param randomWords random values relating to attempt
      */
     function _resolveERC721Mint(
-        address account,
+        address minter,
         address collection,
         uint256[] memory randomWords
     ) internal {
@@ -216,7 +216,7 @@ abstract contract PerpetualMintInternal is
 
         //TODO: update based on consolation spec
         if (!result) {
-            _mint(account, l.id);
+            _mint(minter, l.id);
             ++l.id;
         }
 
@@ -226,13 +226,13 @@ abstract contract PerpetualMintInternal is
             address oldOwner = l.escrowedERC721Owner[collection][tokenId];
 
             _updateDepositorEarnings(oldOwner, collection);
-            _updateDepositorEarnings(account, collection);
+            _updateDepositorEarnings(minter, collection);
 
             --l.activeTokens[oldOwner][collection];
-            ++l.inactiveTokens[account][collection];
+            ++l.inactiveTokens[minter][collection];
 
             l.activeTokenIds[collection].remove(tokenId);
-            l.escrowedERC721Owner[collection][tokenId] = account;
+            l.escrowedERC721Owner[collection][tokenId] = minter;
         }
 
         emit ERC721MintResolved(collection, result);
@@ -240,12 +240,12 @@ abstract contract PerpetualMintInternal is
 
     /**
      * @notice resolves the outcome of an attempted mint of an ERC1155 collection
-     * @param account address attempting the mint
+     * @param minter address of mitner
      * @param collection address of collection which token may be minted from
      * @param randomWords random values relating to attempt
      */
     function _resolveERC1155Mint(
-        address account,
+        address minter,
         address collection,
         uint256[] memory randomWords
     ) internal {
@@ -258,7 +258,7 @@ abstract contract PerpetualMintInternal is
 
         //TODO: update based on consolation spec
         if (!result) {
-            _mint(account, l.id);
+            _mint(minter, l.id);
             ++l.id;
         }
 
@@ -274,9 +274,9 @@ abstract contract PerpetualMintInternal is
             );
 
             _updateDepositorEarnings(oldOwner, collection);
-            _updateDepositorEarnings(account, collection);
+            _updateDepositorEarnings(minter, collection);
 
-            _assignEscrowedERC1155Asset(oldOwner, account, collection, tokenId);
+            _assignEscrowedERC1155Asset(oldOwner, minter, collection, tokenId);
         }
 
         emit ERC1155MintResolved(collection, result);

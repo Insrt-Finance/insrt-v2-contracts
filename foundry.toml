@@ -1,18 +1,18 @@
 # Default Profile
 [profile.default]
+evm_version = "shanghai"
 ffi = false
 fuzz_runs = 256
 optimizer = true
 optimizer_runs = 1_000_000
 remappings = [
+  "@chainlink/interfaces/=lib/chainlink/contracts/src/v0.8/interfaces/",
+  "@chainlink/vrf/=lib/chainlink/contracts/src/v0.8/vrf/",
   "@solidstate/contracts/=lib/solidstate-solidity/contracts/",
   "@solidstate/layerzero-client/=lib/layerzero-client/contracts/",
-  "forge-std/=lib/forge-std/src/",
-  "@chainlink/vrf/=lib/chainlink/contracts/src/v0.8/vrf/",
-  "@chainlink/interfaces/=lib/chainlink/contracts/src/v0.8/interfaces/",
+  "forge-std/=lib/forge-std/src/"
 ]
 solc_version = '0.8.20'
-evm_version = "shanghai"
 src = "contracts"
 verbosity = 1
 

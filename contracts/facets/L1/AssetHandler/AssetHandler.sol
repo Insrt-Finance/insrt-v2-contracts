@@ -55,11 +55,11 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         _setTrustedRemoteAddress(remoteChainId, trustedRemoteAddress);
     }
 
-    /// TODO: add support for risk parameter
     /// @inheritdoc IL1AssetHandler
     function depositERC1155Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
+        uint64 risk,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts
     ) external payable {
@@ -79,18 +79,25 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         _depositERC1155Assets(
             collection,
             layerZeroDestinationChainId,
+            risk,
             tokenIds,
             amounts
         );
 
-        emit ERC1155AssetsDeposited(msg.sender, collection, tokenIds, amounts);
+        emit ERC1155AssetsDeposited(
+            msg.sender,
+            collection,
+            risk,
+            tokenIds,
+            amounts
+        );
     }
 
-    /// TODO: add support for risk parameter
     /// @inheritdoc IL1AssetHandler
     function depositERC721Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
+        uint64 risk,
         uint256[] calldata tokenIds
     ) external payable {
         for (uint256 i = 0; i < tokenIds.length; i++) {
@@ -102,9 +109,14 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
             );
         }
 
-        _depositERC721Assets(collection, layerZeroDestinationChainId, tokenIds);
+        _depositERC721Assets(
+            collection,
+            layerZeroDestinationChainId,
+            risk,
+            tokenIds
+        );
 
-        emit ERC721AssetsDeposited(msg.sender, collection, tokenIds);
+        emit ERC721AssetsDeposited(msg.sender, collection, risk, tokenIds);
     }
 
     /// @notice Handles received LayerZero cross-chain messages.
@@ -177,15 +189,16 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         }
     }
 
-    /// TODO: add support for risk parameter
     /// @notice Deposits ERC1155 assets cross-chain using LayerZero.
     /// @param collection Address of the ERC1155 collection.
     /// @param layerZeroDestinationChainId The LayerZero destination chain ID.
+    /// @param risk The risk setting for the assets being deposited.
     /// @param tokenIds IDs of the tokens to be deposited.
     /// @param amounts The amounts of the tokens to be deposited.
     function _depositERC1155Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
+        uint64 risk,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts
     ) private {
@@ -194,6 +207,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
             PayloadEncoder.encodeDepositERC1155AssetsPayload(
                 msg.sender,
                 collection,
+                risk,
                 tokenIds,
                 amounts
             ),
@@ -204,14 +218,15 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         );
     }
 
-    /// TODO: add support for risk parameter
     /// @notice Deposits ERC721 assets cross-chain using LayerZero.
     /// @param collection Address of the ERC721 collection.
     /// @param layerZeroDestinationChainId The LayerZero destination chain ID.
+    /// @param risk The risk setting for the assets being deposited.
     /// @param tokenIds IDs of the tokens to be deposited.
     function _depositERC721Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
+        uint64 risk,
         uint256[] calldata tokenIds
     ) private {
         _lzSend(
@@ -219,6 +234,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
             PayloadEncoder.encodeDepositERC721AssetsPayload(
                 msg.sender,
                 collection,
+                risk,
                 tokenIds
             ),
             payable(msg.sender),

@@ -125,6 +125,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 ,
                 address depositor,
                 address collection,
+                uint64 risk,
                 uint256[] memory tokenIds,
                 uint256[] memory amounts
             ) = abi.decode(
@@ -133,6 +134,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                         PayloadEncoder.AssetType,
                         address,
                         address,
+                        uint64,
                         uint256[],
                         uint256[]
                     )
@@ -148,6 +150,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             emit ERC1155AssetsDeposited(
                 depositor,
                 collection,
+                risk,
                 tokenIds,
                 amounts
             );
@@ -157,10 +160,17 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 ,
                 address depositor,
                 address collection,
+                uint64 risk,
                 uint256[] memory tokenIds
             ) = abi.decode(
                     data,
-                    (PayloadEncoder.AssetType, address, address, uint256[])
+                    (
+                        PayloadEncoder.AssetType,
+                        address,
+                        address,
+                        uint64,
+                        uint256[]
+                    )
                 );
 
             // Update the deposited ERC721 assets in the contract's storage
@@ -170,7 +180,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 ] = true;
             }
 
-            emit ERC721AssetsDeposited(depositor, collection, tokenIds);
+            emit ERC721AssetsDeposited(depositor, collection, risk, tokenIds);
         }
     }
 

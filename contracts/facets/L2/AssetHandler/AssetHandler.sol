@@ -10,7 +10,7 @@ import { IAssetHandler } from "../../../interfaces/IAssetHandler.sol";
 import { PayloadEncoder } from "../../../libraries/PayloadEncoder.sol";
 
 /// @title L2AssetHandler
-/// @dev Handles NFT assets on L2 and allows them to be staked & unstaked cross-chain via LayerZero.
+/// @dev Handles NFT assets on L2 and allows them to be deposited & withdrawn cross-chain via LayerZero.
 contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     /// @notice Deploys a new instance of the L2AssetHandler contract.
     constructor() {
@@ -34,7 +34,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     }
 
     /// @inheritdoc IL2AssetHandler
-    function unstakeERC1155Assets(
+    function withdrawERC1155Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds,
@@ -45,63 +45,67 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             revert ERC1155TokenIdsAndAmountsLengthMismatch();
         }
 
-        // For each tokenId, check if staked amount is less than requested unstake amount
+        // For each tokenId, check if deposited amount is less than requested withdraw amount
         // If it is, revert the transaction with a custom error
-        // If not, reduce staked amount by unstake amount
+        // If not, reduce deposited amount by withdraw amount
         for (uint256 i = 0; i < tokenIds.length; i++) {
             if (
-                Storage.layout().stakedERC1155Assets[msg.sender][collection][
+                Storage.layout().depositedERC1155Assets[msg.sender][collection][
                     tokenIds[i]
                 ] < amounts[i]
             ) {
-                revert ERC1155TokenAmountExceedsStakedAmount();
+                revert ERC1155TokenAmountExceedsDepositedAmount();
             }
 
-            Storage.layout().stakedERC1155Assets[msg.sender][collection][
+            Storage.layout().depositedERC1155Assets[msg.sender][collection][
                 tokenIds[i]
             ] -= amounts[i];
         }
 
-        _unstakeERC1155Assets(
+        _withdrawERC1155Assets(
             collection,
             layerZeroDestinationChainId,
             tokenIds,
             amounts
         );
 
-        emit ERC1155AssetsUnstaked(msg.sender, collection, tokenIds, amounts);
+        emit ERC1155AssetsWithdrawn(msg.sender, collection, tokenIds, amounts);
     }
 
     /// @inheritdoc IL2AssetHandler
-    function unstakeERC721Assets(
+    function withdrawERC721Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds
     ) external payable {
-        // For each tokenId, check if token is staked
+        // For each tokenId, check if token is deposited
         // If it's not, revert the transaction with a custom error
-        // If it is, remove it from the set of staked tokens
+        // If it is, remove it from the set of deposited tokens
         for (uint256 i = 0; i < tokenIds.length; i++) {
             if (
-                Storage.layout().stakedERC721Assets[msg.sender][collection][
+                Storage.layout().depositedERC721Assets[msg.sender][collection][
                     tokenIds[i]
                 ] == false
             ) {
-                revert ERC721TokenNotStaked();
+                revert ERC721TokenNotDeposited();
             }
 
-            Storage.layout().stakedERC721Assets[msg.sender][collection][
+            Storage.layout().depositedERC721Assets[msg.sender][collection][
                 tokenIds[i]
             ] = false;
         }
 
-        _unstakeERC721Assets(collection, layerZeroDestinationChainId, tokenIds);
+        _withdrawERC721Assets(
+            collection,
+            layerZeroDestinationChainId,
+            tokenIds
+        );
 
-        emit ERC721AssetsUnstaked(msg.sender, collection, tokenIds);
+        emit ERC721AssetsWithdrawn(msg.sender, collection, tokenIds);
     }
 
     /// @notice Handles received LayerZero cross-chain messages.
-    /// @dev Overridden from the SolidStateLayerZeroClient contract. It processes data payloads based on the asset type and updates staked assets accordingly.
+    /// @dev Overridden from the SolidStateLayerZeroClient contract. It processes data payloads based on the asset type and updates deposited assets accordingly.
     /// @param data The cross-chain message data payload. Decoded based on prefix and processed accordingly.
     function _handleLayerZeroMessage(
         uint16,
@@ -116,10 +120,10 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         );
 
         if (assetType == PayloadEncoder.AssetType.ERC1155) {
-            // Decode the payload to get the staker, the collection, the tokenIds and the amounts for each tokenId
+            // Decode the payload to get the depositor, the collection, the tokenIds and the amounts for each tokenId
             (
                 ,
-                address staker,
+                address depositor,
                 address collection,
                 uint256[] memory tokenIds,
                 uint256[] memory amounts
@@ -134,19 +138,24 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                     )
                 );
 
-            // Update the staked ERC1155 assets in the contract's storage
+            // Update the deposited ERC1155 assets in the contract's storage
             for (uint256 i = 0; i < tokenIds.length; i++) {
-                Storage.layout().stakedERC1155Assets[staker][collection][
+                Storage.layout().depositedERC1155Assets[depositor][collection][
                     tokenIds[i]
                 ] += amounts[i];
             }
 
-            emit ERC1155AssetsStaked(staker, collection, tokenIds, amounts);
+            emit ERC1155AssetsDeposited(
+                depositor,
+                collection,
+                tokenIds,
+                amounts
+            );
         } else {
-            // Decode the payload to get the staker, the collection, and the tokenIds
+            // Decode the payload to get the depositor, the collection, and the tokenIds
             (
                 ,
-                address staker,
+                address depositor,
                 address collection,
                 uint256[] memory tokenIds
             ) = abi.decode(
@@ -154,23 +163,23 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                     (PayloadEncoder.AssetType, address, address, uint256[])
                 );
 
-            // Update the staked ERC721 assets in the contract's storage
+            // Update the deposited ERC721 assets in the contract's storage
             for (uint256 i = 0; i < tokenIds.length; i++) {
-                Storage.layout().stakedERC721Assets[staker][collection][
+                Storage.layout().depositedERC721Assets[depositor][collection][
                     tokenIds[i]
                 ] = true;
             }
 
-            emit ERC721AssetsStaked(staker, collection, tokenIds);
+            emit ERC721AssetsDeposited(depositor, collection, tokenIds);
         }
     }
 
     /// @notice Withdraws ERC1155 assets cross-chain using LayerZero.
     /// @param collection Address of the ERC1155 collection.
     /// @param layerZeroDestinationChainId The LayerZero destination chain ID.
-    /// @param tokenIds IDs of the tokens to be unstaked.
-    /// @param amounts The amounts of the tokens to be unstaked.
-    function _unstakeERC1155Assets(
+    /// @param tokenIds IDs of the tokens to be withdrawn.
+    /// @param amounts The amounts of the tokens to be withdrawn.
+    function _withdrawERC1155Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds,
@@ -178,7 +187,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     ) private {
         _lzSend(
             layerZeroDestinationChainId,
-            PayloadEncoder.encodeUnstakeERC1155AssetsPayload(
+            PayloadEncoder.encodeWithdrawERC1155AssetsPayload(
                 msg.sender,
                 collection,
                 tokenIds,
@@ -194,15 +203,15 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     /// @notice Withdraws ERC721 assets cross-chain using LayerZero.
     /// @param collection Address of the ERC721 collection.
     /// @param layerZeroDestinationChainId The LayerZero destination chain ID.
-    /// @param tokenIds IDs of the tokens to be unstaked.
-    function _unstakeERC721Assets(
+    /// @param tokenIds IDs of the tokens to be withdrawn.
+    function _withdrawERC721Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds
     ) private {
         _lzSend(
             layerZeroDestinationChainId,
-            PayloadEncoder.encodeUnstakeERC721AssetsPayload(
+            PayloadEncoder.encodeWithdrawERC721AssetsPayload(
                 msg.sender,
                 collection,
                 tokenIds

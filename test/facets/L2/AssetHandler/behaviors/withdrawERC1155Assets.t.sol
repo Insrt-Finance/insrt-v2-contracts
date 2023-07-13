@@ -14,9 +14,9 @@ import { IAssetHandler } from "../../../../../contracts/interfaces/IAssetHandler
 import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 
-/// @title L2AssetHandler_unstakeERC1155Assets
-/// @dev L2AssetHandler test contract for testing expected L2 unstakeERC1155Assets behavior. Tested on an Arbitrum fork.
-contract L2AssetHandler_unstakeERC1155Assets is
+/// @title L2AssetHandler_withdrawERC1155Assets
+/// @dev L2AssetHandler test contract for testing expected L2 withdrawERC1155Assets behavior. Tested on an Arbitrum fork.
+contract L2AssetHandler_withdrawERC1155Assets is
     ILayerZeroClientBaseInternalEvents,
     L2AssetHandlerTest,
     L2ForkTest
@@ -29,16 +29,16 @@ contract L2AssetHandler_unstakeERC1155Assets is
     function setUp() public override {
         super.setUp();
 
-        // staked ERC1155 token amounts are stored in a mapping, so we need to compute the storage slot to set up the test case
-        bytes32 stakedERC1155TokenAmountStorageSlot = keccak256(
+        // deposited ERC1155 token amounts are stored in a mapping, so we need to compute the storage slot to set up the test case
+        bytes32 depositedERC1155TokenAmountStorageSlot = keccak256(
             abi.encode(
-                bongBearTokenIds[0], // the staked ERC1155 token ID
+                bongBearTokenIds[0], // the deposited ERC1155 token ID
                 keccak256(
                     abi.encode(
-                        BONG_BEARS, // the staked ERC1155 token collection
+                        BONG_BEARS, // the deposited ERC1155 token collection
                         keccak256(
                             abi.encode(
-                                address(this), // the staker
+                                address(this), // the depositor
                                 L2AssetHandlerStorage.STORAGE_SLOT
                             )
                         )
@@ -47,23 +47,23 @@ contract L2AssetHandler_unstakeERC1155Assets is
             )
         );
 
-        // write the staked ERC1155 token amount to storage
+        // write the deposited ERC1155 token amount to storage
         vm.store(
             address(l2AssetHandler),
-            stakedERC1155TokenAmountStorageSlot,
+            depositedERC1155TokenAmountStorageSlot,
             bytes32(bongBearTokenAmounts[0])
         );
     }
 
-    /// @dev Tests unstakeERC1155Assets functionality for unstaking ERC1155 tokens.
-    function test_unstakeERC1155Assets() public {
+    /// @dev Tests withdrawERC1155Assets functionality for withdrawing ERC1155 tokens.
+    function test_withdrawERC1155Assets() public {
         l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
         l2AssetHandler.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
 
-        l2AssetHandler.unstakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -71,8 +71,10 @@ contract L2AssetHandler_unstakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that unstakeERC1155Assets functionality emits an ERC1155AssetsUnstaked event when unstaking ERC1155 tokens.
-    function test_unstakeERC1155AssetsEmitsERC1155AssetsUnstakedEvent() public {
+    /// @dev Tests that withdrawERC1155Assets functionality emits an ERC1155AssetsWithdrawn event when withdrawing ERC1155 tokens.
+    function test_withdrawERC1155AssetsEmitsERC1155AssetsWithdrawnEvent()
+        public
+    {
         l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
         l2AssetHandler.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
@@ -80,14 +82,14 @@ contract L2AssetHandler_unstakeERC1155Assets is
         );
 
         vm.expectEmit();
-        emit ERC1155AssetsUnstaked(
+        emit ERC1155AssetsWithdrawn(
             address(this),
             BONG_BEARS,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
 
-        l2AssetHandler.unstakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -95,8 +97,8 @@ contract L2AssetHandler_unstakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that unstakeERC1155Assets functionality emits a MessageSent event when unstaking ERC1155 tokens.
-    function test_unstakeERC1155AssetsEmitsMessageSent() public {
+    /// @dev Tests that withdrawERC1155Assets functionality emits a MessageSent event when withdrawing ERC1155 tokens.
+    function test_withdrawERC1155AssetsEmitsMessageSent() public {
         l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
         l2AssetHandler.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
@@ -119,7 +121,7 @@ contract L2AssetHandler_unstakeERC1155Assets is
             LAYER_ZERO_MESSAGE_FEE
         );
 
-        l2AssetHandler.unstakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -127,8 +129,8 @@ contract L2AssetHandler_unstakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that unstakeERC1155Assets functionality reverts when attempting to unstake more ERC1155 tokens than the msg.sender has staked.
-    function test_unstakeERC1155AssetsRevertsWhenAttemptingToUnstakeMoreThanStakedAmount()
+    /// @dev Tests that withdrawERC1155Assets functionality reverts when attempting to withdraw more ERC1155 tokens than the msg.sender has deposited.
+    function test_withdrawERC1155AssetsRevertsWhenAttemptingToUndepositMoreThanDepositedAmount()
         public
     {
         l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
@@ -138,12 +140,12 @@ contract L2AssetHandler_unstakeERC1155Assets is
         );
 
         vm.expectRevert(
-            IL2AssetHandler.ERC1155TokenAmountExceedsStakedAmount.selector
+            IL2AssetHandler.ERC1155TokenAmountExceedsDepositedAmount.selector
         );
 
         bongBearTokenAmounts[0]++;
 
-        l2AssetHandler.unstakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -151,8 +153,8 @@ contract L2AssetHandler_unstakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that unstakeERC1155Assets functionality reverts when attempting to unstake ERC1155 tokens on an unsupported remote chain.
-    function test_unstakeERC1155AssetsRevertsWhenAttemptingToUnstakeOnAnUnsupportedRemoteChain()
+    /// @dev Tests that withdrawERC1155Assets functionality reverts when attempting to withdraw ERC1155 tokens on an unsupported remote chain.
+    function test_withdrawERC1155AssetsRevertsWhenAttemptingToUndepositOnAnUnsupportedRemoteChain()
         public
     {
         l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
@@ -167,7 +169,7 @@ contract L2AssetHandler_unstakeERC1155Assets is
                 .selector
         );
 
-        l2AssetHandler.unstakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID + 1, // unsupported remote chain
             bongBearTokenIds,
@@ -175,8 +177,8 @@ contract L2AssetHandler_unstakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that unstakeERC1155Assets functionality reverts when attempting to unstake staked ERC1155 tokens that are not owned by the msg.sender.
-    function test_unstakeERC1155AssetsRevertsWhenAttemptingToUnstakeSomeoneElsesStakedTokens()
+    /// @dev Tests that withdrawERC1155Assets functionality reverts when attempting to withdraw deposited ERC1155 tokens that are not owned by the msg.sender.
+    function test_withdrawERC1155AssetsRevertsWhenAttemptingToUndepositSomeoneElsesDepositedTokens()
         public
     {
         l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
@@ -191,16 +193,16 @@ contract L2AssetHandler_unstakeERC1155Assets is
             0
         ] = 66075445032688988859229341194671037535804503065310441849644897862140383199233; // Bong Bear #02
 
-        // staked ERC1155 token amounts are stored in a mapping, so we need to compute the storage slot to set up this test case
-        bytes32 stakedERC1155TokenAmountStorageSlot = keccak256(
+        // deposited ERC1155 token amounts are stored in a mapping, so we need to compute the storage slot to set up this test case
+        bytes32 depositedERC1155TokenAmountStorageSlot = keccak256(
             abi.encode(
-                bongBearTokenIds[0], // the staked ERC1155 token ID
+                bongBearTokenIds[0], // the deposited ERC1155 token ID
                 keccak256(
                     abi.encode(
-                        BONG_BEARS, // the staked ERC1155 token collection
+                        BONG_BEARS, // the deposited ERC1155 token collection
                         keccak256(
                             abi.encode(
-                                msg.sender, // the staker
+                                msg.sender, // the depositor
                                 L2AssetHandlerStorage.STORAGE_SLOT
                             )
                         )
@@ -209,18 +211,18 @@ contract L2AssetHandler_unstakeERC1155Assets is
             )
         );
 
-        // write the staked ERC1155 token amount to storage
+        // write the deposited ERC1155 token amount to storage
         vm.store(
             address(l2AssetHandler),
-            stakedERC1155TokenAmountStorageSlot,
+            depositedERC1155TokenAmountStorageSlot,
             bytes32(bongBearTokenAmounts[0])
         );
 
         vm.expectRevert(
-            IL2AssetHandler.ERC1155TokenAmountExceedsStakedAmount.selector
+            IL2AssetHandler.ERC1155TokenAmountExceedsDepositedAmount.selector
         );
 
-        l2AssetHandler.unstakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -228,8 +230,8 @@ contract L2AssetHandler_unstakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that unstakeERC1155Assets functionality reverts when LayerZero endpoint is not set.
-    function test_unstakeERC1155AssetsRevertsWhenLayerZeroEndpointIsNotSet()
+    /// @dev Tests that withdrawERC1155Assets functionality reverts when LayerZero endpoint is not set.
+    function test_withdrawERC1155AssetsRevertsWhenLayerZeroEndpointIsNotSet()
         public
     {
         vm.expectRevert(
@@ -238,7 +240,7 @@ contract L2AssetHandler_unstakeERC1155Assets is
                 .selector
         );
 
-        l2AssetHandler.unstakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -246,8 +248,8 @@ contract L2AssetHandler_unstakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that unstakeERC1155Assets functionality reverts when LayerZero endpoint is set incorrectly.
-    function test_unstakeERC1155AssetsRevertsWhenLayerZeroEndpointIsSetIncorrectly()
+    /// @dev Tests that withdrawERC1155Assets functionality reverts when LayerZero endpoint is set incorrectly.
+    function test_withdrawERC1155AssetsRevertsWhenLayerZeroEndpointIsSetIncorrectly()
         public
     {
         l2AssetHandler.setLayerZeroEndpoint(address(this)); // incorrect endpoint
@@ -258,7 +260,7 @@ contract L2AssetHandler_unstakeERC1155Assets is
                 .selector
         );
 
-        l2AssetHandler.unstakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -266,8 +268,8 @@ contract L2AssetHandler_unstakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that unstakeERC1155Assets functionality reverts when LayerZero message fee is not sent.
-    function test_unstakeERC1155AssetsRevertsWhenLayerZeroMessageFeeIsNotSent()
+    /// @dev Tests that withdrawERC1155Assets functionality reverts when LayerZero message fee is not sent.
+    function test_withdrawERC1155AssetsRevertsWhenLayerZeroMessageFeeIsNotSent()
         public
     {
         l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
@@ -278,7 +280,7 @@ contract L2AssetHandler_unstakeERC1155Assets is
 
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
-        l2AssetHandler.unstakeERC1155Assets( // message fee not sent
+        l2AssetHandler.withdrawERC1155Assets( // message fee not sent
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -286,8 +288,8 @@ contract L2AssetHandler_unstakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that unstakeERC1155Assets functionality reverts when LayerZero message fee sent is insufficient.
-    function test_unstakeERC1155AssetsRevertsWhenLayerZeroMessageFeeSentIsInsufficient()
+    /// @dev Tests that withdrawERC1155Assets functionality reverts when LayerZero message fee sent is insufficient.
+    function test_withdrawERC1155AssetsRevertsWhenLayerZeroMessageFeeSentIsInsufficient()
         public
     {
         l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
@@ -298,7 +300,7 @@ contract L2AssetHandler_unstakeERC1155Assets is
 
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
-        l2AssetHandler.unstakeERC1155Assets{
+        l2AssetHandler.withdrawERC1155Assets{
             value: LAYER_ZERO_MESSAGE_FEE / 5
         }( // insufficient message fee
             BONG_BEARS,
@@ -308,8 +310,8 @@ contract L2AssetHandler_unstakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that unstakeERC1155Assets functionality reverts when LayerZero trusted remote address is not set.
-    function test_unstakeERC1155AssetsRevertsWhenLayerZeroTrustedRemoteAddressIsNotSet()
+    /// @dev Tests that withdrawERC1155Assets functionality reverts when LayerZero trusted remote address is not set.
+    function test_withdrawERC1155AssetsRevertsWhenLayerZeroTrustedRemoteAddressIsNotSet()
         public
     {
         l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
@@ -320,7 +322,7 @@ contract L2AssetHandler_unstakeERC1155Assets is
                 .selector
         );
 
-        l2AssetHandler.unstakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -328,8 +330,8 @@ contract L2AssetHandler_unstakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that unstakeERC1155Assets functionality reverts when tokenIds and amounts length mismatch.
-    function test_unstakeERC1155AssetsRevertsWhenTokenIdsAndAmountsLengthMismatch()
+    /// @dev Tests that withdrawERC1155Assets functionality reverts when tokenIds and amounts length mismatch.
+    function test_withdrawERC1155AssetsRevertsWhenTokenIdsAndAmountsLengthMismatch()
         public
     {
         vm.expectRevert(
@@ -338,7 +340,7 @@ contract L2AssetHandler_unstakeERC1155Assets is
 
         bongBearTokenAmounts.push(uint256(1)); // mismatched lengths
 
-        l2AssetHandler.unstakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,

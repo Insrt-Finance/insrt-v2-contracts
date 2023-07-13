@@ -11,7 +11,7 @@ import { IAssetHandler } from "../../../interfaces/IAssetHandler.sol";
 import { PayloadEncoder } from "../../../libraries/PayloadEncoder.sol";
 
 /// @title L1AssetHandler
-/// @dev Handles NFT assets on mainnet and allows them to be staked & unstaked cross-chain via LayerZero.
+/// @dev Handles NFT assets on mainnet and allows them to be deposited & withdrawn cross-chain via LayerZero.
 contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
     /// @notice Deploys a new instance of the L1AssetHandler contract.
     constructor() {
@@ -57,7 +57,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
 
     /// TODO: add support for risk parameter
     /// @inheritdoc IL1AssetHandler
-    function stakeERC1155Assets(
+    function depositERC1155Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds,
@@ -76,19 +76,19 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
             ""
         );
 
-        _stakeERC1155Assets(
+        _depositERC1155Assets(
             collection,
             layerZeroDestinationChainId,
             tokenIds,
             amounts
         );
 
-        emit ERC1155AssetsStaked(msg.sender, collection, tokenIds, amounts);
+        emit ERC1155AssetsDeposited(msg.sender, collection, tokenIds, amounts);
     }
 
     /// TODO: add support for risk parameter
     /// @inheritdoc IL1AssetHandler
-    function stakeERC721Assets(
+    function depositERC721Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds
@@ -102,13 +102,13 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
             );
         }
 
-        _stakeERC721Assets(collection, layerZeroDestinationChainId, tokenIds);
+        _depositERC721Assets(collection, layerZeroDestinationChainId, tokenIds);
 
-        emit ERC721AssetsStaked(msg.sender, collection, tokenIds);
+        emit ERC721AssetsDeposited(msg.sender, collection, tokenIds);
     }
 
     /// @notice Handles received LayerZero cross-chain messages.
-    /// @dev Overridden from the SolidStateLayerZeroClient contract. It processes data payloads based on the asset type and transfers unstaked NFT assets accordingly.
+    /// @dev Overridden from the SolidStateLayerZeroClient contract. It processes data payloads based on the asset type and transfers withdrawn NFT assets accordingly.
     /// @param data The cross-chain message data payload. Decoded based on prefix and processed accordingly.
     function _handleLayerZeroMessage(
         uint16,
@@ -150,7 +150,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
                 ""
             );
 
-            emit ERC1155AssetsUnstaked(sender, collection, tokenIds, amounts);
+            emit ERC1155AssetsWithdrawn(sender, collection, tokenIds, amounts);
         } else {
             // Decode the payload to get the sender, the collection, and the tokenIds
             (
@@ -173,7 +173,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
                 );
             }
 
-            emit ERC721AssetsUnstaked(sender, collection, tokenIds);
+            emit ERC721AssetsWithdrawn(sender, collection, tokenIds);
         }
     }
 
@@ -181,9 +181,9 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
     /// @notice Deposits ERC1155 assets cross-chain using LayerZero.
     /// @param collection Address of the ERC1155 collection.
     /// @param layerZeroDestinationChainId The LayerZero destination chain ID.
-    /// @param tokenIds IDs of the tokens to be staked.
-    /// @param amounts The amounts of the tokens to be staked.
-    function _stakeERC1155Assets(
+    /// @param tokenIds IDs of the tokens to be deposited.
+    /// @param amounts The amounts of the tokens to be deposited.
+    function _depositERC1155Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds,
@@ -191,7 +191,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
     ) private {
         _lzSend(
             layerZeroDestinationChainId,
-            PayloadEncoder.encodeStakeERC1155AssetsPayload(
+            PayloadEncoder.encodeDepositERC1155AssetsPayload(
                 msg.sender,
                 collection,
                 tokenIds,
@@ -208,15 +208,15 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
     /// @notice Deposits ERC721 assets cross-chain using LayerZero.
     /// @param collection Address of the ERC721 collection.
     /// @param layerZeroDestinationChainId The LayerZero destination chain ID.
-    /// @param tokenIds IDs of the tokens to be staked.
-    function _stakeERC721Assets(
+    /// @param tokenIds IDs of the tokens to be deposited.
+    function _depositERC721Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds
     ) private {
         _lzSend(
             layerZeroDestinationChainId,
-            PayloadEncoder.encodeStakeERC721AssetsPayload(
+            PayloadEncoder.encodeDepositERC721AssetsPayload(
                 msg.sender,
                 collection,
                 tokenIds

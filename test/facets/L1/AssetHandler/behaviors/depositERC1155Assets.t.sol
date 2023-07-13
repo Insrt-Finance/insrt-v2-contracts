@@ -12,9 +12,9 @@ import { ILayerZeroClientBaseInternalEvents } from "../../../../interfaces/ILaye
 import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
 import { IAssetHandler } from "../../../../../contracts/interfaces/IAssetHandler.sol";
 
-/// @title L1AssetHandler_stakeERC1155Assets
-/// @dev L1AssetHandler test contract for testing expected L1 stakeERC1155Assets behavior. Tested on a Mainnet fork.
-contract L1AssetHandler_stakeERC1155Assets is
+/// @title L1AssetHandler_depositERC1155Assets
+/// @dev L1AssetHandler test contract for testing expected L1 depositERC1155Assets behavior. Tested on a Mainnet fork.
+contract L1AssetHandler_depositERC1155Assets is
     ILayerZeroClientBaseInternalEvents,
     L1AssetHandlerTest,
     L1ForkTest
@@ -44,15 +44,15 @@ contract L1AssetHandler_stakeERC1155Assets is
         bongBears.setApprovalForAll(address(l1AssetHandler), true);
     }
 
-    /// @dev Tests stakeERC1155Assets functionality for staking ERC1155 tokens.
-    function test_stakeERC1155Assets() public {
+    /// @dev Tests depositERC1155Assets functionality for depositing ERC1155 tokens.
+    function test_depositERC1155Assets() public {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
         l1AssetHandler.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
 
-        l1AssetHandler.stakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -60,8 +60,10 @@ contract L1AssetHandler_stakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that stakeERC1155Assets functionality emits an ERC1155AssetsStaked event when staking ERC1155 tokens.
-    function test_stakeERC1155AssetsEmitsERC1155AssetsStakedEvent() public {
+    /// @dev Tests that depositERC1155Assets functionality emits an ERC1155AssetsDeposited event when depositing ERC1155 tokens.
+    function test_depositERC1155AssetsEmitsERC1155AssetsDepositedEvent()
+        public
+    {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
         l1AssetHandler.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
@@ -69,14 +71,14 @@ contract L1AssetHandler_stakeERC1155Assets is
         );
 
         vm.expectEmit();
-        emit ERC1155AssetsStaked(
+        emit ERC1155AssetsDeposited(
             address(this),
             BONG_BEARS,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
 
-        l1AssetHandler.stakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -84,8 +86,8 @@ contract L1AssetHandler_stakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that stakeERC1155Assets functionality emits a MessageSent event when staking ERC1155 tokens.
-    function test_stakeERC1155AssetsEmitsMessageSent() public {
+    /// @dev Tests that depositERC1155Assets functionality emits a MessageSent event when depositing ERC1155 tokens.
+    function test_depositERC1155AssetsEmitsMessageSent() public {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
         l1AssetHandler.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
@@ -108,7 +110,7 @@ contract L1AssetHandler_stakeERC1155Assets is
             LAYER_ZERO_MESSAGE_FEE
         );
 
-        l1AssetHandler.stakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -116,8 +118,8 @@ contract L1AssetHandler_stakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that stakeERC1155Assets functionality reverts when attempting to stake ERC1155 tokens on an unsupported remote chain.
-    function test_stakeERC1155AssetsRevertsWhenAttemptingToStakeOnAnUnsupportedRemoteChain()
+    /// @dev Tests that depositERC1155Assets functionality reverts when attempting to deposit ERC1155 tokens on an unsupported remote chain.
+    function test_depositERC1155AssetsRevertsWhenAttemptingToDepositOnAnUnsupportedRemoteChain()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
@@ -132,7 +134,7 @@ contract L1AssetHandler_stakeERC1155Assets is
                 .selector
         );
 
-        l1AssetHandler.stakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID + 1, // unsupported remote chain
             bongBearTokenIds,
@@ -140,8 +142,8 @@ contract L1AssetHandler_stakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that stakeERC1155Assets functionality reverts when LayerZero endpoint is not set.
-    function test_stakeERC1155AssetsRevertsWhenLayerZeroEndpointIsNotSet()
+    /// @dev Tests that depositERC1155Assets functionality reverts when LayerZero endpoint is not set.
+    function test_depositERC1155AssetsRevertsWhenLayerZeroEndpointIsNotSet()
         public
     {
         vm.expectRevert(
@@ -150,7 +152,7 @@ contract L1AssetHandler_stakeERC1155Assets is
                 .selector
         );
 
-        l1AssetHandler.stakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -158,8 +160,8 @@ contract L1AssetHandler_stakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that stakeERC1155Assets functionality reverts when LayerZero endpoint is set incorrectly.
-    function test_stakeERC1155AssetsRevertsWhenLayerZeroEndpointIsSetIncorrectly()
+    /// @dev Tests that depositERC1155Assets functionality reverts when LayerZero endpoint is set incorrectly.
+    function test_depositERC1155AssetsRevertsWhenLayerZeroEndpointIsSetIncorrectly()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(address(this)); // incorrect endpoint
@@ -170,7 +172,7 @@ contract L1AssetHandler_stakeERC1155Assets is
                 .selector
         );
 
-        l1AssetHandler.stakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -178,8 +180,8 @@ contract L1AssetHandler_stakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that stakeERC1155Assets functionality reverts when LayerZero message fee is not sent.
-    function test_stakeERC1155AssetsRevertsWhenLayerZeroMessageFeeIsNotSent()
+    /// @dev Tests that depositERC1155Assets functionality reverts when LayerZero message fee is not sent.
+    function test_depositERC1155AssetsRevertsWhenLayerZeroMessageFeeIsNotSent()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
@@ -190,7 +192,7 @@ contract L1AssetHandler_stakeERC1155Assets is
 
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
-        l1AssetHandler.stakeERC1155Assets( // message fee not sent
+        l1AssetHandler.depositERC1155Assets( // message fee not sent
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -198,8 +200,8 @@ contract L1AssetHandler_stakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that stakeERC1155Assets functionality reverts when LayerZero message fee sent is insufficient.
-    function test_stakeERC1155AssetsRevertsWhenLayerZeroMessageFeeSentIsInsufficient()
+    /// @dev Tests that depositERC1155Assets functionality reverts when LayerZero message fee sent is insufficient.
+    function test_depositERC1155AssetsRevertsWhenLayerZeroMessageFeeSentIsInsufficient()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
@@ -210,7 +212,9 @@ contract L1AssetHandler_stakeERC1155Assets is
 
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
-        l1AssetHandler.stakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE / 3 }( // insufficient message fee
+        l1AssetHandler.depositERC1155Assets{
+            value: LAYER_ZERO_MESSAGE_FEE / 3
+        }( // insufficient message fee
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -218,8 +222,8 @@ contract L1AssetHandler_stakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that stakeERC1155Assets functionality reverts when LayerZero trusted remote address is not set.
-    function test_stakeERC1155AssetsRevertsWhenLayerZeroTrustedRemoteAddressIsNotSet()
+    /// @dev Tests that depositERC1155Assets functionality reverts when LayerZero trusted remote address is not set.
+    function test_depositERC1155AssetsRevertsWhenLayerZeroTrustedRemoteAddressIsNotSet()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
@@ -230,7 +234,7 @@ contract L1AssetHandler_stakeERC1155Assets is
                 .selector
         );
 
-        l1AssetHandler.stakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -238,8 +242,8 @@ contract L1AssetHandler_stakeERC1155Assets is
         );
     }
 
-    /// @dev Tests that stakeERC1155Assets functionality reverts when tokenIds and amounts length mismatch.
-    function test_stakeERC1155AssetsRevertsWhenTokenIdsAndAmountsLengthMismatch()
+    /// @dev Tests that depositERC1155Assets functionality reverts when tokenIds and amounts length mismatch.
+    function test_depositERC1155AssetsRevertsWhenTokenIdsAndAmountsLengthMismatch()
         public
     {
         vm.expectRevert(
@@ -248,7 +252,7 @@ contract L1AssetHandler_stakeERC1155Assets is
 
         bongBearTokenAmounts.push(uint256(1)); // mismatched lengths
 
-        l1AssetHandler.stakeERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,

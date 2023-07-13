@@ -22,8 +22,8 @@ contract L2AssetHandler_handleLayerZeroMessage is
     /// @dev Dummy test nonce value.
     uint64 internal constant TEST_NONCE = 0;
 
-    /// @dev Tests _handleLayerZeroMessage functionality for staking ERC1155 tokens.
-    function test_handleLayerZeroMessageERC1155Staking() public {
+    /// @dev Tests _handleLayerZeroMessage functionality for depositing ERC1155 tokens.
+    function test_handleLayerZeroMessageERC1155Deposit() public {
         bytes memory encodedData = abi.encode(
             PayloadEncoder.AssetType.ERC1155,
             msg.sender,
@@ -39,16 +39,16 @@ contract L2AssetHandler_handleLayerZeroMessage is
             encodedData
         );
 
-        // the staked ERC1155 token amount is stored in a mapping, so we need to compute the storage slot
-        bytes32 stakedERC1155TokenAmountStorageSlot = keccak256(
+        // the deposited ERC1155 token amount is stored in a mapping, so we need to compute the storage slot
+        bytes32 depositedERC1155TokenAmountStorageSlot = keccak256(
             abi.encode(
-                bongBearTokenIds[0], // the staked ERC1155 token ID
+                bongBearTokenIds[0], // the deposited ERC1155 token ID
                 keccak256(
                     abi.encode(
-                        BONG_BEARS, // the staked ERC1155 token collection
+                        BONG_BEARS, // the deposited ERC1155 token collection
                         keccak256(
                             abi.encode(
-                                msg.sender, // the staker
+                                msg.sender, // the depositor
                                 L2AssetHandlerStorage.STORAGE_SLOT
                             )
                         )
@@ -57,17 +57,17 @@ contract L2AssetHandler_handleLayerZeroMessage is
             )
         );
 
-        uint256 stakedERC1155TokenAmount = uint256(
-            vm.load(address(this), stakedERC1155TokenAmountStorageSlot)
+        uint256 depositedERC1155TokenAmount = uint256(
+            vm.load(address(this), depositedERC1155TokenAmountStorageSlot)
         );
 
-        // mappings are hash tables, so this assertion proves that the staked ERC1155 token amount was
-        // set correctly for the staker, collection, and the given token ID.
-        assertEq(stakedERC1155TokenAmount, bongBearTokenAmounts[0]);
+        // mappings are hash tables, so this assertion proves that the deposited ERC1155 token amount was
+        // set correctly for the depositor, collection, and the given token ID.
+        assertEq(depositedERC1155TokenAmount, bongBearTokenAmounts[0]);
     }
 
-    /// @dev Tests that _handleLayerZeroMessage emits an ERC1155AssetsStaked event when staking ERC1155 tokens.
-    function test_handleLayerZeroMessageERC1155StakingEmitsERC1155AssetsStakedEvent()
+    /// @dev Tests that _handleLayerZeroMessage emits an ERC1155AssetsDeposited event when depositing ERC1155 tokens.
+    function test_handleLayerZeroMessageERC1155DepositEmitsERC1155AssetsDepositedEvent()
         public
     {
         bytes memory encodedData = abi.encode(
@@ -79,7 +79,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
         );
 
         vm.expectEmit();
-        emit ERC1155AssetsStaked(
+        emit ERC1155AssetsDeposited(
             msg.sender,
             BONG_BEARS,
             bongBearTokenIds,
@@ -94,8 +94,8 @@ contract L2AssetHandler_handleLayerZeroMessage is
         );
     }
 
-    /// @dev Tests _handleLayerZeroMessage functionality for staking ERC721 tokens.
-    function test_handleLayerZeroMessageERC721Staking() public {
+    /// @dev Tests _handleLayerZeroMessage functionality for depositing ERC721 tokens.
+    function test_handleLayerZeroMessageERC721Deposit() public {
         bytes memory encodedData = abi.encode(
             PayloadEncoder.AssetType.ERC721,
             msg.sender,
@@ -103,7 +103,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             boredApeYachtClubTokenIds
         );
 
-        // record the storage slot of the staked ERC721 token ID
+        // record the storage slot of the deposited ERC721 token ID
         vm.record();
 
         L2AssetHandlerMock(address(this)).mock_HandleLayerZeroMessage(
@@ -113,18 +113,18 @@ contract L2AssetHandler_handleLayerZeroMessage is
             encodedData
         );
 
-        // access the storage slot of the staked ERC721 token ID via storageWrites
+        // access the storage slot of the deposited ERC721 token ID via storageWrites
         (, bytes32[] memory storageWrites) = vm.accesses(address(this));
 
-        uint256 stakedERC721TokenId = uint256(
+        uint256 depositedERC721TokenId = uint256(
             vm.load(address(this), storageWrites[0])
         );
 
-        assertEq(stakedERC721TokenId, boredApeYachtClubTokenIds[0]);
+        assertEq(depositedERC721TokenId, boredApeYachtClubTokenIds[0]);
     }
 
-    /// @dev Tests that _handleLayerZeroMessage emits an ERC721AssetsStaked event when staking ERC721 tokens.
-    function test_handleLayerZeroMessageERC721StakingEmitsERC721AssetsStakedEvent()
+    /// @dev Tests that _handleLayerZeroMessage emits an ERC721AssetsDeposited event when depositing ERC721 tokens.
+    function test_handleLayerZeroMessageERC721DepositEmitsERC721AssetsDepositedEvent()
         public
     {
         bytes memory encodedData = abi.encode(
@@ -135,7 +135,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
         );
 
         vm.expectEmit();
-        emit ERC721AssetsStaked(
+        emit ERC721AssetsDeposited(
             msg.sender,
             BORED_APE_YACHT_CLUB,
             boredApeYachtClubTokenIds

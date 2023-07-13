@@ -37,8 +37,8 @@ contract L1AssetHandlerHelper {
         functionSelectors[3] = IAssetHandler
             .setLayerZeroTrustedRemoteAddress
             .selector;
-        functionSelectors[4] = IL1AssetHandler.stakeERC1155Assets.selector;
-        functionSelectors[5] = IL1AssetHandler.stakeERC721Assets.selector;
+        functionSelectors[4] = IL1AssetHandler.depositERC1155Assets.selector;
+        functionSelectors[5] = IL1AssetHandler.depositERC721Assets.selector;
 
         ISolidStateDiamond.FacetCut memory facetCut = IDiamondWritableInternal
             .FacetCut({

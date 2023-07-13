@@ -7,7 +7,7 @@ import { IAssetHandlerEvents } from "./IAssetHandlerEvents.sol";
 /// @title IAssetHandler
 /// @dev Defines the base interface for the AssetHandler contracts.
 interface IAssetHandler is IAssetHandlerEvents {
-    /// @notice Thrown when the length of the `tokenIds` array and the `amounts` array are not equal in the `stakeERC1155Assets` & `unstakeERC1155Assets` functions.
+    /// @notice Thrown when the length of the `tokenIds` array and the `amounts` array are not equal in the `depositERC1155Assets` & `withdrawERC1155Assets` functions.
     error ERC1155TokenIdsAndAmountsLengthMismatch();
 
     /// @notice Sets the LayerZero endpoint address for this contract.

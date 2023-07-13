@@ -32,8 +32,8 @@ contract L2AssetHandlerHelper {
         functionSelectors[1] = IAssetHandler
             .setLayerZeroTrustedRemoteAddress
             .selector;
-        functionSelectors[2] = IL2AssetHandler.unstakeERC1155Assets.selector;
-        functionSelectors[3] = IL2AssetHandler.unstakeERC721Assets.selector;
+        functionSelectors[2] = IL2AssetHandler.withdrawERC1155Assets.selector;
+        functionSelectors[3] = IL2AssetHandler.withdrawERC721Assets.selector;
 
         ISolidStateDiamond.FacetCut memory facetCut = IDiamondWritableInternal
             .FacetCut({

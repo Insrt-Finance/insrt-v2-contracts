@@ -3,7 +3,7 @@
 pragma solidity 0.8.20;
 
 /// @title PayloadEncoder
-/// @dev Utility library for encoding stake and unstake NFT asset payloads.
+/// @dev Utility library for encoding deposit and withdraw NFT asset payloads.
 /// Used to relay cross-chain messages using LayerZero.
 library PayloadEncoder {
     /// @notice Used to distinguish between different types of operations in the payload.
@@ -13,14 +13,14 @@ library PayloadEncoder {
         ERC721
     }
 
-    /// @notice Encodes the payload for staking ERC-1155 assets cross-chain.
-    /// @param staker Address of the staker.
+    /// @notice Encodes the payload for depositing ERC-1155 assets cross-chain.
+    /// @param depositor Address of the depositor.
     /// @param collection Address of the collection.
     /// @param tokenIds Array of token ids.
     /// @param amounts Array of amounts, corresponding to the token ids.
     /// @return payload The encoded payload.
-    function encodeStakeERC1155AssetsPayload(
-        address staker,
+    function encodeDepositERC1155AssetsPayload(
+        address depositor,
         address collection,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts
@@ -28,58 +28,58 @@ library PayloadEncoder {
         // Pack the parameters into a dynamically-sized byte array
         payload = abi.encode(
             AssetType.ERC1155,
-            staker,
+            depositor,
             collection,
             tokenIds,
             amounts
         );
     }
 
-    /// @notice Encodes the payload for staking ERC-721 assets cross-chain.
-    /// @param staker Address of the staker.
+    /// @notice Encodes the payload for depositing ERC-721 assets cross-chain.
+    /// @param depositor Address of the depositor.
     /// @param collection Address of the collection.
     /// @param tokenIds Array of token ids.
     /// @return payload The encoded payload.
-    function encodeStakeERC721AssetsPayload(
-        address staker,
+    function encodeDepositERC721AssetsPayload(
+        address depositor,
         address collection,
         uint256[] calldata tokenIds
     ) internal pure returns (bytes memory payload) {
         // Pack the parameters into a dynamically-sized byte array
-        payload = abi.encode(AssetType.ERC721, staker, collection, tokenIds);
+        payload = abi.encode(AssetType.ERC721, depositor, collection, tokenIds);
     }
 
-    /// @notice Encodes the payload for unstaking ERC-1155 assets cross-chain.
-    /// @param staker Address of the staker.
+    /// @notice Encodes the payload for withdrawing ERC-1155 assets cross-chain.
+    /// @param depositor Address of the depositor.
     /// @param collection Address of the collection.
     /// @param tokenIds Array of token ids.
     /// @param amounts Array of amounts, corresponding to the token ids.
     /// @return payload The encoded payload.
-    function encodeUnstakeERC1155AssetsPayload(
-        address staker,
+    function encodeWithdrawERC1155AssetsPayload(
+        address depositor,
         address collection,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts
     ) internal pure returns (bytes memory payload) {
         payload = abi.encode(
             AssetType.ERC1155,
-            staker,
+            depositor,
             collection,
             tokenIds,
             amounts
         );
     }
 
-    /// @notice Encodes the payload for unstaking ERC-721 assets cross-chain.
-    /// @param staker Address of the staker.
+    /// @notice Encodes the payload for withdrawing ERC-721 assets cross-chain.
+    /// @param depositor Address of the depositor.
     /// @param collection Address of the collection.
     /// @param tokenIds Array of token ids.
     /// @return payload The encoded payload.
-    function encodeUnstakeERC721AssetsPayload(
-        address staker,
+    function encodeWithdrawERC721AssetsPayload(
+        address depositor,
         address collection,
         uint256[] calldata tokenIds
     ) internal pure returns (bytes memory payload) {
-        payload = abi.encode(AssetType.ERC721, staker, collection, tokenIds);
+        payload = abi.encode(AssetType.ERC721, depositor, collection, tokenIds);
     }
 }

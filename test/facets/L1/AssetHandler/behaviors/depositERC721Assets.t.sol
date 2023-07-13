@@ -10,9 +10,9 @@ import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
 import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
 import { IAssetHandler } from "../../../../../contracts/interfaces/IAssetHandler.sol";
 
-/// @title L1AssetHandler_stakeERC721Assets
-/// @dev L1AssetHandler test contract for testing expected L1 stakeERC721Assets behavior. Tested on a Mainnet fork.
-contract L1AssetHandler_stakeERC721Assets is
+/// @title L1AssetHandler_depositERC721Assets
+/// @dev L1AssetHandler test contract for testing expected L1 depositERC721Assets behavior. Tested on a Mainnet fork.
+contract L1AssetHandler_depositERC721Assets is
     ILayerZeroClientBaseInternalEvents,
     L1AssetHandlerTest,
     L1ForkTest
@@ -44,23 +44,23 @@ contract L1AssetHandler_stakeERC721Assets is
         boredApeYachtClub.setApprovalForAll(address(l1AssetHandler), true);
     }
 
-    /// @dev Tests stakeERC721Assets functionality for staking ERC721 tokens.
-    function test_stakeERC721Assets() public {
+    /// @dev Tests depositERC721Assets functionality for depositing ERC721 tokens.
+    function test_depositERC721Assets() public {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
         l1AssetHandler.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
 
-        l1AssetHandler.stakeERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
         );
     }
 
-    /// @dev Tests that stakeERC721Assets functionality emits an ERC721AssetsStaked event when staking ERC721 tokens.
-    function test_stakeERC721AssetsEmitsERC721AssetsStakedEvent() public {
+    /// @dev Tests that depositERC721Assets functionality emits an ERC721AssetsDeposited event when depositing ERC721 tokens.
+    function test_depositERC721AssetsEmitsERC721AssetsDepositedEvent() public {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
         l1AssetHandler.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
@@ -68,21 +68,21 @@ contract L1AssetHandler_stakeERC721Assets is
         );
 
         vm.expectEmit();
-        emit ERC721AssetsStaked(
+        emit ERC721AssetsDeposited(
             address(this),
             BORED_APE_YACHT_CLUB,
             boredApeYachtClubTokenIds
         );
 
-        l1AssetHandler.stakeERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
         );
     }
 
-    /// @dev Tests that stakeERC721Assets functionality emits a MessageSent event when staking ERC721 tokens.
-    function test_stakeERC721AssetsEmitsMessageSent() public {
+    /// @dev Tests that depositERC721Assets functionality emits a MessageSent event when depositing ERC721 tokens.
+    function test_depositERC721AssetsEmitsMessageSent() public {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
         l1AssetHandler.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
@@ -104,15 +104,15 @@ contract L1AssetHandler_stakeERC721Assets is
             LAYER_ZERO_MESSAGE_FEE
         );
 
-        l1AssetHandler.stakeERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
         );
     }
 
-    /// @dev Tests that stakeERC721Assets functionality reverts when attempting to stake ERC721 tokens on an unsupported remote chain.
-    function test_stakeERC721AssetsRevertsWhenAttemptingToStakeOnAnUnsupportedRemoteChain()
+    /// @dev Tests that depositERC721Assets functionality reverts when attempting to deposit ERC721 tokens on an unsupported remote chain.
+    function test_depositERC721AssetsRevertsWhenAttemptingToDepositOnAnUnsupportedRemoteChain()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
@@ -127,15 +127,15 @@ contract L1AssetHandler_stakeERC721Assets is
                 .selector
         );
 
-        l1AssetHandler.stakeERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID + 1, // unsupported remote chain
             boredApeYachtClubTokenIds
         );
     }
 
-    /// @dev Tests that stakeERC721Assets functionality reverts when LayerZero endpoint is not set.
-    function test_stakeERC721AssetsRevertsWhenLayerZeroEndpointIsNotSet()
+    /// @dev Tests that depositERC721Assets functionality reverts when LayerZero endpoint is not set.
+    function test_depositERC721AssetsRevertsWhenLayerZeroEndpointIsNotSet()
         public
     {
         vm.expectRevert(
@@ -144,15 +144,15 @@ contract L1AssetHandler_stakeERC721Assets is
                 .selector
         );
 
-        l1AssetHandler.stakeERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
         );
     }
 
-    /// @dev Tests that stakeERC721Assets functionality reverts when LayerZero endpoint is set incorrectly.
-    function test_stakeERC721AssetsRevertsWhenLayerZeroEndpointIsSetIncorrectly()
+    /// @dev Tests that depositERC721Assets functionality reverts when LayerZero endpoint is set incorrectly.
+    function test_depositERC721AssetsRevertsWhenLayerZeroEndpointIsSetIncorrectly()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(address(this)); // incorrect endpoint
@@ -163,15 +163,15 @@ contract L1AssetHandler_stakeERC721Assets is
                 .selector
         );
 
-        l1AssetHandler.stakeERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
         );
     }
 
-    /// @dev Tests that stakeERC721Assets functionality reverts when LayerZero message fee is not sent.
-    function test_stakeERC721AssetsRevertsWhenLayerZeroMessageFeeIsNotSent()
+    /// @dev Tests that depositERC721Assets functionality reverts when LayerZero message fee is not sent.
+    function test_depositERC721AssetsRevertsWhenLayerZeroMessageFeeIsNotSent()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
@@ -182,15 +182,15 @@ contract L1AssetHandler_stakeERC721Assets is
 
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
-        l1AssetHandler.stakeERC721Assets( // message fee not sent
+        l1AssetHandler.depositERC721Assets( // message fee not sent
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
         );
     }
 
-    /// @dev Tests that stakeERC721Assets functionality reverts when LayerZero message fee sent is insufficient.
-    function test_stakeERC721AssetsRevertsWhenLayerZeroMessageFeeSentIsInsufficient()
+    /// @dev Tests that depositERC721Assets functionality reverts when LayerZero message fee sent is insufficient.
+    function test_depositERC721AssetsRevertsWhenLayerZeroMessageFeeSentIsInsufficient()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
@@ -201,15 +201,15 @@ contract L1AssetHandler_stakeERC721Assets is
 
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
-        l1AssetHandler.stakeERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE / 3 }( // insufficient message fee
+        l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE / 3 }( // insufficient message fee
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
         );
     }
 
-    /// @dev Tests that stakeERC721Assets functionality reverts when LayerZero trusted remote address is not set.
-    function test_stakeERC721AssetsRevertsWhenLayerZeroTrustedRemoteAddressIsNotSet()
+    /// @dev Tests that depositERC721Assets functionality reverts when LayerZero trusted remote address is not set.
+    function test_depositERC721AssetsRevertsWhenLayerZeroTrustedRemoteAddressIsNotSet()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
@@ -220,7 +220,7 @@ contract L1AssetHandler_stakeERC721Assets is
                 .selector
         );
 
-        l1AssetHandler.stakeERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds

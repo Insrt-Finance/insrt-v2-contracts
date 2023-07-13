@@ -25,8 +25,8 @@ contract L1AssetHandler_handleLayerZeroMessage is
     /// @dev Dummy test nonce value.
     uint64 internal constant TEST_NONCE = 0;
 
-    /// @dev Tests _handleLayerZeroMessage functionality for unstaking ERC1155 tokens.
-    function test_handleLayerZeroMessageERC1155Unstaking() public {
+    /// @dev Tests _handleLayerZeroMessage functionality for withdrawing ERC1155 tokens.
+    function test_handleLayerZeroMessageERC1155Withdrawal() public {
         stdstore
             .target(BONG_BEARS)
             .sig(bongBears.balanceOf.selector)
@@ -60,8 +60,8 @@ contract L1AssetHandler_handleLayerZeroMessage is
         );
     }
 
-    /// @dev Tests that _handleLayerZeroMessage emits an ERC1155AssetsUnstaked event when unstaking ERC1155 tokens.
-    function test_handleLayerZeroMessageERC1155UnstakingEmitsERC1155AssetsUnstakedEvent()
+    /// @dev Tests that _handleLayerZeroMessage emits an ERC1155AssetsWithdrawn event when withdrawing ERC1155 tokens.
+    function test_handleLayerZeroMessageERC1155WithdrawalEmitsERC1155AssetsWithdrawnEvent()
         public
     {
         stdstore
@@ -80,7 +80,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
         );
 
         vm.expectEmit();
-        emit ERC1155AssetsUnstaked(
+        emit ERC1155AssetsWithdrawn(
             msg.sender,
             BONG_BEARS,
             bongBearTokenIds,
@@ -95,8 +95,8 @@ contract L1AssetHandler_handleLayerZeroMessage is
         );
     }
 
-    /// @dev Tests _handleLayerZeroMessage functionality for unstaking ERC721 tokens.
-    function test_handleLayerZeroMessageERC721Unstaking() public {
+    /// @dev Tests _handleLayerZeroMessage functionality for withdrawing ERC721 tokens.
+    function test_handleLayerZeroMessageERC721Withdrawal() public {
         address ownerToImpersonate = boredApeYachtClub.ownerOf(
             boredApeYachtClubTokenIds[0]
         );
@@ -128,8 +128,8 @@ contract L1AssetHandler_handleLayerZeroMessage is
         );
     }
 
-    /// @dev Tests that _handleLayerZeroMessage emits an ERC721AssetsUnstaked event when unstaking ERC721 tokens.
-    function test_handleLayerZeroMessageERC721UnstakingEmitsERC721AssetsUnstakedEvent()
+    /// @dev Tests that _handleLayerZeroMessage emits an ERC721AssetsWithdrawn event when withdrawing ERC721 tokens.
+    function test_handleLayerZeroMessageERC721WithdrawalEmitsERC721AssetsWithdrawnEvent()
         public
     {
         address ownerToImpersonate = boredApeYachtClub.ownerOf(
@@ -151,7 +151,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
         );
 
         vm.expectEmit();
-        emit ERC721AssetsUnstaked(
+        emit ERC721AssetsWithdrawn(
             msg.sender,
             BORED_APE_YACHT_CLUB,
             boredApeYachtClubTokenIds

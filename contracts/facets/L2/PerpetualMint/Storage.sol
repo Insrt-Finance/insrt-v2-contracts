@@ -34,7 +34,7 @@ library PerpetualMintStorage {
         /// @dev group of tokenIds which may be minted for a collection
         mapping(address collection => EnumerableSet.UintSet tokenIds) activeTokenIds;
         /// @dev sum of risk across all tokens of the same id for a collection
-        /// for ERC721 collcetions, this is just for a single token
+        /// for ERC721 collections, this is just for a single token
         mapping(address collection => mapping(uint256 tokenId => uint256 risk)) tokenRisk;
         //ERC721
         /// @dev links the current owner of an escrowed token of a collection
@@ -42,15 +42,15 @@ library PerpetualMintStorage {
         mapping(address collection => mapping(uint256 tokenId => address owner)) escrowedERC721Owner;
         //ERC1155
         /// @dev set of owners of each tokenId for an ERC1155 collection
-        mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet ownerss)) escrowedERC1155Owners;
+        mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet owners)) escrowedERC1155Owners;
         /// @dev sum of all individual token risks of a token for an ERC1155 collection
         mapping(address collection => mapping(uint256 tokenId => uint64 risk)) totalTokenRisk;
         /// @dev set of ERC1155 token owners which have tokens escrowed and available for minting, of a given tokenId for a collection
         mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet owners)) activeERC1155Owners;
         ///User specific
-        /// @dev amont of deductions in ETH (native token) for a depositor for a collecion
+        /// @dev amount of deductions in ETH (native token) for a depositor for a collection
         mapping(address depositor => mapping(address collection => uint256 amount)) depositorDeductions;
-        /// @dev amont of earnings in ETH (native token) for a depositor for a collecion
+        /// @dev amount of earnings in ETH (native token) for a depositor for a collection
         mapping(address depositor => mapping(address collection => uint256 amount)) depositorEarnings;
         /// @dev amount of tokens escrowed by the contract on behalf of a depositor for a collection
         /// which are able to be minted via mint attempts

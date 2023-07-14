@@ -258,7 +258,7 @@ contract L1AssetHandler_depositERC1155Assets is
         public
     {
         vm.expectRevert(
-            IAssetHandler.ERC1155TokenIdsAndAmountsLengthMismatch.selector
+            IAssetHandler.ERC1155TokenIdsAmountsAndRisksLengthMismatch.selector
         );
 
         bongBearTokenAmounts.push(uint256(1)); // mismatched lengths

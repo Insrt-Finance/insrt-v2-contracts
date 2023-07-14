@@ -63,9 +63,11 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         uint256[] calldata tokenIds,
         uint256[] calldata amounts
     ) external payable {
-        // Check that the lengths of the tokenIds and amounts arrays match
-        if (tokenIds.length != amounts.length) {
-            revert ERC1155TokenIdsAndAmountsLengthMismatch();
+        // Checks that the lengths of the tokenIds, amounts, and risks arrays match
+        if (
+            tokenIds.length != amounts.length || risks.length != amounts.length
+        ) {
+            revert ERC1155TokenIdsAmountsAndRisksLengthMismatch();
         }
 
         IERC1155(collection).safeBatchTransferFrom(

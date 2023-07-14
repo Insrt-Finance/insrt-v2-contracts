@@ -23,4 +23,9 @@ interface IPerpetualMintInternal {
     /// @param collection address of collection that attempted mint is for
     /// @param result success status of mint attempt
     event ERC721MintResolved(address collection, bool result);
+
+    /// @notice emitted when the mint price of a collection is set
+    /// @param collection address of collection
+    /// @param price mint price of collection
+    event MintPriceSet(address collection, uint256 price);
 }

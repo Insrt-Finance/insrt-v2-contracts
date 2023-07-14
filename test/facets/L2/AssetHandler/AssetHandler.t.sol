@@ -45,6 +45,9 @@ abstract contract L2AssetHandlerTest is IAssetHandlerEvents, L2CoreTest {
 
     uint256[] internal bongBearTokenAmounts = new uint256[](1);
 
+    /// @dev LayerZero message fee.
+    uint256 internal LAYER_ZERO_MESSAGE_FEE;
+
     /// @dev Required to receive refund Ether from LayerZero _lzSend relay calls.
     receive() external payable {}
 

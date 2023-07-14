@@ -13,7 +13,4 @@ abstract contract L2ForkTest is Test {
     /// @dev Identifier for the simulated Arbitrum fork.
     /// @notice Fork is created, available for selection, and selected by default.
     uint256 internal arbitrumFork = vm.createSelectFork(ARBITRUM_RPC_URL);
-
-    /// @dev LayerZero message fee.
-    uint256 internal constant LAYER_ZERO_MESSAGE_FEE = 0.04 ether; // Arbitrum ETH
 }

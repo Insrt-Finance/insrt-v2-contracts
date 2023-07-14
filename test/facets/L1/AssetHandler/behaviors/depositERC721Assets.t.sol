@@ -3,6 +3,7 @@
 pragma solidity 0.8.20;
 
 import { ILayerZeroClientBaseInternal } from "@solidstate/layerzero-client/base/ILayerZeroClientBaseInternal.sol";
+import { ILayerZeroEndpoint } from "@solidstate/layerzero-client/interfaces/ILayerZeroEndpoint.sol";
 
 import { L1AssetHandlerTest } from "../AssetHandler.t.sol";
 import { ILayerZeroClientBaseInternalEvents } from "../../../../interfaces/ILayerZeroClientBaseInternalEvents.sol";
@@ -21,9 +22,30 @@ contract L1AssetHandler_depositERC721Assets is
     bytes internal constant LAYER_ZERO_MESSAGE_FEE_REVERT =
         "LayerZero: not enough native for fees";
 
+    /// @dev Test ERC721 deposit payload.
+    bytes internal TEST_ERC721_DEPOSIT_PAYLOAD;
+
     /// @dev Sets up the test case environment.
     function setUp() public override {
         super.setUp();
+
+        TEST_ERC721_DEPOSIT_PAYLOAD = abi.encode(
+            PayloadEncoder.AssetType.ERC721,
+            address(this),
+            BORED_APE_YACHT_CLUB,
+            testRisks,
+            boredApeYachtClubTokenIds
+        );
+
+        (LAYER_ZERO_MESSAGE_FEE, ) = ILayerZeroEndpoint(
+            MAINNET_LAYER_ZERO_ENDPOINT
+        ).estimateFees(
+                DESTINATION_LAYER_ZERO_CHAIN_ID,
+                address(l1AssetHandler),
+                TEST_ERC721_DEPOSIT_PAYLOAD,
+                false,
+                ""
+            );
 
         address ownerToImpersonate = boredApeYachtClub.ownerOf(
             boredApeYachtClubTokenIds[0]
@@ -95,13 +117,7 @@ contract L1AssetHandler_depositERC721Assets is
         vm.expectEmit();
         emit MessageSent(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            abi.encode(
-                PayloadEncoder.AssetType.ERC721,
-                address(this),
-                BORED_APE_YACHT_CLUB,
-                testRisks,
-                boredApeYachtClubTokenIds
-            ),
+            TEST_ERC721_DEPOSIT_PAYLOAD,
             address(this),
             address(0),
             "",

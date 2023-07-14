@@ -55,7 +55,7 @@ contract L1AssetHandler_depositERC1155Assets is
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -75,7 +75,7 @@ contract L1AssetHandler_depositERC1155Assets is
         emit ERC1155AssetsDeposited(
             address(this),
             BONG_BEARS,
-            RISK,
+            testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -83,7 +83,7 @@ contract L1AssetHandler_depositERC1155Assets is
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -104,7 +104,7 @@ contract L1AssetHandler_depositERC1155Assets is
                 PayloadEncoder.AssetType.ERC1155,
                 address(this),
                 BONG_BEARS,
-                RISK,
+                testRisks,
                 bongBearTokenIds,
                 bongBearTokenAmounts
             ),
@@ -117,7 +117,7 @@ contract L1AssetHandler_depositERC1155Assets is
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -142,7 +142,7 @@ contract L1AssetHandler_depositERC1155Assets is
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID + 1, // unsupported remote chain
-            RISK,
+            testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -161,7 +161,7 @@ contract L1AssetHandler_depositERC1155Assets is
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -182,7 +182,7 @@ contract L1AssetHandler_depositERC1155Assets is
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -203,7 +203,7 @@ contract L1AssetHandler_depositERC1155Assets is
         l1AssetHandler.depositERC1155Assets( // message fee not sent
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -226,7 +226,7 @@ contract L1AssetHandler_depositERC1155Assets is
         }( // insufficient message fee
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -247,7 +247,7 @@ contract L1AssetHandler_depositERC1155Assets is
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -266,7 +266,7 @@ contract L1AssetHandler_depositERC1155Assets is
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
         );

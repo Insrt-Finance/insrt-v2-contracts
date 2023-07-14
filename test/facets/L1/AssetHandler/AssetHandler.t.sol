@@ -41,8 +41,8 @@ abstract contract L1AssetHandlerTest is IAssetHandlerEvents, L1CoreTest {
     /// @dev The LayerZero proprietary chain ID for setting Arbitrum as the destination blockchain.
     uint16 internal constant DESTINATION_LAYER_ZERO_CHAIN_ID = 110;
 
-    /// @dev The test risk setting for deposited assets.
-    uint64 internal constant RISK = 1;
+    /// @dev The test risk settings for deposited assets.
+    uint64[] internal testRisks = new uint64[](1);
 
     uint256[] internal boredApeYachtClubTokenIds = new uint256[](1);
 
@@ -69,6 +69,8 @@ abstract contract L1AssetHandlerTest is IAssetHandlerEvents, L1CoreTest {
         boredApeYachtClub = IERC721(BORED_APE_YACHT_CLUB);
 
         boredApeYachtClubTokenIds[0] = 0;
+
+        testRisks[0] = 1;
 
         l1AssetHandler = IL1AssetHandler(address(l1CoreDiamond));
     }

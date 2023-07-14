@@ -55,7 +55,7 @@ contract L1AssetHandler_depositERC721Assets is
         l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             boredApeYachtClubTokenIds
         );
     }
@@ -72,14 +72,14 @@ contract L1AssetHandler_depositERC721Assets is
         emit ERC721AssetsDeposited(
             address(this),
             BORED_APE_YACHT_CLUB,
-            RISK,
+            testRisks,
             boredApeYachtClubTokenIds
         );
 
         l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             boredApeYachtClubTokenIds
         );
     }
@@ -99,7 +99,7 @@ contract L1AssetHandler_depositERC721Assets is
                 PayloadEncoder.AssetType.ERC721,
                 address(this),
                 BORED_APE_YACHT_CLUB,
-                RISK,
+                testRisks,
                 boredApeYachtClubTokenIds
             ),
             address(this),
@@ -111,7 +111,7 @@ contract L1AssetHandler_depositERC721Assets is
         l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             boredApeYachtClubTokenIds
         );
     }
@@ -135,7 +135,7 @@ contract L1AssetHandler_depositERC721Assets is
         l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID + 1, // unsupported remote chain
-            RISK,
+            testRisks,
             boredApeYachtClubTokenIds
         );
     }
@@ -153,7 +153,7 @@ contract L1AssetHandler_depositERC721Assets is
         l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             boredApeYachtClubTokenIds
         );
     }
@@ -173,7 +173,7 @@ contract L1AssetHandler_depositERC721Assets is
         l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             boredApeYachtClubTokenIds
         );
     }
@@ -193,7 +193,7 @@ contract L1AssetHandler_depositERC721Assets is
         l1AssetHandler.depositERC721Assets( // message fee not sent
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             boredApeYachtClubTokenIds
         );
     }
@@ -213,7 +213,7 @@ contract L1AssetHandler_depositERC721Assets is
         l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE / 3 }( // insufficient message fee
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             boredApeYachtClubTokenIds
         );
     }
@@ -233,7 +233,7 @@ contract L1AssetHandler_depositERC721Assets is
         l1AssetHandler.depositERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
-            RISK,
+            testRisks,
             boredApeYachtClubTokenIds
         );
     }

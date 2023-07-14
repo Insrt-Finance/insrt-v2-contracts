@@ -28,7 +28,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             PayloadEncoder.AssetType.ERC1155,
             msg.sender,
             BONG_BEARS,
-            RISK,
+            testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -75,7 +75,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             PayloadEncoder.AssetType.ERC1155,
             msg.sender,
             BONG_BEARS,
-            RISK,
+            testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -84,7 +84,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
         emit ERC1155AssetsDeposited(
             msg.sender,
             BONG_BEARS,
-            RISK,
+            testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -103,7 +103,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             PayloadEncoder.AssetType.ERC721,
             msg.sender,
             BORED_APE_YACHT_CLUB,
-            RISK,
+            testRisks,
             boredApeYachtClubTokenIds
         );
 
@@ -135,7 +135,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             PayloadEncoder.AssetType.ERC721,
             msg.sender,
             BORED_APE_YACHT_CLUB,
-            RISK,
+            testRisks,
             boredApeYachtClubTokenIds
         );
 
@@ -143,7 +143,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
         emit ERC721AssetsDeposited(
             msg.sender,
             BORED_APE_YACHT_CLUB,
-            RISK,
+            testRisks,
             boredApeYachtClubTokenIds
         );
 
@@ -163,7 +163,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             bytes32(uint256(2)), // invalid asset type
             msg.sender,
             BONG_BEARS,
-            RISK,
+            testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
         );

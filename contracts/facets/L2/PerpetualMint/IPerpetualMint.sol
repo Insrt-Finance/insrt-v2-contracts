@@ -33,4 +33,14 @@ interface IPerpetualMint {
     /// @notice claims all earnings of a collection for the msg.sender
     /// @param collection address of collection
     function claimEarnings(address collection) external;
+
+    /// @notice updates the risk associated with an escrowed token
+    /// @param collection address of token collection
+    /// @param tokenId id of token
+    /// @param risk risk value
+    function updateTokenRisk(
+        address collection,
+        uint256 tokenId,
+        uint64 risk
+    ) external;
 }

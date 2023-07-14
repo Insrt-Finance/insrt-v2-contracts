@@ -62,6 +62,15 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal {
         _claimEarnings(msg.sender, collection);
     }
 
+    /// @inheritdoc IPerpetualMint
+    function updateTokenRisk(
+        address collection,
+        uint256 tokenId,
+        uint64 risk
+    ) external {
+        _updateTokenRisk(msg.sender, collection, tokenId, risk);
+    }
+
     /// @notice Chainlink VRF Coordinator callback
     /// @param requestId id of request for random values
     /// @param randomWords random values returned from Chainlink VRF coordination

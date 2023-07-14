@@ -8,6 +8,12 @@ interface IPerpetualMintInternal {
     /// @notice thrown when an incorrent amount of ETH is received
     error IncorrectETHReceived();
 
+    /// @notice thrown when a non-owner is attempting to modify token parameters
+    error OnlyEscrowedTokenOwner();
+
+    /// @notice thrown when attempting to set a value of risk larger than basis
+    error BasisExceeded();
+
     /// @notice emitted when the outcome of an attempted mint is resolved
     /// @param collection address of collection that attempted mint is for
     /// @param result success status of mint attempt

@@ -2,9 +2,8 @@
 
 pragma solidity 0.8.20;
 
-import "@solidstate/contracts/interfaces/IERC1155.sol";
-import "@solidstate/contracts/interfaces/IERC721.sol";
-
+import { IERC1155 } from "@solidstate/contracts/interfaces/IERC1155.sol";
+import { IERC721 } from "@solidstate/contracts/interfaces/IERC721.sol";
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
 import { L1AssetHandlerHelper } from "./AssetHandlerHelper.t.sol";

@@ -5,7 +5,7 @@ pragma solidity 0.8.20;
 import { SolidStateLayerZeroClient } from "@solidstate/layerzero-client/SolidStateLayerZeroClient.sol";
 
 import { IL2AssetHandler } from "./IAssetHandler.sol";
-import { L2AssetHandlerStorage as Storage } from "./Storage.sol";
+import { L2AssetHandlerStorage } from "./Storage.sol";
 import { IAssetHandler } from "../../../interfaces/IAssetHandler.sol";
 import { PayloadEncoder } from "../../../libraries/PayloadEncoder.sol";
 
@@ -45,21 +45,25 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             revert ERC1155TokenIdsAndAmountsLengthMismatch();
         }
 
+        L2AssetHandlerStorage.Layout
+            storage l2AssetHandlerStorageLayout = L2AssetHandlerStorage
+                .layout();
+
         // For each tokenId, check if deposited amount is less than requested withdraw amount
         // If it is, revert the transaction with a custom error
         // If not, reduce deposited amount by withdraw amount
         for (uint256 i = 0; i < tokenIds.length; i++) {
             if (
-                Storage.layout().depositedERC1155Assets[msg.sender][collection][
-                    tokenIds[i]
-                ] < amounts[i]
+                l2AssetHandlerStorageLayout.depositedERC1155Assets[msg.sender][
+                    collection
+                ][tokenIds[i]] < amounts[i]
             ) {
                 revert ERC1155TokenAmountExceedsDepositedAmount();
             }
 
-            Storage.layout().depositedERC1155Assets[msg.sender][collection][
-                tokenIds[i]
-            ] -= amounts[i];
+            l2AssetHandlerStorageLayout.depositedERC1155Assets[msg.sender][
+                collection
+            ][tokenIds[i]] -= amounts[i];
         }
 
         _withdrawERC1155Assets(
@@ -78,21 +82,25 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds
     ) external payable {
+        L2AssetHandlerStorage.Layout
+            storage l2AssetHandlerStorageLayout = L2AssetHandlerStorage
+                .layout();
+
         // For each tokenId, check if token is deposited
         // If it's not, revert the transaction with a custom error
         // If it is, remove it from the set of deposited tokens
         for (uint256 i = 0; i < tokenIds.length; i++) {
             if (
-                Storage.layout().depositedERC721Assets[msg.sender][collection][
-                    tokenIds[i]
-                ] == false
+                l2AssetHandlerStorageLayout.depositedERC721Assets[msg.sender][
+                    collection
+                ][tokenIds[i]] == false
             ) {
                 revert ERC721TokenNotDeposited();
             }
 
-            Storage.layout().depositedERC721Assets[msg.sender][collection][
-                tokenIds[i]
-            ] = false;
+            l2AssetHandlerStorageLayout.depositedERC721Assets[msg.sender][
+                collection
+            ][tokenIds[i]] = false;
         }
 
         _withdrawERC721Assets(

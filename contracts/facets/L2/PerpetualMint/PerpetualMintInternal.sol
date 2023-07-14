@@ -23,8 +23,6 @@ abstract contract PerpetualMintInternal is
     using AddressUtils for address payable;
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.UintSet;
-    using EnumerableSet for EnumerableSet.AddressSet;
-    using AddressUtils for address payable;
 
     /// @dev denominator used in percentage calculations
     uint32 internal constant BASIS = 1000000000;
@@ -462,6 +460,17 @@ abstract contract PerpetualMintInternal is
     function _setCollectionType(address collection, bool isERC721) internal {
         Storage.layout().collectionType[collection] = isERC721;
         emit CollectionTypeSet(collection, isERC721);
+    }
+
+    /// @notice set the mint price for a given collection
+    /// @param collection address of collection
+    /// @param price mint price of the collection
+    function _setCollectionMintPrice(
+        address collection,
+        uint256 price
+    ) internal {
+        Storage.layout().collectionMintPrice[collection] = price;
+        emit MintPriceSet(collection, price);
     }
 
     /// @notice updates the earnings of a depositor  based on current conitions

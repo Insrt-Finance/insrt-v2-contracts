@@ -430,4 +430,61 @@ abstract contract PerpetualMintInternal is
             ];
         }
     }
+
+    /// @notice updates the risk associated with an escrowed token
+    /// @param depositor address of escrowed token owner
+    /// @param collection address of token collection
+    /// @param tokenId id of token
+    /// @param risk risk value
+    function _updateTokenRisk(
+        address depositor,
+        address collection,
+        uint256 tokenId,
+        uint64 risk
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        if (risk > BASIS) {
+            revert BasisExceeded();
+        }
+
+        if (l.collectionType[collection]) {
+            if (depositor != l.escrowedERC721Owner[collection][tokenId]) {
+                revert OnlyEscrowedTokenOwner();
+            }
+
+            uint64 oldRisk = l.tokenRisk[collection][tokenId];
+
+            l.tokenRisk[collection][tokenId] = risk;
+            l.totalRisk[collection] += risk > oldRisk
+                ? risk - oldRisk
+                : oldRisk - risk;
+        } else {
+            if (
+                !l.escrowedERC1155Owners[collection][tokenId].contains(
+                    depositor
+                )
+            ) {
+                revert OnlyEscrowedTokenOwner();
+            }
+            if (
+                !l.activeERC1155Owners[collection][tokenId].contains(depositor)
+            ) {
+                l.activeERC1155Owners[collection][tokenId].add(depositor);
+                l.activeERC1155Tokens[depositor][collection][tokenId] = l
+                    .inactiveERC1155Tokens[depositor][collection][tokenId];
+                delete l.inactiveERC1155Tokens[depositor][collection][tokenId];
+            }
+            uint64 oldRisk = l.depositorTokenRisk[depositor][collection][
+                tokenId
+            ];
+
+            uint64 riskChange = (
+                risk > oldRisk ? risk - oldRisk : oldRisk - risk
+            ) * uint64(l.activeERC1155Tokens[depositor][collection][tokenId]);
+            l.totalDepositorRisk[depositor][collection] += riskChange;
+            l.tokenRisk[collection][tokenId] += riskChange;
+            l.depositorTokenRisk[depositor][collection][tokenId] = risk;
+        }
+    }
 }

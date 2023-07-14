@@ -317,7 +317,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
         l2AssetHandler.withdrawERC1155Assets{
-            value: LAYER_ZERO_MESSAGE_FEE / 5
+            value: LAYER_ZERO_MESSAGE_FEE / 6
         }( // insufficient message fee
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,

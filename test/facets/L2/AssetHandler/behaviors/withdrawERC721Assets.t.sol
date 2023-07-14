@@ -297,7 +297,7 @@ contract L2AssetHandler_withdrawERC721Assets is
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
         l2AssetHandler.withdrawERC721Assets{
-            value: LAYER_ZERO_MESSAGE_FEE / 5
+            value: LAYER_ZERO_MESSAGE_FEE / 6
         }( // insufficient message fee
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,

@@ -253,6 +253,25 @@ contract L1AssetHandler_depositERC1155Assets is
         );
     }
 
+    /// @dev Tests that depositERC1155Assets functionality reverts when risks and amounts length mismatch.
+    function test_depositERC1155AssetsRevertsWhenRisksAndAmountsLengthMismatch()
+        public
+    {
+        vm.expectRevert(
+            IAssetHandler.ERC1155TokenIdsAmountsAndRisksLengthMismatch.selector
+        );
+
+        testRisks.push(uint64(1)); // mismatched lengths
+
+        l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            BONG_BEARS,
+            DESTINATION_LAYER_ZERO_CHAIN_ID,
+            testRisks,
+            bongBearTokenIds,
+            bongBearTokenAmounts
+        );
+    }
+
     /// @dev Tests that depositERC1155Assets functionality reverts when tokenIds and amounts length mismatch.
     function test_depositERC1155AssetsRevertsWhenTokenIdsAndAmountsLengthMismatch()
         public

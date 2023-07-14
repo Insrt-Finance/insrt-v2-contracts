@@ -2,12 +2,14 @@
 
 pragma solidity ^0.8.21;
 
+import { Ownable } from "@solidstate/contracts/access/ownable/Ownable.sol";
+
 import { IPerpetualMint } from "./IPerpetualMint.sol";
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 
 /// @title PerpetualMint facet contract
 /// @dev contains all externally called functions
-contract PerpetualMint is IPerpetualMint, PerpetualMintInternal {
+contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
     constructor(
         bytes32 keyHash,
         address vrf,
@@ -60,6 +62,14 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal {
     /// @inheritdoc IPerpetualMint
     function claimEarnings(address collection) external {
         _claimEarnings(msg.sender, collection);
+    }
+
+    /// @inheritdoc IPerpetualMint
+    function setCollectionMintPrice(
+        address collection,
+        uint256 price
+    ) external onlyOwner {
+        _setCollectionMintPrice(collection, price);
     }
 
     /// @inheritdoc IPerpetualMint

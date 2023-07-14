@@ -34,6 +34,11 @@ interface IPerpetualMint {
     /// @param collection address of collection
     function claimEarnings(address collection) external;
 
+    /// @notice set the mint price for a given collection
+    /// @param collection address of collection
+    /// @param price mint price of the collection
+    function setCollectionMintPrice(address collection, uint256 price) external;
+
     /// @notice updates the risk associated with an escrowed token
     /// @param collection address of token collection
     /// @param tokenId id of token

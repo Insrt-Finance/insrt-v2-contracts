@@ -472,6 +472,17 @@ abstract contract PerpetualMintInternal is
         emit CollectionTypeSet(collection, isERC721);
     }
 
+    /// @notice set the mint price for a given collection
+    /// @param collection address of collection
+    /// @param price mint price of the collection
+    function _setCollectionMintPrice(
+        address collection,
+        uint256 price
+    ) internal {
+        Storage.layout().collectionMintPrice[collection] = price;
+        emit MintPriceSet(collection, price);
+    }
+
     /// @notice updates the earnings of a depositor  based on current conitions
     /// @param collection address of collection earnings relate to
     /// @param depositor address of depositor

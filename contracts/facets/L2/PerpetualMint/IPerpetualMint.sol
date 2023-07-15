@@ -34,6 +34,15 @@ interface IPerpetualMint {
     /// @param collection address of collection
     function claimEarnings(address collection) external;
 
+    /// @notice returns owner of escrowed ERC721 token
+    /// @param collection address of collection
+    /// @param tokenId id of token
+    /// @return owner address of token owner
+    function escrowedERC721TokenOwner(
+        address collection,
+        uint256 tokenId
+    ) external view returns (address owner);
+
     /// @notice set the mint price for a given collection
     /// @param collection address of collection
     /// @param price mint price of the collection

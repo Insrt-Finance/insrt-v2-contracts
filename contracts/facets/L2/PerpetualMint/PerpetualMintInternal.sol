@@ -252,6 +252,17 @@ abstract contract PerpetualMintInternal is
         owner = Storage.layout().escrowedERC721Owner[collection][tokenId];
     }
 
+    /// @notice returns owner of escrowed ERC721 token
+    /// @param collection address of collection
+    /// @param tokenId id of token
+    /// @return owner address of token owner
+    function _escrowedERC721TokenOwner(
+        address collection,
+        uint256 tokenId
+    ) internal view returns (address owner) {
+        owner = Storage.layout().escrowedERC721Owner[collection][tokenId];
+    }
+
     /// @notice internal Chainlink VRF callback
     /// @notice is executed by the ChainlinkVRF Coordinator contract
     /// @param requestId id of chainlinkVRF request

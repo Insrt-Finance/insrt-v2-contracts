@@ -154,7 +154,7 @@ abstract contract PerpetualMintInternal is
     ) private pure returns (uint64[2] memory chunks) {
         unchecked {
             for (uint64 i = 0; i < 2; ++i) {
-                chunks[i] = uint64(value << (i * 64));
+                chunks[i] = uint64(value >> (i * 64));
             }
         }
     }
@@ -167,7 +167,7 @@ abstract contract PerpetualMintInternal is
     ) private pure returns (uint128[2] memory chunks) {
         unchecked {
             for (uint256 i = 0; i < 2; ++i) {
-                chunks[i] = uint128(value << (i * 128));
+                chunks[i] = uint128(value >> (i * 128));
             }
         }
     }

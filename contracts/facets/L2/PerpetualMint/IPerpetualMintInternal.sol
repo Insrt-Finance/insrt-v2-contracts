@@ -28,4 +28,9 @@ interface IPerpetualMintInternal {
     /// @param collection address of collection
     /// @param price mint price of collection
     event MintPriceSet(address collection, uint256 price);
+
+    /// @notice emitted when the type of a collection is set
+    /// @param collection address of collection
+    /// @param isERC721 whether collection is an ERC721
+    event CollectionTypeSet(address collection, bool isERC721);
 }

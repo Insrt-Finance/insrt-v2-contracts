@@ -39,6 +39,11 @@ interface IPerpetualMint {
     /// @param price mint price of the collection
     function setCollectionMintPrice(address collection, uint256 price) external;
 
+    /// @notice sets the type of a collection
+    /// @param collection address of collection
+    /// @param isERC721 bool indicating whether collection is ERC721 or ERC1155
+    function setCollectionType(address collection, bool isERC721) external;
+
     /// @notice updates the risk associated with an escrowed token
     /// @param collection address of token collection
     /// @param tokenId id of token

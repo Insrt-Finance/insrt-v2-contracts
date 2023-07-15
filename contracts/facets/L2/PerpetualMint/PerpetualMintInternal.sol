@@ -364,7 +364,7 @@ abstract contract PerpetualMintInternal is
         address collection,
         uint256 tokenId,
         uint64 randomValue
-    ) private view returns (address owner) {
+    ) internal view returns (address owner) {
         Storage.Layout storage l = Storage.layout();
 
         EnumerableSet.AddressSet storage owners = l.activeERC1155Owners[
@@ -394,7 +394,7 @@ abstract contract PerpetualMintInternal is
     function _selectToken(
         address collection,
         uint128 randomValue
-    ) private view returns (uint256 tokenId) {
+    ) internal view returns (uint256 tokenId) {
         Storage.Layout storage l = Storage.layout();
 
         EnumerableSet.UintSet storage tokenIds = l.activeTokenIds[collection];

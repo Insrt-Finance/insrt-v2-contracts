@@ -483,6 +483,14 @@ abstract contract PerpetualMintInternal is
         emit MintPriceSet(collection, price);
     }
 
+    /// @notice sets the type of a collection
+    /// @param collection address of collection
+    /// @param isERC721 bool indicating whether collection is ERC721 or ERC1155
+    function _setCollectionType(address collection, bool isERC721) internal {
+        Storage.layout().collectionType[collection] = isERC721;
+        emit CollectionTypeSet(collection, isERC721);
+    }
+
     /// @notice updates the earnings of a depositor  based on current conitions
     /// @param collection address of collection earnings relate to
     /// @param depositor address of depositor

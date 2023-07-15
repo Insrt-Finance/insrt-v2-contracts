@@ -55,7 +55,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             // Reduce the senders' (claimants') claimable balance of the ERC1155 token
             perpetualMintStorageLayout.inactiveERC1155Tokens[msg.sender][
                 collection
-            ][claims[i].tokenId] -= claims[i].amount;
+            ][claims[i].tokenId] -= uint64(claims[i].amount);
 
             // Reduce the original owners' (depositors') deposit balance of the ERC1155 token
             L2AssetHandlerStorage.layout().erc1155Deposits[

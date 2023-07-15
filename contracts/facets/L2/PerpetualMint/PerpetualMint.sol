@@ -65,6 +65,14 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
     }
 
     /// @inheritdoc IPerpetualMint
+    function escrowedERC721TokenOwner(
+        address collection,
+        uint256 tokenId
+    ) external view returns (address owner) {
+        owner = _escrowedERC721TokenOwner(collection, tokenId);
+    }
+
+    /// @inheritdoc IPerpetualMint
     function setCollectionMintPrice(
         address collection,
         uint256 price

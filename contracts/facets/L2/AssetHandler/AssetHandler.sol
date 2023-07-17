@@ -53,32 +53,36 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         PerpetualMintStorage.Layout
             storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
 
-        // For each tokenId, check if deposited amount is less than requested withdraw amount
-        // If it is, revert the transaction with a custom error
-        // If not, reduce deposited amount by withdraw amount
+        // Iterate over each token ID
         for (uint256 i = 0; i < tokenIds.length; i++) {
+            // Reduce the number of the deposited ERC1155 assets for the sender (depositor)
             L2AssetHandlerStorage.layout().depositedERC1155Assets[msg.sender][
                 collection
             ][tokenIds[i]] -= amounts[i];
 
+            // Reduce the count of active ERC1155 tokens for the sender (depositor)
             perpetualMintStorageLayout.activeERC1155Tokens[msg.sender][
                 collection
             ][tokenIds[i]] -= amounts[i];
 
+            // Calculate the risk to be deducted based on the risk for each token and the amount to be withdrawn
             uint64 riskToBeDeducted = perpetualMintStorageLayout
                 .depositorTokenRisk[collection][msg.sender][tokenIds[i]] *
                 uint64(amounts[i]);
 
+            // If all tokens of a particular ID owned by the sender are withdrawn
             if (
                 perpetualMintStorageLayout.activeERC1155Tokens[msg.sender][
                     collection
                 ][tokenIds[i]] == 0
             ) {
+                // Remove the sender from the list of active owners of the token ID
                 perpetualMintStorageLayout
                 .activeERC1155Owners[collection][tokenIds[i]].remove(
                         msg.sender
                     );
 
+                // If there are no more active owners for the token ID, remove the token ID from the list of active token IDs
                 if (
                     perpetualMintStorageLayout
                     .activeERC1155Owners[collection][tokenIds[i]].length() == 0
@@ -88,28 +92,34 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                         .remove(tokenIds[i]);
                 }
 
+                // Reset the risk for the sender and the token ID
                 perpetualMintStorageLayout.depositorTokenRisk[collection][
                     msg.sender
                 ][tokenIds[i]] = 0;
             }
 
+            // Reduce the total count of active tokens in the collection
             perpetualMintStorageLayout.totalActiveTokens[collection] -= amounts[
                 i
             ];
 
+            // Reduce the total risk for the sender in the collection
             perpetualMintStorageLayout.totalDepositorRisk[collection][
                 msg.sender
             ] -= riskToBeDeducted;
 
+            // Reduce the total risk in the collection
             perpetualMintStorageLayout.totalRisk[
                 collection
             ] -= riskToBeDeducted;
 
+            // Reduce the total risk for the token ID in the collection
             perpetualMintStorageLayout.totalTokenRisk[collection][
                 tokenIds[i]
             ] -= riskToBeDeducted;
         }
 
+        // If there are no more active tokens in the collection, remove the collection from the list of active collections
         if (perpetualMintStorageLayout.totalActiveTokens[collection] == 0) {
             perpetualMintStorageLayout.activeCollections.remove(collection);
         }
@@ -137,10 +147,9 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         PerpetualMintStorage.Layout
             storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
 
-        // For each tokenId, check if token is deposited
-        // If it's not, revert the transaction with a custom error
-        // If it is, remove it from the set of deposited tokens
+        // Iterate over each token ID
         for (uint256 i = 0; i < tokenIds.length; i++) {
+            // If the token is not deposited by the sender, revert the transaction
             if (
                 l2AssetHandlerStorageLayout.depositedERC721Assets[msg.sender][
                     collection
@@ -149,38 +158,48 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 revert ERC721TokenNotDeposited();
             }
 
+            // Reset the token as not deposited by the sender
             l2AssetHandlerStorageLayout.depositedERC721Assets[msg.sender][
                 collection
             ][tokenIds[i]] = false;
 
+            // Remove the token ID from the active token IDs in the collection
             perpetualMintStorageLayout.activeTokenIds[collection].remove(
                 tokenIds[i]
             );
 
+            // Decrement the count of active tokens for the sender in the collection
             perpetualMintStorageLayout.activeTokens[msg.sender][collection]--;
 
+            // Calculate the risk to be deducted based on the sender's risk for the token ID in the collection
             uint64 riskToBeDeducted = perpetualMintStorageLayout
                 .depositorTokenRisk[collection][msg.sender][tokenIds[i]];
 
+            // Reset the risk for the sender and the token ID in the collection
             perpetualMintStorageLayout.depositorTokenRisk[collection][
                 msg.sender
             ][tokenIds[i]] = 0;
 
+            // Deduct the risk from the total risk for the token ID in the collection
             perpetualMintStorageLayout.tokenRisk[collection][
                 tokenIds[i]
             ] -= riskToBeDeducted;
 
+            // Decrement the total number of active tokens in the collection
             perpetualMintStorageLayout.totalActiveTokens[collection]--;
 
+            // Deduct the risk from the total risk for the sender in the collection
             perpetualMintStorageLayout.totalDepositorRisk[collection][
                 msg.sender
             ] -= riskToBeDeducted;
 
+            // Deduct the risk from the total risk in the collection
             perpetualMintStorageLayout.totalRisk[
                 collection
             ] -= riskToBeDeducted;
         }
 
+        // If there are no active tokens in the collection, remove it from the active collections
         if (perpetualMintStorageLayout.totalActiveTokens[collection] == 0) {
             perpetualMintStorageLayout.activeCollections.remove(collection);
         }

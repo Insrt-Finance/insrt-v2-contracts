@@ -181,17 +181,22 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                     collection
                 ] += amounts[i];
 
+                uint64 totalAddedRisk = risks[i] * uint64(amounts[i]);
+
                 // Update the total risk for the depositor in the collection
                 perpetualMintStorageLayout.totalDepositorRisk[collection][
                     depositor
-                ] += risks[i];
+                ] += totalAddedRisk;
 
-                perpetualMintStorageLayout.totalRisk[collection] += risks[i];
+                // Update the total risk in the collection
+                perpetualMintStorageLayout.totalRisk[
+                    collection
+                ] += totalAddedRisk;
 
                 // Update the total risk for the token ID in the collection
                 perpetualMintStorageLayout.totalTokenRisk[collection][
                     tokenIds[i]
-                ] += risks[i];
+                ] += totalAddedRisk;
             }
 
             // Add the collection to the set of active collections

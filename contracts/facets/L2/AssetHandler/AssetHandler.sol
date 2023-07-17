@@ -50,17 +50,68 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             revert ERC1155TokenIdsAndAmountsLengthMismatch();
         }
 
-        L2AssetHandlerStorage.Layout
-            storage l2AssetHandlerStorageLayout = L2AssetHandlerStorage
-                .layout();
+        PerpetualMintStorage.Layout
+            storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
 
         // For each tokenId, check if deposited amount is less than requested withdraw amount
         // If it is, revert the transaction with a custom error
         // If not, reduce deposited amount by withdraw amount
         for (uint256 i = 0; i < tokenIds.length; i++) {
-            l2AssetHandlerStorageLayout.depositedERC1155Assets[msg.sender][
+            L2AssetHandlerStorage.layout().depositedERC1155Assets[msg.sender][
                 collection
             ][tokenIds[i]] -= amounts[i];
+
+            perpetualMintStorageLayout.activeERC1155Tokens[msg.sender][
+                collection
+            ][tokenIds[i]] -= amounts[i];
+
+            uint64 riskToBeDeducted = perpetualMintStorageLayout
+                .depositorTokenRisk[collection][msg.sender][tokenIds[i]] *
+                uint64(amounts[i]);
+
+            if (
+                perpetualMintStorageLayout.activeERC1155Tokens[msg.sender][
+                    collection
+                ][tokenIds[i]] == 0
+            ) {
+                perpetualMintStorageLayout
+                .activeERC1155Owners[collection][tokenIds[i]].remove(
+                        msg.sender
+                    );
+
+                if (
+                    perpetualMintStorageLayout
+                    .activeERC1155Owners[collection][tokenIds[i]].length() == 0
+                ) {
+                    perpetualMintStorageLayout
+                        .activeTokenIds[collection]
+                        .remove(tokenIds[i]);
+                }
+
+                perpetualMintStorageLayout.depositorTokenRisk[collection][
+                    msg.sender
+                ][tokenIds[i]] = 0;
+            }
+
+            perpetualMintStorageLayout.totalActiveTokens[collection] -= amounts[
+                i
+            ];
+
+            perpetualMintStorageLayout.totalDepositorRisk[collection][
+                msg.sender
+            ] -= riskToBeDeducted;
+
+            perpetualMintStorageLayout.totalRisk[
+                collection
+            ] -= riskToBeDeducted;
+
+            perpetualMintStorageLayout.totalTokenRisk[collection][
+                tokenIds[i]
+            ] -= riskToBeDeducted;
+        }
+
+        if (perpetualMintStorageLayout.totalActiveTokens[collection] == 0) {
+            perpetualMintStorageLayout.activeCollections.remove(collection);
         }
 
         _withdrawERC1155Assets(
@@ -83,23 +134,55 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             storage l2AssetHandlerStorageLayout = L2AssetHandlerStorage
                 .layout();
 
+        PerpetualMintStorage.Layout
+            storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
+
         // For each tokenId, check if token is deposited
         // If it's not, revert the transaction with a custom error
         // If it is, remove it from the set of deposited tokens
-        unchecked {
-            for (uint256 i = 0; i < tokenIds.length; i++) {
-                if (
-                    l2AssetHandlerStorageLayout.depositedERC721Assets[
-                        msg.sender
-                    ][collection][tokenIds[i]] == false
-                ) {
-                    revert ERC721TokenNotDeposited();
-                }
-
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            if (
                 l2AssetHandlerStorageLayout.depositedERC721Assets[msg.sender][
                     collection
-                ][tokenIds[i]] = false;
+                ][tokenIds[i]] == false
+            ) {
+                revert ERC721TokenNotDeposited();
             }
+
+            l2AssetHandlerStorageLayout.depositedERC721Assets[msg.sender][
+                collection
+            ][tokenIds[i]] = false;
+
+            perpetualMintStorageLayout.activeTokenIds[collection].remove(
+                tokenIds[i]
+            );
+
+            perpetualMintStorageLayout.activeTokens[msg.sender][collection]--;
+
+            uint64 riskToBeDeducted = perpetualMintStorageLayout
+                .depositorTokenRisk[collection][msg.sender][tokenIds[i]];
+
+            perpetualMintStorageLayout.depositorTokenRisk[collection][
+                msg.sender
+            ][tokenIds[i]] = 0;
+
+            perpetualMintStorageLayout.tokenRisk[collection][
+                tokenIds[i]
+            ] -= riskToBeDeducted;
+
+            perpetualMintStorageLayout.totalActiveTokens[collection]--;
+
+            perpetualMintStorageLayout.totalDepositorRisk[collection][
+                msg.sender
+            ] -= riskToBeDeducted;
+
+            perpetualMintStorageLayout.totalRisk[
+                collection
+            ] -= riskToBeDeducted;
+        }
+
+        if (perpetualMintStorageLayout.totalActiveTokens[collection] == 0) {
+            perpetualMintStorageLayout.activeCollections.remove(collection);
         }
 
         _withdrawERC721Assets(

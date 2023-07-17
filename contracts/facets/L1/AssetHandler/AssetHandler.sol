@@ -102,13 +102,15 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         uint64[] calldata risks,
         uint256[] calldata tokenIds
     ) external payable {
-        for (uint256 i = 0; i < tokenIds.length; i++) {
-            IERC721(collection).safeTransferFrom(
-                msg.sender,
-                address(this),
-                tokenIds[i],
-                ""
-            );
+        unchecked {
+            for (uint256 i = 0; i < tokenIds.length; i++) {
+                IERC721(collection).safeTransferFrom(
+                    msg.sender,
+                    address(this),
+                    tokenIds[i],
+                    ""
+                );
+            }
         }
 
         _depositERC721Assets(
@@ -178,13 +180,15 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
                 );
 
             // Transfer the ERC721 assets to the sender
-            for (uint256 i = 0; i < tokenIds.length; i++) {
-                IERC721(collection).safeTransferFrom(
-                    address(this),
-                    sender,
-                    tokenIds[i],
-                    ""
-                );
+            unchecked {
+                for (uint256 i = 0; i < tokenIds.length; i++) {
+                    IERC721(collection).safeTransferFrom(
+                        address(this),
+                        sender,
+                        tokenIds[i],
+                        ""
+                    );
+                }
             }
 
             emit ERC721AssetsWithdrawn(sender, collection, tokenIds);

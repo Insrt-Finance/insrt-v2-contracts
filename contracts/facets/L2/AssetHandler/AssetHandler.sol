@@ -94,18 +94,20 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         // For each tokenId, check if token is deposited
         // If it's not, revert the transaction with a custom error
         // If it is, remove it from the set of deposited tokens
-        for (uint256 i = 0; i < tokenIds.length; i++) {
-            if (
+        unchecked {
+            for (uint256 i = 0; i < tokenIds.length; i++) {
+                if (
+                    l2AssetHandlerStorageLayout.depositedERC721Assets[
+                        msg.sender
+                    ][collection][tokenIds[i]] == false
+                ) {
+                    revert ERC721TokenNotDeposited();
+                }
+
                 l2AssetHandlerStorageLayout.depositedERC721Assets[msg.sender][
                     collection
-                ][tokenIds[i]] == false
-            ) {
-                revert ERC721TokenNotDeposited();
+                ][tokenIds[i]] = false;
             }
-
-            l2AssetHandlerStorageLayout.depositedERC721Assets[msg.sender][
-                collection
-            ][tokenIds[i]] = false;
         }
 
         _withdrawERC721Assets(

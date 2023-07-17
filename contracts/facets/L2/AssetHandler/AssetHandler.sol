@@ -150,12 +150,14 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                     )
                 );
 
-            // Update the deposited ERC1155 assets in the contract's storage
+            // Iterate over each token ID
             for (uint256 i = 0; i < tokenIds.length; i++) {
+                // Update the amount of deposited ERC1155 assets for the depositor and the token ID in the collection
                 L2AssetHandlerStorage.layout().depositedERC1155Assets[
                     depositor
                 ][collection][tokenIds[i]] += amounts[i];
 
+                // Add the depositor to the set of active owners for the token ID in the collection
                 perpetualMintStorageLayout
                 .activeERC1155Owners[collection][tokenIds[i]].add(depositor);
 
@@ -163,29 +165,35 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                     tokenIds[i]
                 );
 
+                // Update the amount of active ERC1155 tokens for the depositor and the token ID in the collection
                 perpetualMintStorageLayout.activeERC1155Tokens[depositor][
                     collection
                 ][tokenIds[i]] += amounts[i];
 
+                // Set the risk for the depositor and the token ID in the collection
                 perpetualMintStorageLayout.depositorTokenRisk[collection][
                     depositor
                 ][tokenIds[i]] = risks[i];
 
+                // Update the total number of active tokens in the collection
                 perpetualMintStorageLayout.totalActiveTokens[
                     collection
                 ] += amounts[i];
 
+                // Update the total risk for the depositor in the collection
                 perpetualMintStorageLayout.totalDepositorRisk[collection][
                     depositor
                 ] += risks[i];
 
                 perpetualMintStorageLayout.totalRisk[collection] += risks[i];
 
+                // Update the total risk for the token ID in the collection
                 perpetualMintStorageLayout.totalTokenRisk[collection][
                     tokenIds[i]
                 ] += risks[i];
             }
 
+            // Add the collection to the set of active collections
             perpetualMintStorageLayout.activeCollections.add(collection);
 
             emit ERC1155AssetsDeposited(
@@ -214,37 +222,46 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                     )
                 );
 
-            // Update the deposited ERC721 assets in the contract's storage
+            // Iterate over each token ID
             for (uint256 i = 0; i < tokenIds.length; i++) {
+                // Mark the ERC721 token as deposited by the depositor in the collection
                 L2AssetHandlerStorage.layout().depositedERC721Assets[depositor][
                     collection
                 ][tokenIds[i]] = true;
 
+                // Add the token ID to the set of active token IDs in the collection
                 perpetualMintStorageLayout.activeTokenIds[collection].add(
                     tokenIds[i]
                 );
 
+                // Increment the count of active tokens for the depositor in the collection
                 perpetualMintStorageLayout.activeTokens[depositor][
                     collection
                 ]++;
 
+                // Set the risk for the depositor and the token ID in the collection
                 perpetualMintStorageLayout.depositorTokenRisk[collection][
                     depositor
                 ][tokenIds[i]] = risks[i];
 
+                // Increase the risk for the token ID in the collection
                 perpetualMintStorageLayout.tokenRisk[collection][
                     tokenIds[i]
                 ] += risks[i];
 
+                // Increment the total number of active tokens in the collection
                 perpetualMintStorageLayout.totalActiveTokens[collection]++;
 
+                // Increase the total risk for the depositor in the collection
                 perpetualMintStorageLayout.totalDepositorRisk[collection][
                     depositor
                 ] += risks[i];
 
+                // Increase the total risk in the collection
                 perpetualMintStorageLayout.totalRisk[collection] += risks[i];
             }
 
+            // Add the collection to the set of active collections
             perpetualMintStorageLayout.activeCollections.add(collection);
 
             emit ERC721AssetsDeposited(depositor, collection, risks, tokenIds);

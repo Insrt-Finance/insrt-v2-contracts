@@ -58,14 +58,6 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         // If it is, revert the transaction with a custom error
         // If not, reduce deposited amount by withdraw amount
         for (uint256 i = 0; i < tokenIds.length; i++) {
-            if (
-                l2AssetHandlerStorageLayout.depositedERC1155Assets[msg.sender][
-                    collection
-                ][tokenIds[i]] < amounts[i]
-            ) {
-                revert ERC1155TokenAmountExceedsDepositedAmount();
-            }
-
             l2AssetHandlerStorageLayout.depositedERC1155Assets[msg.sender][
                 collection
             ][tokenIds[i]] -= amounts[i];

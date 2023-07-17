@@ -7,9 +7,6 @@ import { IAssetHandler } from "../../../interfaces/IAssetHandler.sol";
 /// @title IL2AssetHandler
 /// @dev Defines interface for the L2AssetHandler contract. Extends IAssetHandler.
 interface IL2AssetHandler is IAssetHandler {
-    /// @notice Thrown when a user tries to withdraw more ERC1155 tokens than they have deposited. May implicitly signal that there are no tokens deposited.
-    error ERC1155TokenAmountExceedsDepositedAmount();
-
     /// @notice Thrown when a user tries to withdraw an ERC721 token that is not deposited.
     error ERC721TokenNotDeposited();
 

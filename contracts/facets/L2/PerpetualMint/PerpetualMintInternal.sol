@@ -361,10 +361,11 @@ abstract contract PerpetualMintInternal is
             collection
         ][tokenId];
 
-        uint256 cumulativeRisk;
         uint256 tokenIndex;
-        uint256 normalizedValue = randomValue %
-            l.tokenRisk[collection][tokenId];
+        uint64 cumulativeRisk;
+        uint64 normalizedValue = uint64(
+            randomValue % l.tokenRisk[collection][tokenId]
+        );
 
         /// @dev identifies the owner index at which the the cumulative risk is less than
         /// the normalized value, in order to select the owner at the index
@@ -390,8 +391,8 @@ abstract contract PerpetualMintInternal is
         EnumerableSet.UintSet storage tokenIds = l.activeTokenIds[collection];
 
         uint256 tokenIndex;
-        uint256 cumulativeRisk;
-        uint256 normalizedValue = randomValue % l.totalRisk[collection];
+        uint64 cumulativeRisk;
+        uint64 normalizedValue = uint64(randomValue % l.totalRisk[collection]);
 
         /// @dev identifies the token index at which the the cumulative risk is less than
         /// the normalized value, in order to select the tokenId at the index

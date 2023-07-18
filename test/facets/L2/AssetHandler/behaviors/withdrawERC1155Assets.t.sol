@@ -8,8 +8,8 @@ import { ILayerZeroClientBaseInternal } from "@solidstate/layerzero-client/base/
 import { ILayerZeroEndpoint } from "@solidstate/layerzero-client/interfaces/ILayerZeroEndpoint.sol";
 
 import { L2AssetHandlerTest } from "../AssetHandler.t.sol";
-import { ILayerZeroClientBaseInternalEvents } from "../../../../interfaces/ILayerZeroClientBaseInternalEvents.sol";
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
+import { L2AssetHandlerMock } from "../../../../mocks/L2AssetHandlerMock.t.sol";
 import { IL2AssetHandler } from "../../../../../contracts/facets/L2/AssetHandler/IAssetHandler.sol";
 import { L2AssetHandlerStorage } from "../../../../../contracts/facets/L2/AssetHandler/Storage.sol";
 import { IAssetHandler } from "../../../../../contracts/interfaces/IAssetHandler.sol";
@@ -18,7 +18,7 @@ import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncode
 /// @title L2AssetHandler_withdrawERC1155Assets
 /// @dev L2AssetHandler test contract for testing expected L2 withdrawERC1155Assets behavior. Tested on an Arbitrum fork.
 contract L2AssetHandler_withdrawERC1155Assets is
-    ILayerZeroClientBaseInternalEvents,
+    L2AssetHandlerMock,
     L2AssetHandlerTest,
     L2ForkTest
 {
@@ -51,7 +51,23 @@ contract L2AssetHandler_withdrawERC1155Assets is
                 ""
             );
 
-        // deposited ERC1155 token amounts are stored in a mapping, so we need to compute the storage slot to set up the test case
+        bytes memory encodedData = abi.encode(
+            PayloadEncoder.AssetType.ERC1155,
+            address(this),
+            BONG_BEARS,
+            testRisks,
+            bongBearTokenIds,
+            bongBearTokenAmounts
+        );
+
+        this.mock_HandleLayerZeroMessage(
+            DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
+            TEST_PATH, // would be the expected path in production, here this is a dummy value
+            TEST_NONCE, // dummy nonce value
+            encodedData
+        );
+
+        // the deposited ERC1155 token amount is stored in a mapping, so we need to compute the storage slot
         bytes32 depositedERC1155TokenAmountStorageSlot = keccak256(
             abi.encode(
                 bongBearTokenIds[0], // the deposited ERC1155 token ID
@@ -69,23 +85,29 @@ contract L2AssetHandler_withdrawERC1155Assets is
             )
         );
 
-        // write the deposited ERC1155 token amount to storage
-        vm.store(
-            address(l2AssetHandler),
-            depositedERC1155TokenAmountStorageSlot,
-            bytes32(bongBearTokenAmounts[0])
+        uint256 depositedERC1155TokenAmount = uint256(
+            vm.load(address(this), depositedERC1155TokenAmountStorageSlot)
         );
+
+        // mappings are hash tables, so this assertion proves that the deposited ERC1155 token amount was
+        // set correctly for the depositor, collection, and the given token ID.
+        assertEq(depositedERC1155TokenAmount, bongBearTokenAmounts[0]);
     }
 
     /// @dev Tests withdrawERC1155Assets functionality for withdrawing ERC1155 tokens.
     function test_withdrawERC1155Assets() public {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        // mock the sender to be msg.sender and not the contract in order to have authority to call setLayerZeroEndpoint
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        // mock the sender to be msg.sender and not the contract in order to have authority to call setLayerZeroTrustedRemoteAddress
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
 
-        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -97,8 +119,11 @@ contract L2AssetHandler_withdrawERC1155Assets is
     function test_withdrawERC1155AssetsEmitsERC1155AssetsWithdrawnEvent()
         public
     {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
@@ -111,7 +136,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
             bongBearTokenAmounts
         );
 
-        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -121,8 +146,11 @@ contract L2AssetHandler_withdrawERC1155Assets is
 
     /// @dev Tests that withdrawERC1155Assets functionality emits a MessageSent event when withdrawing ERC1155 tokens.
     function test_withdrawERC1155AssetsEmitsMessageSent() public {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
@@ -137,7 +165,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
             LAYER_ZERO_MESSAGE_FEE
         );
 
-        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -149,8 +177,11 @@ contract L2AssetHandler_withdrawERC1155Assets is
     function test_withdrawERC1155AssetsRevertsWhenAttemptingToUndepositMoreThanDepositedAmount()
         public
     {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
@@ -159,7 +190,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
 
         bongBearTokenAmounts[0]++;
 
-        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -171,8 +202,11 @@ contract L2AssetHandler_withdrawERC1155Assets is
     function test_withdrawERC1155AssetsRevertsWhenAttemptingToUndepositOnAnUnsupportedRemoteChain()
         public
     {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
@@ -183,7 +217,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
                 .selector
         );
 
-        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID + 1, // unsupported remote chain
             bongBearTokenIds,
@@ -195,8 +229,11 @@ contract L2AssetHandler_withdrawERC1155Assets is
     function test_withdrawERC1155AssetsRevertsWhenAttemptingToUndepositSomeoneElsesDepositedTokens()
         public
     {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
@@ -234,7 +271,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
 
         vm.expectRevert();
 
-        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -252,7 +289,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
                 .selector
         );
 
-        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -264,7 +301,8 @@ contract L2AssetHandler_withdrawERC1155Assets is
     function test_withdrawERC1155AssetsRevertsWhenLayerZeroEndpointIsSetIncorrectly()
         public
     {
-        l2AssetHandler.setLayerZeroEndpoint(address(this)); // incorrect endpoint
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(address(this)); // incorrect endpoint
 
         vm.expectRevert(
             ILayerZeroClientBaseInternal
@@ -272,7 +310,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
                 .selector
         );
 
-        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -284,15 +322,18 @@ contract L2AssetHandler_withdrawERC1155Assets is
     function test_withdrawERC1155AssetsRevertsWhenLayerZeroMessageFeeIsNotSent()
         public
     {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
 
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
-        l2AssetHandler.withdrawERC1155Assets( // message fee not sent
+        this.withdrawERC1155Assets( // message fee not sent
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -304,17 +345,18 @@ contract L2AssetHandler_withdrawERC1155Assets is
     function test_withdrawERC1155AssetsRevertsWhenLayerZeroMessageFeeSentIsInsufficient()
         public
     {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
 
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
-        l2AssetHandler.withdrawERC1155Assets{
-            value: LAYER_ZERO_MESSAGE_FEE / 6
-        }( // insufficient message fee
+        this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE / 6 }( // insufficient message fee
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -326,7 +368,8 @@ contract L2AssetHandler_withdrawERC1155Assets is
     function test_withdrawERC1155AssetsRevertsWhenLayerZeroTrustedRemoteAddressIsNotSet()
         public
     {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
 
         vm.expectRevert(
             ILayerZeroClientBaseInternal
@@ -334,7 +377,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
                 .selector
         );
 
-        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -352,7 +395,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
 
         bongBearTokenAmounts.push(uint256(1)); // mismatched lengths
 
-        l2AssetHandler.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,

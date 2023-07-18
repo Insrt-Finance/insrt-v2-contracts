@@ -151,7 +151,7 @@ abstract contract PerpetualMintInternal is
     /// @return chunks array of 2 uint64 values
     function _chunk128to64(
         uint128 value
-    ) private pure returns (uint64[2] memory chunks) {
+    ) internal pure returns (uint64[2] memory chunks) {
         unchecked {
             for (uint64 i = 0; i < 2; ++i) {
                 chunks[i] = uint64(value >> (i * 64));
@@ -164,7 +164,7 @@ abstract contract PerpetualMintInternal is
     /// @return chunks array of 2 uint128 values
     function _chunk256to128(
         uint256 value
-    ) private pure returns (uint128[2] memory chunks) {
+    ) internal pure returns (uint128[2] memory chunks) {
         unchecked {
             for (uint256 i = 0; i < 2; ++i) {
                 chunks[i] = uint128(value >> (i * 128));
@@ -198,16 +198,6 @@ abstract contract PerpetualMintInternal is
 
         delete l.depositorEarnings[depositor][collection];
         payable(depositor).sendValue(earnings);
-    }
-
-    /// @notice returns the product of the amount of assets of a collction with the BASIS
-    /// @param collection address of collection
-    /// @return basis product of the amoutn of assets with the basis
-    /// Note: May not need
-    function _cumulativeBasis(
-        address collection
-    ) private view returns (uint256 basis) {
-        basis = Storage.layout().totalActiveTokens[collection] * BASIS;
     }
 
     /// @notice returns owner of escrowed ERC721 token
@@ -247,7 +237,7 @@ abstract contract PerpetualMintInternal is
     function _normalizeValue(
         uint128 value,
         uint128 basis
-    ) private pure returns (uint128 normalizedValue) {
+    ) internal pure returns (uint128 normalizedValue) {
         normalizedValue = value % basis;
     }
 
@@ -437,7 +427,7 @@ abstract contract PerpetualMintInternal is
     function _updateDepositorEarnings(
         address depositor,
         address collection
-    ) private {
+    ) internal {
         Storage.Layout storage l = Storage.layout();
 
         uint256 totalDepositorRisk = l.totalDepositorRisk[depositor][

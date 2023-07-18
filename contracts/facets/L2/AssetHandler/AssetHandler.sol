@@ -67,7 +67,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
             // Calculate the risk to be deducted based on the risk for each token and the amount to be withdrawn
             uint64 riskToBeDeducted = perpetualMintStorageLayout
-                .depositorTokenRisk[collection][msg.sender][tokenIds[i]] *
+                .depositorTokenRisk[msg.sender][collection][tokenIds[i]] *
                 uint64(amounts[i]);
 
             // If all tokens of a particular ID owned by the sender are withdrawn
@@ -93,8 +93,8 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 }
 
                 // Reset the risk for the sender and the token ID
-                perpetualMintStorageLayout.depositorTokenRisk[collection][
-                    msg.sender
+                perpetualMintStorageLayout.depositorTokenRisk[msg.sender][
+                    collection
                 ][tokenIds[i]] = 0;
             }
 
@@ -104,8 +104,8 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             ];
 
             // Reduce the total risk for the sender in the collection
-            perpetualMintStorageLayout.totalDepositorRisk[collection][
-                msg.sender
+            perpetualMintStorageLayout.totalDepositorRisk[msg.sender][
+                collection
             ] -= riskToBeDeducted;
 
             // Reduce the total risk in the collection
@@ -173,11 +173,11 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
             // Calculate the risk to be deducted based on the sender's risk for the token ID in the collection
             uint64 riskToBeDeducted = perpetualMintStorageLayout
-                .depositorTokenRisk[collection][msg.sender][tokenIds[i]];
+                .depositorTokenRisk[msg.sender][collection][tokenIds[i]];
 
             // Reset the risk for the sender and the token ID in the collection
-            perpetualMintStorageLayout.depositorTokenRisk[collection][
-                msg.sender
+            perpetualMintStorageLayout.depositorTokenRisk[msg.sender][
+                collection
             ][tokenIds[i]] = 0;
 
             // Deduct the risk from the total risk for the token ID in the collection
@@ -189,8 +189,8 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             perpetualMintStorageLayout.totalActiveTokens[collection]--;
 
             // Deduct the risk from the total risk for the sender in the collection
-            perpetualMintStorageLayout.totalDepositorRisk[collection][
-                msg.sender
+            perpetualMintStorageLayout.totalDepositorRisk[msg.sender][
+                collection
             ] -= riskToBeDeducted;
 
             // Deduct the risk from the total risk in the collection
@@ -274,8 +274,8 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 );
 
                 // Set the risk for the depositor and the token ID in the collection
-                perpetualMintStorageLayout.depositorTokenRisk[collection][
-                    depositor
+                perpetualMintStorageLayout.depositorTokenRisk[depositor][
+                    collection
                 ][tokenIds[i]] = risks[i];
 
                 // Update the total number of active tokens in the collection
@@ -286,8 +286,8 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 uint64 totalAddedRisk = risks[i] * uint64(amounts[i]);
 
                 // Update the total risk for the depositor in the collection
-                perpetualMintStorageLayout.totalDepositorRisk[collection][
-                    depositor
+                perpetualMintStorageLayout.totalDepositorRisk[depositor][
+                    collection
                 ] += totalAddedRisk;
 
                 // Update the total risk in the collection
@@ -348,8 +348,8 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 ]++;
 
                 // Set the risk for the depositor and the token ID in the collection
-                perpetualMintStorageLayout.depositorTokenRisk[collection][
-                    depositor
+                perpetualMintStorageLayout.depositorTokenRisk[depositor][
+                    collection
                 ][tokenIds[i]] = risks[i];
 
                 // Increase the risk for the token ID in the collection
@@ -361,8 +361,8 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 perpetualMintStorageLayout.totalActiveTokens[collection]++;
 
                 // Increase the total risk for the depositor in the collection
-                perpetualMintStorageLayout.totalDepositorRisk[collection][
-                    depositor
+                perpetualMintStorageLayout.totalDepositorRisk[depositor][
+                    collection
                 ] += risks[i];
 
                 // Increase the total risk in the collection

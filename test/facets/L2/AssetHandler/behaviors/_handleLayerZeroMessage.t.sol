@@ -195,13 +195,12 @@ contract L2AssetHandler_handleLayerZeroMessage is
             )
         );
 
-        bytes32 depositorTokenRisk = vm.load(
-            address(this),
-            depositorTokenRiskStorageSlot
+        uint64 depositorTokenRisk = uint64(
+            uint256(vm.load(address(this), depositorTokenRiskStorageSlot))
         );
 
         // this assertion proves that the depositor token risk was added to depositorTokenRisk
-        assertEq(uint64(uint256(depositorTokenRisk)), testRisks[0]);
+        assertEq(depositorTokenRisk, testRisks[0]);
 
         // the total number of active tokens in the collection is stored in a mapping
         bytes32 totalActiveTokenAmountStorageSlot = keccak256(

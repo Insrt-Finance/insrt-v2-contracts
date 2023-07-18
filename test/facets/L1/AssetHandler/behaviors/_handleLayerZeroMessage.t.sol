@@ -47,7 +47,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
             bongBearTokenAmounts
         );
 
-        L1AssetHandlerMock(address(this)).mock_HandleLayerZeroMessage(
+        this.mock_HandleLayerZeroMessage(
             DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
             TEST_PATH, // would be the expected path in production, here this is a dummy value
             TEST_NONCE, // dummy nonce value
@@ -87,7 +87,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
             bongBearTokenAmounts
         );
 
-        L1AssetHandlerMock(address(this)).mock_HandleLayerZeroMessage(
+        this.mock_HandleLayerZeroMessage(
             DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
             TEST_PATH, // would be the expected path in production, here this is a dummy value
             TEST_NONCE, // dummy nonce value
@@ -120,7 +120,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
             boredApeYachtClubTokenIds
         );
 
-        L1AssetHandlerMock(address(this)).mock_HandleLayerZeroMessage(
+        this.mock_HandleLayerZeroMessage(
             DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
             TEST_PATH, // would be the expected path in production, here this is a dummy value
             TEST_NONCE, // dummy nonce value
@@ -157,7 +157,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
             boredApeYachtClubTokenIds
         );
 
-        L1AssetHandlerMock(address(this)).mock_HandleLayerZeroMessage(
+        this.mock_HandleLayerZeroMessage(
             DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
             TEST_PATH, // would be the expected path in production, here this is a dummy value
             TEST_NONCE, // dummy nonce value
@@ -179,7 +179,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
 
         vm.expectRevert();
 
-        L1AssetHandlerMock(address(this)).mock_HandleLayerZeroMessage(
+        this.mock_HandleLayerZeroMessage(
             DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
             TEST_PATH, // would be the expected path in production, here this is a dummy value
             TEST_NONCE, // dummy nonce value

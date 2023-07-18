@@ -230,7 +230,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             )
         );
 
-        uint64 totalDepositorRisk = uint64(
+        uint256 totalDepositorRisk = uint256(
             uint256(vm.load(address(this), totalDepositorRiskStorageSlot))
         );
 
@@ -245,7 +245,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             )
         );
 
-        uint64 totalRisk = uint64(
+        uint128 totalRisk = uint128(
             uint256(vm.load(address(this), totalRiskStorageSlot))
         );
 

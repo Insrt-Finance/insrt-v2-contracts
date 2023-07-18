@@ -15,13 +15,6 @@ contract L2AssetHandler_handleLayerZeroMessage is
     L2AssetHandlerTest,
     L2ForkTest
 {
-    /// @dev Dummy trusted remote test path.
-    bytes internal TEST_PATH =
-        bytes.concat(bytes20(vm.addr(1234)), bytes20(vm.addr(5678)));
-
-    /// @dev Dummy test nonce value.
-    uint64 internal constant TEST_NONCE = 0;
-
     /// @dev Tests _handleLayerZeroMessage functionality for depositing ERC1155 tokens.
     function test_handleLayerZeroMessageERC1155Deposit() public {
         bytes memory encodedData = abi.encode(

@@ -327,7 +327,7 @@ abstract contract PerpetualMintInternal is
         uint128[2] memory randomValues = _chunk256to128(randomWords[0]);
 
         bool result = _averageCollectionRisk(collection) >
-            _normalizeValue(uint128(randomValues[0]), BASIS);
+            _normalizeValue(randomValues[0], BASIS);
 
         //TODO: update based on consolation spec
         if (!result) {
@@ -338,7 +338,7 @@ abstract contract PerpetualMintInternal is
         if (result) {
             uint256 tokenId = _selectToken(collection, randomValues[1]);
             address oldOwner = l.escrowedERC721Owner[collection][tokenId];
-
+            uint64 oldRisk = l.tokenRisk[collection][tokenId];
             _updateDepositorEarnings(oldOwner, collection);
             _updateDepositorEarnings(minter, collection);
 
@@ -347,6 +347,10 @@ abstract contract PerpetualMintInternal is
 
             l.activeTokenIds[collection].remove(tokenId);
             l.escrowedERC721Owner[collection][tokenId] = minter;
+            l.totalRisk[collection] -= oldRisk;
+            l.totalDepositorRisk[oldOwner][collection] -= oldRisk;
+            --l.totalActiveTokens[collection];
+            delete l.tokenRisk[collection][tokenId];
         }
 
         emit ERC721MintResolved(collection, result);

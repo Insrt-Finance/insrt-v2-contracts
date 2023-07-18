@@ -60,7 +60,7 @@ library PerpetualMintStorage {
         /// @dev sum of risks of tokens deposited by a depositor for a collection
         mapping(address depositor => mapping(address collection => uint64 risk)) totalDepositorRisk;
         /// @dev risk for a given tokenId in an ERC1155 for a depositor
-        /// an implication is that even if a depositor has deposited 5 tokens of the same tokenId, their risk is the same
+        /// an implication is that even if a depositor has deposited 5 tokens of the same tokenId, each token has the same risk
         mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint64 risk))) depositorTokenRisk;
         /// @dev number of tokens of particular tokenId for an ERC1155 collection of a user which are able to be minted
         mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint64 amount))) activeERC1155Tokens;

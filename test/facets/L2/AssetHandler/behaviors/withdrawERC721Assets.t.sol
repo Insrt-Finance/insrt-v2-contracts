@@ -8,8 +8,8 @@ import { ILayerZeroClientBaseInternal } from "@solidstate/layerzero-client/base/
 import { ILayerZeroEndpoint } from "@solidstate/layerzero-client/interfaces/ILayerZeroEndpoint.sol";
 
 import { L2AssetHandlerTest } from "../AssetHandler.t.sol";
-import { ILayerZeroClientBaseInternalEvents } from "../../../../interfaces/ILayerZeroClientBaseInternalEvents.sol";
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
+import { L2AssetHandlerMock } from "../../../../mocks/L2AssetHandlerMock.t.sol";
 import { IL2AssetHandler } from "../../../../../contracts/facets/L2/AssetHandler/IAssetHandler.sol";
 import { L2AssetHandlerStorage } from "../../../../../contracts/facets/L2/AssetHandler/Storage.sol";
 import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
@@ -17,7 +17,7 @@ import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncode
 /// @title L2AssetHandler_withdrawERC721Assets
 /// @dev L2AssetHandler test contract for testing expected L2 withdrawERC721Assets behavior. Tested on an Arbitrum fork.
 contract L2AssetHandler_withdrawERC721Assets is
-    ILayerZeroClientBaseInternalEvents,
+    L2AssetHandlerMock,
     L2AssetHandlerTest,
     L2ForkTest
 {
@@ -49,8 +49,23 @@ contract L2AssetHandler_withdrawERC721Assets is
                 ""
             );
 
-        // deposited ERC721 records are stored in a mapping, so we need to compute the storage slot to set up this test case
-        bytes32 depositedERC721TokenIdDepositedStorageSlot = keccak256(
+        bytes memory encodedData = abi.encode(
+            PayloadEncoder.AssetType.ERC721,
+            address(this),
+            BORED_APE_YACHT_CLUB,
+            testRisks,
+            boredApeYachtClubTokenIds
+        );
+
+        this.mock_HandleLayerZeroMessage(
+            DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
+            TEST_PATH, // would be the expected path in production, here this is a dummy value
+            TEST_NONCE, // dummy nonce value
+            encodedData
+        );
+
+        // the deposited ERC721 token deposited boolean is stored in a mapping, so we need to compute the storage slot
+        bytes32 depositedERC721TokenDepositedStorageSlot = keccak256(
             abi.encode(
                 boredApeYachtClubTokenIds[0], // the deposited ERC721 token ID
                 keccak256(
@@ -67,23 +82,29 @@ contract L2AssetHandler_withdrawERC721Assets is
             )
         );
 
-        // write the deposited ERC721 deposited state to storage
-        vm.store(
-            address(l2AssetHandler),
-            depositedERC721TokenIdDepositedStorageSlot,
-            bytes32(uint256(1))
+        uint256 depositedERC721TokenDeposited = uint256(
+            vm.load(address(this), depositedERC721TokenDepositedStorageSlot)
         );
+
+        // mappings are hash tables, so this assertion proves that the deposited ERC721 token deposited boolean
+        // was set correctly for the depositor, collection, and the given token ID.
+        assertEq(depositedERC721TokenDeposited, 1); // 1 is true
     }
 
     /// @dev Tests withdrawERC721Assets functionality for withdrawing ERC721 tokens.
     function test_withdrawERC721Assets() public {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        // mock the sender to be msg.sender and not the contract in order to have authority to call setLayerZeroEndpoint
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        // mock the sender to be msg.sender and not the contract in order to have authority to call setLayerZeroTrustedRemoteAddress
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
 
-        l2AssetHandler.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -92,8 +113,11 @@ contract L2AssetHandler_withdrawERC721Assets is
 
     /// @dev Tests that withdrawERC721Assets functionality emits an ERC721AssetsWithdrawn event when withdrawing ERC721 tokens.
     function test_withdrawERC721AssetsEmitsERC721AssetsWithdrawnEvent() public {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
@@ -105,7 +129,7 @@ contract L2AssetHandler_withdrawERC721Assets is
             boredApeYachtClubTokenIds
         );
 
-        l2AssetHandler.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -114,8 +138,11 @@ contract L2AssetHandler_withdrawERC721Assets is
 
     /// @dev Tests that withdrawERC721Assets functionality emits a MessageSent event when withdrawing ERC721 tokens.
     function test_withdrawERC721AssetsEmitsMessageSent() public {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
@@ -130,7 +157,7 @@ contract L2AssetHandler_withdrawERC721Assets is
             LAYER_ZERO_MESSAGE_FEE
         );
 
-        l2AssetHandler.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -141,8 +168,11 @@ contract L2AssetHandler_withdrawERC721Assets is
     function test_withdrawERC721AssetsRevertsWhenAttemptingToUndepositMoreThanDepositedAmount()
         public
     {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
@@ -151,7 +181,7 @@ contract L2AssetHandler_withdrawERC721Assets is
 
         boredApeYachtClubTokenIds.push(2);
 
-        l2AssetHandler.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -162,8 +192,11 @@ contract L2AssetHandler_withdrawERC721Assets is
     function test_withdrawERC721AssetsRevertsWhenAttemptingToUndepositOnAnUnsupportedRemoteChain()
         public
     {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
@@ -174,7 +207,7 @@ contract L2AssetHandler_withdrawERC721Assets is
                 .selector
         );
 
-        l2AssetHandler.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID + 1, // unsupported remote chain
             boredApeYachtClubTokenIds
@@ -185,8 +218,11 @@ contract L2AssetHandler_withdrawERC721Assets is
     function test_withdrawERC721AssetsRevertsWhenAttemptingToUndepositSomeoneElsesDepositedTokens()
         public
     {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
@@ -222,7 +258,7 @@ contract L2AssetHandler_withdrawERC721Assets is
 
         vm.expectRevert(IL2AssetHandler.ERC721TokenNotDeposited.selector);
 
-        l2AssetHandler.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -239,7 +275,7 @@ contract L2AssetHandler_withdrawERC721Assets is
                 .selector
         );
 
-        l2AssetHandler.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -250,7 +286,8 @@ contract L2AssetHandler_withdrawERC721Assets is
     function test_withdrawERC721AssetsRevertsWhenLayerZeroEndpointIsSetIncorrectly()
         public
     {
-        l2AssetHandler.setLayerZeroEndpoint(address(this)); // incorrect endpoint
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(address(this)); // incorrect endpoint
 
         vm.expectRevert(
             ILayerZeroClientBaseInternal
@@ -258,7 +295,7 @@ contract L2AssetHandler_withdrawERC721Assets is
                 .selector
         );
 
-        l2AssetHandler.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -269,15 +306,18 @@ contract L2AssetHandler_withdrawERC721Assets is
     function test_withdrawERC721AssetsRevertsWhenLayerZeroMessageFeeIsNotSent()
         public
     {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
 
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
-        l2AssetHandler.withdrawERC721Assets( // message fee not sent
+        this.withdrawERC721Assets( // message fee not sent
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -288,17 +328,18 @@ contract L2AssetHandler_withdrawERC721Assets is
     function test_withdrawERC721AssetsRevertsWhenLayerZeroMessageFeeSentIsInsufficient()
         public
     {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
-        l2AssetHandler.setLayerZeroTrustedRemoteAddress(
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+
+        vm.prank(msg.sender);
+        this.setLayerZeroTrustedRemoteAddress(
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
 
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
-        l2AssetHandler.withdrawERC721Assets{
-            value: LAYER_ZERO_MESSAGE_FEE / 6
-        }( // insufficient message fee
+        this.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE / 6 }( // insufficient message fee
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -309,7 +350,8 @@ contract L2AssetHandler_withdrawERC721Assets is
     function test_withdrawERC721AssetsRevertsWhenLayerZeroTrustedRemoteAddressIsNotSet()
         public
     {
-        l2AssetHandler.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
+        vm.prank(msg.sender);
+        this.setLayerZeroEndpoint(ARBITRUM_LAYER_ZERO_ENDPOINT);
 
         vm.expectRevert(
             ILayerZeroClientBaseInternal
@@ -317,7 +359,7 @@ contract L2AssetHandler_withdrawERC721Assets is
                 .selector
         );
 
-        l2AssetHandler.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+        this.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds

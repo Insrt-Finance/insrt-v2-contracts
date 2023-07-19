@@ -127,13 +127,12 @@ contract L2AssetHandler_handleLayerZeroMessage is
             )
         );
 
-        bytes32 activeERC1155TokenAmount = vm.load(
-            address(this),
-            activeERC1155TokenAmountStorageSlot
+        uint256 activeERC1155TokenAmount = uint256(
+            vm.load(address(this), activeERC1155TokenAmountStorageSlot)
         );
 
         // this assertion proves that the ERC1155 token amount was added to activeERC1155Tokens
-        assertEq(uint256(activeERC1155TokenAmount), bongBearTokenAmounts[0]);
+        assertEq(activeERC1155TokenAmount, bongBearTokenAmounts[0]);
 
         // active token ids eligible to be minted are stored as a UintSet in a mapping, so we need to compute the storage slot
         // this slot defaults to the storage slot of the UintSet._inner._values array length
@@ -166,16 +165,12 @@ contract L2AssetHandler_handleLayerZeroMessage is
             )
         );
 
-        bytes32 activeTokenIdValueAtUintSetIndex = vm.load(
-            address(this),
-            activeTokenIdValueAtUintSetIndexStorageSlot
+        uint256 activeTokenIdValueAtUintSetIndex = uint256(
+            vm.load(address(this), activeTokenIdValueAtUintSetIndexStorageSlot)
         );
 
         // this assertion proves that the active token ID was added to the activeTokenIds UintSet
-        assertEq(
-            uint256(activeTokenIdValueAtUintSetIndex),
-            bongBearTokenIds[0]
-        );
+        assertEq(activeTokenIdValueAtUintSetIndex, bongBearTokenIds[0]);
 
         // depositor token risk values are stored in a mapping, so we need to compute the storage slot
         bytes32 depositorTokenRiskStorageSlot = keccak256(
@@ -416,14 +411,13 @@ contract L2AssetHandler_handleLayerZeroMessage is
             )
         );
 
-        bytes32 activeTokenIdValueAtUintSetIndex = vm.load(
-            address(this),
-            activeTokenIdValueAtUintSetIndexStorageSlot
+        uint256 activeTokenIdValueAtUintSetIndex = uint256(
+            vm.load(address(this), activeTokenIdValueAtUintSetIndexStorageSlot)
         );
 
         // this assertion proves that the token ID was added to the set of active token IDs in the collection
         assertEq(
-            uint256(activeTokenIdValueAtUintSetIndex),
+            activeTokenIdValueAtUintSetIndex,
             boredApeYachtClubTokenIds[0]
         );
 

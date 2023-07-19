@@ -8,7 +8,7 @@ import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
 /// @title PerpetualMint_averageCollectionRisk
-/// @dev PerpetualMint test contract for texting expected behavior of the averageCollectionRisk function.
+/// @dev PerpetualMint test contract for testing expected behavior of the averageCollectionRisk function
 contract PerpetualMint_averageCollectionRisk is PerpetualMintTest, L1ForkTest {
     using stdStorage for StdStorage;
 

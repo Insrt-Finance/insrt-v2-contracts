@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.20;
+pragma solidity 0.8.21;
 
 import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableInternal.sol";
 import { ILayerZeroClientBaseInternal } from "@solidstate/layerzero-client/base/ILayerZeroClientBaseInternal.sol";

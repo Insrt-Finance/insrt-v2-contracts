@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.20;
+pragma solidity 0.8.21;
 
 import { IERC165 } from "@solidstate/contracts/interfaces/IERC165.sol";
 import { IERC721 } from "@solidstate/contracts/interfaces/IERC721.sol";

@@ -12,7 +12,7 @@ remappings = [
   "@solidstate/layerzero-client/=lib/layerzero-client/contracts/",
   "forge-std/=lib/forge-std/src/"
 ]
-solc_version = '0.8.20'
+solc_version = '0.8.21'
 src = "contracts"
 verbosity = 1
 

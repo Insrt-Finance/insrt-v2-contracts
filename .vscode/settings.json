@@ -6,7 +6,7 @@
   "makefile.extensionOutputFolder": "./cache",
   "prettier.documentSelectors": ["**/*.sol"],
   "search.exclude": { "lib": true },
-  "solidity.compileUsingRemoteVersion": "v0.8.20",
+  "solidity.compileUsingRemoteVersion": "v0.8.21",
   "solidity.formatter": "prettier",
   "solidity.packageDefaultDependenciesContractsDirectory": "src",
   "solidity.packageDefaultDependenciesDirectory": "lib",

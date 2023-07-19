@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.20;
+pragma solidity 0.8.21;
 
 /// @title L2AssetHandlerStorage
 /// @dev Defines storage layout for the L2AssetHandler facet.

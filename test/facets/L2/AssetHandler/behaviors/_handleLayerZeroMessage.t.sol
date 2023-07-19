@@ -276,7 +276,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
         bytes32 activeCollectionsSetIndexStorageSlot = keccak256(
             abi.encode(
                 BONG_BEARS, // the active ERC1155 token collection
-                uint256(activeCollectionsSetStorageSlot) + 1 // Set.inner._indexes storage slot
+                uint256(activeCollectionsSetStorageSlot) + 1 // Set._inner._indexes storage slot
             )
         );
 
@@ -548,7 +548,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
         bytes32 activeCollectionsSetIndexStorageSlot = keccak256(
             abi.encode(
                 BORED_APE_YACHT_CLUB, // the active ERCE721 token collection
-                uint256(activeCollectionsSetStorageSlot) + 1 // Set.inner._indexes storage slot
+                uint256(activeCollectionsSetStorageSlot) + 1 // Set._inner._indexes storage slot
             )
         );
 

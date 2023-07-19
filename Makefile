@@ -2,7 +2,7 @@
 # (-include to ignore error if it does not exist)
 -include .env
 
-# Install dependencies
+### Install dependencies
 install:
 	@command -v pnpm >/dev/null 2>&1 || npm i -g pnpm
 	@echo
@@ -12,15 +12,21 @@ install:
 	@echo
 update:; forge update
 
-# Build & test
+### Build & test
 build  :; forge build
-clean  :; forge clean # remove build artifacts and cache directories
-fmt    :; forge fmt # run built-in formatter
+# remove build artifacts and cache directories
+clean  :; forge clean
+# run built-in formatter
+fmt    :; forge fmt
 prettier    :; pnpm prettier --write contracts/**/**/**/*.sol
-size  :; forge build --sizes # show contract sizes
-snapshot :; forge snapshot # create a snapshot of each test's gas usage
+# show contract sizes
+size  :; forge build --sizes
+ # create a snapshot of each test's gas usage
+snapshot :; forge snapshot
 test:
 	forge test
-trace   :; forge test -vvv # show stack traces for failing tests
-.PHONY: test # prevent make from looking for a file named test
+# show stack traces for failing tests
+trace   :; forge test -vvv
+# prevent make from looking for a file named test
+.PHONY: test
 

@@ -60,7 +60,7 @@ contract DepositFacetMock is IERC721Receiver, IERC1155Receiver {
             l.totalDepositorRisk[msg.sender][collection] += addedRisk;
             l.tokenRisk[collection][tokenId] += addedRisk;
             l.escrowedERC1155Owners[collection][tokenId].add(msg.sender);
-            l.depositorTokenRisk[msg.sender][collection][tokenId] = addedRisk;
+            l.depositorTokenRisk[msg.sender][collection][tokenId] = risk;
             l.activeERC1155Owners[collection][tokenId].add(msg.sender);
             l.activeERC1155Tokens[msg.sender][collection][tokenId] += amount;
         }

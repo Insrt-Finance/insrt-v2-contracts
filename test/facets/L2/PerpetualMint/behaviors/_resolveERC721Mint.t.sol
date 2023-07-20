@@ -30,7 +30,7 @@ contract PerpetualMint_resolveERC721Mint is
 
     /// @dev value of roll which will lead to a successful mint and token one being selected
     uint256 internal constant tokenOneWinValue =
-        uint256(uint128(300) << 128) | uint256(uint128(500));
+        (uint256(300) << 128) | uint256(uint128(500));
 
     /// @dev expected value of won token ID
     uint256 internal expectedTokenId;

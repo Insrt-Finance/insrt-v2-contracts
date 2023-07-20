@@ -225,8 +225,10 @@ contract L2AssetHandler_handleLayerZeroMessage is
             )
         );
 
-        uint256 totalDepositorRisk = uint256(
-            uint256(vm.load(address(this), totalDepositorRiskStorageSlot))
+        uint64 totalDepositorRisk = uint64(
+            uint256(
+                uint256(vm.load(address(this), totalDepositorRiskStorageSlot))
+            )
         );
 
         // this assertion proves that the total risk for the depositor in the collection was updated correctly
@@ -240,7 +242,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             )
         );
 
-        uint128 totalRisk = uint128(
+        uint64 totalRisk = uint64(
             uint256(vm.load(address(this), totalRiskStorageSlot))
         );
 
@@ -479,7 +481,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             )
         );
 
-        uint256 tokenRisk = uint256(
+        uint64 tokenRisk = uint64(
             uint256(vm.load(address(this), tokenRiskStorageSlot))
         );
 
@@ -514,8 +516,8 @@ contract L2AssetHandler_handleLayerZeroMessage is
             )
         );
 
-        uint256 totalDepositorRisk = uint256(
-            vm.load(address(this), totalDepositorRiskStorageSlot)
+        uint64 totalDepositorRisk = uint64(
+            uint256(vm.load(address(this), totalDepositorRiskStorageSlot))
         );
 
         // this assertion proves that the total risk for the depositor in the collection was incremented correctly
@@ -532,7 +534,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             )
         );
 
-        uint128 totalRisk = uint128(
+        uint64 totalRisk = uint64(
             uint256(vm.load(address(this), totalRiskStorageSlot))
         );
 

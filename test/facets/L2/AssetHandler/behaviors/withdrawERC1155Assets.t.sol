@@ -317,8 +317,10 @@ contract L2AssetHandler_withdrawERC1155Assets is
             )
         );
 
-        uint256 totalDepositorRisk = uint256(
-            uint256(vm.load(address(this), totalDepositorRiskStorageSlot))
+        uint64 totalDepositorRisk = uint64(
+            uint256(
+                uint256(vm.load(address(this), totalDepositorRiskStorageSlot))
+            )
         );
 
         // this assertion proves that the total risk for the depositor in the collection was updated correctly
@@ -332,7 +334,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
             )
         );
 
-        uint128 totalRisk = uint128(
+        uint64 totalRisk = uint64(
             uint256(vm.load(address(this), totalRiskStorageSlot))
         );
 

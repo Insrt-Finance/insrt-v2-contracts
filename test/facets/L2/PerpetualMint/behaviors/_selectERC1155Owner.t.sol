@@ -14,31 +14,40 @@ contract PerpetualMint_selectERC1155Owner is
     PerpetualMintTest,
     L1ForkTest
 {
+    /// @dev value of roll which will lead to depositor one being selected
+    uint128 internal constant depositorOneSelectValue = uint64(900);
+
     function setUp() public override {
         super.setUp();
 
-        depositBongBearsAssetsMock();
+        depositParallelAlphaAssetsMock();
     }
 
     /// @dev tests selecting an ERC1155 owner after an ERC1155 asset has been won
-    function testFuzz_selectERC1155Owner(
-        uint8 tokenSelector,
-        uint64 randomOwnerValue
-    ) public view {
-        // select a random token
-        uint8 pickingNumber = tokenSelector % 2;
-        uint256 selectedTokenId = pickingNumber == 0
-            ? bongBearTokenIds[0]
-            : bongBearTokenIds[1];
+    function testFuzz_selectERC1155Owner(uint64 randomOwnerValue) public view {
+        uint256 selectedTokenId = parallelAlphaTokenIds[0];
 
-        //identfiy the expected owner as per the setup since each token only has one owner
-        address expectedOwner = selectedTokenId == bongBearTokenIds[0]
-            ? depositorOne
-            : depositorTwo;
+        // make sure random value is within 0 - tokenRisk range
+        uint64 normalizedValue = randomOwnerValue %
+            _tokenRisk(address(perpetualMint), PARALLEL_ALPHA, selectedTokenId);
+
+        uint64 depositorOneRisk = _depositorTokenRisk(
+            address(perpetualMint),
+            depositorOne,
+            PARALLEL_ALPHA,
+            selectedTokenId
+        );
+
+        // since only two owners, if normalizedValue is larger than the
+        // risk of depositorOne, then its depositorTwo who is the expectedOWner
+        address expectedOwner = normalizedValue >
+            depositorOneRisk * parallelAlphaTokenAmount
+            ? depositorTwo
+            : depositorOne;
 
         assert(
             perpetualMint.exposed_selectERC1155Owner(
-                BONG_BEARS,
+                PARALLEL_ALPHA,
                 selectedTokenId,
                 randomOwnerValue
             ) == expectedOwner

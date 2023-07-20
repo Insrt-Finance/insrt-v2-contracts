@@ -22,27 +22,28 @@ abstract contract PerpetualMintTest is L1CoreTest, StorageRead {
     using stdStorage for StdStorage;
 
     IPerpetualMintTest public perpetualMint;
-    IERC1155 public bongBears;
+    IERC1155 public parallelAlpha;
     IERC721 public boredApeYachtClub;
 
     //denominator used in percentage calculations
     uint32 internal constant BASIS = 1000000000;
 
     //Ethereum mainnet Bong Bears contract address.
-    address internal constant BONG_BEARS =
-        0x495f947276749Ce646f68AC8c248420045cb7b5e;
+    address internal constant PARALLEL_ALPHA =
+        0x76BE3b62873462d2142405439777e971754E8E77;
 
     //Ethereum mainnet Bored Ape Yacht Club contract address.
     address internal constant BORED_APE_YACHT_CLUB =
         0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
 
-    uint256[] internal boredApeYachtClubTokenIds = new uint256[](4);
+    uint256[] internal boredApeYachtClubTokenIds = new uint256[](2);
 
-    uint256[] internal bongBearTokenIds = new uint256[](2);
+    uint256[] internal parallelAlphaTokenIds = new uint256[](2);
 
-    uint256[] internal bongBearTokenAmounts = new uint256[](2);
+    // all depositors will deposit the same amount of ParallelAlpha tokens
+    uint256 internal parallelAlphaTokenAmount = 10;
 
-    uint256 BORED_APE_YACHT_CLUB_MINT_PRICE = 0.5 ether;
+    uint256 MINT_PRICE = 0.5 ether;
 
     // depositors
     address payable internal depositorOne = payable(address(1));
@@ -51,8 +52,9 @@ abstract contract PerpetualMintTest is L1CoreTest, StorageRead {
     address payable internal minter = payable(address(3));
 
     // token risk values
-    uint64 internal constant riskOne = 400;
-    uint64 internal constant riskTwo = 800;
+    uint64 internal constant riskOne = 400; // for BAYC
+    uint64 internal constant riskTwo = 800; // for BAYC
+    uint64 internal constant riskThree = 100; //for parallelAlpha
 
     /// @dev sets up PerpetualMint for testing
     function setUp() public virtual override {
@@ -62,27 +64,17 @@ abstract contract PerpetualMintTest is L1CoreTest, StorageRead {
 
         perpetualMint = IPerpetualMintTest(address(l1CoreDiamond));
         boredApeYachtClub = IERC721(BORED_APE_YACHT_CLUB);
-        bongBears = IERC1155(BONG_BEARS);
+        parallelAlpha = IERC1155(PARALLEL_ALPHA);
 
         boredApeYachtClubTokenIds[0] = 101;
         boredApeYachtClubTokenIds[1] = 102;
-        boredApeYachtClubTokenIds[2] = 103; //unused
-        boredApeYachtClubTokenIds[3] = 104; //unused
 
-        bongBearTokenIds[
-            0
-        ] = 66075445032688988859229341194671037535804503065310441849644897861040871571457; // Bong Bear #01
-        bongBearTokenIds[
-            1
-        ] = 66075445032688988859229341194671037535804503065310441849644897862140383199233; // Bong Bear #02
-        bongBearTokenAmounts[0] = 1;
-        bongBearTokenAmounts[1] = 1;
+        parallelAlphaTokenIds[0] = 10951;
+        parallelAlphaTokenIds[1] = 11022;
 
-        perpetualMint.setCollectionMintPrice(
-            BORED_APE_YACHT_CLUB,
-            BORED_APE_YACHT_CLUB_MINT_PRICE
-        );
+        perpetualMint.setCollectionMintPrice(BORED_APE_YACHT_CLUB, MINT_PRICE);
         perpetualMint.setCollectionType(BORED_APE_YACHT_CLUB, true);
+        perpetualMint.setCollectionMintPrice(PARALLEL_ALPHA, MINT_PRICE);
 
         assert(
             _collectionType(address(perpetualMint), BORED_APE_YACHT_CLUB) ==
@@ -173,57 +165,91 @@ abstract contract PerpetualMintTest is L1CoreTest, StorageRead {
     }
 
     /// @dev deposits bong bear tokens into the PerpetualMint contracts
-    function depositBongBearsAssetsMock() internal {
-        //give tokens to bong bears
+    function depositParallelAlphaAssetsMock() internal {
+        // give PARALLEL_ALPHA tokens to depositors
+        // two depositors for parallelAlphaTokenIds[0]
         stdstore
-            .target(BONG_BEARS)
-            .sig(bongBears.balanceOf.selector)
+            .target(PARALLEL_ALPHA)
+            .sig(parallelAlpha.balanceOf.selector)
             .with_key(address(depositorOne))
-            .with_key(bongBearTokenIds[0])
-            .checked_write(bongBearTokenAmounts[0]);
+            .with_key(parallelAlphaTokenIds[0])
+            .checked_write(parallelAlphaTokenAmount);
         stdstore
-            .target(BONG_BEARS)
-            .sig(bongBears.balanceOf.selector)
+            .target(PARALLEL_ALPHA)
+            .sig(parallelAlpha.balanceOf.selector)
             .with_key(address(depositorTwo))
-            .with_key(bongBearTokenIds[1])
-            .checked_write(bongBearTokenAmounts[1]);
+            .with_key(parallelAlphaTokenIds[0])
+            .checked_write(parallelAlphaTokenAmount);
+
+        // one depositor for parallelAlphaTokenIds[1]
+        stdstore
+            .target(PARALLEL_ALPHA)
+            .sig(parallelAlpha.balanceOf.selector)
+            .with_key(address(depositorOne))
+            .with_key(parallelAlphaTokenIds[1])
+            .checked_write(parallelAlphaTokenAmount);
 
         assert(
-            bongBears.balanceOf(address(depositorOne), bongBearTokenIds[0]) == 1
+            parallelAlpha.balanceOf(
+                address(depositorOne),
+                parallelAlphaTokenIds[0]
+            ) == parallelAlphaTokenAmount
         );
         assert(
-            bongBears.balanceOf(address(depositorTwo), bongBearTokenIds[1]) == 1
+            parallelAlpha.balanceOf(
+                address(depositorTwo),
+                parallelAlphaTokenIds[0]
+            ) == parallelAlphaTokenAmount
+        );
+        assert(
+            parallelAlpha.balanceOf(
+                address(depositorOne),
+                parallelAlphaTokenIds[1]
+            ) == parallelAlphaTokenAmount
         );
 
         //deposit tokens
         vm.prank(depositorOne);
-        bongBears.setApprovalForAll(address(perpetualMint), true);
+        parallelAlpha.setApprovalForAll(address(perpetualMint), true);
         vm.prank(depositorOne);
         perpetualMint.depositAsset(
-            BONG_BEARS,
-            bongBearTokenIds[0],
-            uint64(bongBearTokenAmounts[0]),
-            riskOne
+            PARALLEL_ALPHA,
+            parallelAlphaTokenIds[0],
+            uint64(parallelAlphaTokenAmount),
+            riskThree
         );
 
         vm.prank(depositorTwo);
-        bongBears.setApprovalForAll(address(perpetualMint), true);
+        parallelAlpha.setApprovalForAll(address(perpetualMint), true);
         vm.prank(depositorTwo);
         perpetualMint.depositAsset(
-            BONG_BEARS,
-            bongBearTokenIds[1],
-            uint64(bongBearTokenAmounts[1]),
-            riskTwo
+            PARALLEL_ALPHA,
+            parallelAlphaTokenIds[0],
+            uint64(parallelAlphaTokenAmount),
+            riskThree
+        );
+
+        vm.prank(depositorOne);
+        perpetualMint.depositAsset(
+            PARALLEL_ALPHA,
+            parallelAlphaTokenIds[1],
+            uint64(parallelAlphaTokenAmount),
+            riskThree
         );
 
         //assert tokens are deposited
         assert(
-            bongBears.balanceOf(address(perpetualMint), bongBearTokenIds[0]) ==
-                1
+            parallelAlpha.balanceOf(
+                address(perpetualMint),
+                parallelAlphaTokenIds[0]
+            ) == 2 * parallelAlphaTokenAmount
         );
+
         assert(
-            bongBears.balanceOf(address(perpetualMint), bongBearTokenIds[1]) ==
-                1
+            parallelAlpha.balanceOf(
+                address(perpetualMint),
+                parallelAlphaTokenIds[1]
+            ) == parallelAlphaTokenAmount
         );
     }
 }

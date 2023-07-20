@@ -368,7 +368,7 @@ abstract contract PerpetualMintInternal is
         uint256 cumulativeRisk;
         uint256 tokenIndex;
         uint256 normalizedValue = randomValue %
-            l.totalTokenRisk[collection][tokenId];
+            l.tokenRisk[collection][tokenId];
 
         /// @dev identifies the owner index at which the the cumulative risk is less than
         /// the normalized value, in order to select the owner at the index

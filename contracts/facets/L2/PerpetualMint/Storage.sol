@@ -43,8 +43,6 @@ library PerpetualMintStorage {
         //ERC1155
         /// @dev set of owners of each tokenId for an ERC1155 collection
         mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet owners)) escrowedERC1155Owners;
-        /// @dev sum of all individual token risks of a token for an ERC1155 collection
-        mapping(address collection => mapping(uint256 tokenId => uint64 risk)) totalTokenRisk;
         /// @dev set of ERC1155 token owners which have tokens escrowed and available for minting, of a given tokenId for a collection
         mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet owners)) activeERC1155Owners;
         ///User specific

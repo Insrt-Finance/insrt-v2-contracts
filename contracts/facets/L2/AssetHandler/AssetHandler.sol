@@ -114,7 +114,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             ] -= riskToBeDeducted;
 
             // Reduce the total risk for the token ID in the collection
-            perpetualMintStorageLayout.totalTokenRisk[collection][
+            perpetualMintStorageLayout.tokenRisk[collection][
                 tokenIds[i]
             ] -= riskToBeDeducted;
         }
@@ -294,7 +294,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 ] += totalAddedRisk;
 
                 // Update the total risk for the token ID in the collection
-                perpetualMintStorageLayout.totalTokenRisk[collection][
+                perpetualMintStorageLayout.tokenRisk[collection][
                     tokenIds[i]
                 ] += totalAddedRisk;
             }

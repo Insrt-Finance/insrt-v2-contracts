@@ -342,24 +342,24 @@ contract L2AssetHandler_withdrawERC1155Assets is
         assertEq(totalRisk, 0);
 
         // the total risk for the token ID in the collection is stored in a mapping
-        bytes32 totalTokenRiskStorageSlot = keccak256(
+        bytes32 tokenRiskStorageSlot = keccak256(
             abi.encode(
                 bongBearTokenIds[0], // the active ERC1155 token ID
                 keccak256(
                     abi.encode(
                         BONG_BEARS, // the active ERC1155 token collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // the totalTokenRisk storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 12 // the tokenRisk storage slot
                     )
                 )
             )
         );
 
-        uint64 totalTokenRisk = uint64(
-            uint256(vm.load(address(this), totalTokenRiskStorageSlot))
+        uint64 tokenRisk = uint64(
+            uint256(vm.load(address(this), tokenRiskStorageSlot))
         );
 
         // this assertion proves that the total risk for the token ID in the collection was updated correctly
-        assertEq(totalTokenRisk, 0);
+        assertEq(tokenRisk, 0);
 
         if (totalActiveTokens == 0) {
             // the set of active collections is stored in an AddressSet data structure

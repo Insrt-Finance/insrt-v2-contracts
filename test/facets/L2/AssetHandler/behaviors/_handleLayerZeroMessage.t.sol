@@ -68,7 +68,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                 keccak256(
                     abi.encode(
                         BONG_BEARS, // the active ERC1155 token collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 16 // the activeERC1155Owners storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // the activeERC1155Owners storage slot
                     )
                 )
             )
@@ -119,7 +119,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                         keccak256(
                             abi.encode(
                                 msg.sender, // the active ERC1155 token depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 23 // the activeERC1155Tokens storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // the activeERC1155Tokens storage slot
                             )
                         )
                     )
@@ -182,7 +182,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                         keccak256(
                             abi.encode(
                                 msg.sender, // the active ERC1155 token depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // the depositorTokenRisk storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the depositorTokenRisk storage slot
                             )
                         )
                     )
@@ -219,7 +219,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                 keccak256(
                     abi.encode(
                         msg.sender, // the depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the totalDepositorRisk storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 20 // the totalDepositorRisk storage slot
                     )
                 )
             )
@@ -250,24 +250,24 @@ contract L2AssetHandler_handleLayerZeroMessage is
         assertEq(totalRisk, testRisks[0] * bongBearTokenAmounts[0]);
 
         // the total risk for the token ID in the collection is stored in a mapping
-        bytes32 totalTokenRiskStorageSlot = keccak256(
+        bytes32 tokenRiskStorageSlot = keccak256(
             abi.encode(
                 bongBearTokenIds[0], // the active ERC1155 token ID
                 keccak256(
                     abi.encode(
                         BONG_BEARS, // the active ERC1155 token collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // the totalTokenRisk storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 12 // the tokenRisk storage slot
                     )
                 )
             )
         );
 
-        uint64 totalTokenRisk = uint64(
-            uint256(vm.load(address(this), totalTokenRiskStorageSlot))
+        uint64 tokenRisk = uint64(
+            uint256(vm.load(address(this), tokenRiskStorageSlot))
         );
 
         // this assertion proves that the total risk for the token ID in the collection was updated correctly
-        assertEq(totalTokenRisk, testRisks[0] * bongBearTokenAmounts[0]);
+        assertEq(tokenRisk, testRisks[0] * bongBearTokenAmounts[0]);
 
         // the set of active collections is stored in an AddressSet data structure
         // this slot defaults to the storage slot of the AddressSet._values array length
@@ -430,7 +430,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                 keccak256(
                     abi.encode(
                         msg.sender, // the depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 19 // the activeTokens storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 18 // the activeTokens storage slot
                     )
                 )
             )
@@ -453,7 +453,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                         keccak256(
                             abi.encode(
                                 msg.sender, // the depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // the depositorTokenRisk storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the depositorTokenRisk storage slot
                             )
                         )
                     )
@@ -510,7 +510,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                 keccak256(
                     abi.encode(
                         msg.sender, // the depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the totalDepositorRisk storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 20 // the totalDepositorRisk storage slot
                     )
                 )
             )

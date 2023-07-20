@@ -20,7 +20,7 @@ contract PerpetualMint_setCollectionMintPrice is
     /// @dev tests the setting of a new collection mint price
     function testFuzz_setCollectionMintPrice(uint256 amount) public {
         assert(
-            BORED_APE_YACHT_CLUB_MINT_PRICE ==
+            MINT_PRICE ==
                 _collectionMintPrice(
                     address(perpetualMint),
                     BORED_APE_YACHT_CLUB

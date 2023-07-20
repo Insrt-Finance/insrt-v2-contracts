@@ -17,7 +17,7 @@ contract PerpetualMint_resolveERC721Mint is
     uint256 internal constant COLLECTION_EARNINGS = 1 ether;
 
     /// @dev mimics random values sent by Chainlink VRF
-    uint256[] randomWords; // needed to pass a memory array in the function call
+    uint256[] randomWords;
 
     // grab BAYC collection earnings storage slot
     bytes32 internal constant collectionEarningsStorageSlot =
@@ -84,13 +84,12 @@ contract PerpetualMint_resolveERC721Mint is
     /// @dev tests that _resolveERC721Mint works with many random values
     function testFuzz_resolveERC721Mint(uint256 randomValue) public {
         randomWords.push(randomValue);
-        uint256[] memory randWords = randomWords;
 
         vm.prank(minter);
         perpetualMint.exposed_resolveERC721Mint(
             minter,
             BORED_APE_YACHT_CLUB,
-            randWords
+            randomWords
         );
     }
 
@@ -98,8 +97,6 @@ contract PerpetualMint_resolveERC721Mint is
     function test_resolveERC721MintWinIncrementsInactiveTokensOfWinner()
         public
     {
-        uint256[] memory randWords = randomWords;
-
         uint64 oldInactiveTokens = _inactiveTokens(
             address(perpetualMint),
             address(minter),
@@ -110,7 +107,7 @@ contract PerpetualMint_resolveERC721Mint is
         perpetualMint.exposed_resolveERC721Mint(
             minter,
             BORED_APE_YACHT_CLUB,
-            randWords
+            randomWords
         );
 
         assert(
@@ -126,8 +123,6 @@ contract PerpetualMint_resolveERC721Mint is
 
     /// @dev tests that the number of active tokens is decremented for the old owner after win
     function test_resolveERC721MintDecrementsActiveTokensOfOldOwner() public {
-        uint256[] memory randWords = randomWords;
-
         uint64 oldActiveTokens = _activeTokens(
             address(perpetualMint),
             oldOwner,
@@ -138,7 +133,7 @@ contract PerpetualMint_resolveERC721Mint is
         perpetualMint.exposed_resolveERC721Mint(
             minter,
             BORED_APE_YACHT_CLUB,
-            randWords
+            randomWords
         );
 
         assert(
@@ -155,13 +150,11 @@ contract PerpetualMint_resolveERC721Mint is
     /// @dev tests that the new owner is the minter after a win
     /// @dev simultaneously tests token selection
     function test_resolveERC721MintWinEscrowedERC721OwnerIsMinter() public {
-        uint256[] memory randWords = randomWords;
-
         vm.prank(minter);
         perpetualMint.exposed_resolveERC721Mint(
             minter,
             BORED_APE_YACHT_CLUB,
-            randWords
+            randomWords
         );
 
         assert(
@@ -178,8 +171,6 @@ contract PerpetualMint_resolveERC721Mint is
     function test_resolveERC721MintWinUpdateDepositorEarningsOfOldOwner()
         public
     {
-        uint256[] memory randWords = randomWords;
-
         assert(totalDepositorRisk != 0);
         assert(totalRisk != 0);
 
@@ -187,7 +178,7 @@ contract PerpetualMint_resolveERC721Mint is
         perpetualMint.exposed_resolveERC721Mint(
             minter,
             BORED_APE_YACHT_CLUB,
-            randWords
+            randomWords
         );
 
         uint256 newDepositorDeductions = _depositorDeductions(
@@ -217,13 +208,11 @@ contract PerpetualMint_resolveERC721Mint is
     function test_resolveERC721MintWinUpdateDepositorEarningsOfMinterWhenMinterHasNoDeposits()
         public
     {
-        uint256[] memory randWords = randomWords;
-
         vm.prank(minter); //has zero risk since they have not deposited
         perpetualMint.exposed_resolveERC721Mint(
             minter,
             BORED_APE_YACHT_CLUB,
-            randWords
+            randomWords
         );
 
         assert(
@@ -244,13 +233,11 @@ contract PerpetualMint_resolveERC721Mint is
     function test_resolveERC721MintWinUpdateDepositorEarningsOfMinterWhenMinterHasPreviousDeposits()
         public
     {
-        uint256[] memory randWords = randomWords;
-
         vm.prank(depositorTwo);
         perpetualMint.exposed_resolveERC721Mint(
             depositorTwo,
             BORED_APE_YACHT_CLUB,
-            randWords
+            randomWords
         );
 
         uint256 expectedEarnings = (COLLECTION_EARNINGS * riskTwo) /
@@ -279,13 +266,11 @@ contract PerpetualMint_resolveERC721Mint is
 
     /// @dev tests that the won token risk is deleted after a win
     function test_resolveERC721MintWinDeletesWonTokenRisk() public {
-        uint256[] memory randWords = randomWords;
-
         vm.prank(minter);
         perpetualMint.exposed_resolveERC721Mint(
             minter,
             BORED_APE_YACHT_CLUB,
-            randWords
+            randomWords
         );
 
         assert(
@@ -302,8 +287,6 @@ contract PerpetualMint_resolveERC721Mint is
     function test_resolveERC721MintWinDecrementsTotalActiveTokensOfCollection()
         public
     {
-        uint256[] memory randWords = randomWords;
-
         uint256 oldActiveTokens = _totalActiveTokens(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB
@@ -313,7 +296,7 @@ contract PerpetualMint_resolveERC721Mint is
         perpetualMint.exposed_resolveERC721Mint(
             minter,
             BORED_APE_YACHT_CLUB,
-            randWords
+            randomWords
         );
 
         uint256 newActiveTokens = _totalActiveTokens(
@@ -328,8 +311,6 @@ contract PerpetualMint_resolveERC721Mint is
     function test_resolveERC721MintWinReducesTotalDepositorRiskOfOldOwnerByWonTokenRisk()
         public
     {
-        uint256[] memory randWords = randomWords;
-
         uint64 tokenRisk = _tokenRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB,
@@ -340,7 +321,7 @@ contract PerpetualMint_resolveERC721Mint is
         perpetualMint.exposed_resolveERC721Mint(
             minter,
             BORED_APE_YACHT_CLUB,
-            randWords
+            randomWords
         );
 
         uint64 newDepositorRisk = _totalDepositorRisk(
@@ -354,8 +335,6 @@ contract PerpetualMint_resolveERC721Mint is
 
     /// @dev tests that the ERC721MintResolved event is emitted
     function test_resolveERC721TokenMintEmitsERC721MintResolved() public {
-        uint256[] memory randWords = randomWords;
-
         vm.expectEmit();
         emit ERC721MintResolved(BORED_APE_YACHT_CLUB, true);
 
@@ -363,7 +342,7 @@ contract PerpetualMint_resolveERC721Mint is
         perpetualMint.exposed_resolveERC721Mint(
             minter,
             BORED_APE_YACHT_CLUB,
-            randWords
+            randomWords
         );
     }
 
@@ -371,8 +350,6 @@ contract PerpetualMint_resolveERC721Mint is
     function test_resolveERC721MintWinWonTokenRemovedFromActiveTokenIds()
         public
     {
-        uint256[] memory randWords = randomWords;
-
         uint256[] memory oldActiveTokenIds = _activeTokenIds(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB
@@ -382,7 +359,7 @@ contract PerpetualMint_resolveERC721Mint is
         perpetualMint.exposed_resolveERC721Mint(
             minter,
             BORED_APE_YACHT_CLUB,
-            randWords
+            randomWords
         );
 
         uint256[] memory newActiveTokenIds = _activeTokenIds(

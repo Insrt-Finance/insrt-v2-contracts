@@ -280,7 +280,7 @@ abstract contract StorageRead is Test {
     /// @param collection address of collection
     /// @param tokenId id of token
     /// @return owners array of owner address values from EnumerableSet.AddressSet._inner._values
-    function _escrowedERC1155TokenOwners(
+    function _escrowedERC1155Owners(
         address target,
         address collection,
         uint256 tokenId

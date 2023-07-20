@@ -93,7 +93,7 @@ abstract contract PerpetualMintInternal is
         ++l.inactiveERC1155Tokens[to][collection][tokenId];
 
         if (!l.escrowedERC1155Owners[collection][tokenId].contains(to)) {
-            l.escrowedERC1155Owners[collection][tokenId].add(from);
+            l.escrowedERC1155Owners[collection][tokenId].add(to);
         }
 
         if (l.activeERC1155Tokens[from][collection][tokenId] == 0) {

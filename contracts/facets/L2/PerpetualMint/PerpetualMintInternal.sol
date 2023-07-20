@@ -374,9 +374,7 @@ abstract contract PerpetualMintInternal is
 
         uint256 tokenIndex;
         uint64 cumulativeRisk;
-        uint64 normalizedValue = uint64(
-            randomValue % l.tokenRisk[collection][tokenId]
-        );
+        uint64 normalizedValue = randomValue % l.tokenRisk[collection][tokenId];
 
         /// @dev identifies the owner index at which the the cumulative risk is less than
         /// the normalized value, in order to select the owner at the index
@@ -386,7 +384,7 @@ abstract contract PerpetualMintInternal is
                 l.depositorTokenRisk[owner][collection][tokenId] *
                 l.activeERC1155Tokens[owner][collection][tokenId];
             ++tokenIndex;
-        } while (cumulativeRisk <= normalizedValue);
+        } while (cumulativeRisk < normalizedValue);
     }
 
     /// @notice selects the token which was won after a successfull mint attempt
@@ -411,7 +409,7 @@ abstract contract PerpetualMintInternal is
             tokenId = tokenIds.at(tokenIndex);
             cumulativeRisk += l.tokenRisk[collection][tokenId];
             ++tokenIndex;
-        } while (cumulativeRisk <= normalizedValue);
+        } while (cumulativeRisk < normalizedValue);
     }
 
     /// @notice set the mint price for a given collection
@@ -478,6 +476,8 @@ abstract contract PerpetualMintInternal is
         if (risk > BASIS) {
             revert BasisExceeded();
         }
+
+        _updateDepositorEarnings(depositor, collection);
 
         if (l.collectionType[collection]) {
             if (depositor != l.escrowedERC721Owner[collection][tokenId]) {

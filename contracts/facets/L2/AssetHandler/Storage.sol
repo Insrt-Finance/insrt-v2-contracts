@@ -8,10 +8,10 @@ library L2AssetHandlerStorage {
     struct Layout {
         /// @dev Mapping of depositor address to collection address to tokenId to amount for ERC1155 assets.
         /// Represents the amount of each specific ERC1155 token that each depositor has deposited.
-        mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint256 amount))) depositedERC1155Assets;
+        mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint256 amount))) erc1155Deposits;
         /// @dev Mapping of depositor address to collection address to tokenId to deposited check for ERC721 assets.
         /// Represents the specific ERC721 tokens that each depositor has deposited.
-        mapping(address depositor => mapping(address collection => mapping(uint256 tokenIds => bool deposited))) depositedERC721Assets;
+        mapping(address depositor => mapping(address collection => mapping(uint256 tokenIds => bool deposited))) erc721Deposits;
     }
 
     // The slot in contract storage where data will be stored. Used to avoid collisions with other variables.

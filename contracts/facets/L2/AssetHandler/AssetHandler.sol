@@ -56,7 +56,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         // Iterate over each token ID
         for (uint256 i = 0; i < tokenIds.length; i++) {
             // Reduce the number of the deposited ERC1155 assets for the sender (depositor)
-            L2AssetHandlerStorage.layout().depositedERC1155Assets[msg.sender][
+            L2AssetHandlerStorage.layout().erc1155Deposits[msg.sender][
                 collection
             ][tokenIds[i]] -= amounts[i];
 
@@ -151,7 +151,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         for (uint256 i = 0; i < tokenIds.length; i++) {
             // If the token is not deposited by the sender, revert the transaction
             if (
-                l2AssetHandlerStorageLayout.depositedERC721Assets[msg.sender][
+                l2AssetHandlerStorageLayout.erc721Deposits[msg.sender][
                     collection
                 ][tokenIds[i]] == false
             ) {
@@ -159,9 +159,9 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             }
 
             // Reset the token as not deposited by the sender
-            l2AssetHandlerStorageLayout.depositedERC721Assets[msg.sender][
-                collection
-            ][tokenIds[i]] = false;
+            l2AssetHandlerStorageLayout.erc721Deposits[msg.sender][collection][
+                tokenIds[i]
+            ] = false;
 
             // Remove the token ID from the active token IDs in the collection
             perpetualMintStorageLayout.activeTokenIds[collection].remove(
@@ -253,9 +253,9 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             // Iterate over each token ID
             for (uint256 i = 0; i < tokenIds.length; i++) {
                 // Update the amount of deposited ERC1155 assets for the depositor and the token ID in the collection
-                L2AssetHandlerStorage.layout().depositedERC1155Assets[
-                    depositor
-                ][collection][tokenIds[i]] += amounts[i];
+                L2AssetHandlerStorage.layout().erc1155Deposits[depositor][
+                    collection
+                ][tokenIds[i]] += amounts[i];
 
                 // Add the depositor to the set of active owners for the token ID in the collection
                 perpetualMintStorageLayout
@@ -331,7 +331,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             // Iterate over each token ID
             for (uint256 i = 0; i < tokenIds.length; i++) {
                 // Mark the ERC721 token as deposited by the depositor in the collection
-                L2AssetHandlerStorage.layout().depositedERC721Assets[depositor][
+                L2AssetHandlerStorage.layout().erc721Deposits[depositor][
                     collection
                 ][tokenIds[i]] = true;
 

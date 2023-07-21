@@ -366,7 +366,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                         keccak256(
                             abi.encode(
                                 msg.sender, // the depositor
-                                uint256(L2AssetHandlerStorage.STORAGE_SLOT) + 1 // the depositedERC721Assets storage slot
+                                uint256(L2AssetHandlerStorage.STORAGE_SLOT) + 1 // the erc721Deposits storage slot
                             )
                         )
                     )

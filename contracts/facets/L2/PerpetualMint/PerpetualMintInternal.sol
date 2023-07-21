@@ -97,7 +97,6 @@ abstract contract PerpetualMintInternal is
         ++l.claimableERC1155Tokens[collection][from][tokenId];
         ++l.inactiveERC1155Tokens[to][collection][tokenId];
         --l.totalActiveTokens[collection];
-        --l.totalActiveTokenIdTokens[collection][tokenId];
         l.totalRisk[collection] -= tokenRisk;
         l.tokenRisk[collection][tokenId] -= tokenRisk;
         l.totalDepositorRisk[from][collection] -= tokenRisk;
@@ -115,7 +114,7 @@ abstract contract PerpetualMintInternal is
             }
         }
 
-        if (l.totalActiveTokenIdTokens[collection][tokenId] == 0) {
+        if (l.tokenRisk[collection][tokenId] == 0) {
             l.activeTokenIds[collection].remove(tokenId);
         }
     }

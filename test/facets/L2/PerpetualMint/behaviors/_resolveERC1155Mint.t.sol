@@ -7,6 +7,8 @@ import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
 
+/// @title PerpetualMint_resolveERC1155Mint
+/// @dev PerpetualMint test contract for testing expected behavior of the _resolveERC1155Mint function
 contract PerpetualMint_resolveERC1155Mint is
     IPerpetualMintInternal,
     PerpetualMintTest,

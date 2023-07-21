@@ -20,42 +20,6 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
     }
 
     /// @inheritdoc IL1AssetHandler
-    function onERC1155BatchReceived(
-        address,
-        address,
-        uint256[] calldata,
-        uint256[] calldata,
-        bytes calldata
-    ) external pure returns (bytes4) {
-        return this.onERC1155BatchReceived.selector;
-    }
-
-    /// @inheritdoc IL1AssetHandler
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes calldata
-    ) external pure returns (bytes4) {
-        return this.onERC721Received.selector;
-    }
-
-    /// @inheritdoc IAssetHandler
-    function setLayerZeroEndpoint(
-        address layerZeroEndpoint
-    ) external onlyOwner {
-        _setLayerZeroEndpoint(layerZeroEndpoint);
-    }
-
-    /// @inheritdoc IAssetHandler
-    function setLayerZeroTrustedRemoteAddress(
-        uint16 remoteChainId,
-        bytes calldata trustedRemoteAddress
-    ) external onlyOwner {
-        _setTrustedRemoteAddress(remoteChainId, trustedRemoteAddress);
-    }
-
-    /// @inheritdoc IL1AssetHandler
     function depositERC1155Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
@@ -121,6 +85,42 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         );
 
         emit ERC721AssetsDeposited(msg.sender, collection, risks, tokenIds);
+    }
+
+    /// @inheritdoc IL1AssetHandler
+    function onERC1155BatchReceived(
+        address,
+        address,
+        uint256[] calldata,
+        uint256[] calldata,
+        bytes calldata
+    ) external pure returns (bytes4) {
+        return this.onERC1155BatchReceived.selector;
+    }
+
+    /// @inheritdoc IL1AssetHandler
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes calldata
+    ) external pure returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
+
+    /// @inheritdoc IAssetHandler
+    function setLayerZeroEndpoint(
+        address layerZeroEndpoint
+    ) external onlyOwner {
+        _setLayerZeroEndpoint(layerZeroEndpoint);
+    }
+
+    /// @inheritdoc IAssetHandler
+    function setLayerZeroTrustedRemoteAddress(
+        uint16 remoteChainId,
+        bytes calldata trustedRemoteAddress
+    ) external onlyOwner {
+        _setTrustedRemoteAddress(remoteChainId, trustedRemoteAddress);
     }
 
     /// @notice Handles received LayerZero cross-chain messages.

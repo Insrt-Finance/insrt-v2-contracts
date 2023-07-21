@@ -79,13 +79,13 @@ abstract contract PerpetualMintInternal is
     /// @param to address that asset will be assigned to
     /// @param collection address of ERC1155 collection
     /// @param tokenId token id
-    /// @param fromRisk risk of token set by from address prior to transfer
+    /// @param tokenRisk risk of token set by from address prior to transfer
     function _assignEscrowedERC1155Asset(
         address from,
         address to,
         address collection,
         uint256 tokenId,
-        uint64 fromRisk
+        uint64 tokenRisk
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
@@ -96,9 +96,9 @@ abstract contract PerpetualMintInternal is
         ++l.inactiveERC1155Tokens[to][collection][tokenId];
         --l.totalActiveTokens[collection];
         --l.totalActiveTokenIdTokens[collection][tokenId];
-        l.totalRisk[collection] -= fromRisk;
-        l.tokenRisk[collection][tokenId] -= fromRisk;
-        l.totalDepositorRisk[from][collection] -= fromRisk;
+        l.totalRisk[collection] -= tokenRisk;
+        l.tokenRisk[collection][tokenId] -= tokenRisk;
+        l.totalDepositorRisk[from][collection] -= tokenRisk;
 
         if (l.activeERC1155Tokens[from][collection][tokenId] == 0) {
             l.activeERC1155Owners[collection][tokenId].remove(from);
@@ -108,6 +108,36 @@ abstract contract PerpetualMintInternal is
         if (l.totalActiveTokenIdTokens[collection][tokenId] == 0) {
             l.activeTokenIds[collection].remove(tokenId);
         }
+    }
+
+    /// @notice assigns an ERC721 asset from one account to another, updating the required
+    /// state variables simultaneously
+    /// @param from address asset currently is escrowed for
+    /// @param to address that asset will be assigned to
+    /// @param collection address of ERC721 collection
+    /// @param tokenId token id
+    /// @param tokenRisk risk of token set by from address prior to transfer
+    function _assignEscrowedERC721Asset(
+        address from,
+        address to,
+        address collection,
+        uint256 tokenId,
+        uint64 tokenRisk
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        _updateDepositorEarnings(from, collection);
+        _updateDepositorEarnings(to, collection);
+
+        --l.activeTokens[from][collection];
+        ++l.inactiveTokens[to][collection];
+
+        l.activeTokenIds[collection].remove(tokenId);
+        l.escrowedERC721Owner[collection][tokenId] = to;
+        l.totalRisk[collection] -= tokenRisk;
+        l.totalDepositorRisk[from][collection] -= tokenRisk;
+        --l.totalActiveTokens[collection];
+        delete l.tokenRisk[collection][tokenId];
     }
 
     /// @notice attempts to mint a token from a collection for a minter
@@ -345,20 +375,14 @@ abstract contract PerpetualMintInternal is
 
         if (result) {
             uint256 tokenId = _selectToken(collection, randomValues[1]);
-            address oldOwner = l.escrowedERC721Owner[collection][tokenId];
-            uint64 oldRisk = l.tokenRisk[collection][tokenId];
-            _updateDepositorEarnings(oldOwner, collection);
-            _updateDepositorEarnings(minter, collection);
 
-            --l.activeTokens[oldOwner][collection];
-            ++l.inactiveTokens[minter][collection];
-
-            l.activeTokenIds[collection].remove(tokenId);
-            l.escrowedERC721Owner[collection][tokenId] = minter;
-            l.totalRisk[collection] -= oldRisk;
-            l.totalDepositorRisk[oldOwner][collection] -= oldRisk;
-            --l.totalActiveTokens[collection];
-            delete l.tokenRisk[collection][tokenId];
+            _assignEscrowedERC721Asset(
+                l.escrowedERC721Owner[collection][tokenId],
+                minter,
+                collection,
+                tokenId,
+                l.tokenRisk[collection][tokenId]
+            );
         }
 
         emit ERC721MintResolved(collection, result);

@@ -18,7 +18,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
     /// @dev tokenId of ERC1155 asset to be transferred
     uint256 tokenId;
 
-    /// @dev risk of token set by depositor prince to transfer
+    /// @dev risk of token set by depositor prior to transfer
     uint64 tokenRisk;
     /// @dev activeERC1155Tokens storage slot
     bytes32 slot;
@@ -223,7 +223,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
     }
 
     /// @dev test that 'to' address is added to escrowedERC1155Owners if it was not contained prior to assignment
-    function test_assignEscrowedERC1155AddsToToEscrowedERC1155TokenOwnerIfToIsNotContained()
+    function test_assignEscrowedERC1155AssetAddsToToEscrowedERC1155TokenOwnerIfToIsNotContained()
         public
     {
         perpetualMint.exposed_assignEscrowedERC1155Asset(
@@ -245,7 +245,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
     }
 
     /// @dev test that 'from' address is removed to activeERC1155Owners if 'from' activeERC1155Tokens is zero
-    function test_assignEscrowedERC1155RemovesFromFromActiveERC1155OwnersIfFromActiveERC1155TokensIsZero()
+    function test_assignEscrowedERC1155AssetRemovesFromFromActiveERC1155OwnersIfFromActiveERC1155TokensIsZero()
         public
     {
         perpetualMint.exposed_assignEscrowedERC1155Asset(
@@ -268,7 +268,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
     }
 
     /// @dev test that 'from' address is depositTokenRisk is deleted if 'from' activeERC1155 tokens are zero
-    function test_assignEscrowedERC1155DeletesFromDepositorTokenRiskIfFromActiveERC1155TokensIsZero()
+    function test_assignEscrowedERC1155AssetDeletesFromDepositorTokenRiskIfFromActiveERC1155TokensIsZero()
         public
     {
         perpetualMint.exposed_assignEscrowedERC1155Asset(
@@ -290,7 +290,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
     }
 
     /// @dev test that 'from' address is removed to escrowedERC1155Owners if 'from' activeERC1155tokens and inactiveERC1155tokens are zero
-    function test_assignEscrowedERC1155RemovesFromFromEscrowedERC1155OwnersIfFromActiveERC1155TokensAndInactiveERC1155TokensAreZero()
+    function test_assignEscrowedERC1155AssetRemovesFromFromEscrowedERC1155OwnersIfFromActiveERC1155TokensAndInactiveERC1155TokensAreZero()
         public
     {
         perpetualMint.exposed_assignEscrowedERC1155Asset(
@@ -313,7 +313,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
     }
 
     /// @dev test that transferred tokenId is removed from activeTokenIds if tokenId tokenRisk is zero
-    function test_assignEscrowedERC1155RemovesTokenIdFromActiveTokenIdsIfTokenRiskIsZero()
+    function test_assignEscrowedERC1155AssetRemovesTokenIdFromActiveTokenIdsIfTokenRiskIsZero()
         public
     {
         bytes32 tokenRiskSlot = keccak256(

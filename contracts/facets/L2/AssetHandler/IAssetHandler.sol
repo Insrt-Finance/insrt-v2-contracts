@@ -12,6 +12,12 @@ interface IL2AssetHandler is IAssetHandler {
     /// @notice Thrown when a user tries to withdraw an ERC721 token that is not deposited.
     error ERC721TokenNotDeposited();
 
+    event ERC1155AssetsClaimed(
+        address indexed claimant,
+        address indexed collection,
+        ERC1155Claim[] claims
+    );
+
     /// @notice Used to withdraw ERC1155 assets.
     /// @dev Debits specified ERC1155 tokens from the user and withdraws them cross-chain.
     /// @param collection The address of the ERC1155 token contract.

@@ -10,7 +10,7 @@ remappings = [
   "@chainlink/vrf/=lib/chainlink/contracts/src/v0.8/vrf/",
   "@solidstate/contracts/=lib/solidstate-solidity/contracts/",
   "@solidstate/layerzero-client/=lib/layerzero-client/contracts/",
-  "forge-std/=lib/forge-std/src/"
+  "forge-std/=lib/forge-std/src/",
 ]
 solc_version = '0.8.21'
 src = "contracts"

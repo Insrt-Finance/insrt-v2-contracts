@@ -18,6 +18,13 @@ interface IL2AssetHandler is IAssetHandler {
         ERC1155Claim[] claims
     );
 
+    /// @notice Defines the data structure for an ERC1155 claim.
+    struct ERC1155Claim {
+        address originalOwner;
+        uint256 tokenId;
+        uint256 amount;
+    }
+
     /// @notice Used to withdraw ERC1155 assets.
     /// @dev Debits specified ERC1155 tokens from the user and withdraws them cross-chain.
     /// @param collection The address of the ERC1155 token contract.

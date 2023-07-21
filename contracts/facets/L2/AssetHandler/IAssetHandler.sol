@@ -7,6 +7,8 @@ import { IAssetHandler } from "../../../interfaces/IAssetHandler.sol";
 /// @title IL2AssetHandler
 /// @dev Defines interface for the L2AssetHandler contract. Extends IAssetHandler.
 interface IL2AssetHandler is IAssetHandler {
+    /// @notice Thrown when a user tries to withdraw and claim ERC1155 token that is not escrowed.
+    error ERC1155TokenNotEscrowed();
     /// @notice Thrown when a user tries to withdraw an ERC721 token that is not deposited.
     error ERC721TokenNotDeposited();
 

@@ -53,4 +53,13 @@ interface IPerpetualMintHarness {
         address depositor,
         address collection
     ) external;
+
+    /// @dev exposes _assignEscrowedERC1155Asset method
+    function exposed_assignEscrowedERC1155Asset(
+        address from,
+        address to,
+        address collection,
+        uint256 tokenId,
+        uint64 tokenRisk
+    ) external;
 }

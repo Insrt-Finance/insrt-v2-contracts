@@ -89,4 +89,15 @@ contract PerpetualMintHarness is PerpetualMint, IPerpetualMintHarness {
     ) external {
         _updateDepositorEarnings(depositor, collection);
     }
+
+    /// @dev exposes _assignEscrowedERC1155Asset method
+    function exposed_assignEscrowedERC1155Asset(
+        address from,
+        address to,
+        address collection,
+        uint256 tokenId,
+        uint64 tokenRisk
+    ) external {
+        _assignEscrowedERC1155Asset(from, to, collection, tokenId, tokenRisk);
+    }
 }

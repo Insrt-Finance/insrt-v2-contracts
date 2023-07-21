@@ -43,7 +43,7 @@ contract PerpetualMintHelper {
         view
         returns (ISolidStateDiamond.FacetCut[] memory)
     {
-        bytes4[] memory mintingSelectors = new bytes4[](18);
+        bytes4[] memory mintingSelectors = new bytes4[](19);
         bytes4[] memory depositSelectors = new bytes4[](4);
 
         // map the function selectors to their respective interfaces
@@ -80,6 +80,9 @@ contract PerpetualMintHelper {
             .selector;
         mintingSelectors[17] = IPerpetualMintHarness
             .exposed_updateDepositorEarnings
+            .selector;
+        mintingSelectors[18] = IPerpetualMintHarness
+            .exposed_assignEscrowedERC1155Asset
             .selector;
 
         depositSelectors[0] = IDepositFacetMock.depositAsset.selector;

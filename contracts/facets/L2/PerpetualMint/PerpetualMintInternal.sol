@@ -80,17 +80,27 @@ abstract contract PerpetualMintInternal is
     /// @param to address that asset will be assigned to
     /// @param collection address of ERC1155 collection
     /// @param tokenId token id
+    /// @param fromRisk risk of token set by from address prior to transfer
     function _assignEscrowedERC1155Asset(
         address from,
         address to,
         address collection,
-        uint256 tokenId
-    ) private {
+        uint256 tokenId,
+        uint64 fromRisk
+    ) internal {
         Storage.Layout storage l = Storage.layout();
+
+        _updateDepositorEarnings(from, collection);
+        _updateDepositorEarnings(to, collection);
 
         --l.activeERC1155Tokens[from][collection][tokenId];
         ++l.claimableERC1155Tokens[collection][from][tokenId];
         ++l.inactiveERC1155Tokens[to][collection][tokenId];
+        --l.totalActiveTokens[collection];
+        --l.totalActiveTokenIdTokens[collection][tokenId];
+        l.totalRisk[collection] -= fromRisk;
+        l.tokenRisk[collection][tokenId] -= fromRisk;
+        l.totalDepositorRisk[from][collection] -= fromRisk;
 
         if (!l.escrowedERC1155Owners[collection][tokenId].contains(to)) {
             l.escrowedERC1155Owners[collection][tokenId].add(to);
@@ -103,6 +113,10 @@ abstract contract PerpetualMintInternal is
             if (l.inactiveERC1155Tokens[from][collection][tokenId] == 0) {
                 l.escrowedERC1155Owners[collection][tokenId].remove(from);
             }
+        }
+
+        if (l.totalActiveTokenIdTokens[collection][tokenId] == 0) {
+            l.activeTokenIds[collection].remove(tokenId);
         }
     }
 
@@ -305,10 +319,13 @@ abstract contract PerpetualMintInternal is
                 randomValues64[1]
             );
 
-            _updateDepositorEarnings(oldOwner, collection);
-            _updateDepositorEarnings(minter, collection);
-
-            _assignEscrowedERC1155Asset(oldOwner, minter, collection, tokenId);
+            _assignEscrowedERC1155Asset(
+                oldOwner,
+                minter,
+                collection,
+                tokenId,
+                l.depositorTokenRisk[oldOwner][collection][tokenId]
+            );
         }
 
         emit ERC1155MintResolved(collection, result);

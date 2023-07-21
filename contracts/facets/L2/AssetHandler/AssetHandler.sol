@@ -23,6 +23,72 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         _setOwner(msg.sender);
     }
 
+    /// @inheritdoc IL2AssetHandler
+    function claimERC1155Assets(
+        address collection,
+        uint16 layerZeroDestinationChainId,
+        ERC1155Claim[] calldata claims
+    ) external payable {
+        PerpetualMintStorage.Layout
+            storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
+
+        uint256[] memory amounts;
+        uint256[] memory tokenIds;
+
+        // Iterate over each claim
+        for (uint256 i = 0; i < claims.length; i++) {
+            // If the sender (claimer) is not the escrowed claimant of the ERC1155 token, revert the transaction
+            if (
+                !perpetualMintStorageLayout
+                .escrowedERC1155Owners[collection][claims[i].tokenId].contains(
+                        msg.sender
+                    )
+            ) {
+                revert ERC1155TokenNotEscrowed();
+            }
+
+            // Reduce the original owners' (depositors') claimable balance of the ERC1155 token
+            perpetualMintStorageLayout.claimableERC1155Tokens[collection][
+                claims[i].originalOwner
+            ][claims[i].tokenId] -= claims[i].amount;
+
+            // Reduce the senders' (claimants') claimable balance of the ERC1155 token
+            perpetualMintStorageLayout.inactiveERC1155Tokens[msg.sender][
+                collection
+            ][claims[i].tokenId] -= claims[i].amount;
+
+            // Reduce the original owners' (depositors') deposit balance of the ERC1155 token
+            L2AssetHandlerStorage.layout().erc1155Deposits[
+                claims[i].originalOwner
+            ][collection][claims[i].tokenId] -= claims[i].amount;
+
+            // If the claimant has no more ERC1155 tokens of a particular ID available to claim,
+            // remove them from the list of escrowed claimants for the token ID
+            if (
+                perpetualMintStorageLayout.inactiveERC1155Tokens[msg.sender][
+                    collection
+                ][claims[i].tokenId] == 0
+            ) {
+                perpetualMintStorageLayout
+                .escrowedERC1155Owners[collection][claims[i].tokenId].remove(
+                        msg.sender
+                    );
+            }
+
+            amounts[i] = claims[i].amount;
+            tokenIds[i] = claims[i].tokenId;
+        }
+
+        _withdrawERC1155Assets(
+            collection,
+            layerZeroDestinationChainId,
+            tokenIds,
+            amounts
+        );
+
+        emit ERC1155AssetsClaimed(msg.sender, collection, claims);
+    }
+
     /// @inheritdoc IAssetHandler
     function setLayerZeroEndpoint(
         address layerZeroEndpoint

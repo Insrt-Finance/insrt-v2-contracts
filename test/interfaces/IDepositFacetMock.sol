@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.21;
 
 import { IERC721Receiver } from "@solidstate/contracts/interfaces/IERC721Receiver.sol";
 import { IERC1155Receiver } from "@solidstate/contracts/interfaces/IERC1155Receiver.sol";

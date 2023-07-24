@@ -330,7 +330,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         collection, // the ERC1155 collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // escrowedERC1155TokenOwners mapping slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // activeERC1155TokenOwners mapping slot
                     )
                 )
             )

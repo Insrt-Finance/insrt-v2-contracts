@@ -473,7 +473,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     function _withdrawERC721Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
-        uint256[] calldata tokenIds
+        uint256[] memory tokenIds
     ) private {
         _lzSend(
             layerZeroDestinationChainId,

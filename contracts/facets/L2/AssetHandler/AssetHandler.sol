@@ -89,6 +89,50 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         emit ERC1155AssetsClaimed(msg.sender, collection, claims);
     }
 
+    /// @inheritdoc IL2AssetHandler
+    function claimERC721Assets(
+        address collection,
+        uint16 layerZeroDestinationChainId,
+        ERC721Claim[] calldata claims
+    ) external payable {
+        PerpetualMintStorage.Layout
+            storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
+
+        uint256[] memory tokenIds;
+
+        // Iterate over each claim
+        for (uint256 i = 0; i < claims.length; ++i) {
+            // If the sender (claimer) is not the escrowed claimant of the ERC721 token, revert the transaction
+            if (
+                perpetualMintStorageLayout.escrowedERC721Owner[collection][
+                    claims[i].tokenId
+                ] != msg.sender
+            ) {
+                revert ERC721TokenNotEscrowed();
+            }
+
+            // Reset the original owners' (depositors') deposit balance of the ERC721 token
+            L2AssetHandlerStorage.layout().erc721Deposits[
+                claims[i].originalOwner
+            ][collection][claims[i].tokenId] = false;
+
+            // Remove the sender (claimer) from the mapping of escrowed claimants for the token ID
+            perpetualMintStorageLayout.escrowedERC721Owner[collection][
+                claims[i].tokenId
+            ] = address(0);
+
+            tokenIds[i] = claims[i].tokenId;
+        }
+
+        _withdrawERC721Assets(
+            collection,
+            layerZeroDestinationChainId,
+            tokenIds
+        );
+
+        emit ERC721AssetsClaimed(msg.sender, collection, claims);
+    }
+
     /// @inheritdoc IAssetHandler
     function setLayerZeroEndpoint(
         address layerZeroEndpoint

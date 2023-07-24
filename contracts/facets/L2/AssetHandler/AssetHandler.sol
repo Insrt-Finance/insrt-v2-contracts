@@ -36,7 +36,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         uint256[] memory tokenIds;
 
         // Iterate over each claim
-        for (uint256 i = 0; i < claims.length; i++) {
+        for (uint256 i = 0; i < claims.length; ++i) {
             // If the sender (claimer) is not the escrowed claimant of the ERC1155 token, revert the transaction
             if (
                 !perpetualMintStorageLayout
@@ -120,7 +120,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
 
         // Iterate over each token ID
-        for (uint256 i = 0; i < tokenIds.length; i++) {
+        for (uint256 i = 0; i < tokenIds.length; ++i) {
             // Reduce the number of the deposited ERC1155 assets for the sender (depositor)
             L2AssetHandlerStorage.layout().erc1155Deposits[msg.sender][
                 collection
@@ -214,7 +214,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
 
         // Iterate over each token ID
-        for (uint256 i = 0; i < tokenIds.length; i++) {
+        for (uint256 i = 0; i < tokenIds.length; ++i) {
             // If the token is not deposited by the sender, revert the transaction
             if (
                 l2AssetHandlerStorageLayout.erc721Deposits[msg.sender][
@@ -235,7 +235,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             );
 
             // Decrement the count of active tokens for the sender in the collection
-            perpetualMintStorageLayout.activeTokens[msg.sender][collection]--;
+            --perpetualMintStorageLayout.activeTokens[msg.sender][collection];
 
             // Calculate the risk to be deducted based on the sender's risk for the token ID in the collection
             uint64 riskToBeDeducted = perpetualMintStorageLayout
@@ -250,7 +250,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             perpetualMintStorageLayout.tokenRisk[collection][tokenIds[i]] = 0;
 
             // Decrement the total number of active tokens in the collection
-            perpetualMintStorageLayout.totalActiveTokens[collection]--;
+            --perpetualMintStorageLayout.totalActiveTokens[collection];
 
             // Deduct the risk from the total risk for the sender in the collection
             perpetualMintStorageLayout.totalDepositorRisk[msg.sender][
@@ -317,7 +317,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 );
 
             // Iterate over each token ID
-            for (uint256 i = 0; i < tokenIds.length; i++) {
+            for (uint256 i = 0; i < tokenIds.length; ++i) {
                 // Update the amount of deposited ERC1155 assets for the depositor and the token ID in the collection
                 L2AssetHandlerStorage.layout().erc1155Deposits[depositor][
                     collection
@@ -395,7 +395,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 );
 
             // Iterate over each token ID
-            for (uint256 i = 0; i < tokenIds.length; i++) {
+            for (uint256 i = 0; i < tokenIds.length; ++i) {
                 // Mark the ERC721 token as deposited by the depositor in the collection
                 L2AssetHandlerStorage.layout().erc721Deposits[depositor][
                     collection
@@ -407,9 +407,9 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 );
 
                 // Increment the count of active tokens for the depositor in the collection
-                perpetualMintStorageLayout.activeTokens[depositor][
+                ++perpetualMintStorageLayout.activeTokens[depositor][
                     collection
-                ]++;
+                ];
 
                 // Set the risk for the depositor and the token ID in the collection
                 perpetualMintStorageLayout.depositorTokenRisk[depositor][
@@ -422,7 +422,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 ] = risks[i];
 
                 // Increment the total number of active tokens in the collection
-                perpetualMintStorageLayout.totalActiveTokens[collection]++;
+                ++perpetualMintStorageLayout.totalActiveTokens[collection];
 
                 // Increase the total risk for the depositor in the collection
                 perpetualMintStorageLayout.totalDepositorRisk[depositor][

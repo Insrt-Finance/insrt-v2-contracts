@@ -516,11 +516,18 @@ abstract contract PerpetualMintInternal is
             }
 
             uint64 oldRisk = l.tokenRisk[collection][tokenId];
-
             l.tokenRisk[collection][tokenId] = risk;
-            l.totalRisk[collection] += risk > oldRisk
-                ? risk - oldRisk
-                : oldRisk - risk;
+
+            uint64 riskChange;
+            if (risk > oldRisk) {
+                riskChange = risk - oldRisk;
+                l.totalRisk[collection] += riskChange;
+                l.totalDepositorRisk[depositor][collection] += riskChange;
+            } else {
+                riskChange = oldRisk - risk;
+                l.totalRisk[collection] -= riskChange;
+                l.totalDepositorRisk[depositor][collection] -= riskChange;
+            }
         } else {
             if (
                 !l.escrowedERC1155Owners[collection][tokenId].contains(

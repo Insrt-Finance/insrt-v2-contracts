@@ -51,10 +51,10 @@ library PerpetualMintStorage {
         mapping(address depositor => mapping(address collection => uint256 amount)) depositorDeductions;
         /// @dev amount of earnings in ETH (native token) for a depositor for a collection
         mapping(address depositor => mapping(address collection => uint256 amount)) depositorEarnings;
-        /// @dev amount of tokens escrowed by the contract on behalf of a depositor for a collection
+        /// @dev amount of tokens escrowed by the contract on behalf of a depositor for an ERC721 collection
         /// which are able to be minted via mint attempts
         mapping(address depositor => mapping(address collection => uint256 amount)) activeTokens;
-        /// @dev amount of tokens escrowed by the contract on behalf of a depositor for a collection
+        /// @dev amount of tokens escrowed by the contract on behalf of a depositor for an ERC721 collection
         /// which are not able to be minted via mint attempts
         mapping(address depositor => mapping(address collection => uint256 amount)) inactiveTokens;
         /// @dev sum of risks of tokens deposited by a depositor for a collection

@@ -8,6 +8,7 @@ import { IERC1155 } from "@solidstate/contracts/interfaces/IERC1155.sol";
 import { IERC721 } from "@solidstate/contracts/interfaces/IERC721.sol";
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
+import { PerpetualMintStorage as Storage } from "../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 import { L1CoreTest } from "../../../diamonds/L1/Core.t.sol";
 import { IDepositFacetMock } from "../../../interfaces/IDepositFacetMock.sol";
 import { StorageRead } from "../common/StorageRead.t.sol";
@@ -72,9 +73,21 @@ abstract contract PerpetualMintTest is L1CoreTest, StorageRead {
         parallelAlphaTokenIds[1] = 11022;
 
         perpetualMint.setCollectionMintPrice(BORED_APE_YACHT_CLUB, MINT_PRICE);
-        perpetualMint.setCollectionType(BORED_APE_YACHT_CLUB, true);
-        perpetualMint.setCollectionMintPrice(PARALLEL_ALPHA, MINT_PRICE);
 
+        bytes32 collectionTypeSlot = keccak256(
+            abi.encode(
+                BORED_APE_YACHT_CLUB, // address of collection
+                uint256(Storage.STORAGE_SLOT) + 6 // collectionType mapping storage slot
+            )
+        );
+
+        vm.store(
+            address(perpetualMint),
+            collectionTypeSlot,
+            bytes32(uint256(1))
+        );
+
+        perpetualMint.setCollectionMintPrice(PARALLEL_ALPHA, MINT_PRICE);
         assert(
             _collectionType(address(perpetualMint), BORED_APE_YACHT_CLUB) ==
                 true

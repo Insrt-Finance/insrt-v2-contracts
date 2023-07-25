@@ -14,11 +14,6 @@ interface IPerpetualMintInternal {
     /// @notice thrown when a non-owner is attempting to modify token parameters
     error OnlyEscrowedTokenOwner();
 
-    /// @notice emitted when the type of a collection is set
-    /// @param collection address of collection
-    /// @param isERC721 whether collection is an ERC721
-    event CollectionTypeSet(address collection, bool isERC721);
-
     /// @notice emitted when the outcome of an attempted mint is resolved
     /// @param collection address of collection that attempted mint is for
     /// @param result success status of mint attempt

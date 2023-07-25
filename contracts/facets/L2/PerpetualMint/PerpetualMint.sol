@@ -81,14 +81,6 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
     }
 
     /// @inheritdoc IPerpetualMint
-    function setCollectionType(
-        address collection,
-        bool isERC721
-    ) external onlyOwner {
-        _setCollectionType(collection, isERC721);
-    }
-
-    /// @inheritdoc IPerpetualMint
     function updateTokenRisk(
         address collection,
         uint256 tokenId,

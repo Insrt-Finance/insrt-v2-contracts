@@ -22,12 +22,12 @@ interface IPerpetualMintInternal {
     /// @notice emitted when the outcome of an attempted mint is resolved
     /// @param collection address of collection that attempted mint is for
     /// @param result success status of mint attempt
-    event ERC1155MintResolved(address collection, bool result);
+    event ERC1155MintResolved(address indexed collection, bool result);
 
     /// @notice emitted when the outcome of an attempted mint is resolved
     /// @param collection address of collection that attempted mint is for
     /// @param result success status of mint attempt
-    event ERC721MintResolved(address collection, bool result);
+    event ERC721MintResolved(address indexed collection, bool result);
 
     /// @notice emitted when the mint price of a collection is set
     /// @param collection address of collection

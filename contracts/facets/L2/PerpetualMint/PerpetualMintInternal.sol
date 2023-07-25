@@ -279,6 +279,63 @@ abstract contract PerpetualMintInternal is
         }
     }
 
+    /// @dev sets a token's risk to zero thereby making it idle - it is still escrowed
+    /// by the PerpetualMint contracts but not actively accruing earnings nor mint attemps
+    /// @param depositor address of depositor of token
+    /// @param collection address of ERC721/1155 collection
+    /// @param tokenId id of token of collection
+    function _idleToken(
+        address depositor,
+        address collection,
+        uint256 tokenId
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        _updateDepositorEarnings(depositor, collection);
+
+        if (l.collectionType[collection]) {
+            if (depositor != l.escrowedERC721Owner[collection][tokenId]) {
+                revert OnlyEscrowedTokenOwner();
+            }
+
+            uint64 oldRisk = l.tokenRisk[collection][tokenId];
+
+            l.totalRisk[collection] -= oldRisk;
+            l.activeTokenIds[collection].remove(tokenId);
+            --l.totalActiveTokens[collection];
+            --l.activeTokens[depositor][collection];
+            ++l.inactiveTokens[depositor][collection];
+            l.totalDepositorRisk[depositor][collection] -= oldRisk;
+            delete l.tokenRisk[collection][tokenId];
+        } else {
+            if (
+                !l.escrowedERC1155Owners[collection][tokenId].contains(
+                    depositor
+                )
+            ) {
+                revert OnlyEscrowedTokenOwner();
+            }
+
+            uint64 oldRisk = l.depositorTokenRisk[depositor][collection][
+                tokenId
+            ];
+            uint64 activeTokens = l.activeERC1155Tokens[depositor][collection][
+                tokenId
+            ];
+
+            uint64 riskChange = activeTokens * oldRisk;
+            l.totalRisk[collection] -= riskChange;
+            l.totalActiveTokens[collection] -= activeTokens;
+            l.totalDepositorRisk[depositor][collection] -= riskChange;
+            delete l.depositorTokenRisk[depositor][collection][tokenId];
+            delete l.activeERC1155Tokens[depositor][collection][tokenId];
+            l.inactiveERC1155Tokens[depositor][collection][
+                tokenId
+            ] += activeTokens;
+            l.activeERC1155Owners[collection][tokenId].remove(depositor);
+        }
+    }
+
     /// @notice ensures a value is within the BASIS range
     /// @param value value to normalize
     /// @return normalizedValue value after normalization
@@ -507,6 +564,10 @@ abstract contract PerpetualMintInternal is
             revert BasisExceeded();
         }
 
+        if (risk == 0) {
+            revert TokenRiskMustBeNonZero();
+        }
+
         _updateDepositorEarnings(depositor, collection);
 
         if (l.collectionType[collection]) {
@@ -516,27 +577,17 @@ abstract contract PerpetualMintInternal is
 
             uint64 oldRisk = l.tokenRisk[collection][tokenId];
 
-            if (risk == 0) {
-                l.totalRisk[collection] -= oldRisk;
-                l.activeTokenIds[collection].remove(tokenId);
-                --l.totalActiveTokens[collection];
-                --l.activeTokens[depositor][collection];
-                ++l.inactiveTokens[depositor][collection];
-                l.totalDepositorRisk[depositor][collection] -= oldRisk;
-                delete l.tokenRisk[collection][tokenId];
-            } else {
-                l.tokenRisk[collection][tokenId] = risk;
-                uint64 riskChange;
+            l.tokenRisk[collection][tokenId] = risk;
+            uint64 riskChange;
 
-                if (risk > oldRisk) {
-                    riskChange = risk - oldRisk;
-                    l.totalRisk[collection] += riskChange;
-                    l.totalDepositorRisk[depositor][collection] += riskChange;
-                } else {
-                    riskChange = oldRisk - risk;
-                    l.totalRisk[collection] -= riskChange;
-                    l.totalDepositorRisk[depositor][collection] -= riskChange;
-                }
+            if (risk > oldRisk) {
+                riskChange = risk - oldRisk;
+                l.totalRisk[collection] += riskChange;
+                l.totalDepositorRisk[depositor][collection] += riskChange;
+            } else {
+                riskChange = oldRisk - risk;
+                l.totalRisk[collection] -= riskChange;
+                l.totalDepositorRisk[depositor][collection] -= riskChange;
             }
         } else {
             if (
@@ -550,50 +601,31 @@ abstract contract PerpetualMintInternal is
             uint64 oldRisk = l.depositorTokenRisk[depositor][collection][
                 tokenId
             ];
+            uint64 riskChange;
+
+            if (
+                !l.activeERC1155Owners[collection][tokenId].contains(depositor)
+            ) {
+                l.activeERC1155Owners[collection][tokenId].add(depositor);
+            }
+
+            l.activeERC1155Tokens[depositor][collection][tokenId] += l
+                .inactiveERC1155Tokens[depositor][collection][tokenId];
+
             uint64 activeTokens = l.activeERC1155Tokens[depositor][collection][
                 tokenId
             ];
-            uint64 riskChange;
-
-            if (risk == 0) {
-                riskChange = activeTokens * oldRisk;
-                l.totalRisk[collection] -= riskChange;
-                l.totalActiveTokens[collection] -= activeTokens;
-                l.totalDepositorRisk[depositor][collection] -= riskChange;
-                delete l.depositorTokenRisk[depositor][collection][tokenId];
-                delete l.activeERC1155Tokens[depositor][collection][tokenId];
-                l.inactiveERC1155Tokens[depositor][collection][
-                    tokenId
-                ] += activeTokens;
-                l.activeERC1155Owners[collection][tokenId].remove(depositor);
+            if (risk > oldRisk) {
+                riskChange = (risk - oldRisk) * activeTokens;
+                l.totalDepositorRisk[depositor][collection] += riskChange;
+                l.tokenRisk[collection][tokenId] += riskChange;
             } else {
-                if (
-                    !l.activeERC1155Owners[collection][tokenId].contains(
-                        depositor
-                    )
-                ) {
-                    l.activeERC1155Owners[collection][tokenId].add(depositor);
-                }
-
-                l.activeERC1155Tokens[depositor][collection][tokenId] += l
-                    .inactiveERC1155Tokens[depositor][collection][tokenId];
-
-                if (risk > oldRisk) {
-                    riskChange =
-                        (risk - oldRisk) *
-                        l.activeERC1155Tokens[depositor][collection][tokenId];
-                    l.totalDepositorRisk[depositor][collection] += riskChange;
-                    l.tokenRisk[collection][tokenId] += riskChange;
-                } else {
-                    riskChange =
-                        (oldRisk - risk) *
-                        l.activeERC1155Tokens[depositor][collection][tokenId];
-                    l.totalDepositorRisk[depositor][collection] -= riskChange;
-                    l.tokenRisk[collection][tokenId] -= riskChange;
-                }
-
-                l.depositorTokenRisk[depositor][collection][tokenId] = risk;
+                riskChange = (oldRisk - risk) * activeTokens;
+                l.totalDepositorRisk[depositor][collection] -= riskChange;
+                l.tokenRisk[collection][tokenId] -= riskChange;
             }
+
+            l.depositorTokenRisk[depositor][collection][tokenId] = risk;
         }
     }
 }

@@ -14,6 +14,9 @@ interface IPerpetualMintInternal {
     /// @notice thrown when a non-owner is attempting to modify token parameters
     error OnlyEscrowedTokenOwner();
 
+    /// @notice thrown when an attempt is made to update token risk to 0
+    error TokenRiskMustBeNonZero();
+
     /// @notice emitted when the outcome of an attempted mint is resolved
     /// @param collection address of collection that attempted mint is for
     /// @param result success status of mint attempt

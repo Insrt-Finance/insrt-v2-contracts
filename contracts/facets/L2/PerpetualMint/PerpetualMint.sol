@@ -73,6 +73,15 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
     }
 
     /// @inheritdoc IPerpetualMint
+    function idleToken(
+        address depositor,
+        address collection,
+        uint256 tokenId
+    ) external {
+        _idleToken(depositor, collection, tokenId);
+    }
+
+    /// @inheritdoc IPerpetualMint
     function setCollectionMintPrice(
         address collection,
         uint256 price

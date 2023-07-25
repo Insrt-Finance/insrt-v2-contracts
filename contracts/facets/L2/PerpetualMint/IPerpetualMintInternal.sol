@@ -5,14 +5,19 @@ pragma solidity ^0.8.21;
 /// @title IPerpetualMintInternal interface
 /// @dev contains all errors and events used in the PerpeutlaMint facet contract
 interface IPerpetualMintInternal {
+    /// @notice thrown when attempting to set a value of risk larger than basis
+    error BasisExceeded();
+
     /// @notice thrown when an incorrent amount of ETH is received
     error IncorrectETHReceived();
 
     /// @notice thrown when a non-owner is attempting to modify token parameters
     error OnlyEscrowedTokenOwner();
 
-    /// @notice thrown when attempting to set a value of risk larger than basis
-    error BasisExceeded();
+    /// @notice emitted when the type of a collection is set
+    /// @param collection address of collection
+    /// @param isERC721 whether collection is an ERC721
+    event CollectionTypeSet(address collection, bool isERC721);
 
     /// @notice emitted when the outcome of an attempted mint is resolved
     /// @param collection address of collection that attempted mint is for
@@ -28,9 +33,4 @@ interface IPerpetualMintInternal {
     /// @param collection address of collection
     /// @param price mint price of collection
     event MintPriceSet(address collection, uint256 price);
-
-    /// @notice emitted when the type of a collection is set
-    /// @param collection address of collection
-    /// @param isERC721 whether collection is an ERC721
-    event CollectionTypeSet(address collection, bool isERC721);
 }

@@ -14,12 +14,17 @@ update:; forge update
 
 ### Build & test
 build  :; forge build
-clean  :; forge clean # remove build artifacts and cache directories
-fmt    :; forge fmt # run built-in formatter
+# remove build artifacts and cache directories
+clean  :; forge clean
+# run built-in formatter
+fmt    :; forge fmt
+# run prettier formatter on tests and contracts
 prettier    :; pnpm prettier --write contracts/**/**/**/*.sol test/**/**/**/**/*.sol
-size  :; forge build --sizes # show contract sizes
-snapshot :; forge snapshot # create a snapshot of each test's gas usage
-test:;
+# show contract sizes
+size  :; forge build --sizes
+ # create a snapshot of each test's gas usage
+snapshot :; forge snapshot
+test:
 	forge test
 # show stack traces for failing tests
 trace   :; forge test -vvv

@@ -30,12 +30,6 @@ interface IL2AssetHandler is IAssetHandler {
         uint256 amount;
     }
 
-    /// @notice Defines the data structure for an ERC721 claim.
-    struct ERC721Claim {
-        address originalOwner;
-        uint256 tokenId;
-    }
-
     /// @notice Used to claim ERC1155 assets.
     /// @dev Debits specified ERC1155 token claims from the user and withdraws them cross-chain.
     /// @param collection The address of the ERC1155 token contract.

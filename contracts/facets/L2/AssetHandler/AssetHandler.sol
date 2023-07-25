@@ -440,10 +440,10 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
             // Iterate over each token ID
             for (uint256 i = 0; i < tokenIds.length; ++i) {
-                // Mark the ERC721 token as deposited by the depositor in the collection
-                L2AssetHandlerStorage.layout().erc721Deposits[depositor][
-                    collection
-                ][tokenIds[i]] = true;
+                // Mark the deposited ERC721 token as escrowed by the depositor in the collection
+                perpetualMintStorageLayout.escrowedERC721Owner[collection][
+                    tokenIds[i]
+                ] = depositor;
 
                 // Add the token ID to the set of active token IDs in the collection
                 perpetualMintStorageLayout.activeTokenIds[collection].add(

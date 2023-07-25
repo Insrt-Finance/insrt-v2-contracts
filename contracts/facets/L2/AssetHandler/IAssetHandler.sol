@@ -23,16 +23,6 @@ interface IL2AssetHandler is IAssetHandler {
         ERC1155Claim[] claims
     );
 
-    /// @notice Emitted when ERC721 assets are successfully claimed.
-    /// @param claimant The indexed address of the claimant.
-    /// @param collection The indexed address of the ERC721 collection.
-    /// @param claims The ERC721 claims that were successfully claimed.
-    event ERC721AssetsClaimed(
-        address indexed claimant,
-        address indexed collection,
-        ERC721Claim[] claims
-    );
-
     /// @notice Defines the data structure for an ERC1155 claim.
     struct ERC1155Claim {
         address originalOwner;

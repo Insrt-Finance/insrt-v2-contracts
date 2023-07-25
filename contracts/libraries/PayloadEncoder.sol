@@ -89,7 +89,7 @@ library PayloadEncoder {
     function encodeWithdrawERC721AssetsPayload(
         address depositor,
         address collection,
-        uint256[] memory tokenIds
+        uint256[] calldata tokenIds
     ) internal pure returns (bytes memory payload) {
         payload = abi.encode(AssetType.ERC721, depositor, collection, tokenIds);
     }

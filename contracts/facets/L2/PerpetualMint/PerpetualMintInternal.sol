@@ -603,12 +603,6 @@ abstract contract PerpetualMintInternal is
             ];
             uint64 riskChange;
 
-            if (
-                !l.activeERC1155Owners[collection][tokenId].contains(depositor)
-            ) {
-                l.activeERC1155Owners[collection][tokenId].add(depositor);
-            }
-
             l.activeERC1155Tokens[depositor][collection][tokenId] += l
                 .inactiveERC1155Tokens[depositor][collection][tokenId];
 

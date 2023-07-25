@@ -250,28 +250,24 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds
     ) external payable {
-        L2AssetHandlerStorage.Layout
-            storage l2AssetHandlerStorageLayout = L2AssetHandlerStorage
-                .layout();
-
         PerpetualMintStorage.Layout
             storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
 
         // Iterate over each token ID
         for (uint256 i = 0; i < tokenIds.length; ++i) {
-            // If the token is not deposited by the sender, revert the transaction
+            // If the token is not escrowed by the sender, revert the transaction
             if (
-                l2AssetHandlerStorageLayout.erc721Deposits[msg.sender][
-                    collection
-                ][tokenIds[i]] == false
+                perpetualMintStorageLayout.escrowedERC721Owner[collection][
+                    tokenIds[i]
+                ] != msg.sender
             ) {
-                revert ERC721TokenNotDeposited();
+                revert ERC721TokenNotEscrowed();
             }
 
-            // Reset the token as not deposited by the sender
-            l2AssetHandlerStorageLayout.erc721Deposits[msg.sender][collection][
+            // Reset the token as not escrowed by the sender
+            perpetualMintStorageLayout.escrowedERC721Owner[collection][
                 tokenIds[i]
-            ] = false;
+            ] = address(0);
 
             // Remove the token ID from the active token IDs in the collection
             perpetualMintStorageLayout.activeTokenIds[collection].remove(

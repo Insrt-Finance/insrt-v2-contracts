@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.21;
 
-import { Ownable } from "@solidstate/contracts/access/ownable/Ownable.sol";
 import { LinkTokenInterface } from "@chainlink/interfaces/LinkTokenInterface.sol";
 import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV2Interface.sol";
+import { Ownable } from "@solidstate/contracts/access/ownable/Ownable.sol";
 
 contract VRFSubscriptionManager is Ownable {
     address public immutable VRF;

@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.21;
 
-import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
+import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
 /// @title PerpetualMint_selectToken
 /// @dev PerpetualMint test contract for testing expected behavior of the selectToken function

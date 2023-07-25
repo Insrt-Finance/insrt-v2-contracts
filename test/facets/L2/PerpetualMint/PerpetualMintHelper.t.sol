@@ -6,10 +6,10 @@ import { IDiamondWritableInternal } from "@solidstate/contracts/proxy/diamond/wr
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
 import { IPerpetualMint } from "../../../../contracts/facets/L2/PerpetualMint/IPerpetualMint.sol";
-import { IPerpetualMintHarness } from "./IPerpetualMintHarness.t.sol";
-import { PerpetualMintHarness } from "./PerpetualMintHarness.t.sol";
 import { DepositFacetMock } from "../../../mocks/DepositFacetMock.t.sol";
 import { IDepositFacetMock } from "../../../interfaces/IDepositFacetMock.sol";
+import { IPerpetualMintHarness } from "./IPerpetualMintHarness.t.sol";
+import { PerpetualMintHarness } from "./PerpetualMintHarness.t.sol";
 
 /// @title PerpetualMintHelper
 /// @dev Test helper contract for setting up PerpetualMint facet for diamond cutting and testing

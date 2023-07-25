@@ -9,11 +9,10 @@ import { IERC721 } from "@solidstate/contracts/interfaces/IERC721.sol";
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
 import { L1CoreTest } from "../../../diamonds/L1/Core.t.sol";
-import { PerpetualMintHelper } from "./PerpetualMintHelper.t.sol";
-import { IPerpetualMintTest } from "./IPerpetualMintTest.t.sol";
-import { StorageRead } from "../common/StorageRead.t.sol";
-
 import { IDepositFacetMock } from "../../../interfaces/IDepositFacetMock.sol";
+import { StorageRead } from "../common/StorageRead.t.sol";
+import { IPerpetualMintTest } from "./IPerpetualMintTest.t.sol";
+import { PerpetualMintHelper } from "./PerpetualMintHelper.t.sol";
 
 /// @title PerpetualMintTest
 /// @dev PerpetualMintTest helper contract. Configures PerpetualMint and DepositFacetMock as facets of L1Core test.

@@ -462,7 +462,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
     }
 
     /// @dev Tests that withdrawERC1155Assets functionality reverts when attempting to withdraw more ERC1155 tokens than the msg.sender has deposited.
-    function test_withdrawERC1155AssetsRevertsWhenAttemptingToUndepositMoreThanDepositedAmount()
+    function test_withdrawERC1155AssetsRevertsWhenAttemptingToWithdrawMoreThanDepositedAmount()
         public
     {
         vm.prank(msg.sender);
@@ -487,7 +487,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
     }
 
     /// @dev Tests that withdrawERC1155Assets functionality reverts when attempting to withdraw ERC1155 tokens on an unsupported remote chain.
-    function test_withdrawERC1155AssetsRevertsWhenAttemptingToUndepositOnAnUnsupportedRemoteChain()
+    function test_withdrawERC1155AssetsRevertsWhenAttemptingToWithdrawOnAnUnsupportedRemoteChain()
         public
     {
         vm.prank(msg.sender);
@@ -514,7 +514,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
     }
 
     /// @dev Tests that withdrawERC1155Assets functionality reverts when attempting to withdraw deposited ERC1155 tokens that are not owned by the msg.sender.
-    function test_withdrawERC1155AssetsRevertsWhenAttemptingToUndepositSomeoneElsesDepositedTokens()
+    function test_withdrawERC1155AssetsRevertsWhenAttemptingToWithdrawSomeoneElsesDepositedTokens()
         public
     {
         vm.prank(msg.sender);

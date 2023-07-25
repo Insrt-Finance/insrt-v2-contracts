@@ -380,7 +380,7 @@ contract L2AssetHandler_withdrawERC721Assets is
     }
 
     /// @dev Tests that withdrawERC721Assets functionality reverts when attempting to withdraw more ERC721 tokens than the msg.sender has deposited.
-    function test_withdrawERC721AssetsRevertsWhenAttemptingToUndepositMoreThanDepositedAmount()
+    function test_withdrawERC721AssetsRevertsWhenAttemptingToWithdrawMoreThanDepositedAmount()
         public
     {
         vm.prank(msg.sender);
@@ -404,7 +404,7 @@ contract L2AssetHandler_withdrawERC721Assets is
     }
 
     /// @dev Tests that withdrawERC721Assets functionality reverts when attempting to withdraw ERC721 tokens on an unsupported remote chain.
-    function test_withdrawERC721AssetsRevertsWhenAttemptingToUndepositOnAnUnsupportedRemoteChain()
+    function test_withdrawERC721AssetsRevertsWhenAttemptingToWithdrawOnAnUnsupportedRemoteChain()
         public
     {
         vm.prank(msg.sender);
@@ -430,7 +430,7 @@ contract L2AssetHandler_withdrawERC721Assets is
     }
 
     /// @dev Tests that withdrawERC721Assets functionality reverts when attempting to withdraw deposited ERC721 tokens that are not owned by the msg.sender.
-    function test_withdrawERC721AssetsRevertsWhenAttemptingToUndepositSomeoneElsesDepositedTokens()
+    function test_withdrawERC721AssetsRevertsWhenAttemptingToWithdrawSomeoneElsesDepositedTokens()
         public
     {
         vm.prank(msg.sender);

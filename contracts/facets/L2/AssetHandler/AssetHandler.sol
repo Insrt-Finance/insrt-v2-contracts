@@ -6,7 +6,6 @@ import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { SolidStateLayerZeroClient } from "@solidstate/layerzero-client/SolidStateLayerZeroClient.sol";
 
 import { IL2AssetHandler } from "./IAssetHandler.sol";
-import { L2AssetHandlerStorage } from "./Storage.sol";
 import { PerpetualMintStorage } from "../PerpetualMint/Storage.sol";
 import { IAssetHandler } from "../../../interfaces/IAssetHandler.sol";
 import { PayloadEncoder } from "../../../libraries/PayloadEncoder.sol";
@@ -237,11 +236,6 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 revert ERC721TokenNotEscrowed();
             }
 
-            // Reset the token as not escrowed by the sender
-            perpetualMintStorageLayout.escrowedERC721Owner[collection][
-                tokenIds[i]
-            ] = address(0);
-
             // Remove the token ID from the active token IDs in the collection
             perpetualMintStorageLayout.activeTokenIds[collection].remove(
                 tokenIds[i]
@@ -258,6 +252,11 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             perpetualMintStorageLayout.depositorTokenRisk[msg.sender][
                 collection
             ][tokenIds[i]] = 0;
+
+            // Reset the token as not escrowed by the sender
+            perpetualMintStorageLayout.escrowedERC721Owner[collection][
+                tokenIds[i]
+            ] = address(0);
 
             // Reset the token risk for the token ID in the collection
             perpetualMintStorageLayout.tokenRisk[collection][tokenIds[i]] = 0;
@@ -350,12 +349,17 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                     collection
                 ][tokenIds[i]] = risks[i];
 
+                uint64 totalAddedRisk = risks[i] * uint64(amounts[i]);
+
+                // Update the total risk for the token ID in the collection
+                perpetualMintStorageLayout.tokenRisk[collection][
+                    tokenIds[i]
+                ] += totalAddedRisk;
+
                 // Update the total number of active tokens in the collection
                 perpetualMintStorageLayout.totalActiveTokens[
                     collection
                 ] += amounts[i];
-
-                uint64 totalAddedRisk = risks[i] * uint64(amounts[i]);
 
                 // Update the total risk for the depositor in the collection
                 perpetualMintStorageLayout.totalDepositorRisk[depositor][
@@ -365,11 +369,6 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 // Update the total risk in the collection
                 perpetualMintStorageLayout.totalRisk[
                     collection
-                ] += totalAddedRisk;
-
-                // Update the total risk for the token ID in the collection
-                perpetualMintStorageLayout.tokenRisk[collection][
-                    tokenIds[i]
                 ] += totalAddedRisk;
             }
 
@@ -404,11 +403,6 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
             // Iterate over each token ID
             for (uint256 i = 0; i < tokenIds.length; ++i) {
-                // Mark the deposited ERC721 token as escrowed by the depositor in the collection
-                perpetualMintStorageLayout.escrowedERC721Owner[collection][
-                    tokenIds[i]
-                ] = depositor;
-
                 // Add the token ID to the set of active token IDs in the collection
                 perpetualMintStorageLayout.activeTokenIds[collection].add(
                     tokenIds[i]
@@ -423,6 +417,11 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 perpetualMintStorageLayout.depositorTokenRisk[depositor][
                     collection
                 ][tokenIds[i]] = risks[i];
+
+                // Mark the deposited ERC721 token as escrowed by the depositor in the collection
+                perpetualMintStorageLayout.escrowedERC721Owner[collection][
+                    tokenIds[i]
+                ] = depositor;
 
                 // Set the risk for the token ID in the collection
                 perpetualMintStorageLayout.tokenRisk[collection][

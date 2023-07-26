@@ -280,62 +280,148 @@ abstract contract PerpetualMintInternal is
         }
     }
 
-    /// @dev sets a token's risk to zero thereby making it idle - it is still escrowed
-    /// by the PerpetualMint contracts but not actively accruing earnings nor mint attemps
+    /// @notice sets the token risk of a set of ERC1155 tokens to zero thereby making them idle - still escrowed
+    /// by the PerpetualMint contracts but not actively accruing earnings nor incurring risk from mint attemps
     /// @param depositor address of depositor of token
-    /// @param collection address of ERC721/1155 collection
-    /// @param tokenId id of token of collection
-    function _idleToken(
+    /// @param collection address of ERC1155 collection
+    /// @param tokenIds ids of token of collection
+    function _idleERC1155Tokens(
         address depositor,
         address collection,
-        uint256 tokenId
+        uint256[] calldata tokenIds
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
         _updateDepositorEarnings(depositor, collection);
 
-        if (l.collectionType[collection]) {
-            if (depositor != l.escrowedERC721Owner[collection][tokenId]) {
-                revert OnlyEscrowedTokenOwner();
+        uint256 idsLength = tokenIds.length;
+
+        unchecked {
+            for (uint256 i; i < idsLength; ++i) {
+                uint256 tokenId = tokenIds[i];
+
+                if (
+                    !l.escrowedERC1155Owners[collection][tokenId].contains(
+                        depositor
+                    )
+                ) {
+                    revert OnlyEscrowedTokenOwner();
+                }
+
+                uint64 oldRisk = l.depositorTokenRisk[depositor][collection][
+                    tokenId
+                ];
+                uint64 activeTokens = l.activeERC1155Tokens[depositor][
+                    collection
+                ][tokenId];
+
+                uint64 riskChange = activeTokens * oldRisk;
+                l.totalRisk[collection] -= riskChange;
+                l.totalActiveTokens[collection] -= activeTokens;
+                l.totalDepositorRisk[depositor][collection] -= riskChange;
+                l.depositorTokenRisk[depositor][collection][tokenId] = 0;
+                l.activeERC1155Tokens[depositor][collection][tokenId] = 0;
+                l.inactiveERC1155Tokens[depositor][collection][
+                    tokenId
+                ] += activeTokens;
+                l.activeERC1155Owners[collection][tokenId].remove(depositor);
             }
-
-            uint64 oldRisk = l.tokenRisk[collection][tokenId];
-
-            l.totalRisk[collection] -= oldRisk;
-            l.activeTokenIds[collection].remove(tokenId);
-            --l.totalActiveTokens[collection];
-            --l.activeTokens[depositor][collection];
-            ++l.inactiveTokens[depositor][collection];
-            l.totalDepositorRisk[depositor][collection] -= oldRisk;
-            l.tokenRisk[collection][tokenId] = 0;
-        } else {
-            if (
-                !l.escrowedERC1155Owners[collection][tokenId].contains(
-                    depositor
-                )
-            ) {
-                revert OnlyEscrowedTokenOwner();
-            }
-
-            uint64 oldRisk = l.depositorTokenRisk[depositor][collection][
-                tokenId
-            ];
-            uint64 activeTokens = l.activeERC1155Tokens[depositor][collection][
-                tokenId
-            ];
-
-            uint64 riskChange = activeTokens * oldRisk;
-            l.totalRisk[collection] -= riskChange;
-            l.totalActiveTokens[collection] -= activeTokens;
-            l.totalDepositorRisk[depositor][collection] -= riskChange;
-            l.depositorTokenRisk[depositor][collection][tokenId] = 0;
-            l.activeERC1155Tokens[depositor][collection][tokenId] = 0;
-            l.inactiveERC1155Tokens[depositor][collection][
-                tokenId
-            ] += activeTokens;
-            l.activeERC1155Owners[collection][tokenId].remove(depositor);
         }
     }
+
+    /// @notice sets the token risk of a set of ERC721 tokens to zero thereby making them idle - still escrowed
+    /// by the PerpetualMint contracts but not actively accruing earnings nor incurring risk from mint attemps
+    /// @param depositor address of depositor of token
+    /// @param collection address of ERC721 collection
+    /// @param tokenIds ids of token of collection
+    function _idleERC721Tokens(
+        address depositor,
+        address collection,
+        uint256[] calldata tokenIds
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        _updateDepositorEarnings(depositor, collection);
+
+        uint256 idsLength = tokenIds.length;
+
+        unchecked {
+            for (uint256 i; i < idsLength; ++i) {
+                uint256 tokenId = tokenIds[i];
+
+                if (depositor != l.escrowedERC721Owner[collection][tokenId]) {
+                    revert OnlyEscrowedTokenOwner();
+                }
+
+                uint64 oldRisk = l.tokenRisk[collection][tokenId];
+
+                l.totalRisk[collection] -= oldRisk;
+                l.activeTokenIds[collection].remove(tokenId);
+                --l.totalActiveTokens[collection];
+                --l.activeTokens[depositor][collection];
+                ++l.inactiveTokens[depositor][collection];
+                l.totalDepositorRisk[depositor][collection] -= oldRisk;
+                l.tokenRisk[collection][tokenId] = 0;
+            }
+        }
+    }
+
+    // /// @notice sets a token's risk to zero thereby making it idle - it is still escrowed
+    // /// by the PerpetualMint contracts but not actively accruing earnings nor mint attemps
+    // /// @param depositor address of depositor of token
+    // /// @param collection address of ERC721/1155 collection
+    // /// @param tokenId id of token of collection
+    // function _idleToken(
+    //     address depositor,
+    //     address collection,
+    //     uint256 tokenId
+    // ) internal {
+    //     Storage.Layout storage l = Storage.layout();
+
+    //     _updateDepositorEarnings(depositor, collection);
+
+    //     if (l.collectionType[collection]) {
+    //         if (depositor != l.escrowedERC721Owner[collection][tokenId]) {
+    //             revert OnlyEscrowedTokenOwner();
+    //         }
+
+    //         uint64 oldRisk = l.tokenRisk[collection][tokenId];
+
+    //         l.totalRisk[collection] -= oldRisk;
+    //         l.activeTokenIds[collection].remove(tokenId);
+    //         --l.totalActiveTokens[collection];
+    //         --l.activeTokens[depositor][collection];
+    //         ++l.inactiveTokens[depositor][collection];
+    //         l.totalDepositorRisk[depositor][collection] -= oldRisk;
+    //         l.tokenRisk[collection][tokenId] = 0;
+    //     } else {
+    //         if (
+    //             !l.escrowedERC1155Owners[collection][tokenId].contains(
+    //                 depositor
+    //             )
+    //         ) {
+    //             revert OnlyEscrowedTokenOwner();
+    //         }
+
+    //         uint64 oldRisk = l.depositorTokenRisk[depositor][collection][
+    //             tokenId
+    //         ];
+    //         uint64 activeTokens = l.activeERC1155Tokens[depositor][collection][
+    //             tokenId
+    //         ];
+
+    //         uint64 riskChange = activeTokens * oldRisk;
+    //         l.totalRisk[collection] -= riskChange;
+    //         l.totalActiveTokens[collection] -= activeTokens;
+    //         l.totalDepositorRisk[depositor][collection] -= riskChange;
+    //         l.depositorTokenRisk[depositor][collection][tokenId] = 0;
+    //         l.activeERC1155Tokens[depositor][collection][tokenId] = 0;
+    //         l.inactiveERC1155Tokens[depositor][collection][
+    //             tokenId
+    //         ] += activeTokens;
+    //         l.activeERC1155Owners[collection][tokenId].remove(depositor);
+    //     }
+    // }
 
     /// @notice ensures a value is within the BASIS range
     /// @param value value to normalize

@@ -45,7 +45,6 @@ interface IPerpetualMint {
 
     /// @notice sets the token risk of a set of ERC1155 tokens to zero thereby making them idle - still escrowed
     /// by the PerpetualMint contracts but not actively accruing earnings nor incurring risk from mint attemps
-    /// @param depositor address of depositor of token
     /// @param collection address of ERC1155 collection
     /// @param tokenIds ids of token of collection
     function idleERC1155Tokens(

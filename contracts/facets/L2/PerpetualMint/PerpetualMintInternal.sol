@@ -366,63 +366,6 @@ abstract contract PerpetualMintInternal is
         }
     }
 
-    // /// @notice sets a token's risk to zero thereby making it idle - it is still escrowed
-    // /// by the PerpetualMint contracts but not actively accruing earnings nor mint attemps
-    // /// @param depositor address of depositor of token
-    // /// @param collection address of ERC721/1155 collection
-    // /// @param tokenId id of token of collection
-    // function _idleToken(
-    //     address depositor,
-    //     address collection,
-    //     uint256 tokenId
-    // ) internal {
-    //     Storage.Layout storage l = Storage.layout();
-
-    //     _updateDepositorEarnings(depositor, collection);
-
-    //     if (l.collectionType[collection]) {
-    //         if (depositor != l.escrowedERC721Owner[collection][tokenId]) {
-    //             revert OnlyEscrowedTokenOwner();
-    //         }
-
-    //         uint64 oldRisk = l.tokenRisk[collection][tokenId];
-
-    //         l.totalRisk[collection] -= oldRisk;
-    //         l.activeTokenIds[collection].remove(tokenId);
-    //         --l.totalActiveTokens[collection];
-    //         --l.activeTokens[depositor][collection];
-    //         ++l.inactiveTokens[depositor][collection];
-    //         l.totalDepositorRisk[depositor][collection] -= oldRisk;
-    //         l.tokenRisk[collection][tokenId] = 0;
-    //     } else {
-    //         if (
-    //             !l.escrowedERC1155Owners[collection][tokenId].contains(
-    //                 depositor
-    //             )
-    //         ) {
-    //             revert OnlyEscrowedTokenOwner();
-    //         }
-
-    //         uint64 oldRisk = l.depositorTokenRisk[depositor][collection][
-    //             tokenId
-    //         ];
-    //         uint64 activeTokens = l.activeERC1155Tokens[depositor][collection][
-    //             tokenId
-    //         ];
-
-    //         uint64 riskChange = activeTokens * oldRisk;
-    //         l.totalRisk[collection] -= riskChange;
-    //         l.totalActiveTokens[collection] -= activeTokens;
-    //         l.totalDepositorRisk[depositor][collection] -= riskChange;
-    //         l.depositorTokenRisk[depositor][collection][tokenId] = 0;
-    //         l.activeERC1155Tokens[depositor][collection][tokenId] = 0;
-    //         l.inactiveERC1155Tokens[depositor][collection][
-    //             tokenId
-    //         ] += activeTokens;
-    //         l.activeERC1155Owners[collection][tokenId].remove(depositor);
-    //     }
-    // }
-
     /// @notice ensures a value is within the BASIS range
     /// @param value value to normalize
     /// @return normalizedValue value after normalization

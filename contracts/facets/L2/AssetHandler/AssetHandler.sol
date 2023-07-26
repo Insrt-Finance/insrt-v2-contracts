@@ -27,56 +27,32 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     function claimERC1155Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
-        ERC1155Claim[] calldata claims
+        uint256[] calldata tokenIds,
+        uint256[] calldata amounts
     ) external payable {
+        // Check that the lengths of the tokenIds and amounts arrays match
+        if (tokenIds.length != amounts.length) {
+            revert ERC1155TokenIdsAndAmountsLengthMismatch();
+        }
+
         PerpetualMintStorage.Layout
             storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
 
-        uint256[] memory amounts;
-        uint256[] memory tokenIds;
-
-        // Iterate over each claim
-        for (uint256 i = 0; i < claims.length; ++i) {
-            // If the sender (claimer) is not the escrowed claimant of the ERC1155 token, revert the transaction
+        // Iterate over each tokenId
+        for (uint256 i = 0; i < tokenIds.length; ++i) {
+            // If the sender (claimer) does not have any ERC1155 tokens of the specified ID available to claim, revert the transaction
             if (
-                !perpetualMintStorageLayout
-                .escrowedERC1155Owners[collection][claims[i].tokenId].contains(
-                        msg.sender
-                    )
+                perpetualMintStorageLayout.inactiveERC1155Tokens[msg.sender][
+                    collection
+                ][tokenIds[i]] == 0
             ) {
                 revert ERC1155TokenNotEscrowed();
             }
 
-            // Reduce the original owners' (depositors') claimable balance of the ERC1155 token
-            perpetualMintStorageLayout.claimableERC1155Tokens[collection][
-                claims[i].originalOwner
-            ][claims[i].tokenId] -= claims[i].amount;
-
-            // Reduce the senders' (claimants') claimable balance of the ERC1155 token
+            // Reduce the count of inactive ERC1155 tokens for the sender (claimer)
             perpetualMintStorageLayout.inactiveERC1155Tokens[msg.sender][
                 collection
-            ][claims[i].tokenId] -= claims[i].amount;
-
-            // Reduce the original owners' (depositors') deposit balance of the ERC1155 token
-            L2AssetHandlerStorage.layout().erc1155Deposits[
-                claims[i].originalOwner
-            ][collection][claims[i].tokenId] -= claims[i].amount;
-
-            // If the claimant has no more ERC1155 tokens of a particular ID available to claim,
-            // remove them from the list of escrowed claimants for the token ID
-            if (
-                perpetualMintStorageLayout.inactiveERC1155Tokens[msg.sender][
-                    collection
-                ][claims[i].tokenId] == 0
-            ) {
-                perpetualMintStorageLayout
-                .escrowedERC1155Owners[collection][claims[i].tokenId].remove(
-                        msg.sender
-                    );
-            }
-
-            amounts[i] = claims[i].amount;
-            tokenIds[i] = claims[i].tokenId;
+            ][tokenIds[i]] -= amounts[i];
         }
 
         _withdrawERC1155Assets(
@@ -86,7 +62,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             amounts
         );
 
-        emit ERC1155AssetsClaimed(msg.sender, collection, claims);
+        emit ERC1155AssetsWithdrawn(msg.sender, collection, tokenIds, amounts);
     }
 
     /// @inheritdoc IL2AssetHandler

@@ -161,11 +161,6 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
         // Iterate over each token ID
         for (uint256 i = 0; i < tokenIds.length; ++i) {
-            // Reduce the number of the deposited ERC1155 assets for the sender (depositor)
-            L2AssetHandlerStorage.layout().erc1155Deposits[msg.sender][
-                collection
-            ][tokenIds[i]] -= amounts[i];
-
             // Reduce the count of active ERC1155 tokens for the sender (depositor)
             perpetualMintStorageLayout.activeERC1155Tokens[msg.sender][
                 collection
@@ -187,21 +182,26 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 .activeERC1155Owners[collection][tokenIds[i]].remove(
                         msg.sender
                     );
+            }
 
-                // If there are no more active owners for the token ID, remove the token ID from the list of active token IDs
-                if (
-                    perpetualMintStorageLayout
-                    .activeERC1155Owners[collection][tokenIds[i]].length() == 0
-                ) {
-                    perpetualMintStorageLayout
-                        .activeTokenIds[collection]
-                        .remove(tokenIds[i]);
-                }
+            // Reduce the total risk for the sender (depositor) and the token ID in the collection
+            perpetualMintStorageLayout.depositorTokenRisk[msg.sender][
+                collection
+            ][tokenIds[i]] -= riskToBeDeducted;
 
-                // Reset the risk for the sender and the token ID
-                perpetualMintStorageLayout.depositorTokenRisk[msg.sender][
-                    collection
-                ][tokenIds[i]] = 0;
+            // Reduce the total risk for the token ID in the collection
+            perpetualMintStorageLayout.tokenRisk[collection][
+                tokenIds[i]
+            ] -= riskToBeDeducted;
+
+            // If all tokens of a particular ID are withdrawn, remove the token ID from the list of active token IDs
+            if (
+                perpetualMintStorageLayout.tokenRisk[collection][tokenIds[i]] ==
+                0
+            ) {
+                perpetualMintStorageLayout.activeTokenIds[collection].remove(
+                    tokenIds[i]
+                );
             }
 
             // Reduce the total count of active tokens in the collection
@@ -217,11 +217,6 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             // Reduce the total risk in the collection
             perpetualMintStorageLayout.totalRisk[
                 collection
-            ] -= riskToBeDeducted;
-
-            // Reduce the total risk for the token ID in the collection
-            perpetualMintStorageLayout.tokenRisk[collection][
-                tokenIds[i]
             ] -= riskToBeDeducted;
         }
 

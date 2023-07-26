@@ -69,8 +69,8 @@ library PayloadEncoder {
     function encodeWithdrawERC1155AssetsPayload(
         address depositor,
         address collection,
-        uint256[] memory tokenIds,
-        uint256[] memory amounts
+        uint256[] calldata tokenIds,
+        uint256[] calldata amounts
     ) internal pure returns (bytes memory payload) {
         payload = abi.encode(
             AssetType.ERC1155,

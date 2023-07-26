@@ -2,17 +2,13 @@
 
 pragma solidity ^0.8.21;
 
-import { IERC721 } from "@solidstate/contracts/interfaces/IERC721.sol";
-import { IERC1155 } from "@solidstate/contracts/interfaces/IERC1155.sol";
-import { IERC1155Receiver } from "@solidstate/contracts/interfaces/IERC1155Receiver.sol";
-import { IERC721Receiver } from "@solidstate/contracts/interfaces/IERC721Receiver.sol";
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
 import { PerpetualMintStorage as Storage } from "../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
 /// @title DepositFacetMock
 /// @dev mocks depositing asset into PerpetualMint
-contract DepositFacetMock is IERC721Receiver, IERC1155Receiver {
+contract DepositFacetMock {
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -32,12 +28,6 @@ contract DepositFacetMock is IERC721Receiver, IERC1155Receiver {
         Storage.Layout storage l = Storage.layout();
 
         if (l.collectionType[collection]) {
-            IERC721(collection).safeTransferFrom(
-                msg.sender,
-                address(this),
-                tokenId
-            );
-
             l.totalRisk[collection] += risk;
             ++l.totalActiveTokens[collection];
             ++l.activeTokens[msg.sender][collection];
@@ -45,14 +35,6 @@ contract DepositFacetMock is IERC721Receiver, IERC1155Receiver {
             l.tokenRisk[collection][tokenId] = risk;
             l.escrowedERC721Owner[collection][tokenId] = msg.sender;
         } else {
-            IERC1155(collection).safeTransferFrom(
-                msg.sender,
-                address(this),
-                tokenId,
-                amount,
-                "0x"
-            );
-
             uint64 addedRisk = risk * uint64(amount);
 
             l.totalRisk[collection] += addedRisk;
@@ -66,40 +48,5 @@ contract DepositFacetMock is IERC721Receiver, IERC1155Receiver {
         }
 
         l.activeTokenIds[collection].add(tokenId);
-    }
-
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes calldata
-    ) external pure returns (bytes4) {
-        return this.onERC721Received.selector;
-    }
-
-    function onERC1155BatchReceived(
-        address,
-        address,
-        uint256[] calldata,
-        uint256[] calldata,
-        bytes calldata
-    ) external pure returns (bytes4) {
-        return this.onERC1155BatchReceived.selector;
-    }
-
-    function onERC1155Received(
-        address,
-        address,
-        uint256,
-        uint256,
-        bytes calldata
-    ) external pure returns (bytes4) {
-        return this.onERC1155Received.selector;
-    }
-
-    function supportsInterface(
-        bytes4 interfaceId
-    ) external pure returns (bool) {
-        return interfaceId == type(IERC1155Receiver).interfaceId;
     }
 }

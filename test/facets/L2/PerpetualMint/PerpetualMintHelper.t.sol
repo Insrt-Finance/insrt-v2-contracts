@@ -44,7 +44,7 @@ contract PerpetualMintHelper {
         returns (ISolidStateDiamond.FacetCut[] memory)
     {
         bytes4[] memory mintingSelectors = new bytes4[](19);
-        bytes4[] memory depositSelectors = new bytes4[](4);
+        bytes4[] memory depositSelectors = new bytes4[](1);
 
         // map the function selectors to their respective interfaces
         mintingSelectors[0] = IPerpetualMint.attemptMint.selector;
@@ -86,9 +86,6 @@ contract PerpetualMintHelper {
             .selector;
 
         depositSelectors[0] = IDepositFacetMock.depositAsset.selector;
-        depositSelectors[1] = IDepositFacetMock.onERC1155Received.selector;
-        depositSelectors[2] = IDepositFacetMock.onERC1155BatchReceived.selector;
-        depositSelectors[3] = IDepositFacetMock.onERC721Received.selector;
 
         ISolidStateDiamond.FacetCut
             memory mintFacetCut = IDiamondWritableInternal.FacetCut({

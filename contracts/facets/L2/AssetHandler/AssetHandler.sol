@@ -222,11 +222,17 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
         // Iterate over each token ID
         for (uint256 i = 0; i < tokenIds.length; ++i) {
-            // If the token is not escrowed by the sender, revert the transaction
+            // If the token is not escrowed by the sender, or the token has already
+            // been removed from the active token IDs in the collection, revert the transaction.
+            // This is to prevent the sender from withdrawing a token that has been idled (must be claimed instead).
             if (
                 perpetualMintStorageLayout.escrowedERC721Owner[collection][
                     tokenIds[i]
-                ] != msg.sender
+                ] !=
+                msg.sender ||
+                !perpetualMintStorageLayout.activeTokenIds[collection].contains(
+                    tokenIds[i]
+                )
             ) {
                 revert ERC721TokenNotEscrowed();
             }

@@ -11,7 +11,6 @@ import { L2AssetHandlerTest } from "../AssetHandler.t.sol";
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { L2AssetHandlerMock } from "../../../../mocks/L2AssetHandlerMock.t.sol";
 import { IL2AssetHandler } from "../../../../../contracts/facets/L2/AssetHandler/IAssetHandler.sol";
-import { L2AssetHandlerStorage } from "../../../../../contracts/facets/L2/AssetHandler/Storage.sol";
 import { PerpetualMintStorage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
 
@@ -199,7 +198,7 @@ contract L2AssetHandler_withdrawERC721Assets is
                         keccak256(
                             abi.encode(
                                 address(this), // the depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // the depositorTokenRisk storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the depositorTokenRisk storage slot
                             )
                         )
                     )

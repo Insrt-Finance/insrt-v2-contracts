@@ -9,7 +9,7 @@ import { IERC721 } from "@solidstate/contracts/interfaces/IERC721.sol";
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
 import { PerpetualMintStorage as Storage } from "../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
-import { L1CoreTest } from "../../../diamonds/L1/Core.t.sol";
+import { L2CoreTest } from "../../../diamonds/L2/Core.t.sol";
 import { IDepositFacetMock } from "../../../interfaces/IDepositFacetMock.sol";
 import { StorageRead } from "../common/StorageRead.t.sol";
 import { IPerpetualMintTest } from "./IPerpetualMintTest.t.sol";
@@ -18,7 +18,7 @@ import { PerpetualMintHelper } from "./PerpetualMintHelper.t.sol";
 /// @title PerpetualMintTest
 /// @dev PerpetualMintTest helper contract. Configures PerpetualMint and DepositFacetMock as facets of L1Core test.
 /// @dev Should functoin identically across all forks given appropriate Chainlink VRF details are set.
-abstract contract PerpetualMintTest is L1CoreTest, StorageRead {
+abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     using stdStorage for StdStorage;
 
     IPerpetualMintTest public perpetualMint;
@@ -62,7 +62,7 @@ abstract contract PerpetualMintTest is L1CoreTest, StorageRead {
 
         initPerpetualMint();
 
-        perpetualMint = IPerpetualMintTest(address(l1CoreDiamond));
+        perpetualMint = IPerpetualMintTest(address(l2CoreDiamond));
         boredApeYachtClub = IERC721(BORED_APE_YACHT_CLUB);
         parallelAlpha = IERC1155(PARALLEL_ALPHA);
 
@@ -101,7 +101,7 @@ abstract contract PerpetualMintTest is L1CoreTest, StorageRead {
         ISolidStateDiamond.FacetCut[] memory facetCuts = perpetualMintHelper
             .getFacetCuts();
 
-        l1CoreDiamond.diamondCut(facetCuts, address(0), "");
+        l2CoreDiamond.diamondCut(facetCuts, address(0), "");
     }
 
     /// @dev deposits bored ape tokens from depositors into the PerpetualMint contracts

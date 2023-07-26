@@ -4,7 +4,7 @@ pragma solidity 0.8.21;
 
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
-import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
 /// @title PerpetualMint_resolveERC1155Mint
@@ -12,7 +12,7 @@ import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 contract PerpetualMint_resolveERC1155Mint is
     IPerpetualMintInternal,
     PerpetualMintTest,
-    L1ForkTest
+    L2ForkTest
 {
     uint256 internal constant COLLECTION_EARNINGS = 1 ether;
     uint256[] randomWords;

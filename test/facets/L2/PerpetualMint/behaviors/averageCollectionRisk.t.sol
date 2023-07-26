@@ -4,12 +4,12 @@ pragma solidity 0.8.21;
 
 import "forge-std/StdStorage.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
-import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
 /// @title PerpetualMint_averageCollectionRisk
 /// @dev PerpetualMint test contract for testing expected behavior of the averageCollectionRisk function
-contract PerpetualMint_averageCollectionRisk is PerpetualMintTest, L1ForkTest {
+contract PerpetualMint_averageCollectionRisk is PerpetualMintTest, L2ForkTest {
     using stdStorage for StdStorage;
 
     function setUp() public override {

@@ -2,12 +2,12 @@
 
 pragma solidity 0.8.21;
 
-import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
 /// @title PerpetualMint_selectToken
 /// @dev PerpetualMint test contract for testing expected behavior of the selectToken function
-contract PerpetualMint_selectToken is PerpetualMintTest, L1ForkTest {
+contract PerpetualMint_selectToken is PerpetualMintTest, L2ForkTest {
     function setUp() public override {
         super.setUp();
 

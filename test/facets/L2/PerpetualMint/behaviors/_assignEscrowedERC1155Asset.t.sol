@@ -4,7 +4,7 @@ pragma solidity 0.8.21;
 
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
-import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
 /// @title PerpetualMint_assignEscrowedERC1155Asset
@@ -12,7 +12,7 @@ import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 contract PerpetualMint_assignEscrowedERC1155Asset is
     IPerpetualMintInternal,
     PerpetualMintTest,
-    L1ForkTest
+    L2ForkTest
 {
     /// @dev tokenId of ERC1155 asset to be transferred
     uint256 tokenId;

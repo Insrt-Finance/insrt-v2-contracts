@@ -548,79 +548,121 @@ abstract contract PerpetualMintInternal is
         }
     }
 
-    /// @notice updates the risk associated with an escrowed token
+    /// @notice updates the risk associated with escrowed ERC1155 tokens of a depositor
     /// @param depositor address of escrowed token owner
     /// @param collection address of token collection
-    /// @param tokenId id of token
-    /// @param risk risk value
-    function _updateTokenRisk(
+    /// @param tokenIds array of token ids
+    /// @param risks array of new risk values for token ids
+    function _udpateERC1155TokenRisks(
         address depositor,
         address collection,
-        uint256 tokenId,
-        uint64 risk
+        uint256[] calldata tokenIds,
+        uint64[] calldata risks
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        if (risk > BASIS) {
-            revert BasisExceeded();
-        }
+        uint256 idLength = tokenIds.length;
 
-        if (risk == 0) {
-            revert TokenRiskMustBeNonZero();
+        if (idLength != risks.length) {
+            revert TokenIdsAndRisksMismatch();
         }
 
         _updateDepositorEarnings(depositor, collection);
 
-        if (l.collectionType[collection]) {
-            if (depositor != l.escrowedERC721Owner[collection][tokenId]) {
-                revert OnlyEscrowedTokenOwner();
+        unchecked {
+            for (uint256 i; i < idLength; ++i) {
+                uint256 tokenId = tokenIds[i];
+                uint64 risk = risks[i];
+                if (
+                    !l.escrowedERC1155Owners[collection][tokenId].contains(
+                        depositor
+                    )
+                ) {
+                    revert OnlyEscrowedTokenOwner();
+                }
+
+                uint64 oldRisk = l.depositorTokenRisk[depositor][collection][
+                    tokenId
+                ];
+                uint64 riskChange;
+
+                l.activeERC1155Tokens[depositor][collection][tokenId] += l
+                    .inactiveERC1155Tokens[depositor][collection][tokenId];
+
+                if (risk > oldRisk) {
+                    riskChange =
+                        (risk - oldRisk) *
+                        l.activeERC1155Tokens[depositor][collection][tokenId];
+                    l.totalDepositorRisk[depositor][collection] += riskChange;
+                    l.tokenRisk[collection][tokenId] += riskChange;
+                } else {
+                    riskChange =
+                        (oldRisk - risk) *
+                        l.activeERC1155Tokens[depositor][collection][tokenId];
+                    l.totalDepositorRisk[depositor][collection] -= riskChange;
+                    l.tokenRisk[collection][tokenId] -= riskChange;
+                }
+
+                l.depositorTokenRisk[depositor][collection][tokenId] = risk;
             }
+        }
+    }
 
-            uint64 oldRisk = l.tokenRisk[collection][tokenId];
+    /// @notice updates the risk associated with an escrowed ERC721 tokens of a depositor
+    /// @param depositor address of escrowed token owner
+    /// @param collection address of token collection
+    /// @param tokenIds array of token ids
+    /// @param risks array of new risk values for token ids
+    function _updateERC721TokenRisks(
+        address depositor,
+        address collection,
+        uint256[] calldata tokenIds,
+        uint64[] calldata risks
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
 
-            l.tokenRisk[collection][tokenId] = risk;
-            uint64 riskChange;
+        uint256 idLength = tokenIds.length;
 
-            if (risk > oldRisk) {
-                riskChange = risk - oldRisk;
-                l.totalRisk[collection] += riskChange;
-                l.totalDepositorRisk[depositor][collection] += riskChange;
-            } else {
-                riskChange = oldRisk - risk;
-                l.totalRisk[collection] -= riskChange;
-                l.totalDepositorRisk[depositor][collection] -= riskChange;
+        if (idLength != risks.length) {
+            revert TokenIdsAndRisksMismatch();
+        }
+
+        _updateDepositorEarnings(depositor, collection);
+
+        unchecked {
+            for (uint256 i; i < idLength; ++i) {
+                uint256 tokenId = tokenIds[i];
+                uint64 risk = risks[i];
+
+                if (risk > BASIS) {
+                    revert BasisExceeded();
+                }
+
+                if (risk == 0) {
+                    revert TokenRiskMustBeNonZero();
+                }
+
+                if (
+                    depositor != l.escrowedERC721Owner[collection][tokenIds[i]]
+                ) {
+                    revert OnlyEscrowedTokenOwner();
+                }
+
+                uint64 oldRisk = l.tokenRisk[collection][tokenId];
+
+                l.tokenRisk[collection][tokenId] = risk;
+                uint64 riskChange;
+
+                if (risk > oldRisk) {
+                    riskChange = risk - oldRisk;
+                    l.totalRisk[collection] += riskChange;
+                    l.totalDepositorRisk[depositor][collection] += riskChange;
+                } else {
+                    riskChange = oldRisk - risk;
+                    l.totalRisk[collection] -= riskChange;
+                    l.totalDepositorRisk[depositor][collection] -= riskChange;
+                }
             }
-        } else {
-            if (
-                !l.escrowedERC1155Owners[collection][tokenId].contains(
-                    depositor
-                )
-            ) {
-                revert OnlyEscrowedTokenOwner();
-            }
-
-            uint64 oldRisk = l.depositorTokenRisk[depositor][collection][
-                tokenId
-            ];
-            uint64 riskChange;
-
-            l.activeERC1155Tokens[depositor][collection][tokenId] += l
-                .inactiveERC1155Tokens[depositor][collection][tokenId];
-
-            uint64 activeTokens = l.activeERC1155Tokens[depositor][collection][
-                tokenId
-            ];
-            if (risk > oldRisk) {
-                riskChange = (risk - oldRisk) * activeTokens;
-                l.totalDepositorRisk[depositor][collection] += riskChange;
-                l.tokenRisk[collection][tokenId] += riskChange;
-            } else {
-                riskChange = (oldRisk - risk) * activeTokens;
-                l.totalDepositorRisk[depositor][collection] -= riskChange;
-                l.tokenRisk[collection][tokenId] -= riskChange;
-            }
-
-            l.depositorTokenRisk[depositor][collection][tokenId] = risk;
         }
     }
 }

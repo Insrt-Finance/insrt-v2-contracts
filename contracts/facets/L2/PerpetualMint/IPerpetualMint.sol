@@ -54,13 +54,23 @@ interface IPerpetualMint {
     /// @param price mint price of the collection
     function setCollectionMintPrice(address collection, uint256 price) external;
 
-    /// @notice updates the risk associated with an escrowed token
+    /// @notice updates the risk associated with escrowed ERC1155 tokens of a depositor
     /// @param collection address of token collection
-    /// @param tokenId id of token
-    /// @param risk risk value
-    function updateTokenRisk(
+    /// @param tokenIds array of token ids
+    /// @param risks array of new risk values for token ids
+    function updateERC1155TokenRisks(
         address collection,
-        uint256 tokenId,
-        uint64 risk
+        uint256[] calldata tokenIds,
+        uint64[] calldata risks
+    ) external;
+
+    /// @notice updates the risk associated with an escrowed ERC721 tokens of a depositor
+    /// @param collection address of token collection
+    /// @param tokenIds array of token ids
+    /// @param risks array of new risk values for token ids
+    function updateERC721TokenRisks(
+        address collection,
+        uint256[] calldata tokenIds,
+        uint64[] calldata risks
     ) external;
 }

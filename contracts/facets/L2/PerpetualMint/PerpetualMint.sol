@@ -86,12 +86,21 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
     }
 
     /// @inheritdoc IPerpetualMint
-    function updateTokenRisk(
+    function updateERC1155TokenRisks(
         address collection,
-        uint256 tokenId,
-        uint64 risk
+        uint256[] calldata tokenIds,
+        uint64[] calldata risks
     ) external {
-        _updateTokenRisk(msg.sender, collection, tokenId, risk);
+        _udpateERC1155TokenRisks(msg.sender, collection, tokenIds, risks);
+    }
+
+    /// @inheritdoc IPerpetualMint
+    function updateERC721TokenRisks(
+        address collection,
+        uint256[] calldata tokenIds,
+        uint64[] calldata risks
+    ) external {
+        _updateERC721TokenRisks(msg.sender, collection, tokenIds, risks);
     }
 
     /// @notice Chainlink VRF Coordinator callback

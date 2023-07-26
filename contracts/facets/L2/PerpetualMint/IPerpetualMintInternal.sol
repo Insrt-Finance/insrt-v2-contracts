@@ -14,6 +14,10 @@ interface IPerpetualMintInternal {
     /// @notice thrown when a non-owner is attempting to modify token parameters
     error OnlyEscrowedTokenOwner();
 
+    /// @notice thrown when the arrays of tokenIds and risks have different length when attempting to update
+    /// ERC721 or ERC1155 token risks
+    error TokenIdsAndRisksMismatch();
+
     /// @notice thrown when an attempt is made to update token risk to 0
     error TokenRiskMustBeNonZero();
 

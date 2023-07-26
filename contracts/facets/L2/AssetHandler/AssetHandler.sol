@@ -354,11 +354,6 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
             // Iterate over each token ID
             for (uint256 i = 0; i < tokenIds.length; ++i) {
-                // Update the amount of deposited ERC1155 assets for the depositor and the token ID in the collection
-                L2AssetHandlerStorage.layout().erc1155Deposits[depositor][
-                    collection
-                ][tokenIds[i]] += amounts[i];
-
                 // Add the depositor to the set of active owners for the token ID in the collection
                 perpetualMintStorageLayout
                 .activeERC1155Owners[collection][tokenIds[i]].add(depositor);

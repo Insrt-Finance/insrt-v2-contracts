@@ -567,12 +567,25 @@ abstract contract PerpetualMintInternal is
             revert TokenIdsAndRisksMismatch();
         }
 
+        if (l.collectionType[collection]) {
+            revert CollectionTypeMismatch();
+        }
+
         _updateDepositorEarnings(depositor, collection);
 
         unchecked {
             for (uint256 i; i < idLength; ++i) {
                 uint256 tokenId = tokenIds[i];
                 uint64 risk = risks[i];
+
+                if (risk > BASIS) {
+                    revert BasisExceeded();
+                }
+
+                if (risk == 0) {
+                    revert TokenRiskMustBeNonZero();
+                }
+
                 if (
                     !l.escrowedERC1155Owners[collection][tokenId].contains(
                         depositor
@@ -625,6 +638,10 @@ abstract contract PerpetualMintInternal is
 
         if (idLength != risks.length) {
             revert TokenIdsAndRisksMismatch();
+        }
+
+        if (!l.collectionType[collection]) {
+            revert CollectionTypeMismatch();
         }
 
         _updateDepositorEarnings(depositor, collection);

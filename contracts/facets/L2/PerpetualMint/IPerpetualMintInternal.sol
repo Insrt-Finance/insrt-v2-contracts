@@ -8,6 +8,10 @@ interface IPerpetualMintInternal {
     /// @notice thrown when attempting to set a value of risk larger than basis
     error BasisExceeded();
 
+    /// @notice thrown when attempting to update risks of  tokens which belong to a different collection
+    /// type than that specified in the functional call
+    error CollectionTypeMismatch();
+
     /// @notice thrown when an incorrent amount of ETH is received
     error IncorrectETHReceived();
 

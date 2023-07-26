@@ -2,11 +2,11 @@
 
 pragma solidity ^0.8.21;
 
-import { VRFConsumerBaseV2 } from "@chainlink/vrf/VRFConsumerBaseV2.sol";
 import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV2Interface.sol";
-import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
+import { VRFConsumerBaseV2 } from "@chainlink/vrf/VRFConsumerBaseV2.sol";
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { ERC721BaseInternal } from "@solidstate/contracts/token/ERC721/base/ERC721BaseInternal.sol";
+import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 
 import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "./Storage.sol";
@@ -104,7 +104,7 @@ abstract contract PerpetualMintInternal is
 
         if (l.activeERC1155Tokens[from][collection][tokenId] == 0) {
             l.activeERC1155Owners[collection][tokenId].remove(from);
-            delete l.depositorTokenRisk[from][collection][tokenId];
+            l.depositorTokenRisk[from][collection][tokenId] = 0;
 
             if (l.inactiveERC1155Tokens[from][collection][tokenId] == 0) {
                 l.escrowedERC1155Owners[collection][tokenId].remove(from);
@@ -143,7 +143,7 @@ abstract contract PerpetualMintInternal is
         l.totalRisk[collection] -= tokenRisk;
         l.totalDepositorRisk[from][collection] -= tokenRisk;
         --l.totalActiveTokens[collection];
-        delete l.tokenRisk[collection][tokenId];
+        l.tokenRisk[collection][tokenId] = 0;
     }
 
     /// @notice attempts to mint a token from a collection for a minter
@@ -244,7 +244,8 @@ abstract contract PerpetualMintInternal is
         _updateDepositorEarnings(depositor, collection);
         uint256 earnings = l.depositorEarnings[depositor][collection];
 
-        delete l.depositorEarnings[depositor][collection];
+        //TODO: should set to depositorDeductions and not to 0
+        l.depositorEarnings[depositor][collection] = 0;
         payable(depositor).sendValue(earnings);
     }
 
@@ -306,7 +307,7 @@ abstract contract PerpetualMintInternal is
             --l.activeTokens[depositor][collection];
             ++l.inactiveTokens[depositor][collection];
             l.totalDepositorRisk[depositor][collection] -= oldRisk;
-            delete l.tokenRisk[collection][tokenId];
+            l.tokenRisk[collection][tokenId] = 0;
         } else {
             if (
                 !l.escrowedERC1155Owners[collection][tokenId].contains(
@@ -327,8 +328,8 @@ abstract contract PerpetualMintInternal is
             l.totalRisk[collection] -= riskChange;
             l.totalActiveTokens[collection] -= activeTokens;
             l.totalDepositorRisk[depositor][collection] -= riskChange;
-            delete l.depositorTokenRisk[depositor][collection][tokenId];
-            delete l.activeERC1155Tokens[depositor][collection][tokenId];
+            l.depositorTokenRisk[depositor][collection][tokenId] = 0;
+            l.activeERC1155Tokens[depositor][collection][tokenId] = 0;
             l.inactiveERC1155Tokens[depositor][collection][
                 tokenId
             ] += activeTokens;

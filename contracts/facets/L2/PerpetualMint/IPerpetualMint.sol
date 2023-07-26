@@ -44,7 +44,7 @@ interface IPerpetualMint {
     ) external view returns (address owner);
 
     /// @dev sets a token's risk to zero thereby making it idle - it is still escrowed
-    /// by the PerpetualMint contracts but not actively accruing earnings nor mint attemps
+    /// by the PerpetualMint contracts but not actively accruing earnings nor mint attempts
     /// @param collection address of ERC721/1155 collection
     /// @param tokenId id of token of collection
     function idleToken(address collection, uint256 tokenId) external;

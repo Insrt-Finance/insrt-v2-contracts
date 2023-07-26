@@ -41,8 +41,6 @@ library PerpetualMintStorage {
         /// source of truth for checking which address may change token state (withdraw, setRisk etc)
         mapping(address collection => mapping(uint256 tokenId => address owner)) escrowedERC721Owner;
         //ERC1155
-        /// @dev set of owners of each tokenId for an ERC1155 collection
-        mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet owners)) escrowedERC1155Owners;
         /// @dev set of ERC1155 token owners which have tokens escrowed and available for minting, of a given tokenId for a collection
         mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet owners)) activeERC1155Owners;
         ///User specific

@@ -2,17 +2,12 @@
 
 pragma solidity 0.8.21;
 
+import { AssetType } from "../enums/AssetType.sol";
+
 /// @title PayloadEncoder
 /// @dev Utility library for encoding deposit and withdraw NFT asset payloads.
 /// Used to relay cross-chain messages using LayerZero.
 library PayloadEncoder {
-    /// @notice Used to distinguish between different types of operations in the payload.
-    /// @dev Each type of operation (ERC1155 or ERC721) is represented by an enum value.
-    enum AssetType {
-        ERC1155,
-        ERC721
-    }
-
     /// @notice Encodes the payload for depositing ERC-1155 assets cross-chain.
     /// @param depositor Address of the depositor.
     /// @param collection Address of the collection.

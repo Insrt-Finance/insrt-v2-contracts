@@ -10,8 +10,8 @@ import { ILayerZeroEndpoint } from "@solidstate/layerzero-client/interfaces/ILay
 import { L1AssetHandlerTest } from "../AssetHandler.t.sol";
 import { ILayerZeroClientBaseInternalEvents } from "../../../../interfaces/ILayerZeroClientBaseInternalEvents.sol";
 import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
+import { AssetType } from "../../../../../contracts/enums/AssetType.sol";
 import { IAssetHandler } from "../../../../../contracts/interfaces/IAssetHandler.sol";
-import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
 
 /// @title L1AssetHandler_depositERC1155Assets
 /// @dev L1AssetHandler test contract for testing expected L1 depositERC1155Assets behavior. Tested on a Mainnet fork.
@@ -34,7 +34,7 @@ contract L1AssetHandler_depositERC1155Assets is
         super.setUp();
 
         TEST_ERC1155_DEPOSIT_PAYLOAD = abi.encode(
-            PayloadEncoder.AssetType.ERC1155,
+            AssetType.ERC1155,
             address(this),
             BONG_BEARS,
             testRisks,

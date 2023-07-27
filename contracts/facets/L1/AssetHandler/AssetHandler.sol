@@ -7,6 +7,7 @@ import { IERC721 } from "@solidstate/contracts/interfaces/IERC721.sol";
 import { SolidStateLayerZeroClient } from "@solidstate/layerzero-client/SolidStateLayerZeroClient.sol";
 
 import { IL1AssetHandler } from "./IAssetHandler.sol";
+import { AssetType } from "../../../enums/AssetType.sol";
 import { IAssetHandler } from "../../../interfaces/IAssetHandler.sol";
 import { PayloadEncoder } from "../../../libraries/PayloadEncoder.sol";
 
@@ -133,12 +134,9 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         bytes calldata data
     ) internal override {
         // Decode the asset type from the payload. If the asset type is not supported, this call will revert.
-        PayloadEncoder.AssetType assetType = abi.decode(
-            data,
-            (PayloadEncoder.AssetType)
-        );
+        AssetType assetType = abi.decode(data, (AssetType));
 
-        if (assetType == PayloadEncoder.AssetType.ERC1155) {
+        if (assetType == AssetType.ERC1155) {
             // Decode the payload to get the sender, the collection, the tokenIds and the amounts for each tokenId
             (
                 ,
@@ -148,13 +146,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
                 uint256[] memory amounts
             ) = abi.decode(
                     data,
-                    (
-                        PayloadEncoder.AssetType,
-                        address,
-                        address,
-                        uint256[],
-                        uint256[]
-                    )
+                    (AssetType, address, address, uint256[], uint256[])
                 );
 
             // Transfer the ERC1155 assets to the sender
@@ -174,10 +166,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
                 address sender,
                 address collection,
                 uint256[] memory tokenIds
-            ) = abi.decode(
-                    data,
-                    (PayloadEncoder.AssetType, address, address, uint256[])
-                );
+            ) = abi.decode(data, (AssetType, address, address, uint256[]));
 
             // Transfer the ERC721 assets to the sender
             unchecked {

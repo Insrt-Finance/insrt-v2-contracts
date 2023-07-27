@@ -8,8 +8,8 @@ import { ILayerZeroEndpoint } from "@solidstate/layerzero-client/interfaces/ILay
 import { L1AssetHandlerTest } from "../AssetHandler.t.sol";
 import { ILayerZeroClientBaseInternalEvents } from "../../../../interfaces/ILayerZeroClientBaseInternalEvents.sol";
 import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
+import { AssetType } from "../../../../../contracts/enums/AssetType.sol";
 import { IAssetHandler } from "../../../../../contracts/interfaces/IAssetHandler.sol";
-import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
 
 /// @title L1AssetHandler_depositERC721Assets
 /// @dev L1AssetHandler test contract for testing expected L1 depositERC721Assets behavior. Tested on a Mainnet fork.
@@ -30,7 +30,7 @@ contract L1AssetHandler_depositERC721Assets is
         super.setUp();
 
         TEST_ERC721_DEPOSIT_PAYLOAD = abi.encode(
-            PayloadEncoder.AssetType.ERC721,
+            AssetType.ERC721,
             address(this),
             BORED_APE_YACHT_CLUB,
             testRisks,

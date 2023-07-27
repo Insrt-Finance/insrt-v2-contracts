@@ -7,6 +7,7 @@ import { SolidStateLayerZeroClient } from "@solidstate/layerzero-client/SolidSta
 
 import { IL2AssetHandler } from "./IAssetHandler.sol";
 import { PerpetualMintStorage } from "../PerpetualMint/Storage.sol";
+import { AssetType } from "../../../enums/AssetType.sol";
 import { IAssetHandler } from "../../../interfaces/IAssetHandler.sol";
 import { PayloadEncoder } from "../../../libraries/PayloadEncoder.sol";
 
@@ -300,15 +301,12 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         bytes calldata data
     ) internal override {
         // Decode the asset type from the payload. If the asset type is not supported, this call will revert.
-        PayloadEncoder.AssetType assetType = abi.decode(
-            data,
-            (PayloadEncoder.AssetType)
-        );
+        AssetType assetType = abi.decode(data, (AssetType));
 
         PerpetualMintStorage.Layout
             storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
 
-        if (assetType == PayloadEncoder.AssetType.ERC1155) {
+        if (assetType == AssetType.ERC1155) {
             // Decode the payload to get the depositor, the collection, the tokenIds and the amounts for each tokenId
             (
                 ,
@@ -320,7 +318,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             ) = abi.decode(
                     data,
                     (
-                        PayloadEncoder.AssetType,
+                        AssetType,
                         address,
                         address,
                         uint64[],
@@ -394,13 +392,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 uint256[] memory tokenIds
             ) = abi.decode(
                     data,
-                    (
-                        PayloadEncoder.AssetType,
-                        address,
-                        address,
-                        uint64[],
-                        uint256[]
-                    )
+                    (AssetType, address, address, uint64[], uint256[])
                 );
 
             // Iterate over each token ID

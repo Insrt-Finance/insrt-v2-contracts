@@ -10,10 +10,10 @@ import { ILayerZeroEndpoint } from "@solidstate/layerzero-client/interfaces/ILay
 import { L2AssetHandlerTest } from "../AssetHandler.t.sol";
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { L2AssetHandlerMock } from "../../../../mocks/L2AssetHandlerMock.t.sol";
+import { AssetType } from "../../../../../contracts/enums/AssetType.sol";
 import { IL2AssetHandler } from "../../../../../contracts/facets/L2/AssetHandler/IAssetHandler.sol";
 import { PerpetualMintStorage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 import { IAssetHandler } from "../../../../../contracts/interfaces/IAssetHandler.sol";
-import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
 
 /// @title L2AssetHandler_withdrawERC1155Assets
 /// @dev L2AssetHandler test contract for testing expected L2 withdrawERC1155Assets behavior. Tested on an Arbitrum fork.
@@ -34,7 +34,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         super.setUp();
 
         TEST_ERC1155_WITHDRAW_PAYLOAD = abi.encode(
-            PayloadEncoder.AssetType.ERC1155,
+            AssetType.ERC1155,
             address(this),
             BONG_BEARS,
             bongBearTokenIds,
@@ -52,7 +52,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
             );
 
         bytes memory encodedData = abi.encode(
-            PayloadEncoder.AssetType.ERC1155,
+            AssetType.ERC1155,
             address(this),
             BONG_BEARS,
             testRisks,

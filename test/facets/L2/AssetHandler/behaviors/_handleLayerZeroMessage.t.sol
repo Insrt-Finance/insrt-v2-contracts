@@ -5,8 +5,8 @@ pragma solidity 0.8.21;
 import { L2AssetHandlerTest } from "../AssetHandler.t.sol";
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { L2AssetHandlerMock } from "../../../../mocks/L2AssetHandlerMock.t.sol";
+import { AssetType } from "../../../../../contracts/enums/AssetType.sol";
 import { PerpetualMintStorage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
-import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
 
 /// @title L2AssetHandler_handleLayerZeroMessage
 /// @dev L2AssetHandler test contract for testing expected L2 _handleLayerZeroMessage behavior. Tested on a Mainnet fork.
@@ -18,7 +18,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
     /// @dev Tests _handleLayerZeroMessage functionality for depositing ERC1155 tokens.
     function test_handleLayerZeroMessageERC1155Deposit() public {
         bytes memory encodedData = abi.encode(
-            PayloadEncoder.AssetType.ERC1155,
+            AssetType.ERC1155,
             msg.sender,
             BONG_BEARS,
             testRisks,
@@ -287,7 +287,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
         public
     {
         bytes memory encodedData = abi.encode(
-            PayloadEncoder.AssetType.ERC1155,
+            AssetType.ERC1155,
             msg.sender,
             BONG_BEARS,
             testRisks,
@@ -315,7 +315,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
     /// @dev Tests _handleLayerZeroMessage functionality for depositing ERC721 tokens.
     function test_handleLayerZeroMessageERC721Deposit() public {
         bytes memory encodedData = abi.encode(
-            PayloadEncoder.AssetType.ERC721,
+            AssetType.ERC721,
             msg.sender,
             BORED_APE_YACHT_CLUB,
             testRisks,
@@ -556,7 +556,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
         public
     {
         bytes memory encodedData = abi.encode(
-            PayloadEncoder.AssetType.ERC721,
+            AssetType.ERC721,
             msg.sender,
             BORED_APE_YACHT_CLUB,
             testRisks,

@@ -157,12 +157,13 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 .activeERC1155Owners[collection][tokenIds[i]].remove(
                         msg.sender
                     );
-            }
 
-            // Reduce the total risk for the sender (depositor) and the token ID in the collection
-            perpetualMintStorageLayout.depositorTokenRisk[msg.sender][
-                collection
-            ][tokenIds[i]] -= riskToBeDeducted;
+                // Reset the risk for the sender and the token ID
+                // Currently, for ERC1155 tokens, the risk is the same for all token IDs in a collection
+                perpetualMintStorageLayout.depositorTokenRisk[msg.sender][
+                    collection
+                ][tokenIds[i]] = 0;
+            }
 
             // Reduce the total risk for the token ID in the collection
             perpetualMintStorageLayout.tokenRisk[collection][

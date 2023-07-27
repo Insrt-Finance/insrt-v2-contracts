@@ -375,6 +375,9 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             // Add the collection to the set of active collections
             perpetualMintStorageLayout.activeCollections.add(collection);
 
+            // Set the asset type for the collection
+            perpetualMintStorageLayout.collectionType[collection] = assetType;
+
             emit ERC1155AssetsDeposited(
                 depositor,
                 collection,
@@ -436,6 +439,9 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
             // Add the collection to the set of active collections
             perpetualMintStorageLayout.activeCollections.add(collection);
+
+            // Set the asset type for the collection
+            perpetualMintStorageLayout.collectionType[collection] = assetType;
 
             emit ERC721AssetsDeposited(depositor, collection, risks, tokenIds);
         }

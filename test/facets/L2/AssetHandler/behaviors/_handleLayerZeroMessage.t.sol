@@ -280,6 +280,19 @@ contract L2AssetHandler_handleLayerZeroMessage is
             address(uint160(uint256(activeCollectionsValueAtSetIndex))),
             BONG_BEARS
         );
+
+        bytes32 collectionTypeStorageSlot = keccak256(
+            abi.encode(
+                BONG_BEARS, // the deposited ERC1155 token collection
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 6 // the collectionType storage slot
+            )
+        );
+
+        uint8 collectionType = uint8(
+            uint256(vm.load(address(this), collectionTypeStorageSlot))
+        );
+
+        assertEq(collectionType, uint8(AssetType.ERC1155));
     }
 
     /// @dev Tests that _handleLayerZeroMessage emits an ERC1155AssetsDeposited event when depositing ERC1155 tokens.
@@ -549,6 +562,19 @@ contract L2AssetHandler_handleLayerZeroMessage is
             address(uint160(uint256(activeCollectionsValueAtSetIndex))),
             BORED_APE_YACHT_CLUB
         );
+
+        bytes32 collectionTypeStorageSlot = keccak256(
+            abi.encode(
+                BORED_APE_YACHT_CLUB, // the active ERCE721 token collection
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 6 // the collectionType storage slot
+            )
+        );
+
+        uint8 collectionType = uint8(
+            uint256(vm.load(address(this), collectionTypeStorageSlot))
+        );
+
+        assertEq(collectionType, uint8(AssetType.ERC721));
     }
 
     /// @dev Tests that _handleLayerZeroMessage emits an ERC721AssetsDeposited event when depositing ERC721 tokens.

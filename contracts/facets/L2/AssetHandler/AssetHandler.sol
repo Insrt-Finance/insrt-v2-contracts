@@ -346,6 +346,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 );
 
                 // Set the risk for the depositor and the token ID in the collection
+                // Currently for ERC1155 tokens, the risk is always the same for all token IDs in the collection
                 perpetualMintStorageLayout.depositorTokenRisk[depositor][
                     collection
                 ][tokenIds[i]] = risks[i];

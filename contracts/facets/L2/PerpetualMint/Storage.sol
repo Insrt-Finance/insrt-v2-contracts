@@ -4,6 +4,8 @@ pragma solidity ^0.8.21;
 
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
+import { AssetType } from "../../../enums/AssetType.sol";
+
 /// @title PerpetualMintStorage
 /// @dev defines storage layout for the PerpetualMint facet
 library PerpetualMintStorage {
@@ -21,8 +23,9 @@ library PerpetualMintStorage {
         mapping(uint256 requestId => address minter) requestMinter;
         /// @dev links the request made to chainlink VRF for random words to a collection
         mapping(uint256 requestId => address collection) requestCollection;
-        /// @dev indicates whether a collection is an ERC721 or ERC1155 with a boolean isERC721
-        mapping(address collection => bool isERC721) collectionType;
+        /// @dev indicates the type of asset for a collection
+        /// Used to distinguish between different supported types of collections.
+        mapping(address collection => AssetType) collectionType;
         /// @dev total amount of ETH (native token) earned for a collection from mint attempts
         mapping(address collection => uint256 amount) collectionEarnings;
         /// @dev price of mint attempt in ETH (native token) for a collection

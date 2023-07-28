@@ -25,7 +25,7 @@ abstract contract PerpetualMintInternal is
     /// @dev denominator used in percentage calculations
     uint32 internal constant BASIS = 1000000000;
 
-    /// @dev address of Cchainlink VRFCoordinatorV2 contract
+    /// @dev address of Chainlink VRFCoordinatorV2 contract
     address private immutable VRF;
 
     constructor(address vrfCoordinator) VRFConsumerBaseV2(vrfCoordinator) {
@@ -519,7 +519,7 @@ abstract contract PerpetualMintInternal is
         emit MintPriceSet(collection, price);
     }
 
-    /// @notice sets the Chainlinkg VRF config
+    /// @notice sets the Chainlink VRF config
     /// @param config VRFConfig struct holding all related data to ChainlinkVRF
     function _setVRFConfig(Storage.VRFConfig calldata config) internal {
         Storage.layout().vrfConfig = config;

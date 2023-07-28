@@ -8,8 +8,6 @@ import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
-import "forge-std/console.sol";
-
 /// @title PerpetualMint_setVRFConfig
 /// @dev PerpetualMint test contract for testing expected behavior of the setVRFConfig function
 contract PerpetualMint_setVRFConfig is

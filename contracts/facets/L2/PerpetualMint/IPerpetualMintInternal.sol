@@ -42,7 +42,7 @@ interface IPerpetualMintInternal {
     /// @param price mint price of collection
     event MintPriceSet(address collection, uint256 price);
 
-    /// @notice emitted when the Chainlinkg VRF config is set
+    /// @notice emitted when the Chainlink VRF config is set
     /// @param config VRFConfig struct holding all related data to ChainlinkVRF
     event VRFConfigSet(Storage.VRFConfig config);
 }

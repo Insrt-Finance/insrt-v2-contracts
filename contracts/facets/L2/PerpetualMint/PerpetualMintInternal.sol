@@ -740,13 +740,9 @@ abstract contract PerpetualMintInternal is
             l.totalDepositorRisk[depositor][collection] += riskChange;
             l.tokenRisk[collection][tokenId] += riskChange;
         } else {
-            uint64 oldTotalDepositorRisk = l.totalDepositorRisk[depositor][
-                collection
-            ];
             uint64 activeTokenRiskChange = (oldRisk - risk) *
                 l.activeERC1155Tokens[depositor][collection][tokenId];
             uint64 inactiveTokenRiskChange = risk * amount;
-            riskChange = activeTokenRiskChange + inactiveTokenRiskChange;
 
             // determine whether overall risk increases or decreases - determined
             // from whether enough inactive tokens are activated to exceed the decrease
@@ -754,10 +750,12 @@ abstract contract PerpetualMintInternal is
             // if the changes are equal, no state changes need to be made - eg when the risk
             // value is set to half of its previous amount, and the inactive tokens are equal to
             // the active tokens
-            if (activeTokenRiskChange > oldTotalDepositorRisk) {
+            if (activeTokenRiskChange > inactiveTokenRiskChange) {
+                riskChange = activeTokenRiskChange - inactiveTokenRiskChange;
                 l.totalDepositorRisk[depositor][collection] -= riskChange;
                 l.tokenRisk[collection][tokenId] -= riskChange;
             } else {
+                riskChange = inactiveTokenRiskChange - activeTokenRiskChange;
                 l.totalDepositorRisk[depositor][collection] += riskChange;
                 l.tokenRisk[collection][tokenId] += riskChange;
             }

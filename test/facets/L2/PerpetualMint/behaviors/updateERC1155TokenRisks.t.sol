@@ -168,7 +168,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
     }
 
     /// @dev tests that when updating the risk of ERC1155 tokens the active ERC1155 tokens is increased by the amount of
-    /// inactive ERC1155 tokens to be activate for each of the updated tokenIds
+    /// inactive ERC1155 tokens to be activated for each of the updated tokenIds
     function test_updateERC1155TokenRisksIncreasesActiveTokensOfDepositorBySumOfInactiveTokensAmountsToBeActivatedOfEachTokenId()
         public
     {
@@ -211,7 +211,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
     }
 
     /// @dev tests that when updating the risk of a ERC1155 tokens the total depositor risk of that collection is changed
-    /// correctly when overall risk increases and new risk value is larged
+    /// correctly when overall risk increases and new risk value is larger
     function test_updateERC1155TokenRisksChangesTotalDepositorRiskByTotalRiskChangeWhenOverallRiskChangeIsPositiveNewRiskIsLarger()
         public
     {

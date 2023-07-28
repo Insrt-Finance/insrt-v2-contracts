@@ -258,37 +258,34 @@ abstract contract PerpetualMintInternal is
     }
 
     /// @notice enforces that a depositor is an owner of a tokenId in an ERC1155 collection
+    /// @param l storage struct for PerpetualMint
     /// @param depositor address of depositor
     /// @param collection address of ERC1155 collection
     /// @param tokenId id of token
     /// will be deprecated upon PR consolidation
     function _enforceERC1155Ownership(
+        Storage.Layout storage l,
         address depositor,
         address collection,
         uint256 tokenId
     ) internal view {
-        if (
-            !Storage
-            .layout()
-            .escrowedERC1155Owners[collection][tokenId].contains(depositor)
-        ) {
+        if (!l.escrowedERC1155Owners[collection][tokenId].contains(depositor)) {
             revert OnlyEscrowedTokenOwner();
         }
     }
 
     /// @notice enforces that a depositor is the owner of an ERC721 token
+    /// @param l storage struct for PerpetualMint
     /// @param depositor address of depositor
     /// @param collection address of ERC721 collection
     /// @param tokenId id of token
     function _enforceERC721Ownership(
+        Storage.Layout storage l,
         address depositor,
         address collection,
         uint256 tokenId
     ) internal view {
-        if (
-            depositor !=
-            Storage.layout().escrowedERC721Owner[collection][tokenId]
-        ) {
+        if (depositor != l.escrowedERC721Owner[collection][tokenId]) {
             revert OnlyEscrowedTokenOwner();
         }
     }
@@ -298,19 +295,6 @@ abstract contract PerpetualMintInternal is
     function _enforceNonZeroRisk(uint64 risk) internal pure {
         if (risk == 0) {
             revert TokenRiskMustBeNonZero();
-        }
-    }
-
-    /// @notice enforces that two arrays have the same length
-    /// @param firstArr first array
-    /// @param secondArr second array
-    /// will be deprecated on risk-size change
-    function _enforceUint256AndUint64ArrayLengthMatch(
-        uint256[] calldata firstArr,
-        uint64[] calldata secondArr
-    ) internal pure {
-        if (firstArr.length != secondArr.length) {
-            revert ArrayLengthMismatch();
         }
     }
 
@@ -377,7 +361,7 @@ abstract contract PerpetualMintInternal is
             uint256 tokenId = tokenIds[i];
             uint256 amount = amounts[i];
 
-            _enforceERC1155Ownership(depositor, collection, tokenId);
+            _enforceERC1155Ownership(l, depositor, collection, tokenId);
 
             uint64 activeTokens = l.activeERC1155Tokens[depositor][collection][
                 tokenId
@@ -418,7 +402,7 @@ abstract contract PerpetualMintInternal is
 
         for (uint256 i; i < tokenIds.length; ++i) {
             uint256 tokenId = tokenIds[i];
-            _enforceERC721Ownership(depositor, collection, tokenId);
+            _enforceERC721Ownership(l, depositor, collection, tokenId);
 
             uint64 oldRisk = l.tokenRisk[collection][tokenId];
 
@@ -658,8 +642,11 @@ abstract contract PerpetualMintInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        _enforceUint256ArrayLengthMatch(tokenIds, amounts);
-        _enforceUint256AndUint64ArrayLengthMatch(tokenIds, risks);
+        if (
+            tokenIds.length != amounts.length || tokenIds.length != risks.length
+        ) {
+            revert ArrayLengthMismatch();
+        }
 
         if (l.collectionType[collection]) {
             revert CollectionTypeMismatch();
@@ -695,7 +682,7 @@ abstract contract PerpetualMintInternal is
 
         _enforceBasis(risk);
         _enforceNonZeroRisk(risk);
-        _enforceERC1155Ownership(depositor, collection, tokenId);
+        _enforceERC1155Ownership(l, depositor, collection, tokenId);
 
         uint64 oldRisk = l.depositorTokenRisk[depositor][collection][tokenId];
         uint64 riskChange;

@@ -53,7 +53,7 @@ contract PerpetualMint_updateDepositorEarnings is
         vm.store(address(perpetualMint), totalDepositorRiskStorageSlot, 0);
     }
 
-    /// @dev tests earnings udpates when a depositor has no risk, for example after a minter wins an asset
+    /// @dev tests earnings updates when a depositor has no risk, for example after a minter wins an asset
     function test_updateDepositorEarningsWhenTotalDepositorRiskIsZero() public {
         perpetualMint.exposed_updateDepositorEarnings(
             depositorOne,

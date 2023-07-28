@@ -81,7 +81,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
         );
     }
 
-    /// @dev tests that upon updating ERC1155 token risks, the depositor earnings are udpated and the depositor
+    /// @dev tests that upon updating ERC1155 token risks, the depositor earnings are updated and the depositor
     /// deductions set equal to the depositor earnings
     function test_updateERC1155TokenRisksUpdatesDepositorEarningsWhenTotalDepositorRiskIsNonZero()
         public
@@ -390,7 +390,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
 
     /// @dev tests that when updating the token risk of ERC1155 tokens the depositor token risk of
     /// that token is set to the new risk
-    function test_udpateERC1155TokenRisksSetsDepositorTokenRiskOfERC155CollectionToNewRisk()
+    function test_updateERC1155TokenRisksSetsDepositorTokenRiskOfERC155CollectionToNewRisk()
         public
     {
         vm.prank(depositorOne);

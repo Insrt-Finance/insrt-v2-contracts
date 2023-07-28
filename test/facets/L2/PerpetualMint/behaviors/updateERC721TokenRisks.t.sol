@@ -89,7 +89,7 @@ contract PerpetualMint_updateERC721TokenRisks is
         );
     }
 
-    /// @dev tests that upon updating ERC721 token risks, the depositor earnings are udpated and the depositor
+    /// @dev tests that upon updating ERC721 token risks, the depositor earnings are updated and the depositor
     /// deductions set equal to the depositor earnings
     function test_updateERC721TokenRisksUpdatesDepositorEarningsWhenTotalDepositorRiskIsNonZero()
         public

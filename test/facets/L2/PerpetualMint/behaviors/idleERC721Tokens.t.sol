@@ -45,7 +45,7 @@ contract PerpetualMint_idleERC721Tokens is
         tokenIds.push(BAYC_ID);
     }
 
-    /// @dev tests that upon idling ERC721 tokens, the depositor earnings are udpated and the depositor
+    /// @dev tests that upon idling ERC721 tokens, the depositor earnings are updated and the depositor
     /// deductions set equal to the depositor earnings
     function test_idleERC721TokensUpdatesDepositorEarningsWhenTotalDepositorRiskIsNonZero()
         public

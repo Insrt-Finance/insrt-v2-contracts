@@ -249,12 +249,19 @@ abstract contract PerpetualMintInternal is
         payable(depositor).sendValue(earnings);
     }
 
+    /// @notice enforces that a value does not exceed the BASIS
+    /// @param value value to check
     function _enforceBasis(uint64 value) internal pure {
         if (value > BASIS) {
             revert BasisExceeded();
         }
     }
 
+    /// @notice enforces that a depositor is an owner of a tokenId in an ERC1155 collection
+    /// @param depositor address of depositor
+    /// @param collection address of ERC1155 collection
+    /// @param tokenId id of token
+    /// will be deprecated upon PR consolidation
     function _enforceERC1155Ownership(
         address depositor,
         address collection,
@@ -269,12 +276,36 @@ abstract contract PerpetualMintInternal is
         }
     }
 
+    /// @notice enforces that a depositor is the owner of an ERC721 token
+    /// @param depositor address of depositor
+    /// @param collection address of ERC721 collection
+    /// @param tokenId id of token
+    function _enforceERC721Ownership(
+        address depositor,
+        address collection,
+        uint256 tokenId
+    ) internal view {
+        if (
+            depositor !=
+            Storage.layout().escrowedERC721Owner[collection][tokenId]
+        ) {
+            revert OnlyEscrowedTokenOwner();
+        }
+    }
+
+    /// @notice enforces that a risk value is non-zero
+    /// @param risk value to check
     function _enforceNonZeroRisk(uint64 risk) internal pure {
         if (risk == 0) {
             revert TokenRiskMustBeNonZero();
         }
     }
 
+    /// @notice enforces that a depositor has sufficient inactive tokens to activate
+    /// @param depositor address of depositor
+    /// @param collection address of ERC1155 collection
+    /// @param tokenId id of token
+    /// @param amount amount to check
     function _enforceSufficientInactiveTokens(
         address depositor,
         address collection,
@@ -288,6 +319,31 @@ abstract contract PerpetualMintInternal is
             ]
         ) {
             revert AmountToActivateExceedsInactiveTokens();
+        }
+    }
+
+    /// @notice enforces that two arrays have the same length
+    /// @param firstArr first array
+    /// @param secondArr second array
+    /// will be deprecated on risk-size change
+    function _enforceUint256AndUint64ArrayLengthMatch(
+        uint256[] calldata firstArr,
+        uint64[] calldata secondArr
+    ) internal pure {
+        if (firstArr.length != secondArr.length) {
+            revert ArrayLengthMismatch();
+        }
+    }
+
+    /// @notice enforces that two uint256 arrays have the same length
+    /// @param firstArr first array
+    /// @param secondArr second array
+    function _enforceUint256ArrayLengthMatch(
+        uint256[] calldata firstArr,
+        uint256[] calldata secondArr
+    ) internal pure {
+        if (firstArr.length != secondArr.length) {
+            revert ArrayLengthMismatch();
         }
     }
 
@@ -342,13 +398,7 @@ abstract contract PerpetualMintInternal is
             uint256 tokenId = tokenIds[i];
             uint256 amount = amounts[i];
 
-            if (
-                !l.escrowedERC1155Owners[collection][tokenId].contains(
-                    depositor
-                )
-            ) {
-                revert OnlyEscrowedTokenOwner();
-            }
+            _enforceERC1155Ownership(depositor, collection, tokenId);
 
             uint64 activeTokens = l.activeERC1155Tokens[depositor][collection][
                 tokenId
@@ -393,10 +443,7 @@ abstract contract PerpetualMintInternal is
 
         for (uint256 i; i < tokenIds.length; ++i) {
             uint256 tokenId = tokenIds[i];
-
-            if (depositor != l.escrowedERC721Owner[collection][tokenId]) {
-                revert OnlyEscrowedTokenOwner();
-            }
+            _enforceERC721Ownership(depositor, collection, tokenId);
 
             uint64 oldRisk = l.tokenRisk[collection][tokenId];
 
@@ -636,11 +683,8 @@ abstract contract PerpetualMintInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        if (
-            tokenIds.length != risks.length || tokenIds.length != amounts.length
-        ) {
-            revert ArrayLengthMismatch();
-        }
+        _enforceUint256ArrayLengthMatch(tokenIds, amounts);
+        _enforceUint256AndUint64ArrayLengthMatch(tokenIds, risks);
 
         if (l.collectionType[collection]) {
             revert CollectionTypeMismatch();

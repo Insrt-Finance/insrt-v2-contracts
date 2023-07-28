@@ -72,12 +72,28 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
         parallelAlphaTokenIds[0] = 10951;
         parallelAlphaTokenIds[1] = 11022;
 
+        perpetualMint.setVRFConfig(
+            Storage.VRFConfig({
+                // Arbitrum 150 GWEI keyhash
+                keyHash: bytes32(
+                    0x68d24f9a037a649944964c2a1ebd0b2918f4a243d2a99701cc22b548cf2daff0
+                ),
+                // Initiated Subscription ID
+                subscriptionId: uint64(5),
+                // Max Callback Gas Limit
+                callbackGasLimit: uint32(2500000),
+                // Minimum confimations:
+                minConfirmations: uint16(5)
+            })
+        );
+
         perpetualMint.setCollectionMintPrice(BORED_APE_YACHT_CLUB, MINT_PRICE);
+        perpetualMint.setCollectionMintPrice(PARALLEL_ALPHA, MINT_PRICE);
 
         bytes32 collectionTypeSlot = keccak256(
             abi.encode(
                 BORED_APE_YACHT_CLUB, // address of collection
-                uint256(Storage.STORAGE_SLOT) + 6 // collectionType mapping storage slot
+                uint256(Storage.STORAGE_SLOT) + 8 // collectionType mapping storage slot
             )
         );
 
@@ -87,7 +103,6 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
             bytes32(uint256(1))
         );
 
-        perpetualMint.setCollectionMintPrice(PARALLEL_ALPHA, MINT_PRICE);
         assert(
             _collectionType(address(perpetualMint), BORED_APE_YACHT_CLUB) ==
                 true

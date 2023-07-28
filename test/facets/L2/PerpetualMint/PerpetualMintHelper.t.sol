@@ -6,6 +6,7 @@ import { IDiamondWritableInternal } from "@solidstate/contracts/proxy/diamond/wr
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
 import { IPerpetualMint } from "../../../../contracts/facets/L2/PerpetualMint/IPerpetualMint.sol";
+import { PerpetualMintStorage as Storage } from "../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 import { DepositFacetMock } from "../../../mocks/DepositFacetMock.t.sol";
 import { IDepositFacetMock } from "../../../interfaces/IDepositFacetMock.sol";
 import { IPerpetualMintHarness } from "./IPerpetualMintHarness.t.sol";
@@ -17,21 +18,14 @@ contract PerpetualMintHelper {
     PerpetualMintHarness public perpetualMintHarnessImplementation;
     DepositFacetMock public depositFacetMockImplementation;
 
-    bytes32 public constant KEY_HASH = bytes32("");
+    // Arbitrum mainnet Chainlink VRF Coordinator address
     address public constant VRF_COORDINATOR =
         address(0x41034678D6C633D8a95c75e1138A360a28bA15d1);
-    uint64 public constant SUBSCRIPTION_ID = uint64(0);
-    uint32 public constant CALLBACK_GAS_LIMIT = 2500000;
-    uint16 public constant MIN_CONFIRMATIONS = 3;
 
     /// @dev deploys DepositFacetMock and PerpetualMintHarness implementations
     constructor() {
         perpetualMintHarnessImplementation = new PerpetualMintHarness(
-            KEY_HASH,
-            VRF_COORDINATOR,
-            SUBSCRIPTION_ID,
-            CALLBACK_GAS_LIMIT,
-            MIN_CONFIRMATIONS
+            VRF_COORDINATOR
         );
 
         depositFacetMockImplementation = new DepositFacetMock();
@@ -43,7 +37,7 @@ contract PerpetualMintHelper {
         view
         returns (ISolidStateDiamond.FacetCut[] memory)
     {
-        bytes4[] memory mintingSelectors = new bytes4[](21);
+        bytes4[] memory mintingSelectors = new bytes4[](22);
         bytes4[] memory depositSelectors = new bytes4[](1);
 
         // map the function selectors to their respective interfaces
@@ -55,35 +49,36 @@ contract PerpetualMintHelper {
         mintingSelectors[5] = IPerpetualMint.averageCollectionRisk.selector;
         mintingSelectors[6] = IPerpetualMint.escrowedERC721TokenOwner.selector;
         mintingSelectors[7] = IPerpetualMint.setCollectionMintPrice.selector;
-        mintingSelectors[8] = IPerpetualMint.updateERC1155TokenRisks.selector;
-        mintingSelectors[9] = IPerpetualMint.updateERC721TokenRisks.selector;
-        mintingSelectors[10] = IPerpetualMint.idleERC1155Tokens.selector;
-        mintingSelectors[11] = IPerpetualMint.idleERC721Tokens.selector;
-        mintingSelectors[12] = IPerpetualMintHarness
+        mintingSelectors[8] = IPerpetualMint.setVRFConfig.selector;
+        mintingSelectors[9] = IPerpetualMint.updateERC1155TokenRisks.selector;
+        mintingSelectors[10] = IPerpetualMint.updateERC721TokenRisks.selector;
+        mintingSelectors[11] = IPerpetualMint.idleERC1155Tokens.selector;
+        mintingSelectors[12] = IPerpetualMint.idleERC721Tokens.selector;
+        mintingSelectors[13] = IPerpetualMintHarness
             .exposed_resolveERC721Mint
             .selector;
-        mintingSelectors[13] = IPerpetualMintHarness
+        mintingSelectors[14] = IPerpetualMintHarness
             .exposed_resolveERC1155Mint
             .selector;
-        mintingSelectors[14] = IPerpetualMintHarness
+        mintingSelectors[15] = IPerpetualMintHarness
             .exposed_selectToken
             .selector;
-        mintingSelectors[15] = IPerpetualMintHarness
+        mintingSelectors[16] = IPerpetualMintHarness
             .exposed_selectERC1155Owner
             .selector;
-        mintingSelectors[16] = IPerpetualMintHarness
+        mintingSelectors[17] = IPerpetualMintHarness
             .exposed_chunk128to64
             .selector;
-        mintingSelectors[17] = IPerpetualMintHarness
+        mintingSelectors[18] = IPerpetualMintHarness
             .exposed_chunk256to128
             .selector;
-        mintingSelectors[18] = IPerpetualMintHarness
+        mintingSelectors[19] = IPerpetualMintHarness
             .exposed_normalizeValue
             .selector;
-        mintingSelectors[19] = IPerpetualMintHarness
+        mintingSelectors[20] = IPerpetualMintHarness
             .exposed_updateDepositorEarnings
             .selector;
-        mintingSelectors[20] = IPerpetualMintHarness
+        mintingSelectors[21] = IPerpetualMintHarness
             .exposed_assignEscrowedERC1155Asset
             .selector;
 

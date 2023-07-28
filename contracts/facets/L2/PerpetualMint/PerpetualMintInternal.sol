@@ -285,10 +285,12 @@ abstract contract PerpetualMintInternal is
     /// @param depositor address of depositor of token
     /// @param collection address of ERC1155 collection
     /// @param tokenIds ids of token of collection
+    /// @param amounts amount of each tokenId to idle
     function _idleERC1155Tokens(
         address depositor,
         address collection,
-        uint256[] calldata tokenIds
+        uint256[] calldata tokenIds,
+        uint256[] calldata amounts
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
@@ -296,6 +298,7 @@ abstract contract PerpetualMintInternal is
 
         for (uint256 i; i < tokenIds.length; ++i) {
             uint256 tokenId = tokenIds[i];
+            uint256 amount = amounts[i];
 
             if (
                 !l.escrowedERC1155Owners[collection][tokenId].contains(
@@ -305,23 +308,30 @@ abstract contract PerpetualMintInternal is
                 revert OnlyEscrowedTokenOwner();
             }
 
-            uint64 oldRisk = l.depositorTokenRisk[depositor][collection][
-                tokenId
-            ];
             uint64 activeTokens = l.activeERC1155Tokens[depositor][collection][
                 tokenId
             ];
 
-            uint64 riskChange = activeTokens * oldRisk;
+            if (amount > activeTokens) {
+                revert AmountToIdleExceedsActiveTokens();
+            }
+
+            uint64 riskChange = uint64(amount) *
+                l.depositorTokenRisk[depositor][collection][tokenId];
             l.totalRisk[collection] -= riskChange;
-            l.totalActiveTokens[collection] -= activeTokens;
+            l.totalActiveTokens[collection] -= amount;
             l.totalDepositorRisk[depositor][collection] -= riskChange;
-            l.depositorTokenRisk[depositor][collection][tokenId] = 0;
-            l.activeERC1155Tokens[depositor][collection][tokenId] = 0;
-            l.inactiveERC1155Tokens[depositor][collection][
-                tokenId
-            ] += activeTokens;
-            l.activeERC1155Owners[collection][tokenId].remove(depositor);
+            l.activeERC1155Tokens[depositor][collection][tokenId] -= uint64(
+                amount
+            );
+            l.inactiveERC1155Tokens[depositor][collection][tokenId] += uint64(
+                amount
+            );
+
+            if (amount == activeTokens) {
+                l.depositorTokenRisk[depositor][collection][tokenId] = 0;
+                l.activeERC1155Owners[collection][tokenId].remove(depositor);
+            }
         }
     }
 

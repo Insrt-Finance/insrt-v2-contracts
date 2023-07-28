@@ -5,6 +5,10 @@ pragma solidity ^0.8.21;
 /// @title IPerpetualMintInternal interface
 /// @dev contains all errors and events used in the PerpeutlaMint facet contract
 interface IPerpetualMintInternal {
+    /// @notice thrown when attempting to idle more tokens than currently active for a deposutor
+    /// in an ERC1155 collection
+    error AmountToIdleExceedsActiveTokens();
+
     /// @notice thrown when attempting to set a value of risk larger than basis
     error BasisExceeded();
 

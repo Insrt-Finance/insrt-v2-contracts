@@ -47,9 +47,11 @@ interface IPerpetualMint {
     /// by the PerpetualMint contracts but not actively accruing earnings nor incurring risk from mint attemps
     /// @param collection address of ERC1155 collection
     /// @param tokenIds ids of token of collection
+    /// @param amounts amount of each tokenId to idle
     function idleERC1155Tokens(
         address collection,
-        uint256[] calldata tokenIds
+        uint256[] calldata tokenIds,
+        uint256[] calldata amounts
     ) external;
 
     /// @notice sets the token risk of a set of ERC721 tokens to zero thereby making them idle - still escrowed

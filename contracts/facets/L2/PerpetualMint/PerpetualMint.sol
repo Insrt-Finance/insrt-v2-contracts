@@ -75,9 +75,10 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
     /// @inheritdoc IPerpetualMint
     function idleERC1155Tokens(
         address collection,
-        uint256[] calldata tokenIds
+        uint256[] calldata tokenIds,
+        uint256[] calldata amounts
     ) external {
-        _idleERC1155Tokens(msg.sender, collection, tokenIds);
+        _idleERC1155Tokens(msg.sender, collection, tokenIds, amounts);
     }
 
     /// @inheritdoc IPerpetualMint

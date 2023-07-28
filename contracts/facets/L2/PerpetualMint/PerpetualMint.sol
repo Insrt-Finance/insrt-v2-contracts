@@ -6,25 +6,12 @@ import { Ownable } from "@solidstate/contracts/access/ownable/Ownable.sol";
 
 import { IPerpetualMint } from "./IPerpetualMint.sol";
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
+import { PerpetualMintStorage as Storage } from "./Storage.sol";
 
 /// @title PerpetualMint facet contract
 /// @dev contains all externally called functions
 contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
-    constructor(
-        bytes32 keyHash,
-        address vrf,
-        uint64 subscriptionId,
-        uint32 callbackGasLimit,
-        uint16 minConfirmations
-    )
-        PerpetualMintInternal(
-            keyHash,
-            vrf,
-            subscriptionId,
-            callbackGasLimit,
-            minConfirmations
-        )
-    {}
+    constructor(address vrf) PerpetualMintInternal(vrf) {}
 
     /// @inheritdoc IPerpetualMint
     function allAvailableEarnings()
@@ -95,6 +82,13 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
         uint256 price
     ) external onlyOwner {
         _setCollectionMintPrice(collection, price);
+    }
+
+    /// @inheritdoc IPerpetualMint
+    function setVRFConfig(
+        Storage.VRFConfig calldata config
+    ) external onlyOwner {
+        _setVRFConfig(config);
     }
 
     /// @inheritdoc IPerpetualMint

@@ -8,21 +8,7 @@ import { IPerpetualMintHarness } from "./IPerpetualMintHarness.t.sol";
 /// @title PerpetualMintHarness
 /// @dev exposes internal PerpetualMint internal functions for testing
 contract PerpetualMintHarness is IPerpetualMintHarness, PerpetualMint {
-    constructor(
-        bytes32 keyHash,
-        address vrf,
-        uint64 subscriptionId,
-        uint32 callbackGasLimit,
-        uint16 minConfirmations
-    )
-        PerpetualMint(
-            keyHash,
-            vrf,
-            subscriptionId,
-            callbackGasLimit,
-            minConfirmations
-        )
-    {}
+    constructor(address vrf) PerpetualMint(vrf) {}
 
     /// @dev exposes _assignEscrowedERC1155Asset method
     function exposed_assignEscrowedERC1155Asset(

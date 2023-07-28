@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.21;
 
+import { PerpetualMintStorage as Storage } from "./Storage.sol";
+
 /// @title IPerpetualMint
 /// @dev interface to PerpetualMint facet
 interface IPerpetualMint {
@@ -67,6 +69,10 @@ interface IPerpetualMint {
     /// @param collection address of collection
     /// @param price mint price of the collection
     function setCollectionMintPrice(address collection, uint256 price) external;
+
+    /// @notice sets the Chainlink VRF config
+    /// @param config VRFConfig struct holding all related data to ChainlinkVRF setup
+    function setVRFConfig(Storage.VRFConfig calldata config) external;
 
     /// @notice updates the risk associated with escrowed ERC1155 tokens of a depositor
     /// @param collection address of token collection

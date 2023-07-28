@@ -25,32 +25,11 @@ abstract contract PerpetualMintInternal is
     /// @dev denominator used in percentage calculations
     uint32 internal constant BASIS = 1000000000;
 
-    /// @dev see: https://docs.chain.link/vrf/v2/subscription#set-up-your-contract-and-request
-    /// @dev Chainlink identifier for prioritizing transactions
-    /// different keyhashes have different gas prices thus different priorities
-    bytes32 private immutable KEY_HASH;
     /// @dev address of Cchainlink VRFCoordinatorV2 contract
     address private immutable VRF;
-    /// @dev id of Chainlink subscription to VRF for PerpetualMint contract
-    /// TODO: identify whether this needs to be updated thus be stored in storage
-    uint64 private immutable SUBSCRIPTION_ID;
-    /// @dev maximum amount of gas a user is willing to pay for completing the callback VRF function
-    uint32 private immutable CALLBACK_GAS_LIMIT;
-    /// @dev number of block confirmations the VRF service will wait to respond
-    uint16 private immutable MIN_CONFIRMATIONS;
 
-    constructor(
-        bytes32 keyHash,
-        address vrfCoordinator,
-        uint64 subscriptionId,
-        uint32 callbackGasLimit,
-        uint16 minConfirmations
-    ) VRFConsumerBaseV2(vrfCoordinator) {
-        KEY_HASH = keyHash;
+    constructor(address vrfCoordinator) VRFConsumerBaseV2(vrfCoordinator) {
         VRF = vrfCoordinator;
-        SUBSCRIPTION_ID = subscriptionId;
-        CALLBACK_GAS_LIMIT = callbackGasLimit;
-        MIN_CONFIRMATIONS = minConfirmations;
     }
 
     /// @notice calculates the available earnings for a depositor across all collections
@@ -380,10 +359,10 @@ abstract contract PerpetualMintInternal is
         Storage.Layout storage l = Storage.layout();
 
         uint256 requestId = VRFCoordinatorV2Interface(VRF).requestRandomWords(
-            KEY_HASH,
-            SUBSCRIPTION_ID,
-            MIN_CONFIRMATIONS,
-            CALLBACK_GAS_LIMIT,
+            l.vrfConfig.keyHash,
+            l.vrfConfig.subscriptionId,
+            l.vrfConfig.minConfirmations,
+            l.vrfConfig.callbackGasLimit,
             numWords
         );
 
@@ -538,6 +517,13 @@ abstract contract PerpetualMintInternal is
     ) internal {
         Storage.layout().collectionMintPrice[collection] = price;
         emit MintPriceSet(collection, price);
+    }
+
+    /// @notice sets the Chainlinkg VRF config
+    /// @param config VRFConfig struct holding all related data to ChainlinkVRF
+    function _setVRFConfig(Storage.VRFConfig calldata config) internal {
+        Storage.layout().vrfConfig = config;
+        emit VRFConfigSet(config);
     }
 
     /// @notice updates the earnings of a depositor  based on current conitions

@@ -2,9 +2,25 @@
 
 pragma solidity ^0.8.21;
 
+import { PerpetualMintStorage as Storage } from "./Storage.sol";
+
 /// @title IPerpetualMintInternal interface
 /// @dev contains all errors and events used in the PerpeutlaMint facet contract
 interface IPerpetualMintInternal {
+    /// @dev Encapsulates variables related to Chainlink VRF
+    struct VRFConfig {
+        /// @dev see: https://docs.chain.link/vrf/v2/subscription#set-up-your-contract-and-request
+        /// @dev Chainlink identifier for prioritizing transactions
+        /// different keyhashes have different gas prices thus different priorities
+        bytes32 keyHash;
+        /// @dev id of Chainlink subscription to VRF for PerpetualMint contract
+        uint64 subscriptionId;
+        /// @dev maximum amount of gas a user is willing to pay for completing the callback VRF function
+        uint32 callbackGasLimit;
+        /// @dev number of block confirmations the VRF service will wait to respond
+        uint16 minConfirmations;
+    }
+
     /// @notice thrown when attempting to set a value of risk larger than basis
     error BasisExceeded();
 
@@ -39,4 +55,8 @@ interface IPerpetualMintInternal {
     /// @param collection address of collection
     /// @param price mint price of collection
     event MintPriceSet(address collection, uint256 price);
+
+    /// @notice emitted when the Chainlinkg VRF config is set
+    /// @param config VRFConfig struct holding all related data to ChainlinkVRF
+    event VRFConfigSet(Storage.VRFConfig config);
 }

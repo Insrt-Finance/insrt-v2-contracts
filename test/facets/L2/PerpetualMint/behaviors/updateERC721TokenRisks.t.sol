@@ -331,9 +331,7 @@ contract PerpetualMint_updateERC721TokenRisks is
         public
     {
         risks.push(NEW_RISK);
-        vm.expectRevert(
-            IPerpetualMintInternal.TokenIdsAndRisksMismatch.selector
-        );
+        vm.expectRevert(IPerpetualMintInternal.ArrayLengthMismatch.selector);
         vm.prank(depositorOne);
         perpetualMint.updateERC721TokenRisks(
             BORED_APE_YACHT_CLUB,

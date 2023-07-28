@@ -5,9 +5,16 @@ pragma solidity ^0.8.21;
 /// @title IPerpetualMintInternal interface
 /// @dev contains all errors and events used in the PerpeutlaMint facet contract
 interface IPerpetualMintInternal {
+    /// @notice thrown when attempting to active more tokens than inactve amount
+    error AmountToActivateExceedsInactiveTokens();
+
     /// @notice thrown when attempting to idle more tokens than currently active for a deposutor
     /// in an ERC1155 collection
     error AmountToIdleExceedsActiveTokens();
+
+    /// @notice thrown when the arrays of tokenIds and risks have different length when attempting to update
+    /// ERC721 or ERC1155 token risks
+    error ArrayLengthMismatch();
 
     /// @notice thrown when attempting to set a value of risk larger than basis
     error BasisExceeded();
@@ -21,10 +28,6 @@ interface IPerpetualMintInternal {
 
     /// @notice thrown when a non-owner is attempting to modify token parameters
     error OnlyEscrowedTokenOwner();
-
-    /// @notice thrown when the arrays of tokenIds and risks have different length when attempting to update
-    /// ERC721 or ERC1155 token risks
-    error TokenIdsAndRisksMismatch();
 
     /// @notice thrown when an attempt is made to update token risk to 0
     error TokenRiskMustBeNonZero();

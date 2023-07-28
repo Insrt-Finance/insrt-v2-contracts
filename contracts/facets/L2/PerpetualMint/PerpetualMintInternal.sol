@@ -583,17 +583,21 @@ abstract contract PerpetualMintInternal is
     /// @param depositor address of escrowed token owner
     /// @param collection address of token collection
     /// @param tokenIds array of token ids
+    /// @param amounts amount of inactive tokens to activate for each tokenId
     /// @param risks array of new risk values for token ids
     function _updateERC1155TokenRisks(
         address depositor,
         address collection,
         uint256[] calldata tokenIds,
+        uint256[] calldata amounts,
         uint64[] calldata risks
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        if (tokenIds.length != risks.length) {
-            revert TokenIdsAndRisksMismatch();
+        if (
+            tokenIds.length != risks.length || tokenIds.length != amounts.length
+        ) {
+            revert ArrayLengthMismatch();
         }
 
         if (l.collectionType[collection]) {
@@ -605,6 +609,13 @@ abstract contract PerpetualMintInternal is
         for (uint256 i; i < tokenIds.length; ++i) {
             uint256 tokenId = tokenIds[i];
             uint64 risk = risks[i];
+            uint64 amount = uint64(amounts[i]);
+
+            if (
+                amount > l.inactiveERC1155Tokens[depositor][collection][tokenId]
+            ) {
+                revert AmountToActivateExceedsInactiveTokens();
+            }
 
             if (risk > BASIS) {
                 revert BasisExceeded();
@@ -627,23 +638,36 @@ abstract contract PerpetualMintInternal is
             ];
             uint64 riskChange;
 
-            l.activeERC1155Tokens[depositor][collection][tokenId] += l
-                .inactiveERC1155Tokens[depositor][collection][tokenId];
-
             if (risk > oldRisk) {
                 riskChange =
                     (risk - oldRisk) *
-                    l.activeERC1155Tokens[depositor][collection][tokenId];
+                    l.activeERC1155Tokens[depositor][collection][tokenId] +
+                    risk *
+                    amount;
                 l.totalDepositorRisk[depositor][collection] += riskChange;
                 l.tokenRisk[collection][tokenId] += riskChange;
             } else {
-                riskChange =
-                    (oldRisk - risk) *
+                uint64 oldTotalDepositorRisk = l.totalDepositorRisk[depositor][
+                    collection
+                ];
+                uint64 activeTokenRiskChange = (oldRisk - risk) *
                     l.activeERC1155Tokens[depositor][collection][tokenId];
-                l.totalDepositorRisk[depositor][collection] -= riskChange;
-                l.tokenRisk[collection][tokenId] -= riskChange;
+                uint64 inactiveTokenRiskChange = risk * amount;
+                riskChange = activeTokenRiskChange + inactiveTokenRiskChange;
+
+                // determine whether overall risk increases or decreases - determined
+                // from whether enough inactive tokens are activated to exceed the decrease
+                // of active token risk
+                if (activeTokenRiskChange > oldTotalDepositorRisk) {
+                    l.totalDepositorRisk[depositor][collection] -= riskChange;
+                    l.tokenRisk[collection][tokenId] -= riskChange;
+                } else {
+                    l.totalDepositorRisk[depositor][collection] += riskChange;
+                    l.tokenRisk[collection][tokenId] += riskChange;
+                }
             }
 
+            l.activeERC1155Tokens[depositor][collection][tokenId] += amount;
             l.depositorTokenRisk[depositor][collection][tokenId] = risk;
         }
     }
@@ -662,7 +686,7 @@ abstract contract PerpetualMintInternal is
         Storage.Layout storage l = Storage.layout();
 
         if (tokenIds.length != risks.length) {
-            revert TokenIdsAndRisksMismatch();
+            revert ArrayLengthMismatch();
         }
 
         if (!l.collectionType[collection]) {

@@ -8,7 +8,7 @@ interface IPerpetualMintInternal {
     /// @notice thrown when attempting to active more tokens than inactve amount
     error AmountToActivateExceedsInactiveTokens();
 
-    /// @notice thrown when attempting to idle more tokens than currently active for a deposutor
+    /// @notice thrown when attempting to idle more tokens than currently active for a depositor
     /// in an ERC1155 collection
     error AmountToIdleExceedsActiveTokens();
 

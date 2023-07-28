@@ -20,7 +20,7 @@ abstract contract StorageRead is Test {
     ) internal view returns (uint256 fees) {
         bytes32 slot = keccak256(
             abi.encode(
-                uint256(PerpetualMintStorage.STORAGE_SLOT) //protocolFees storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 2 //protocolFees storage slot
             )
         );
 
@@ -33,7 +33,7 @@ abstract contract StorageRead is Test {
     function _mintFeeBP(address target) internal view returns (uint32 feeBP) {
         bytes32 slot = keccak256(
             abi.encode(
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 2 //mintFeeBP storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 4 //mintFeeBP storage slot
             )
         );
 
@@ -48,7 +48,7 @@ abstract contract StorageRead is Test {
     ) internal view returns (address[] memory collections) {
         bytes32 enumerableSetSlot = keccak256(
             abi.encode(
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 3 // activeCollections mapping storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 5 // activeCollections mapping storage slot
             )
         );
 
@@ -80,7 +80,7 @@ abstract contract StorageRead is Test {
         bytes32 slot = keccak256(
             abi.encode(
                 requestId, // id of Chainlink VRF request
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 4 // requestMinter mapping storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 6 // requestMinter mapping storage slot
             )
         );
 
@@ -98,7 +98,7 @@ abstract contract StorageRead is Test {
         bytes32 slot = keccak256(
             abi.encode(
                 requestId, // id of Chainlink VRF request
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 5 // requestCollection mapping storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 7 // requestCollection mapping storage slot
             )
         );
 
@@ -116,7 +116,7 @@ abstract contract StorageRead is Test {
         bytes32 slot = keccak256(
             abi.encode(
                 collection, // address of collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 6 // collectionType mapping storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 8 // collectionType mapping storage slot
             )
         );
 
@@ -134,7 +134,7 @@ abstract contract StorageRead is Test {
         bytes32 slot = keccak256(
             abi.encode(
                 collection, // address of collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 7 // collectionEarnings mapping storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 9 // collectionEarnings mapping storage slot
             )
         );
 
@@ -152,7 +152,7 @@ abstract contract StorageRead is Test {
         bytes32 slot = keccak256(
             abi.encode(
                 collection, // address of collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 8 // collectionMintPrice mapping storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 10 // collectionMintPrice mapping storage slot
             )
         );
 
@@ -170,7 +170,7 @@ abstract contract StorageRead is Test {
         bytes32 slot = keccak256(
             abi.encode(
                 collection, // address of collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 9 // totalRisk mapping storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 11 // totalRisk mapping storage slot
             )
         );
 
@@ -188,7 +188,7 @@ abstract contract StorageRead is Test {
         bytes32 slot = keccak256(
             abi.encode(
                 collection, // address of collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 10 // totalActiveTokens mapping storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 12 // totalActiveTokens mapping storage slot
             )
         );
 
@@ -206,7 +206,7 @@ abstract contract StorageRead is Test {
         bytes32 enumerableSetSlot = keccak256(
             abi.encode(
                 collection, // address of collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 11 // activeTokenIds mapping storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 13 // activeTokenIds mapping storage slot
             )
         );
 
@@ -241,7 +241,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         collection, // address of collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 12 // tokenRisk mapping storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 14 // tokenRisk mapping storage slot
                     )
                 )
             )
@@ -266,7 +266,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         collection, // the ERC721 collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 13 // escrowedERC721Owner mapping slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // escrowedERC721Owner mapping slot
                     )
                 )
             )
@@ -291,7 +291,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         collection, // the ERC1155 collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 14 // escrowedERC1155TokenOwners mapping slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 16 // escrowedERC1155TokenOwners mapping slot
                     )
                 )
             )
@@ -330,7 +330,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         collection, // the ERC1155 collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // activeERC1155TokenOwners mapping slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 17 // activeERC1155TokenOwners mapping slot
                     )
                 )
             )
@@ -369,7 +369,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         depositor, // address of depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 16 // depositorDeductions mapping storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 18 // depositorDeductions mapping storage slot
                     )
                 )
             )
@@ -394,7 +394,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         depositor, // address of depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 17 // depositorEarnings mapping storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 19 // depositorEarnings mapping storage slot
                     )
                 )
             )
@@ -419,7 +419,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         depositor, // address of depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 18 // activeTokens mapping storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 20 // activeTokens mapping storage slot
                     )
                 )
             )
@@ -444,7 +444,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         depositor, // address of depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 19 // inactiveTokens mapping storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // inactiveTokens mapping storage slot
                     )
                 )
             )
@@ -469,7 +469,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         depositor, // address of depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 20 // totalDepositorRisk mapping storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // totalDepositorRisk mapping storage slot
                     )
                 )
             )
@@ -499,7 +499,7 @@ abstract contract StorageRead is Test {
                         keccak256(
                             abi.encode(
                                 depositor, // address of depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // depositorTokenRisk mapping storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 23 // depositorTokenRisk mapping storage slot
                             )
                         )
                     )
@@ -531,7 +531,7 @@ abstract contract StorageRead is Test {
                         keccak256(
                             abi.encode(
                                 depositor, // address of depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // activeERC1155Tokens mapping storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
                             )
                         )
                     )
@@ -563,7 +563,7 @@ abstract contract StorageRead is Test {
                         keccak256(
                             abi.encode(
                                 depositor, // address of depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 23 // inactiveERC1155Tokens mapping storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 25 // inactiveERC1155Tokens mapping storage slot
                             )
                         )
                     )

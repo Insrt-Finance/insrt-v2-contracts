@@ -7,8 +7,6 @@ import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
-import "forge-std/console.sol";
-
 /// @title PerpetualMint_updateERC1155TokenRisks
 /// @dev PerpetualMint test contract for testing expected behavior of the updateERC1155TokenRisks function
 contract PerpetualMint_updateERC1155TokenRisks is

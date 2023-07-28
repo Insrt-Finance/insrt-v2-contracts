@@ -102,7 +102,7 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
         uint256[] calldata tokenIds,
         uint64[] calldata risks
     ) external {
-        _udpateERC1155TokenRisks(msg.sender, collection, tokenIds, risks);
+        _updateERC1155TokenRisks(msg.sender, collection, tokenIds, risks);
     }
 
     /// @inheritdoc IPerpetualMint

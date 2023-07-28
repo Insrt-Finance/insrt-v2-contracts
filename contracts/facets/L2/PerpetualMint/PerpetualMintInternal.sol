@@ -574,7 +574,7 @@ abstract contract PerpetualMintInternal is
     /// @param collection address of token collection
     /// @param tokenIds array of token ids
     /// @param risks array of new risk values for token ids
-    function _udpateERC1155TokenRisks(
+    function _updateERC1155TokenRisks(
         address depositor,
         address collection,
         uint256[] calldata tokenIds,

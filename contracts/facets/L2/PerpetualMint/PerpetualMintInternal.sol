@@ -301,27 +301,6 @@ abstract contract PerpetualMintInternal is
         }
     }
 
-    /// @notice enforces that a depositor has sufficient inactive tokens to activate
-    /// @param depositor address of depositor
-    /// @param collection address of ERC1155 collection
-    /// @param tokenId id of token
-    /// @param amount amount to check
-    function _enforceSufficientInactiveTokens(
-        address depositor,
-        address collection,
-        uint256 tokenId,
-        uint64 amount
-    ) internal view {
-        if (
-            amount >
-            Storage.layout().inactiveERC1155Tokens[depositor][collection][
-                tokenId
-            ]
-        ) {
-            revert AmountToActivateExceedsInactiveTokens();
-        }
-    }
-
     /// @notice enforces that two arrays have the same length
     /// @param firstArr first array
     /// @param secondArr second array
@@ -718,12 +697,6 @@ abstract contract PerpetualMintInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        _enforceSufficientInactiveTokens(
-            depositor,
-            collection,
-            tokenId,
-            amount
-        );
         _enforceBasis(risk);
         _enforceNonZeroRisk(risk);
         _enforceERC1155Ownership(depositor, collection, tokenId);
@@ -762,6 +735,7 @@ abstract contract PerpetualMintInternal is
         }
 
         l.activeERC1155Tokens[depositor][collection][tokenId] += amount;
+        l.inactiveERC1155Tokens[depositor][collection][tokenId] -= amount;
         l.depositorTokenRisk[depositor][collection][tokenId] = risk;
     }
 

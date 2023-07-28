@@ -658,6 +658,48 @@ contract PerpetualMint_updateERC1155TokenRisks is
         }
     }
 
+    /// @dev tests that upon updatingERC1155TokenRisks the inactive ERC1155 amount decreases by amount of tokens
+    /// activated for each tokenId
+    function test_updateERC1155TokenRisksReducesInactiveERC1155AmountForEachTokenIdUpdatedByAmount()
+        public
+    {
+        uint64[] memory oldInactiveTokenAmounts = new uint64[](tokenIds.length);
+
+        for (uint256 i; i < tokenIds.length; ++i) {
+            oldInactiveTokenAmounts[i] = uint64(
+                _inactiveERC1155Tokens(
+                    address(perpetualMint),
+                    depositorOne,
+                    PARALLEL_ALPHA,
+                    tokenIds[i]
+                )
+            );
+        }
+
+        vm.prank(depositorOne);
+        perpetualMint.updateERC1155TokenRisks(
+            PARALLEL_ALPHA,
+            tokenIds,
+            amounts,
+            risks
+        );
+
+        for (uint256 i; i < tokenIds.length; ++i) {
+            assert(
+                oldInactiveTokenAmounts[i] -
+                    uint64(
+                        _inactiveERC1155Tokens(
+                            address(perpetualMint),
+                            depositorOne,
+                            PARALLEL_ALPHA,
+                            tokenIds[i]
+                        )
+                    ) ==
+                    amounts[i]
+            );
+        }
+    }
+
     /// @dev test that updateERC721TokenRisks reverts if the collection is an ERC721 collection
     function test_updateERC1155TokenRisksRevertsWhen_CollectionIsERC721()
         public
@@ -735,26 +777,6 @@ contract PerpetualMint_updateERC1155TokenRisks is
         amounts[0] = 0;
         vm.expectRevert(IPerpetualMintInternal.OnlyEscrowedTokenOwner.selector);
         vm.prank(NON_OWNER);
-        perpetualMint.updateERC1155TokenRisks(
-            PARALLEL_ALPHA,
-            tokenIds,
-            amounts,
-            risks
-        );
-    }
-
-    /// @dev test that updateERC1155TokenRisks reverts if the caller requests activation of more tokens than their inactive
-    /// token amount
-    function test_updateERC1155TokenRisksRevertsWhen_AmountToActivateExceedsInactiveTokens()
-        public
-    {
-        amounts[0] = 1000;
-        vm.expectRevert(
-            IPerpetualMintInternal
-                .AmountToActivateExceedsInactiveTokens
-                .selector
-        );
-        vm.prank(depositorOne);
         perpetualMint.updateERC1155TokenRisks(
             PARALLEL_ALPHA,
             tokenIds,

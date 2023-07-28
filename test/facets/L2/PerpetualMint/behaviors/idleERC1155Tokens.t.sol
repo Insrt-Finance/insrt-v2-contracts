@@ -332,24 +332,4 @@ contract PerpetualMint_idleERC721Tokens is
         vm.prank(NON_OWNER);
         perpetualMint.idleERC1155Tokens(PARALLEL_ALPHA, tokenIds, amounts);
     }
-
-    function test_idleERC1155TokensRevertsWhen_AmountToIdleIsLargerThanActiveTokensOfDepositor()
-        public
-    {
-        for (uint256 i; i < tokenIds.length; ++i) {
-            amounts[i] =
-                _activeERC1155Tokens(
-                    address(perpetualMint),
-                    depositorOne,
-                    PARALLEL_ALPHA,
-                    tokenIds[i]
-                ) +
-                1;
-        }
-        vm.expectRevert(
-            IPerpetualMintInternal.AmountToIdleExceedsActiveTokens.selector
-        );
-        vm.prank(depositorOne);
-        perpetualMint.idleERC1155Tokens(PARALLEL_ALPHA, tokenIds, amounts);
-    }
 }

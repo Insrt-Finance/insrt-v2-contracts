@@ -383,10 +383,6 @@ abstract contract PerpetualMintInternal is
                 tokenId
             ];
 
-            if (amount > activeTokens) {
-                revert AmountToIdleExceedsActiveTokens();
-            }
-
             uint64 riskChange = uint64(amount) *
                 l.depositorTokenRisk[depositor][collection][tokenId];
             l.totalRisk[collection] -= riskChange;

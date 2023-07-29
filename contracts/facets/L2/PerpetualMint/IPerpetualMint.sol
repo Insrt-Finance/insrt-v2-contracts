@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.21;
 
+import { PerpetualMintStorage as Storage } from "./Storage.sol";
+
 /// @title IPerpetualMint
 /// @dev interface to PerpetualMint facet
 interface IPerpetualMint {
@@ -43,23 +45,54 @@ interface IPerpetualMint {
         uint256 tokenId
     ) external view returns (address owner);
 
+    /// @notice sets the token risk of a set of ERC1155 tokens to zero thereby making them idle - still escrowed
+    /// by the PerpetualMint contracts but not actively accruing earnings nor incurring risk from mint attemps
+    /// @param collection address of ERC1155 collection
+    /// @param tokenIds ids of token of collection
+    /// @param amounts amount of each tokenId to idle
+    function idleERC1155Tokens(
+        address collection,
+        uint256[] calldata tokenIds,
+        uint256[] calldata amounts
+    ) external;
+
+    /// @notice sets the token risk of a set of ERC721 tokens to zero thereby making them idle - still escrowed
+    /// by the PerpetualMint contracts but not actively accruing earnings nor incurring risk from mint attemps
+    /// @param collection address of ERC721 collection
+    /// @param tokenIds ids of token of collection
+    function idleERC721Tokens(
+        address collection,
+        uint256[] calldata tokenIds
+    ) external;
+
     /// @notice set the mint price for a given collection
     /// @param collection address of collection
     /// @param price mint price of the collection
     function setCollectionMintPrice(address collection, uint256 price) external;
 
-    /// @notice sets the type of a collection
-    /// @param collection address of collection
-    /// @param isERC721 bool indicating whether collection is ERC721 or ERC1155
-    function setCollectionType(address collection, bool isERC721) external;
+    /// @notice sets the Chainlink VRF config
+    /// @param config VRFConfig struct holding all related data to ChainlinkVRF setup
+    function setVRFConfig(Storage.VRFConfig calldata config) external;
 
-    /// @notice updates the risk associated with an escrowed token
+    /// @notice updates the risk associated with escrowed ERC1155 tokens of a depositor
     /// @param collection address of token collection
-    /// @param tokenId id of token
-    /// @param risk risk value
-    function updateTokenRisk(
+    /// @param tokenIds array of token ids
+    /// @param amounts amount of inactive tokens to activate for each tokenId
+    /// @param risks array of new risk values for token ids
+    function updateERC1155TokenRisks(
         address collection,
-        uint256 tokenId,
-        uint64 risk
+        uint256[] calldata tokenIds,
+        uint256[] calldata amounts,
+        uint64[] calldata risks
+    ) external;
+
+    /// @notice updates the risk associated with an escrowed ERC721 tokens of a depositor
+    /// @param collection address of token collection
+    /// @param tokenIds array of token ids
+    /// @param risks array of new risk values for token ids
+    function updateERC721TokenRisks(
+        address collection,
+        uint256[] calldata tokenIds,
+        uint64[] calldata risks
     ) external;
 }

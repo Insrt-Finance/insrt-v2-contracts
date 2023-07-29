@@ -2,18 +2,17 @@
 
 pragma solidity 0.8.21;
 
-import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
-import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
 
 /// @title PerpetualMint_assignEscrowedERC1155Asset
 /// @dev PerpetualMint test contract for testing expected behavior of the assignEscrowedERC1155 function
 contract PerpetualMint_assignEscrowedERC1155Asset is
     IPerpetualMintInternal,
     PerpetualMintTest,
-    L1ForkTest
+    L2ForkTest
 {
     /// @dev tokenId of ERC1155 asset to be transferred
     uint256 tokenId;
@@ -48,7 +47,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
                         keccak256(
                             abi.encode(
                                 depositorTwo, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 22 // activeERC1155Tokens mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
                             )
                         )
                     )
@@ -322,7 +321,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
                 keccak256(
                     abi.encode(
                         PARALLEL_ALPHA, // address of collection
-                        uint256(Storage.STORAGE_SLOT) + 12 // tokenRisk mapping storage slot
+                        uint256(Storage.STORAGE_SLOT) + 14 // tokenRisk mapping storage slot
                     )
                 )
             )

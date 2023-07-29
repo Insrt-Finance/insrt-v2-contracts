@@ -8,17 +8,17 @@ import { IERC1155 } from "@solidstate/contracts/interfaces/IERC1155.sol";
 import { IERC721 } from "@solidstate/contracts/interfaces/IERC721.sol";
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
-import { L1CoreTest } from "../../../diamonds/L1/Core.t.sol";
-import { PerpetualMintHelper } from "./PerpetualMintHelper.t.sol";
-import { IPerpetualMintTest } from "./IPerpetualMintTest.t.sol";
-import { StorageRead } from "../common/StorageRead.t.sol";
-
+import { PerpetualMintStorage as Storage } from "../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
+import { L2CoreTest } from "../../../diamonds/L2/Core.t.sol";
 import { IDepositFacetMock } from "../../../interfaces/IDepositFacetMock.sol";
+import { StorageRead } from "../common/StorageRead.t.sol";
+import { IPerpetualMintTest } from "./IPerpetualMintTest.t.sol";
+import { PerpetualMintHelper } from "./PerpetualMintHelper.t.sol";
 
 /// @title PerpetualMintTest
 /// @dev PerpetualMintTest helper contract. Configures PerpetualMint and DepositFacetMock as facets of L1Core test.
 /// @dev Should functoin identically across all forks given appropriate Chainlink VRF details are set.
-abstract contract PerpetualMintTest is L1CoreTest, StorageRead {
+abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     using stdStorage for StdStorage;
 
     IPerpetualMintTest public perpetualMint;
@@ -62,7 +62,7 @@ abstract contract PerpetualMintTest is L1CoreTest, StorageRead {
 
         initPerpetualMint();
 
-        perpetualMint = IPerpetualMintTest(address(l1CoreDiamond));
+        perpetualMint = IPerpetualMintTest(address(l2CoreDiamond));
         boredApeYachtClub = IERC721(BORED_APE_YACHT_CLUB);
         parallelAlpha = IERC1155(PARALLEL_ALPHA);
 
@@ -72,9 +72,36 @@ abstract contract PerpetualMintTest is L1CoreTest, StorageRead {
         parallelAlphaTokenIds[0] = 10951;
         parallelAlphaTokenIds[1] = 11022;
 
+        perpetualMint.setVRFConfig(
+            Storage.VRFConfig({
+                // Arbitrum 150 GWEI keyhash
+                keyHash: bytes32(
+                    0x68d24f9a037a649944964c2a1ebd0b2918f4a243d2a99701cc22b548cf2daff0
+                ),
+                // Initiated Subscription ID
+                subscriptionId: uint64(5),
+                // Max Callback Gas Limit
+                callbackGasLimit: uint32(2500000),
+                // Minimum confimations:
+                minConfirmations: uint16(5)
+            })
+        );
+
         perpetualMint.setCollectionMintPrice(BORED_APE_YACHT_CLUB, MINT_PRICE);
-        perpetualMint.setCollectionType(BORED_APE_YACHT_CLUB, true);
         perpetualMint.setCollectionMintPrice(PARALLEL_ALPHA, MINT_PRICE);
+
+        bytes32 collectionTypeSlot = keccak256(
+            abi.encode(
+                BORED_APE_YACHT_CLUB, // address of collection
+                uint256(Storage.STORAGE_SLOT) + 8 // collectionType mapping storage slot
+            )
+        );
+
+        vm.store(
+            address(perpetualMint),
+            collectionTypeSlot,
+            bytes32(uint256(1))
+        );
 
         assert(
             _collectionType(address(perpetualMint), BORED_APE_YACHT_CLUB) ==
@@ -89,49 +116,11 @@ abstract contract PerpetualMintTest is L1CoreTest, StorageRead {
         ISolidStateDiamond.FacetCut[] memory facetCuts = perpetualMintHelper
             .getFacetCuts();
 
-        l1CoreDiamond.diamondCut(facetCuts, address(0), "");
+        l2CoreDiamond.diamondCut(facetCuts, address(0), "");
     }
 
     /// @dev deposits bored ape tokens from depositors into the PerpetualMint contracts
     function depositBoredApeYachtClubAssetsMock() internal {
-        // find owners
-        address ownerOne = boredApeYachtClub.ownerOf(
-            boredApeYachtClubTokenIds[0]
-        );
-        address ownerTwo = boredApeYachtClub.ownerOf(
-            boredApeYachtClubTokenIds[1]
-        );
-
-        // prank owners and transfer tokens
-        vm.prank(ownerOne);
-        boredApeYachtClub.transferFrom(
-            ownerOne,
-            depositorOne,
-            boredApeYachtClubTokenIds[0]
-        );
-        vm.prank(ownerTwo);
-        boredApeYachtClub.transferFrom(
-            ownerTwo,
-            depositorTwo,
-            boredApeYachtClubTokenIds[1]
-        );
-
-        //check tokens are transfered
-        assert(
-            boredApeYachtClub.ownerOf(boredApeYachtClubTokenIds[0]) ==
-                depositorOne
-        );
-        assert(
-            boredApeYachtClub.ownerOf(boredApeYachtClubTokenIds[1]) ==
-                depositorTwo
-        );
-
-        //deposit tokens
-        vm.prank(depositorOne);
-        boredApeYachtClub.approve(
-            address(perpetualMint),
-            boredApeYachtClubTokenIds[0]
-        );
         vm.prank(depositorOne);
         perpetualMint.depositAsset(
             BORED_APE_YACHT_CLUB,
@@ -141,76 +130,16 @@ abstract contract PerpetualMintTest is L1CoreTest, StorageRead {
         );
 
         vm.prank(depositorTwo);
-        boredApeYachtClub.approve(
-            address(perpetualMint),
-            boredApeYachtClubTokenIds[1]
-        );
-        vm.prank(depositorTwo);
         perpetualMint.depositAsset(
             BORED_APE_YACHT_CLUB,
             boredApeYachtClubTokenIds[1],
             1,
             riskTwo
         );
-
-        //assert tokens are deposited
-        assert(
-            boredApeYachtClub.ownerOf(boredApeYachtClubTokenIds[0]) ==
-                address(perpetualMint)
-        );
-        assert(
-            boredApeYachtClub.ownerOf(boredApeYachtClubTokenIds[1]) ==
-                address(perpetualMint)
-        );
     }
 
     /// @dev deposits bong bear tokens into the PerpetualMint contracts
     function depositParallelAlphaAssetsMock() internal {
-        // give PARALLEL_ALPHA tokens to depositors
-        // two depositors for parallelAlphaTokenIds[0]
-        stdstore
-            .target(PARALLEL_ALPHA)
-            .sig(parallelAlpha.balanceOf.selector)
-            .with_key(address(depositorOne))
-            .with_key(parallelAlphaTokenIds[0])
-            .checked_write(parallelAlphaTokenAmount);
-        stdstore
-            .target(PARALLEL_ALPHA)
-            .sig(parallelAlpha.balanceOf.selector)
-            .with_key(address(depositorTwo))
-            .with_key(parallelAlphaTokenIds[0])
-            .checked_write(parallelAlphaTokenAmount);
-
-        // one depositor for parallelAlphaTokenIds[1]
-        stdstore
-            .target(PARALLEL_ALPHA)
-            .sig(parallelAlpha.balanceOf.selector)
-            .with_key(address(depositorOne))
-            .with_key(parallelAlphaTokenIds[1])
-            .checked_write(parallelAlphaTokenAmount);
-
-        assert(
-            parallelAlpha.balanceOf(
-                address(depositorOne),
-                parallelAlphaTokenIds[0]
-            ) == parallelAlphaTokenAmount
-        );
-        assert(
-            parallelAlpha.balanceOf(
-                address(depositorTwo),
-                parallelAlphaTokenIds[0]
-            ) == parallelAlphaTokenAmount
-        );
-        assert(
-            parallelAlpha.balanceOf(
-                address(depositorOne),
-                parallelAlphaTokenIds[1]
-            ) == parallelAlphaTokenAmount
-        );
-
-        //deposit tokens
-        vm.prank(depositorOne);
-        parallelAlpha.setApprovalForAll(address(perpetualMint), true);
         vm.prank(depositorOne);
         perpetualMint.depositAsset(
             PARALLEL_ALPHA,
@@ -219,8 +148,6 @@ abstract contract PerpetualMintTest is L1CoreTest, StorageRead {
             riskThree
         );
 
-        vm.prank(depositorTwo);
-        parallelAlpha.setApprovalForAll(address(perpetualMint), true);
         vm.prank(depositorTwo);
         perpetualMint.depositAsset(
             PARALLEL_ALPHA,
@@ -235,21 +162,6 @@ abstract contract PerpetualMintTest is L1CoreTest, StorageRead {
             parallelAlphaTokenIds[1],
             uint64(parallelAlphaTokenAmount),
             riskThree
-        );
-
-        //assert tokens are deposited
-        assert(
-            parallelAlpha.balanceOf(
-                address(perpetualMint),
-                parallelAlphaTokenIds[0]
-            ) == 2 * parallelAlphaTokenAmount
-        );
-
-        assert(
-            parallelAlpha.balanceOf(
-                address(perpetualMint),
-                parallelAlphaTokenIds[1]
-            ) == parallelAlphaTokenAmount
         );
     }
 }

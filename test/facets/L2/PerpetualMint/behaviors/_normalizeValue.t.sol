@@ -2,12 +2,12 @@
 
 pragma solidity 0.8.21;
 
-import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
 /// @title PerpetualMint_normalizeValue
 /// @dev PerpetualMint test contract for testing expected behavior of the normalizeValue function
-contract PerpetualMint_normalizeValue is PerpetualMintTest, L1ForkTest {
+contract PerpetualMint_normalizeValue is PerpetualMintTest, L2ForkTest {
     /// @dev tests that values are normalized to a basis correctly
     function testFuzz_normalizeValue(uint128 value, uint128 basis) public view {
         // basis is assumed to never be 0 by default

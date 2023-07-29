@@ -4,15 +4,15 @@ pragma solidity 0.8.21;
 
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
-import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
 
 /// @title PerpetualMint_resolveERC1155Mint
 /// @dev PerpetualMint test contract for testing expected behavior of the _resolveERC1155Mint function
 contract PerpetualMint_resolveERC1155Mint is
     IPerpetualMintInternal,
     PerpetualMintTest,
-    L1ForkTest
+    L2ForkTest
 {
     uint256 internal constant COLLECTION_EARNINGS = 1 ether;
     uint256[] randomWords;
@@ -22,7 +22,7 @@ contract PerpetualMint_resolveERC1155Mint is
         keccak256(
             abi.encode(
                 PARALLEL_ALPHA, // the ERC721 collection
-                uint256(Storage.STORAGE_SLOT) + 7 // the risk storage slot
+                uint256(Storage.STORAGE_SLOT) + 9 // the risk storage slot
             )
         );
 
@@ -409,7 +409,7 @@ contract PerpetualMint_resolveERC1155Mint is
                         keccak256(
                             abi.encode(
                                 depositorOne, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 22 // activeERC1155Tokens mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
                             )
                         )
                     )
@@ -426,7 +426,7 @@ contract PerpetualMint_resolveERC1155Mint is
                         keccak256(
                             abi.encode(
                                 depositorTwo, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 22 // activeERC1155Tokens mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
                             )
                         )
                     )
@@ -440,7 +440,7 @@ contract PerpetualMint_resolveERC1155Mint is
                 keccak256(
                     abi.encode(
                         PARALLEL_ALPHA, // address of collection
-                        uint256(Storage.STORAGE_SLOT) + 12 // tokenRisk mapping storage slot
+                        uint256(Storage.STORAGE_SLOT) + 14 // tokenRisk mapping storage slot
                     )
                 )
             )
@@ -489,7 +489,7 @@ contract PerpetualMint_resolveERC1155Mint is
                         keccak256(
                             abi.encode(
                                 depositorOne, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 22 // activeERC1155Tokens mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
                             )
                         )
                     )
@@ -506,7 +506,7 @@ contract PerpetualMint_resolveERC1155Mint is
                         keccak256(
                             abi.encode(
                                 depositorTwo, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 22 // activeERC1155Tokens mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
                             )
                         )
                     )
@@ -520,7 +520,7 @@ contract PerpetualMint_resolveERC1155Mint is
                 keccak256(
                     abi.encode(
                         PARALLEL_ALPHA, // address of collection
-                        uint256(Storage.STORAGE_SLOT) + 12 // tokenRisk mapping storage slot
+                        uint256(Storage.STORAGE_SLOT) + 14 // tokenRisk mapping storage slot
                     )
                 )
             )
@@ -568,7 +568,7 @@ contract PerpetualMint_resolveERC1155Mint is
                         keccak256(
                             abi.encode(
                                 depositorOne, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 22 // activeERC1155Tokens mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
                             )
                         )
                     )
@@ -585,7 +585,7 @@ contract PerpetualMint_resolveERC1155Mint is
                         keccak256(
                             abi.encode(
                                 depositorTwo, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 22 // activeERC1155Tokens mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
                             )
                         )
                     )
@@ -599,7 +599,7 @@ contract PerpetualMint_resolveERC1155Mint is
                 keccak256(
                     abi.encode(
                         PARALLEL_ALPHA, // address of collection
-                        uint256(Storage.STORAGE_SLOT) + 12 // tokenRisk mapping storage slot
+                        uint256(Storage.STORAGE_SLOT) + 14 // tokenRisk mapping storage slot
                     )
                 )
             )
@@ -642,7 +642,7 @@ contract PerpetualMint_resolveERC1155Mint is
                 keccak256(
                     abi.encode(
                         PARALLEL_ALPHA, // address of collection
-                        uint256(Storage.STORAGE_SLOT) + 12 // tokenRisk mapping storage slot
+                        uint256(Storage.STORAGE_SLOT) + 14 // tokenRisk mapping storage slot
                     )
                 )
             )

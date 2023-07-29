@@ -4,15 +4,15 @@ pragma solidity 0.8.21;
 
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
-import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
 
 /// @dev PerpetualMint_resolveERC721Mint
 /// @dev PerpetualMint test contract for testing expected behavior of the _resolveERC721Mint function
 contract PerpetualMint_resolveERC721Mint is
     IPerpetualMintInternal,
     PerpetualMintTest,
-    L1ForkTest
+    L2ForkTest
 {
     uint256 internal constant COLLECTION_EARNINGS = 1 ether;
 
@@ -24,7 +24,7 @@ contract PerpetualMint_resolveERC721Mint is
         keccak256(
             abi.encode(
                 BORED_APE_YACHT_CLUB, // the ERC721 collection
-                uint256(Storage.STORAGE_SLOT) + 7 // the risk storage slot
+                uint256(Storage.STORAGE_SLOT) + 9 // the risk storage slot
             )
         );
 

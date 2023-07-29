@@ -4,14 +4,14 @@ pragma solidity 0.8.21;
 
 import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableInternal.sol";
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
-import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
 /// @title PerpetualMint_setCollectionMintPrice
 /// @dev PerpetualMint test contract for testing expected behavior of the setCollectionMintPrice function
 contract PerpetualMint_setCollectionMintPrice is
     PerpetualMintTest,
-    L1ForkTest,
+    L2ForkTest,
     IPerpetualMintInternal
 {
     address nonOwner = address(5);

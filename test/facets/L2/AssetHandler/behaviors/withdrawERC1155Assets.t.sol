@@ -10,11 +10,10 @@ import { ILayerZeroEndpoint } from "@solidstate/layerzero-client/interfaces/ILay
 import { L2AssetHandlerTest } from "../AssetHandler.t.sol";
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { L2AssetHandlerMock } from "../../../../mocks/L2AssetHandlerMock.t.sol";
+import { AssetType } from "../../../../../contracts/enums/AssetType.sol";
 import { IL2AssetHandler } from "../../../../../contracts/facets/L2/AssetHandler/IAssetHandler.sol";
-import { L2AssetHandlerStorage } from "../../../../../contracts/facets/L2/AssetHandler/Storage.sol";
 import { PerpetualMintStorage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 import { IAssetHandler } from "../../../../../contracts/interfaces/IAssetHandler.sol";
-import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
 
 /// @title L2AssetHandler_withdrawERC1155Assets
 /// @dev L2AssetHandler test contract for testing expected L2 withdrawERC1155Assets behavior. Tested on an Arbitrum fork.
@@ -35,7 +34,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         super.setUp();
 
         TEST_ERC1155_WITHDRAW_PAYLOAD = abi.encode(
-            PayloadEncoder.AssetType.ERC1155,
+            AssetType.ERC1155,
             address(this),
             BONG_BEARS,
             bongBearTokenIds,
@@ -53,7 +52,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
             );
 
         bytes memory encodedData = abi.encode(
-            PayloadEncoder.AssetType.ERC1155,
+            AssetType.ERC1155,
             address(this),
             BONG_BEARS,
             testRisks,
@@ -68,17 +67,17 @@ contract L2AssetHandler_withdrawERC1155Assets is
             encodedData
         );
 
-        // the deposited ERC1155 token amount is stored in a mapping, so we need to compute the storage slot
-        bytes32 depositedERC1155TokenAmountStorageSlot = keccak256(
+        // active ERC1155 tokens are stored in a mapping, so we need to compute the storage slot
+        bytes32 activeERC1155TokenAmountStorageSlot = keccak256(
             abi.encode(
-                bongBearTokenIds[0], // the deposited ERC1155 token ID
+                bongBearTokenIds[0], // the active ERC1155 token ID
                 keccak256(
                     abi.encode(
-                        BONG_BEARS, // the deposited ERC1155 token collection
+                        BONG_BEARS, // the active ERC1155 token collection
                         keccak256(
                             abi.encode(
-                                address(this), // the depositor
-                                L2AssetHandlerStorage.STORAGE_SLOT
+                                address(this), // the active ERC1155 token depositor
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the activeERC1155Tokens storage slot
                             )
                         )
                     )
@@ -86,13 +85,13 @@ contract L2AssetHandler_withdrawERC1155Assets is
             )
         );
 
-        uint256 depositedERC1155TokenAmount = uint256(
-            vm.load(address(this), depositedERC1155TokenAmountStorageSlot)
+        uint256 activeERC1155TokenAmount = uint256(
+            vm.load(address(this), activeERC1155TokenAmountStorageSlot)
         );
 
-        // mappings are hash tables, so this assertion proves that the deposited ERC1155 token amount was
+        // mappings are hash tables, so this assertion proves that the active ERC1155 token amount was
         // set correctly for the depositor, collection, and the given token ID.
-        assertEq(depositedERC1155TokenAmount, bongBearTokenAmounts[0]);
+        assertEq(activeERC1155TokenAmount, bongBearTokenAmounts[0]);
     }
 
     /// @dev Tests withdrawERC1155Assets functionality for withdrawing ERC1155 tokens.
@@ -115,31 +114,6 @@ contract L2AssetHandler_withdrawERC1155Assets is
             bongBearTokenAmounts
         );
 
-        // the deposited ERC1155 token amount is stored in a mapping
-        bytes32 depositedERC1155TokenAmountStorageSlot = keccak256(
-            abi.encode(
-                bongBearTokenIds[0], // the deposited ERC1155 token ID
-                keccak256(
-                    abi.encode(
-                        BONG_BEARS, // the deposited ERC1155 token collection
-                        keccak256(
-                            abi.encode(
-                                address(this), // the depositor
-                                L2AssetHandlerStorage.STORAGE_SLOT
-                            )
-                        )
-                    )
-                )
-            )
-        );
-
-        uint256 depositedERC1155TokenAmount = uint256(
-            vm.load(address(this), depositedERC1155TokenAmountStorageSlot)
-        );
-
-        // this assertion proves that the deposited ERC1155 token amount was decremented correctly.
-        assertEq(depositedERC1155TokenAmount, 0);
-
         // active ERC1155 tokens are stored in a mapping
         bytes32 activeERC1155TokenAmountStorageSlot = keccak256(
             abi.encode(
@@ -150,7 +124,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
                         keccak256(
                             abi.encode(
                                 address(this), // the active ERC1155 token depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 23 // the activeERC1155Tokens storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the activeERC1155Tokens storage slot
                             )
                         )
                     )
@@ -462,7 +436,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
     }
 
     /// @dev Tests that withdrawERC1155Assets functionality reverts when attempting to withdraw more ERC1155 tokens than the msg.sender has deposited.
-    function test_withdrawERC1155AssetsRevertsWhenAttemptingToUndepositMoreThanDepositedAmount()
+    function test_withdrawERC1155AssetsRevertsWhenAttemptingToWithdrawMoreThanDepositedAmount()
         public
     {
         vm.prank(msg.sender);
@@ -487,7 +461,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
     }
 
     /// @dev Tests that withdrawERC1155Assets functionality reverts when attempting to withdraw ERC1155 tokens on an unsupported remote chain.
-    function test_withdrawERC1155AssetsRevertsWhenAttemptingToUndepositOnAnUnsupportedRemoteChain()
+    function test_withdrawERC1155AssetsRevertsWhenAttemptingToWithdrawOnAnUnsupportedRemoteChain()
         public
     {
         vm.prank(msg.sender);
@@ -514,7 +488,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
     }
 
     /// @dev Tests that withdrawERC1155Assets functionality reverts when attempting to withdraw deposited ERC1155 tokens that are not owned by the msg.sender.
-    function test_withdrawERC1155AssetsRevertsWhenAttemptingToUndepositSomeoneElsesDepositedTokens()
+    function test_withdrawERC1155AssetsRevertsWhenAttemptingToWithdrawSomeoneElsesDepositedTokens()
         public
     {
         vm.prank(msg.sender);
@@ -532,17 +506,17 @@ contract L2AssetHandler_withdrawERC1155Assets is
             0
         ] = 66075445032688988859229341194671037535804503065310441849644897862140383199233; // Bong Bear #02
 
-        // deposited ERC1155 token amounts are stored in a mapping, so we need to compute the storage slot to set up this test case
-        bytes32 depositedERC1155TokenAmountStorageSlot = keccak256(
+        // active ERC1155 tokens are stored in a mapping, so we need to compute the storage slot to set up this test case
+        bytes32 activeERC1155TokenAmountStorageSlot = keccak256(
             abi.encode(
-                bongBearTokenIds[0], // the deposited ERC1155 token ID
+                bongBearTokenIds[0], // the active ERC1155 token ID
                 keccak256(
                     abi.encode(
-                        BONG_BEARS, // the deposited ERC1155 token collection
+                        BONG_BEARS, // the active ERC1155 token collection
                         keccak256(
                             abi.encode(
-                                msg.sender, // the depositor
-                                L2AssetHandlerStorage.STORAGE_SLOT
+                                msg.sender, // the active ERC1155 token depositor
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the activeERC1155Tokens storage slot
                             )
                         )
                     )
@@ -550,10 +524,10 @@ contract L2AssetHandler_withdrawERC1155Assets is
             )
         );
 
-        // write the deposited ERC1155 token amount to storage
+        // write the active ERC1155 token amount to storage
         vm.store(
             address(l2AssetHandler),
-            depositedERC1155TokenAmountStorageSlot,
+            activeERC1155TokenAmountStorageSlot,
             bytes32(bongBearTokenAmounts[0])
         );
 

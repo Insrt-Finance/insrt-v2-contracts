@@ -10,6 +10,7 @@ import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 
 import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "./Storage.sol";
+import { AssetType } from "../../../enums/AssetType.sol";
 
 /// @title PerpetualMintInternal facet contract
 /// @dev defines modularly all logic for the PerpetualMint mechanism in internal functions
@@ -70,7 +71,6 @@ abstract contract PerpetualMintInternal is
         _updateDepositorEarnings(to, collection);
 
         --l.activeERC1155Tokens[from][collection][tokenId];
-        ++l.claimableERC1155Tokens[collection][from][tokenId];
         ++l.inactiveERC1155Tokens[to][collection][tokenId];
         --l.totalActiveTokens[collection];
         l.totalRisk[collection] -= tokenRisk;
@@ -313,7 +313,7 @@ abstract contract PerpetualMintInternal is
         address minter = l.requestMinter[requestId];
         address collection = l.requestCollection[requestId];
 
-        if (l.collectionType[collection]) {
+        if (l.collectionType[collection] == AssetType.ERC721) {
             _resolveERC721Mint(minter, collection, randomWords);
         } else {
             _resolveERC1155Mint(minter, collection, randomWords);

@@ -5,9 +5,8 @@ pragma solidity 0.8.21;
 import { L2AssetHandlerTest } from "../AssetHandler.t.sol";
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { L2AssetHandlerMock } from "../../../../mocks/L2AssetHandlerMock.t.sol";
-import { L2AssetHandlerStorage } from "../../../../../contracts/facets/L2/AssetHandler/Storage.sol";
+import { AssetType } from "../../../../../contracts/enums/AssetType.sol";
 import { PerpetualMintStorage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
-import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
 
 /// @title L2AssetHandler_handleLayerZeroMessage
 /// @dev L2AssetHandler test contract for testing expected L2 _handleLayerZeroMessage behavior. Tested on a Mainnet fork.
@@ -19,7 +18,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
     /// @dev Tests _handleLayerZeroMessage functionality for depositing ERC1155 tokens.
     function test_handleLayerZeroMessageERC1155Deposit() public {
         bytes memory encodedData = abi.encode(
-            PayloadEncoder.AssetType.ERC1155,
+            AssetType.ERC1155,
             msg.sender,
             BONG_BEARS,
             testRisks,
@@ -33,32 +32,6 @@ contract L2AssetHandler_handleLayerZeroMessage is
             TEST_NONCE, // dummy nonce value
             encodedData
         );
-
-        // the deposited ERC1155 token amount is stored in a mapping, so we need to compute the storage slot
-        bytes32 depositedERC1155TokenAmountStorageSlot = keccak256(
-            abi.encode(
-                bongBearTokenIds[0], // the deposited ERC1155 token ID
-                keccak256(
-                    abi.encode(
-                        BONG_BEARS, // the deposited ERC1155 token collection
-                        keccak256(
-                            abi.encode(
-                                msg.sender, // the depositor
-                                L2AssetHandlerStorage.STORAGE_SLOT
-                            )
-                        )
-                    )
-                )
-            )
-        );
-
-        uint256 depositedERC1155TokenAmount = uint256(
-            vm.load(address(this), depositedERC1155TokenAmountStorageSlot)
-        );
-
-        // this assertion proves that the deposited ERC1155 token amount was
-        // set correctly for the depositor, collection, and the given token ID.
-        assertEq(depositedERC1155TokenAmount, bongBearTokenAmounts[0]);
 
         // active ERC1155 owners are stored as an AddressSet in a mapping, so we need to compute the storage slot
         // this slot defaults to the storage slot of the AddressSet._inner._values array length
@@ -307,6 +280,19 @@ contract L2AssetHandler_handleLayerZeroMessage is
             address(uint160(uint256(activeCollectionsValueAtSetIndex))),
             BONG_BEARS
         );
+
+        bytes32 collectionTypeStorageSlot = keccak256(
+            abi.encode(
+                BONG_BEARS, // the deposited ERC1155 token collection
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 6 // the collectionType storage slot
+            )
+        );
+
+        uint8 collectionType = uint8(
+            uint256(vm.load(address(this), collectionTypeStorageSlot))
+        );
+
+        assertEq(collectionType, uint8(AssetType.ERC1155));
     }
 
     /// @dev Tests that _handleLayerZeroMessage emits an ERC1155AssetsDeposited event when depositing ERC1155 tokens.
@@ -314,7 +300,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
         public
     {
         bytes memory encodedData = abi.encode(
-            PayloadEncoder.AssetType.ERC1155,
+            AssetType.ERC1155,
             msg.sender,
             BONG_BEARS,
             testRisks,
@@ -342,7 +328,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
     /// @dev Tests _handleLayerZeroMessage functionality for depositing ERC721 tokens.
     function test_handleLayerZeroMessageERC721Deposit() public {
         bytes memory encodedData = abi.encode(
-            PayloadEncoder.AssetType.ERC721,
+            AssetType.ERC721,
             msg.sender,
             BORED_APE_YACHT_CLUB,
             testRisks,
@@ -356,31 +342,28 @@ contract L2AssetHandler_handleLayerZeroMessage is
             encodedData
         );
 
-        // the deposited ERC721 token deposited boolean is stored in a mapping, so we need to compute the storage slot
-        bytes32 depositedERC721TokenDepositedStorageSlot = keccak256(
+        // escrowed ERC721 owners are stored in a mapping, so we need to compute the storage slot
+        bytes32 escrowedERC721OwnerStorageSlot = keccak256(
             abi.encode(
                 boredApeYachtClubTokenIds[0], // the deposited ERC721 token ID
                 keccak256(
                     abi.encode(
-                        BORED_APE_YACHT_CLUB, // the deposited ERC721 token collection
-                        keccak256(
-                            abi.encode(
-                                msg.sender, // the depositor
-                                uint256(L2AssetHandlerStorage.STORAGE_SLOT) + 1 // the erc721Deposits storage slot
-                            )
-                        )
+                        BORED_APE_YACHT_CLUB, // the deposited ERC721 collection
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 13 // the escrowedERC721Owner mapping slot
                     )
                 )
             )
         );
 
-        uint256 depositedERC721TokenDeposited = uint256(
-            vm.load(address(this), depositedERC721TokenDepositedStorageSlot)
+        address escrowedERC721Owner = address(
+            uint160(
+                uint256(vm.load(address(this), escrowedERC721OwnerStorageSlot))
+            )
         );
 
-        // mappings are hash tables, so this assertion proves that the deposited ERC721 token deposited boolean
-        // was set correctly for the depositor, collection, and the given token ID.
-        assertEq(depositedERC721TokenDeposited, 1); // 1 is true
+        // mappings are hash tables, so this assertion proves that the escrowed ERC721 owner
+        // was set correctly for the collection and the given token ID.
+        assertEq(escrowedERC721Owner, msg.sender);
 
         // the active token IDs in the collection is stored in a UintSet data structure, so we need to compute the storage slot
         // this slot defaults to the storage slot of the UintSet._values array length
@@ -579,6 +562,19 @@ contract L2AssetHandler_handleLayerZeroMessage is
             address(uint160(uint256(activeCollectionsValueAtSetIndex))),
             BORED_APE_YACHT_CLUB
         );
+
+        bytes32 collectionTypeStorageSlot = keccak256(
+            abi.encode(
+                BORED_APE_YACHT_CLUB, // the active ERCE721 token collection
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 6 // the collectionType storage slot
+            )
+        );
+
+        uint8 collectionType = uint8(
+            uint256(vm.load(address(this), collectionTypeStorageSlot))
+        );
+
+        assertEq(collectionType, uint8(AssetType.ERC721));
     }
 
     /// @dev Tests that _handleLayerZeroMessage emits an ERC721AssetsDeposited event when depositing ERC721 tokens.
@@ -586,7 +582,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
         public
     {
         bytes memory encodedData = abi.encode(
-            PayloadEncoder.AssetType.ERC721,
+            AssetType.ERC721,
             msg.sender,
             BORED_APE_YACHT_CLUB,
             testRisks,

@@ -7,7 +7,7 @@ import "forge-std/Test.sol";
 import { L1AssetHandlerTest } from "../AssetHandler.t.sol";
 import { L1ForkTest } from "../../../../L1ForkTest.t.sol";
 import { L1AssetHandlerMock } from "../../../../mocks/L1AssetHandlerMock.t.sol";
-import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
+import { AssetType } from "../../../../../contracts/enums/AssetType.sol";
 
 /// @title L1AssetHandler_handleLayerZeroMessage
 /// @dev L1AssetHandler test contract for testing expected L1 _handleLayerZeroMessage behavior. Tested on a Mainnet fork.
@@ -40,7 +40,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
         );
 
         bytes memory encodedData = abi.encode(
-            PayloadEncoder.AssetType.ERC1155,
+            AssetType.ERC1155,
             msg.sender,
             BONG_BEARS,
             bongBearTokenIds,
@@ -72,7 +72,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
             .checked_write(1);
 
         bytes memory encodedData = abi.encode(
-            PayloadEncoder.AssetType.ERC1155,
+            AssetType.ERC1155,
             msg.sender,
             BONG_BEARS,
             bongBearTokenIds,
@@ -114,7 +114,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
         );
 
         bytes memory encodedData = abi.encode(
-            PayloadEncoder.AssetType.ERC721,
+            AssetType.ERC721,
             msg.sender,
             BORED_APE_YACHT_CLUB,
             boredApeYachtClubTokenIds
@@ -144,7 +144,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
         );
 
         bytes memory encodedData = abi.encode(
-            PayloadEncoder.AssetType.ERC721,
+            AssetType.ERC721,
             msg.sender,
             BORED_APE_YACHT_CLUB,
             boredApeYachtClubTokenIds

@@ -6,8 +6,8 @@ import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { SolidStateLayerZeroClient } from "@solidstate/layerzero-client/SolidStateLayerZeroClient.sol";
 
 import { IL2AssetHandler } from "./IAssetHandler.sol";
-import { L2AssetHandlerStorage } from "./Storage.sol";
 import { PerpetualMintStorage } from "../PerpetualMint/Storage.sol";
+import { AssetType } from "../../../enums/AssetType.sol";
 import { IAssetHandler } from "../../../interfaces/IAssetHandler.sol";
 import { PayloadEncoder } from "../../../libraries/PayloadEncoder.sol";
 
@@ -27,32 +27,29 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     function claimERC1155Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
-        ERC1155Claim[] calldata claims
+        uint256[] calldata tokenIds,
+        uint256[] calldata amounts
     ) external payable {
+        // Check that the lengths of the tokenIds and amounts arrays match
+        if (tokenIds.length != amounts.length) {
+            revert ERC1155TokenIdsAndAmountsLengthMismatch();
+        }
+
         PerpetualMintStorage.Layout
             storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
 
-        uint256[] memory amounts;
-        uint256[] memory tokenIds;
-
-        // Iterate over each claim
-        for (uint256 i = 0; i < claims.length; ++i) {
-            // If the sender (claimer) is not the escrowed claimant of the ERC1155 token, revert the transaction
+        // Iterate over each tokenId
+        for (uint256 i = 0; i < tokenIds.length; ++i) {
+            // If the sender (claimer) does not have any ERC1155 tokens of the specified ID available to claim, revert the transaction
             if (
-                !perpetualMintStorageLayout
-                .escrowedERC1155Owners[collection][claims[i].tokenId].contains(
-                        msg.sender
-                    )
+                perpetualMintStorageLayout.inactiveERC1155Tokens[msg.sender][
+                    collection
+                ][tokenIds[i]] == 0
             ) {
                 revert ERC1155TokenNotEscrowed();
             }
 
-            // Reduce the original owners' (depositors') claimable balance of the ERC1155 token
-            perpetualMintStorageLayout.claimableERC1155Tokens[collection][
-                claims[i].originalOwner
-            ][claims[i].tokenId] -= claims[i].amount;
-
-            // Reduce the senders' (claimants') claimable balance of the ERC1155 token
+            // Reduce the count of inactive ERC1155 tokens for the sender (claimer)
             perpetualMintStorageLayout.inactiveERC1155Tokens[msg.sender][
                 collection
             ][claims[i].tokenId] -= uint64(claims[i].amount);
@@ -86,42 +83,38 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             amounts
         );
 
-        emit ERC1155AssetsClaimed(msg.sender, collection, claims);
+        emit ERC1155AssetsWithdrawn(msg.sender, collection, tokenIds, amounts);
     }
 
     /// @inheritdoc IL2AssetHandler
     function claimERC721Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
-        ERC721Claim[] calldata claims
+        uint256[] calldata tokenIds
     ) external payable {
         PerpetualMintStorage.Layout
             storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
 
-        uint256[] memory tokenIds;
-
-        // Iterate over each claim
-        for (uint256 i = 0; i < claims.length; ++i) {
-            // If the sender (claimer) is not the escrowed claimant of the ERC721 token, revert the transaction
+        // Iterate over each token ID
+        for (uint256 i = 0; i < tokenIds.length; ++i) {
+            // If the sender (claimer) is not the escrowed owner of the ERC721 token,
+            // or the token has not been removed from the active token IDs in the collection, revert the transaction
             if (
                 perpetualMintStorageLayout.escrowedERC721Owner[collection][
-                    claims[i].tokenId
-                ] != msg.sender
+                    tokenIds[i]
+                ] !=
+                msg.sender ||
+                perpetualMintStorageLayout.activeTokenIds[collection].contains(
+                    tokenIds[i]
+                )
             ) {
                 revert ERC721TokenNotEscrowed();
             }
 
-            // Reset the original owners' (depositors') deposit balance of the ERC721 token
-            L2AssetHandlerStorage.layout().erc721Deposits[
-                claims[i].originalOwner
-            ][collection][claims[i].tokenId] = false;
-
-            // Remove the sender (claimer) from the mapping of escrowed claimants for the token ID
+            // Remove the sender (claimer) from the mapping of escrowed owners for the token ID
             perpetualMintStorageLayout.escrowedERC721Owner[collection][
-                claims[i].tokenId
+                tokenIds[i]
             ] = address(0);
-
-            tokenIds[i] = claims[i].tokenId;
         }
 
         _withdrawERC721Assets(
@@ -130,7 +123,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             tokenIds
         );
 
-        emit ERC721AssetsClaimed(msg.sender, collection, claims);
+        emit ERC721AssetsWithdrawn(msg.sender, collection, tokenIds);
     }
 
     /// @inheritdoc IAssetHandler
@@ -165,11 +158,6 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
         // Iterate over each token ID
         for (uint256 i = 0; i < tokenIds.length; ++i) {
-            // Reduce the number of the deposited ERC1155 assets for the sender (depositor)
-            L2AssetHandlerStorage.layout().erc1155Deposits[msg.sender][
-                collection
-            ][tokenIds[i]] -= amounts[i];
-
             // Reduce the count of active ERC1155 tokens for the sender (depositor)
             perpetualMintStorageLayout.activeERC1155Tokens[msg.sender][
                 collection
@@ -192,20 +180,26 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                         msg.sender
                     );
 
-                // If there are no more active owners for the token ID, remove the token ID from the list of active token IDs
-                if (
-                    perpetualMintStorageLayout
-                    .activeERC1155Owners[collection][tokenIds[i]].length() == 0
-                ) {
-                    perpetualMintStorageLayout
-                        .activeTokenIds[collection]
-                        .remove(tokenIds[i]);
-                }
-
                 // Reset the risk for the sender and the token ID
+                // Currently, for ERC1155 tokens, the risk is the same for all token IDs in a collection
                 perpetualMintStorageLayout.depositorTokenRisk[msg.sender][
                     collection
                 ][tokenIds[i]] = 0;
+            }
+
+            // Reduce the total risk for the token ID in the collection
+            perpetualMintStorageLayout.tokenRisk[collection][
+                tokenIds[i]
+            ] -= riskToBeDeducted;
+
+            // If all tokens of a particular ID are withdrawn, remove the token ID from the list of active token IDs
+            if (
+                perpetualMintStorageLayout.tokenRisk[collection][tokenIds[i]] ==
+                0
+            ) {
+                perpetualMintStorageLayout.activeTokenIds[collection].remove(
+                    tokenIds[i]
+                );
             }
 
             // Reduce the total count of active tokens in the collection
@@ -221,11 +215,6 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             // Reduce the total risk in the collection
             perpetualMintStorageLayout.totalRisk[
                 collection
-            ] -= riskToBeDeducted;
-
-            // Reduce the total risk for the token ID in the collection
-            perpetualMintStorageLayout.tokenRisk[collection][
-                tokenIds[i]
             ] -= riskToBeDeducted;
         }
 
@@ -250,28 +239,25 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds
     ) external payable {
-        L2AssetHandlerStorage.Layout
-            storage l2AssetHandlerStorageLayout = L2AssetHandlerStorage
-                .layout();
-
         PerpetualMintStorage.Layout
             storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
 
         // Iterate over each token ID
         for (uint256 i = 0; i < tokenIds.length; ++i) {
-            // If the token is not deposited by the sender, revert the transaction
+            // If the token is not escrowed by the sender, or the token has already
+            // been removed from the active token IDs in the collection, revert the transaction.
+            // This is to prevent the sender from withdrawing a token that has been idled (must be claimed instead).
             if (
-                l2AssetHandlerStorageLayout.erc721Deposits[msg.sender][
-                    collection
-                ][tokenIds[i]] == false
+                perpetualMintStorageLayout.escrowedERC721Owner[collection][
+                    tokenIds[i]
+                ] !=
+                msg.sender ||
+                !perpetualMintStorageLayout.activeTokenIds[collection].contains(
+                    tokenIds[i]
+                )
             ) {
-                revert ERC721TokenNotDeposited();
+                revert ERC721TokenNotEscrowed();
             }
-
-            // Reset the token as not deposited by the sender
-            l2AssetHandlerStorageLayout.erc721Deposits[msg.sender][collection][
-                tokenIds[i]
-            ] = false;
 
             // Remove the token ID from the active token IDs in the collection
             perpetualMintStorageLayout.activeTokenIds[collection].remove(
@@ -289,6 +275,11 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             perpetualMintStorageLayout.depositorTokenRisk[msg.sender][
                 collection
             ][tokenIds[i]] = 0;
+
+            // Reset the token as not escrowed by the sender
+            perpetualMintStorageLayout.escrowedERC721Owner[collection][
+                tokenIds[i]
+            ] = address(0);
 
             // Reset the token risk for the token ID in the collection
             perpetualMintStorageLayout.tokenRisk[collection][tokenIds[i]] = 0;
@@ -331,15 +322,12 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         bytes calldata data
     ) internal override {
         // Decode the asset type from the payload. If the asset type is not supported, this call will revert.
-        PayloadEncoder.AssetType assetType = abi.decode(
-            data,
-            (PayloadEncoder.AssetType)
-        );
+        AssetType assetType = abi.decode(data, (AssetType));
 
         PerpetualMintStorage.Layout
             storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
 
-        if (assetType == PayloadEncoder.AssetType.ERC1155) {
+        if (assetType == AssetType.ERC1155) {
             // Decode the payload to get the depositor, the collection, the tokenIds and the amounts for each tokenId
             (
                 ,
@@ -351,7 +339,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             ) = abi.decode(
                     data,
                     (
-                        PayloadEncoder.AssetType,
+                        AssetType,
                         address,
                         address,
                         uint64[],
@@ -362,11 +350,6 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
             // Iterate over each token ID
             for (uint256 i = 0; i < tokenIds.length; ++i) {
-                // Update the amount of deposited ERC1155 assets for the depositor and the token ID in the collection
-                L2AssetHandlerStorage.layout().erc1155Deposits[depositor][
-                    collection
-                ][tokenIds[i]] += amounts[i];
-
                 // Add the depositor to the set of active owners for the token ID in the collection
                 perpetualMintStorageLayout
                 .activeERC1155Owners[collection][tokenIds[i]].add(depositor);
@@ -382,16 +365,22 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 );
 
                 // Set the risk for the depositor and the token ID in the collection
+                // Currently for ERC1155 tokens, the risk is always the same for all token IDs in the collection
                 perpetualMintStorageLayout.depositorTokenRisk[depositor][
                     collection
                 ][tokenIds[i]] = risks[i];
+
+                uint64 totalAddedRisk = risks[i] * uint64(amounts[i]);
+
+                // Update the total risk for the token ID in the collection
+                perpetualMintStorageLayout.tokenRisk[collection][
+                    tokenIds[i]
+                ] += totalAddedRisk;
 
                 // Update the total number of active tokens in the collection
                 perpetualMintStorageLayout.totalActiveTokens[
                     collection
                 ] += amounts[i];
-
-                uint64 totalAddedRisk = risks[i] * uint64(amounts[i]);
 
                 // Update the total risk for the depositor in the collection
                 perpetualMintStorageLayout.totalDepositorRisk[depositor][
@@ -402,15 +391,13 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 perpetualMintStorageLayout.totalRisk[
                     collection
                 ] += totalAddedRisk;
-
-                // Update the total risk for the token ID in the collection
-                perpetualMintStorageLayout.tokenRisk[collection][
-                    tokenIds[i]
-                ] += totalAddedRisk;
             }
 
             // Add the collection to the set of active collections
             perpetualMintStorageLayout.activeCollections.add(collection);
+
+            // Set the asset type for the collection
+            perpetualMintStorageLayout.collectionType[collection] = assetType;
 
             emit ERC1155AssetsDeposited(
                 depositor,
@@ -429,22 +416,11 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 uint256[] memory tokenIds
             ) = abi.decode(
                     data,
-                    (
-                        PayloadEncoder.AssetType,
-                        address,
-                        address,
-                        uint64[],
-                        uint256[]
-                    )
+                    (AssetType, address, address, uint64[], uint256[])
                 );
 
             // Iterate over each token ID
             for (uint256 i = 0; i < tokenIds.length; ++i) {
-                // Mark the ERC721 token as deposited by the depositor in the collection
-                L2AssetHandlerStorage.layout().erc721Deposits[depositor][
-                    collection
-                ][tokenIds[i]] = true;
-
                 // Add the token ID to the set of active token IDs in the collection
                 perpetualMintStorageLayout.activeTokenIds[collection].add(
                     tokenIds[i]
@@ -459,6 +435,11 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 perpetualMintStorageLayout.depositorTokenRisk[depositor][
                     collection
                 ][tokenIds[i]] = risks[i];
+
+                // Mark the deposited ERC721 token as escrowed by the depositor in the collection
+                perpetualMintStorageLayout.escrowedERC721Owner[collection][
+                    tokenIds[i]
+                ] = depositor;
 
                 // Set the risk for the token ID in the collection
                 perpetualMintStorageLayout.tokenRisk[collection][
@@ -480,6 +461,9 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             // Add the collection to the set of active collections
             perpetualMintStorageLayout.activeCollections.add(collection);
 
+            // Set the asset type for the collection
+            perpetualMintStorageLayout.collectionType[collection] = assetType;
+
             emit ERC721AssetsDeposited(depositor, collection, risks, tokenIds);
         }
     }
@@ -492,8 +476,8 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     function _withdrawERC1155Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
-        uint256[] memory tokenIds,
-        uint256[] memory amounts
+        uint256[] calldata tokenIds,
+        uint256[] calldata amounts
     ) private {
         _lzSend(
             layerZeroDestinationChainId,
@@ -517,7 +501,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     function _withdrawERC721Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
-        uint256[] memory tokenIds
+        uint256[] calldata tokenIds
     ) private {
         _lzSend(
             layerZeroDestinationChainId,

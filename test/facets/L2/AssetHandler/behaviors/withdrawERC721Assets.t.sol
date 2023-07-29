@@ -10,10 +10,9 @@ import { ILayerZeroEndpoint } from "@solidstate/layerzero-client/interfaces/ILay
 import { L2AssetHandlerTest } from "../AssetHandler.t.sol";
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { L2AssetHandlerMock } from "../../../../mocks/L2AssetHandlerMock.t.sol";
+import { AssetType } from "../../../../../contracts/enums/AssetType.sol";
 import { IL2AssetHandler } from "../../../../../contracts/facets/L2/AssetHandler/IAssetHandler.sol";
-import { L2AssetHandlerStorage } from "../../../../../contracts/facets/L2/AssetHandler/Storage.sol";
 import { PerpetualMintStorage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
-import { PayloadEncoder } from "../../../../../contracts/libraries/PayloadEncoder.sol";
 
 /// @title L2AssetHandler_withdrawERC721Assets
 /// @dev L2AssetHandler test contract for testing expected L2 withdrawERC721Assets behavior. Tested on an Arbitrum fork.
@@ -34,7 +33,7 @@ contract L2AssetHandler_withdrawERC721Assets is
         super.setUp();
 
         TEST_ERC721_WITHDRAW_PAYLOAD = abi.encode(
-            PayloadEncoder.AssetType.ERC721,
+            AssetType.ERC721,
             address(this),
             BORED_APE_YACHT_CLUB,
             boredApeYachtClubTokenIds
@@ -51,7 +50,7 @@ contract L2AssetHandler_withdrawERC721Assets is
             );
 
         bytes memory encodedData = abi.encode(
-            PayloadEncoder.AssetType.ERC721,
+            AssetType.ERC721,
             address(this),
             BORED_APE_YACHT_CLUB,
             testRisks,
@@ -65,31 +64,28 @@ contract L2AssetHandler_withdrawERC721Assets is
             encodedData
         );
 
-        // the deposited ERC721 token deposited boolean is stored in a mapping, so we need to compute the storage slot
-        bytes32 depositedERC721TokenDepositedStorageSlot = keccak256(
+        // escrowed ERC721 owners are stored in a mapping, so we need to compute the storage slot
+        bytes32 escrowedERC721OwnerStorageSlot = keccak256(
             abi.encode(
                 boredApeYachtClubTokenIds[0], // the deposited ERC721 token ID
                 keccak256(
                     abi.encode(
-                        BORED_APE_YACHT_CLUB, // the deposited ERC721 token collection
-                        keccak256(
-                            abi.encode(
-                                address(this), // the depositor
-                                uint256(L2AssetHandlerStorage.STORAGE_SLOT) + 1 // the erc721Deposits storage slot
-                            )
-                        )
+                        BORED_APE_YACHT_CLUB, // the deposited ERC721 collection
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 13 // the escrowedERC721Owner mapping slot
                     )
                 )
             )
         );
 
-        uint256 depositedERC721TokenDeposited = uint256(
-            vm.load(address(this), depositedERC721TokenDepositedStorageSlot)
+        address escrowedERC721Owner = address(
+            uint160(
+                uint256(vm.load(address(this), escrowedERC721OwnerStorageSlot))
+            )
         );
 
-        // mappings are hash tables, so this assertion proves that the deposited ERC721 token deposited boolean
-        // was set correctly for the depositor, collection, and the given token ID.
-        assertEq(depositedERC721TokenDeposited, 1); // 1 is true
+        // mappings are hash tables, so this assertion proves that the escrowed ERC721 owner
+        // was set correctly for the collection and the given token ID.
+        assertEq(escrowedERC721Owner, address(this));
     }
 
     /// @dev Tests withdrawERC721Assets functionality for withdrawing ERC721 tokens.
@@ -111,31 +107,28 @@ contract L2AssetHandler_withdrawERC721Assets is
             boredApeYachtClubTokenIds
         );
 
-        // the deposited ERC721 token deposited boolean is stored in a mapping, so we need to compute the storage slot
-        bytes32 depositedERC721TokenDepositedStorageSlot = keccak256(
+        // escrowed ERC721 owners are stored in a mapping, so we need to compute the storage slot
+        bytes32 escrowedERC721OwnerStorageSlot = keccak256(
             abi.encode(
                 boredApeYachtClubTokenIds[0], // the deposited ERC721 token ID
                 keccak256(
                     abi.encode(
-                        BORED_APE_YACHT_CLUB, // the deposited ERC721 token collection
-                        keccak256(
-                            abi.encode(
-                                address(this), // the depositor
-                                uint256(L2AssetHandlerStorage.STORAGE_SLOT) + 1 // the erc721Deposits storage slot
-                            )
-                        )
+                        BORED_APE_YACHT_CLUB, // the deposited ERC721 collection
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 13 // the escrowedERC721Owner mapping slot
                     )
                 )
             )
         );
 
-        uint256 depositedERC721TokenDeposited = uint256(
-            vm.load(address(this), depositedERC721TokenDepositedStorageSlot)
+        address escrowedERC721Owner = address(
+            uint160(
+                uint256(vm.load(address(this), escrowedERC721OwnerStorageSlot))
+            )
         );
 
-        // this assertion proves that the deposited ERC721 token deposited boolean
-        // was updated correctly for the depositor, collection, and the given token ID.
-        assertEq(depositedERC721TokenDeposited, 0); // 0 is false
+        // mappings are hash tables, so this assertion proves that the escrowed ERC721 owner
+        // was updated correctly for the collection, and the given token ID.
+        assertEq(escrowedERC721Owner, address(0));
 
         // the active token IDs in the collection is stored in a UintSet data structure
         // this slot defaults to the storage slot of the UintSet._values array length
@@ -205,7 +198,7 @@ contract L2AssetHandler_withdrawERC721Assets is
                         keccak256(
                             abi.encode(
                                 address(this), // the depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // the depositorTokenRisk storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the depositorTokenRisk storage slot
                             )
                         )
                     )
@@ -386,7 +379,7 @@ contract L2AssetHandler_withdrawERC721Assets is
     }
 
     /// @dev Tests that withdrawERC721Assets functionality reverts when attempting to withdraw more ERC721 tokens than the msg.sender has deposited.
-    function test_withdrawERC721AssetsRevertsWhenAttemptingToUndepositMoreThanDepositedAmount()
+    function test_withdrawERC721AssetsRevertsWhenAttemptingToWithdrawMoreThanDepositedAmount()
         public
     {
         vm.prank(msg.sender);
@@ -398,7 +391,7 @@ contract L2AssetHandler_withdrawERC721Assets is
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
 
-        vm.expectRevert(IL2AssetHandler.ERC721TokenNotDeposited.selector);
+        vm.expectRevert(IL2AssetHandler.ERC721TokenNotEscrowed.selector);
 
         boredApeYachtClubTokenIds.push(2);
 
@@ -410,7 +403,7 @@ contract L2AssetHandler_withdrawERC721Assets is
     }
 
     /// @dev Tests that withdrawERC721Assets functionality reverts when attempting to withdraw ERC721 tokens on an unsupported remote chain.
-    function test_withdrawERC721AssetsRevertsWhenAttemptingToUndepositOnAnUnsupportedRemoteChain()
+    function test_withdrawERC721AssetsRevertsWhenAttemptingToWithdrawOnAnUnsupportedRemoteChain()
         public
     {
         vm.prank(msg.sender);
@@ -436,7 +429,7 @@ contract L2AssetHandler_withdrawERC721Assets is
     }
 
     /// @dev Tests that withdrawERC721Assets functionality reverts when attempting to withdraw deposited ERC721 tokens that are not owned by the msg.sender.
-    function test_withdrawERC721AssetsRevertsWhenAttemptingToUndepositSomeoneElsesDepositedTokens()
+    function test_withdrawERC721AssetsRevertsWhenAttemptingToWithdrawSomeoneElsesDepositedTokens()
         public
     {
         vm.prank(msg.sender);
@@ -452,32 +445,27 @@ contract L2AssetHandler_withdrawERC721Assets is
 
         boredApeYachtClubTokenIds[0] = 2;
 
-        // deposited ERC721 records are stored in a mapping, so we need to compute the storage slot to set up this test case
-        bytes32 depositedERC721TokenIdDepositedStorageSlot = keccak256(
+        // escrowed ERC721 owners are stored in a mapping, so we need to compute the storage slot
+        bytes32 escrowedERC721OwnerStorageSlot = keccak256(
             abi.encode(
                 boredApeYachtClubTokenIds[0], // the deposited ERC721 token ID
                 keccak256(
                     abi.encode(
-                        BORED_APE_YACHT_CLUB, // the deposited ERC721 token collection
-                        keccak256(
-                            abi.encode(
-                                msg.sender, // the depositor
-                                uint256(L2AssetHandlerStorage.STORAGE_SLOT) + 1 // the erc721Deposits storage slot
-                            )
-                        )
+                        BORED_APE_YACHT_CLUB, // the deposited ERC721 collection
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 13 // the escrowedERC721Owner mapping slot
                     )
                 )
             )
         );
 
-        // write the deposited ERC721 deposited state to storage
+        // write the escrowed ERC721 owner to storage
         vm.store(
             address(l2AssetHandler),
-            depositedERC721TokenIdDepositedStorageSlot,
-            bytes32(uint256(1))
+            escrowedERC721OwnerStorageSlot,
+            bytes32(bytes20(NON_OWNER_TEST_ADDRESS))
         );
 
-        vm.expectRevert(IL2AssetHandler.ERC721TokenNotDeposited.selector);
+        vm.expectRevert(IL2AssetHandler.ERC721TokenNotEscrowed.selector);
 
         this.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BORED_APE_YACHT_CLUB,

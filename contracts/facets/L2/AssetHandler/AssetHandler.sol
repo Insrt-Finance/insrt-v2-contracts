@@ -52,28 +52,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             // Reduce the count of inactive ERC1155 tokens for the sender (claimer)
             perpetualMintStorageLayout.inactiveERC1155Tokens[msg.sender][
                 collection
-            ][claims[i].tokenId] -= uint64(claims[i].amount);
-
-            // Reduce the original owners' (depositors') deposit balance of the ERC1155 token
-            L2AssetHandlerStorage.layout().erc1155Deposits[
-                claims[i].originalOwner
-            ][collection][claims[i].tokenId] -= claims[i].amount;
-
-            // If the claimant has no more ERC1155 tokens of a particular ID available to claim,
-            // remove them from the list of escrowed claimants for the token ID
-            if (
-                perpetualMintStorageLayout.inactiveERC1155Tokens[msg.sender][
-                    collection
-                ][claims[i].tokenId] == 0
-            ) {
-                perpetualMintStorageLayout
-                .escrowedERC1155Owners[collection][claims[i].tokenId].remove(
-                        msg.sender
-                    );
-            }
-
-            amounts[i] = claims[i].amount;
-            tokenIds[i] = claims[i].tokenId;
+            ][tokenIds[i]] -= uint64(amounts[i]);
         }
 
         _withdrawERC1155Assets(

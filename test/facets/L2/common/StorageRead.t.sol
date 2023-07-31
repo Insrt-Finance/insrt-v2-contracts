@@ -5,6 +5,7 @@ pragma solidity 0.8.21;
 import "forge-std/StdStorage.sol";
 import "forge-std/Test.sol";
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
+import { AssetType } from "../../../../contracts/enums/AssetType.sol";
 import { PerpetualMintStorage as Storage } from "../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
 /// @title StorageRead library
@@ -126,11 +127,11 @@ abstract contract StorageRead is Test {
     /// @dev read collectionType value directly from storage
     /// @param target address of contract to read storage from
     /// @param collection address of collection
-    /// @return isERC721 boolean indicating collection type
+    /// @return assetType type of collection
     function _collectionType(
         address target,
         address collection
-    ) internal view returns (bool isERC721) {
+    ) internal view returns (AssetType assetType) {
         bytes32 slot = keccak256(
             abi.encode(
                 collection, // address of collection
@@ -138,7 +139,9 @@ abstract contract StorageRead is Test {
             )
         );
 
-        isERC721 = vm.load(target, slot) == 0 ? false : true;
+        assetType = vm.load(target, slot) == 0
+            ? AssetType.ERC721
+            : AssetType.ERC1155;
     }
 
     /// @dev read collectionEarnings value directly from storage
@@ -293,45 +296,6 @@ abstract contract StorageRead is Test {
         owner = address(uint160(uint256(vm.load(target, slot))));
     }
 
-    /// @dev read owner values from escrowedERC1155TokenOwners EnumerableSet.AddressSet
-    /// @param target address of contract to read storage from
-    /// @param collection address of collection
-    /// @param tokenId id of token
-    /// @return owners array of owner address values from EnumerableSet.AddressSet._inner._values
-    function _escrowedERC1155Owners(
-        address target,
-        address collection,
-        uint256 tokenId
-    ) internal view returns (address[] memory owners) {
-        bytes32 enumerableSetSlot = keccak256(
-            abi.encode(
-                tokenId, // the ERC1155 token id
-                keccak256(
-                    abi.encode(
-                        collection, // the ERC1155 collection
-                        uint256(Storage.STORAGE_SLOT) + 16 // escrowedERC1155TokenOwners mapping slot
-                    )
-                )
-            )
-        );
-
-        uint256 length = uint256(vm.load(target, enumerableSetSlot)); // read length of array
-
-        bytes32 valueSlot = keccak256(abi.encodePacked(enumerableSetSlot)); // grab storage slot of enumerableSet._inner._values
-
-        address[] memory tempOwners = new address[](length);
-
-        for (uint256 i; i < length; ++i) {
-            tempOwners[i] = address(
-                uint160(
-                    uint256(vm.load(target, bytes32(uint256(valueSlot) + i)))
-                )
-            );
-        }
-
-        owners = tempOwners;
-    }
-
     /// @dev read owner values from activeERC1155TokenOwners EnumerableSet.AddressSet
     /// @param target address of contract to read storage from
     /// @param collection address of collection
@@ -348,7 +312,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         collection, // the ERC1155 collection
-                        uint256(Storage.STORAGE_SLOT) + 17 // activeERC1155TokenOwners mapping slot
+                        uint256(Storage.STORAGE_SLOT) + 16 // activeERC1155TokenOwners mapping slot
                     )
                 )
             )
@@ -387,7 +351,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         depositor, // address of depositor
-                        uint256(Storage.STORAGE_SLOT) + 18 // depositorDeductions mapping storage slot
+                        uint256(Storage.STORAGE_SLOT) + 17 // depositorDeductions mapping storage slot
                     )
                 )
             )
@@ -412,7 +376,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         depositor, // address of depositor
-                        uint256(Storage.STORAGE_SLOT) + 19 // depositorEarnings mapping storage slot
+                        uint256(Storage.STORAGE_SLOT) + 18 // depositorEarnings mapping storage slot
                     )
                 )
             )
@@ -437,7 +401,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         depositor, // address of depositor
-                        uint256(Storage.STORAGE_SLOT) + 20 // activeTokens mapping storage slot
+                        uint256(Storage.STORAGE_SLOT) + 19 // activeTokens mapping storage slot
                     )
                 )
             )
@@ -462,7 +426,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         depositor, // address of depositor
-                        uint256(Storage.STORAGE_SLOT) + 21 // inactiveTokens mapping storage slot
+                        uint256(Storage.STORAGE_SLOT) + 20 // inactiveTokens mapping storage slot
                     )
                 )
             )
@@ -487,7 +451,7 @@ abstract contract StorageRead is Test {
                 keccak256(
                     abi.encode(
                         depositor, // address of depositor
-                        uint256(Storage.STORAGE_SLOT) + 22 // totalDepositorRisk mapping storage slot
+                        uint256(Storage.STORAGE_SLOT) + 21 // totalDepositorRisk mapping storage slot
                     )
                 )
             )
@@ -517,7 +481,7 @@ abstract contract StorageRead is Test {
                         keccak256(
                             abi.encode(
                                 depositor, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 23 // depositorTokenRisk mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 22 // depositorTokenRisk mapping storage slot
                             )
                         )
                     )
@@ -549,7 +513,7 @@ abstract contract StorageRead is Test {
                         keccak256(
                             abi.encode(
                                 depositor, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 23 // activeERC1155Tokens mapping storage slot
                             )
                         )
                     )
@@ -581,7 +545,7 @@ abstract contract StorageRead is Test {
                         keccak256(
                             abi.encode(
                                 depositor, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 25 // inactiveERC1155Tokens mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 24 // inactiveERC1155Tokens mapping storage slot
                             )
                         )
                     )

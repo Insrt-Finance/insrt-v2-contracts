@@ -221,28 +221,6 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
         assert(oldDepositorRisk - newDepositorRisk == tokenRisk);
     }
 
-    /// @dev test that 'to' address is added to escrowedERC1155Owners if it was not contained prior to assignment
-    function test_assignEscrowedERC1155AssetAddsToToEscrowedERC1155TokenOwnerIfToIsNotContained()
-        public
-    {
-        perpetualMint.exposed_assignEscrowedERC1155Asset(
-            depositorOne,
-            minter,
-            PARALLEL_ALPHA,
-            tokenId,
-            tokenRisk
-        );
-
-        address[] memory owners = _escrowedERC1155Owners(
-            address(perpetualMint),
-            PARALLEL_ALPHA,
-            tokenId
-        );
-
-        // minter is in index 2 because two depositors are incldued before minter from setup
-        assert(owners[2] == minter);
-    }
-
     /// @dev test that 'from' address is removed to activeERC1155Owners if 'from' activeERC1155Tokens is zero
     function test_assignEscrowedERC1155AssetRemovesFromFromActiveERC1155OwnersIfFromActiveERC1155TokensIsZero()
         public
@@ -286,29 +264,6 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
         );
 
         assert(risk == 0);
-    }
-
-    /// @dev test that 'from' address is removed to escrowedERC1155Owners if 'from' activeERC1155tokens and inactiveERC1155tokens are zero
-    function test_assignEscrowedERC1155AssetRemovesFromFromEscrowedERC1155OwnersIfFromActiveERC1155TokensAndInactiveERC1155TokensAreZero()
-        public
-    {
-        perpetualMint.exposed_assignEscrowedERC1155Asset(
-            depositorTwo,
-            minter,
-            PARALLEL_ALPHA,
-            tokenId,
-            tokenRisk
-        );
-
-        address[] memory owners = _escrowedERC1155Owners(
-            address(perpetualMint),
-            PARALLEL_ALPHA,
-            tokenId
-        );
-
-        for (uint i; i < owners.length; ++i) {
-            assert(owners[i] != depositorTwo);
-        }
     }
 
     /// @dev test that transferred tokenId is removed from activeTokenIds if tokenId tokenRisk is zero

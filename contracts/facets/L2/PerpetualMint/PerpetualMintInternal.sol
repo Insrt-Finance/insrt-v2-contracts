@@ -721,7 +721,7 @@ abstract contract PerpetualMintInternal is
             revert ArrayLengthMismatch();
         }
 
-        if (l.collectionType[collection] == AssetType.ERC721) {
+        if (l.collectionType[collection] == AssetType.ERC1155) {
             revert CollectionTypeMismatch();
         }
 

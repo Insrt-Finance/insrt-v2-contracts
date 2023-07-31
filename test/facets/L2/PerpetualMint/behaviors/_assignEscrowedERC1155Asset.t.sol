@@ -47,7 +47,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
                         keccak256(
                             abi.encode(
                                 depositorTwo, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 23 // activeERC1155Tokens mapping storage slot
                             )
                         )
                     )

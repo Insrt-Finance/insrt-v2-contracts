@@ -630,7 +630,7 @@ abstract contract PerpetualMintInternal is
             revert ArrayLengthMismatch();
         }
 
-        if (l.collectionType[collection]) {
+        if (l.collectionType[collection] == AssetType.ERC721) {
             revert CollectionTypeMismatch();
         }
 
@@ -721,7 +721,7 @@ abstract contract PerpetualMintInternal is
             revert ArrayLengthMismatch();
         }
 
-        if (!l.collectionType[collection]) {
+        if (l.collectionType[collection] == AssetType.ERC721) {
             revert CollectionTypeMismatch();
         }
 

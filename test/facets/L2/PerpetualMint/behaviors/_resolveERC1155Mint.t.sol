@@ -103,18 +103,18 @@ contract PerpetualMint_resolveERC1155Mint is
             randomWords
         );
 
-        address[] memory owners = _escrowedERC1155Owners(
-            address(perpetualMint),
-            PARALLEL_ALPHA,
-            expectedTokenId
-        );
-
-        //minter was added to owners so is the third owner as there were 2 pre-existing owners
-        assert(owners[2] == minter);
         assert(
             _activeERC1155Tokens(
                 address(perpetualMint),
-                owners[0],
+                minter,
+                PARALLEL_ALPHA,
+                expectedTokenId
+            ) == 1
+        );
+        assert(
+            _activeERC1155Tokens(
+                address(perpetualMint),
+                depositorOne,
                 PARALLEL_ALPHA,
                 expectedTokenId
             ) == parallelAlphaTokenAmount - 1
@@ -370,29 +370,6 @@ contract PerpetualMint_resolveERC1155Mint is
         assert(oldDepositorRisk - newDepositorRisk == tokenRisk);
     }
 
-    /// @dev test that minter address is added to escrowedERC1155Owners if it was not contained prior to successful mint
-    function test_resolveERC1155MintAddsMinterToEscrowedERC1155TokenOwnerIfMinterIsNotContained()
-        public
-    {
-        randomWords.push(tokenOneDepositorOneSelectValue);
-
-        vm.prank(minter);
-        perpetualMint.exposed_resolveERC1155Mint(
-            minter,
-            PARALLEL_ALPHA,
-            randomWords
-        );
-
-        address[] memory owners = _escrowedERC1155Owners(
-            address(perpetualMint),
-            PARALLEL_ALPHA,
-            expectedTokenId
-        );
-
-        // minter is in index 2 because two depositors are incldued before minter from setup
-        assert(owners[2] == minter);
-    }
-
     /// @dev test that depositor address is removed from activeERC1155Owners if depositor activeERC1155Tokens is zero
     function test_resolveERC1155MintRemovesDepositorFromActiveERC1155OwnersIfDepositorActiveERC1155TokensIsZero()
         public
@@ -550,86 +527,6 @@ contract PerpetualMint_resolveERC1155Mint is
         );
 
         assert(risk == 0);
-    }
-
-    /// @dev test that depositor address is removed to escrowedERC1155Owners if depositor activeERC1155tokens and inactiveERC1155tokens are zero
-    function test_resolveERC1155MintRemovesDepositorFromEscrowedERC1155OwnersIfDepositorActiveERC1155TokensAndInactiveERC1155TokensAreZero()
-        public
-    {
-        randomWords.push(tokenOneDepositorOneSelectValue);
-
-        // grab slot of activeERC1155Tokens
-        bytes32 depositorOneSlot = keccak256(
-            abi.encode(
-                expectedTokenId, // id of token
-                keccak256(
-                    abi.encode(
-                        PARALLEL_ALPHA, // address of collection
-                        keccak256(
-                            abi.encode(
-                                depositorOne, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
-                            )
-                        )
-                    )
-                )
-            )
-        );
-
-        bytes32 depositorTwoSlot = keccak256(
-            abi.encode(
-                expectedTokenId, // id of token
-                keccak256(
-                    abi.encode(
-                        PARALLEL_ALPHA, // address of collection
-                        keccak256(
-                            abi.encode(
-                                depositorTwo, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
-                            )
-                        )
-                    )
-                )
-            )
-        );
-
-        bytes32 tokenRiskSlot = keccak256(
-            abi.encode(
-                expectedTokenId, // id of token
-                keccak256(
-                    abi.encode(
-                        PARALLEL_ALPHA, // address of collection
-                        uint256(Storage.STORAGE_SLOT) + 14 // tokenRisk mapping storage slot
-                    )
-                )
-            )
-        );
-
-        //overwrite storage to set activeERC1155 tokens to 1 for testing
-        vm.store(address(perpetualMint), depositorOneSlot, bytes32(uint256(1)));
-        vm.store(address(perpetualMint), depositorTwoSlot, bytes32(uint256(1)));
-        vm.store(
-            address(perpetualMint),
-            tokenRiskSlot,
-            bytes32(uint256(2 * riskThree))
-        ); // only two active tokens
-
-        vm.prank(minter);
-        perpetualMint.exposed_resolveERC1155Mint(
-            minter,
-            PARALLEL_ALPHA,
-            randomWords
-        );
-
-        address[] memory owners = _escrowedERC1155Owners(
-            address(perpetualMint),
-            PARALLEL_ALPHA,
-            expectedTokenId
-        );
-
-        for (uint i; i < owners.length; ++i) {
-            assert(owners[i] != depositorOne);
-        }
     }
 
     /// @dev test that tokenId is removed from activeTokenIds if tokenId tokenRisk is zero after successful mint

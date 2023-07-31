@@ -140,8 +140,8 @@ abstract contract StorageRead is Test {
         );
 
         assetType = vm.load(target, slot) == 0
-            ? AssetType.ERC721
-            : AssetType.ERC1155;
+            ? AssetType.ERC1155
+            : AssetType.ERC721;
     }
 
     /// @dev read collectionEarnings value directly from storage

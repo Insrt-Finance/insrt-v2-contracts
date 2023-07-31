@@ -150,7 +150,7 @@ contract L2AssetHandler_claimERC1155Assets is
                         keccak256(
                             abi.encode(
                                 address(this), // the ERC1155 token winner
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // the inactiveERC1155Tokens storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 24 // the inactiveERC1155Tokens storage slot
                             )
                         )
                     )
@@ -304,7 +304,7 @@ contract L2AssetHandler_claimERC1155Assets is
                         keccak256(
                             abi.encode(
                                 msg.sender, // the ERC1155 token winner
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the inactiveERC1155Tokens storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 24 // the inactiveERC1155Tokens storage slot
                             )
                         )
                     )

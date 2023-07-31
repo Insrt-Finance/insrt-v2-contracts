@@ -71,7 +71,7 @@ contract L2AssetHandler_withdrawERC721Assets is
                 keccak256(
                     abi.encode(
                         BORED_APE_YACHT_CLUB, // the deposited ERC721 collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 13 // the escrowedERC721Owner mapping slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // the escrowedERC721Owner mapping slot
                     )
                 )
             )
@@ -114,7 +114,7 @@ contract L2AssetHandler_withdrawERC721Assets is
                 keccak256(
                     abi.encode(
                         BORED_APE_YACHT_CLUB, // the deposited ERC721 collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 13 // the escrowedERC721Owner mapping slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // the escrowedERC721Owner mapping slot
                     )
                 )
             )
@@ -135,7 +135,7 @@ contract L2AssetHandler_withdrawERC721Assets is
         bytes32 activeTokenIdsUintSetStorageSlot = keccak256(
             abi.encode(
                 BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 11 // the activeTokenIds storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 13 // the activeTokenIds storage slot
             )
         );
 
@@ -198,7 +198,7 @@ contract L2AssetHandler_withdrawERC721Assets is
                         keccak256(
                             abi.encode(
                                 address(this), // the depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the depositorTokenRisk storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // the depositorTokenRisk storage slot
                             )
                         )
                     )
@@ -220,7 +220,7 @@ contract L2AssetHandler_withdrawERC721Assets is
                 keccak256(
                     abi.encode(
                         BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 12 // the tokenRisk storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 14 // the tokenRisk storage slot
                     )
                 )
             )
@@ -237,7 +237,7 @@ contract L2AssetHandler_withdrawERC721Assets is
         bytes32 totalActiveTokensStorageSlot = keccak256(
             abi.encode(
                 BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 10 // the totalActiveTokens storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 12 // the totalActiveTokens storage slot
             )
         );
 
@@ -287,7 +287,7 @@ contract L2AssetHandler_withdrawERC721Assets is
             // the set of active collections is stored in an AddressSet data structure
             // this slot defaults to the storage slot of the AddressSet._values array length
             bytes32 activeCollectionsSetStorageSlot = bytes32(
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 3 // the activeCollections storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 5 // the activeCollections storage slot
             );
 
             bytes32 activeCollectionsSetIndexStorageSlot = keccak256(

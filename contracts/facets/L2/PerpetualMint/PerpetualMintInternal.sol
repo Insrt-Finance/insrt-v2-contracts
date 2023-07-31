@@ -80,10 +80,6 @@ abstract contract PerpetualMintInternal is
         if (l.activeERC1155Tokens[from][collection][tokenId] == 0) {
             l.activeERC1155Owners[collection][tokenId].remove(from);
             l.depositorTokenRisk[from][collection][tokenId] = 0;
-
-            if (l.inactiveERC1155Tokens[from][collection][tokenId] == 0) {
-                l.escrowedERC1155Owners[collection][tokenId].remove(from);
-            }
         }
 
         if (l.tokenRisk[collection][tokenId] == 0) {
@@ -244,7 +240,11 @@ abstract contract PerpetualMintInternal is
         address collection,
         uint256 tokenId
     ) internal view {
-        if (!l.escrowedERC1155Owners[collection][tokenId].contains(depositor)) {
+        if (
+            l.inactiveERC1155Tokens[depositor][collection][tokenId] +
+                l.activeERC1155Tokens[depositor][collection][tokenId] ==
+            0
+        ) {
             revert OnlyEscrowedTokenOwner();
         }
     }

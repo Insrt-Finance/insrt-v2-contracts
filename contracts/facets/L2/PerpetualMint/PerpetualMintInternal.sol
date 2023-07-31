@@ -317,7 +317,7 @@ abstract contract PerpetualMintInternal is
     }
 
     /// @notice sets the token risk of a set of ERC1155 tokens to zero thereby making them idle - still escrowed
-    /// by the PerpetualMint contracts but not actively accruing earnings nor incurring risk from mint attemps
+    /// by the PerpetualMint contracts but not actively accruing earnings nor incurring risk from mint attempts
     /// @param depositor address of depositor of token
     /// @param collection address of ERC1155 collection
     /// @param tokenIds ids of token of collection
@@ -580,7 +580,7 @@ abstract contract PerpetualMintInternal is
         emit VRFConfigSet(config);
     }
 
-    /// @notice updates the earnings of a depositor  based on current conitions
+    /// @notice updates the earnings of a depositor  based on current conditions
     /// @param collection address of collection earnings relate to
     /// @param depositor address of depositor
     function _updateDepositorEarnings(

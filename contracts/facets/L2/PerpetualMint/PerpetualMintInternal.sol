@@ -647,6 +647,62 @@ abstract contract PerpetualMintInternal is
         }
     }
 
+    /// @notice updates the risk associated with an escrowed ERC721 tokens of a depositor
+    /// @param depositor address of escrowed token owner
+    /// @param collection address of token collection
+    /// @param tokenIds array of token ids
+    /// @param risks array of new risk values for token ids
+    function _updateERC721TokenRisks(
+        address depositor,
+        address collection,
+        uint256[] calldata tokenIds,
+        uint64[] calldata risks
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        if (tokenIds.length != risks.length) {
+            revert ArrayLengthMismatch();
+        }
+
+        if (l.collectionType[collection] != AssetType.ERC721) {
+            revert CollectionTypeMismatch();
+        }
+
+        _updateDepositorEarnings(depositor, collection);
+
+        for (uint256 i; i < tokenIds.length; ++i) {
+            uint256 tokenId = tokenIds[i];
+            uint64 risk = risks[i];
+
+            if (risk > BASIS) {
+                revert BasisExceeded();
+            }
+
+            if (risk == 0) {
+                revert TokenRiskMustBeNonZero();
+            }
+
+            if (depositor != l.escrowedERC721Owner[collection][tokenIds[i]]) {
+                revert OnlyEscrowedTokenOwner();
+            }
+
+            uint64 oldRisk = l.tokenRisk[collection][tokenId];
+
+            l.tokenRisk[collection][tokenId] = risk;
+            uint64 riskChange;
+
+            if (risk > oldRisk) {
+                riskChange = risk - oldRisk;
+                l.totalRisk[collection] += riskChange;
+                l.totalDepositorRisk[depositor][collection] += riskChange;
+            } else {
+                riskChange = oldRisk - risk;
+                l.totalRisk[collection] -= riskChange;
+                l.totalDepositorRisk[depositor][collection] -= riskChange;
+            }
+        }
+    }
+
     /// @notice updates the risk for a single ERC1155 tokenId
     /// @param depositor address of escrowed token owner
     /// @param collection address of token collection
@@ -702,61 +758,5 @@ abstract contract PerpetualMintInternal is
         l.activeERC1155Tokens[depositor][collection][tokenId] += amount;
         l.inactiveERC1155Tokens[depositor][collection][tokenId] -= amount;
         l.depositorTokenRisk[depositor][collection][tokenId] = risk;
-    }
-
-    /// @notice updates the risk associated with an escrowed ERC721 tokens of a depositor
-    /// @param depositor address of escrowed token owner
-    /// @param collection address of token collection
-    /// @param tokenIds array of token ids
-    /// @param risks array of new risk values for token ids
-    function _updateERC721TokenRisks(
-        address depositor,
-        address collection,
-        uint256[] calldata tokenIds,
-        uint64[] calldata risks
-    ) internal {
-        Storage.Layout storage l = Storage.layout();
-
-        if (tokenIds.length != risks.length) {
-            revert ArrayLengthMismatch();
-        }
-
-        if (l.collectionType[collection] != AssetType.ERC721) {
-            revert CollectionTypeMismatch();
-        }
-
-        _updateDepositorEarnings(depositor, collection);
-
-        for (uint256 i; i < tokenIds.length; ++i) {
-            uint256 tokenId = tokenIds[i];
-            uint64 risk = risks[i];
-
-            if (risk > BASIS) {
-                revert BasisExceeded();
-            }
-
-            if (risk == 0) {
-                revert TokenRiskMustBeNonZero();
-            }
-
-            if (depositor != l.escrowedERC721Owner[collection][tokenIds[i]]) {
-                revert OnlyEscrowedTokenOwner();
-            }
-
-            uint64 oldRisk = l.tokenRisk[collection][tokenId];
-
-            l.tokenRisk[collection][tokenId] = risk;
-            uint64 riskChange;
-
-            if (risk > oldRisk) {
-                riskChange = risk - oldRisk;
-                l.totalRisk[collection] += riskChange;
-                l.totalDepositorRisk[depositor][collection] += riskChange;
-            } else {
-                riskChange = oldRisk - risk;
-                l.totalRisk[collection] -= riskChange;
-                l.totalDepositorRisk[depositor][collection] -= riskChange;
-            }
-        }
     }
 }

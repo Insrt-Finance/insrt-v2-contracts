@@ -104,7 +104,7 @@ contract PerpetualMint_resolveERC1155Mint is
         );
 
         assert(
-            _activeERC1155Tokens(
+            _inactiveERC1155Tokens(
                 address(perpetualMint),
                 minter,
                 PARALLEL_ALPHA,
@@ -386,7 +386,7 @@ contract PerpetualMint_resolveERC1155Mint is
                         keccak256(
                             abi.encode(
                                 depositorOne, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 23 // activeERC1155Tokens mapping storage slot
                             )
                         )
                     )
@@ -403,7 +403,7 @@ contract PerpetualMint_resolveERC1155Mint is
                         keccak256(
                             abi.encode(
                                 depositorTwo, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 23 // activeERC1155Tokens mapping storage slot
                             )
                         )
                     )
@@ -466,7 +466,7 @@ contract PerpetualMint_resolveERC1155Mint is
                         keccak256(
                             abi.encode(
                                 depositorOne, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 23 // activeERC1155Tokens mapping storage slot
                             )
                         )
                     )
@@ -483,7 +483,7 @@ contract PerpetualMint_resolveERC1155Mint is
                         keccak256(
                             abi.encode(
                                 depositorTwo, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 24 // activeERC1155Tokens mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 23 // activeERC1155Tokens mapping storage slot
                             )
                         )
                     )

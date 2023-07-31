@@ -41,7 +41,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                 keccak256(
                     abi.encode(
                         BONG_BEARS, // the active ERC1155 token collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 17 // the activeERC1155Owners storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 16 // the activeERC1155Owners storage slot
                     )
                 )
             )
@@ -92,7 +92,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                         keccak256(
                             abi.encode(
                                 msg.sender, // the active ERC1155 token depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 24 // the activeERC1155Tokens storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 23 // the activeERC1155Tokens storage slot
                             )
                         )
                     )
@@ -155,7 +155,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                         keccak256(
                             abi.encode(
                                 msg.sender, // the active ERC1155 token depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 23 // the depositorTokenRisk storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // the depositorTokenRisk storage slot
                             )
                         )
                     )
@@ -192,7 +192,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                 keccak256(
                     abi.encode(
                         msg.sender, // the depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // the totalDepositorRisk storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the totalDepositorRisk storage slot
                     )
                 )
             )
@@ -349,7 +349,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                 keccak256(
                     abi.encode(
                         BORED_APE_YACHT_CLUB, // the deposited ERC721 collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 13 // the escrowedERC721Owner mapping slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // the escrowedERC721Owner mapping slot
                     )
                 )
             )
@@ -413,7 +413,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                 keccak256(
                     abi.encode(
                         msg.sender, // the depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 20 // the activeTokens storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 19 // the activeTokens storage slot
                     )
                 )
             )
@@ -436,7 +436,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                         keccak256(
                             abi.encode(
                                 msg.sender, // the depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 23 // the depositorTokenRisk storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // the depositorTokenRisk storage slot
                             )
                         )
                     )
@@ -493,7 +493,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
                 keccak256(
                     abi.encode(
                         msg.sender, // the depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // the totalDepositorRisk storage slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the totalDepositorRisk storage slot
                     )
                 )
             )
@@ -566,7 +566,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
         bytes32 collectionTypeStorageSlot = keccak256(
             abi.encode(
                 BORED_APE_YACHT_CLUB, // the active ERCE721 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 6 // the collectionType storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 8 // the collectionType storage slot
             )
         );
 

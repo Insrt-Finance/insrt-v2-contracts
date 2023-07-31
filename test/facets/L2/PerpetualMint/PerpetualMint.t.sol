@@ -8,6 +8,7 @@ import { IERC1155 } from "@solidstate/contracts/interfaces/IERC1155.sol";
 import { IERC721 } from "@solidstate/contracts/interfaces/IERC721.sol";
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
+import { AssetType } from "../../../../contracts/enums/AssetType.sol";
 import { PerpetualMintStorage as Storage } from "../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 import { L2CoreTest } from "../../../diamonds/L2/Core.t.sol";
 import { IDepositFacetMock } from "../../../interfaces/IDepositFacetMock.sol";
@@ -105,7 +106,7 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
 
         assert(
             _collectionType(address(perpetualMint), BORED_APE_YACHT_CLUB) ==
-                true
+                AssetType.ERC721
         );
     }
 

@@ -4,6 +4,7 @@ pragma solidity ^0.8.21;
 
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
+import { AssetType } from "../../contracts/enums/AssetType.sol";
 import { PerpetualMintStorage as Storage } from "../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
 /// @title DepositFacetMock
@@ -27,7 +28,7 @@ contract DepositFacetMock {
     ) external {
         Storage.Layout storage l = Storage.layout();
 
-        if (l.collectionType[collection]) {
+        if (l.collectionType[collection] == AssetType.ERC721) {
             l.totalRisk[collection] += risk;
             ++l.totalActiveTokens[collection];
             ++l.activeTokens[msg.sender][collection];
@@ -41,7 +42,6 @@ contract DepositFacetMock {
             l.totalActiveTokens[collection] += amount;
             l.totalDepositorRisk[msg.sender][collection] += addedRisk;
             l.tokenRisk[collection][tokenId] += addedRisk;
-            l.escrowedERC1155Owners[collection][tokenId].add(msg.sender);
             l.depositorTokenRisk[msg.sender][collection][tokenId] = risk;
             l.activeERC1155Owners[collection][tokenId].add(msg.sender);
             l.activeERC1155Tokens[msg.sender][collection][tokenId] += amount;

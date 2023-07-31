@@ -7,7 +7,7 @@ import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
-/// @title PerpetualMint_updateTokenRisk
+/// @title PerpetualMint_idleERC721Tokens
 /// @dev PerpetualMint test contract for testing expected behavior of the idleERC721Tokens function
 contract PerpetualMint_idleERC721Tokens is
     IPerpetualMintInternal,

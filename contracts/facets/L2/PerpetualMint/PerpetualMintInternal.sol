@@ -79,7 +79,11 @@ abstract contract PerpetualMintInternal is
 
         if (l.activeERC1155Tokens[from][collection][tokenId] == 0) {
             l.activeERC1155Owners[collection][tokenId].remove(from);
-            delete l.depositorTokenRisk[from][collection][tokenId];
+            l.depositorTokenRisk[from][collection][tokenId] = 0;
+
+            if (l.inactiveERC1155Tokens[from][collection][tokenId] == 0) {
+                l.escrowedERC1155Owners[collection][tokenId].remove(from);
+            }
         }
 
         if (l.tokenRisk[collection][tokenId] == 0) {

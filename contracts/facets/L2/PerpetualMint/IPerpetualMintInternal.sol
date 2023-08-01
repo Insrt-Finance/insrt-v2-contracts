@@ -31,6 +31,9 @@ interface IPerpetualMintInternal {
     /// @notice thrown when a non-owner is attempting to modify token parameters
     error OnlyEscrowedTokenOwner();
 
+    /// @notice thrown when a token that is not idled (inactive) is attempted to be reactivated
+    error TokenAlreadyActive();
+
     /// @notice thrown when an attempt is made to update token risk to 0
     error TokenRiskMustBeNonZero();
 

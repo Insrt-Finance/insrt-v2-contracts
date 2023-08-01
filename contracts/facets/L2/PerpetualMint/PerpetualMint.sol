@@ -77,6 +77,15 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
     }
 
     /// @inheritdoc IPerpetualMint
+    function reactivateERC721Assets(
+        address collection,
+        uint256[] calldata risks,
+        uint256[] calldata tokenIds
+    ) external {
+        _reactivateERC721Assets(msg.sender, collection, risks, tokenIds);
+    }
+
+    /// @inheritdoc IPerpetualMint
     function setCollectionMintPrice(
         address collection,
         uint256 price

@@ -43,8 +43,6 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     uint256 PARALLEL_ALPHA_TOKEN_ID_ONE = 10951;
     uint256 PARALLEL_ALPHA_TOKEN_ID_TWO = 11022;
 
-    uint256[] internal parallelAlphaTokenIds = new uint256[](2);
-
     // all depositors will deposit the same amount of ParallelAlpha tokens
     uint256 internal parallelAlphaTokenAmount = 10;
 
@@ -71,10 +69,19 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     /// @dev The LayerZero proprietary chain ID for setting Ethereum mainnet as the destination blockchain.
     uint16 internal constant DESTINATION_LAYER_ZERO_CHAIN_ID = 101;
 
+    /// @dev BAYC depositor data holders
     uint64[] internal depositorOneBAYCRisks;
     uint64[] internal depositorTwoBAYCRisks;
     uint256[] internal depositorOneBAYCIds;
     uint256[] internal depositorTwoBAYCIds;
+
+    /// @dev Parallel Alpha depositor data holders
+    uint64[] internal depositorOneParallelAlphaRisks;
+    uint64[] internal depositorTwoParallelAlphaRisks;
+    uint256[] internal depositorOneParallelAlphaTokenIds;
+    uint256[] internal depositorTwoParallelAlphaTokenIds;
+    uint256[] internal depositorOneParallelAlphaAmounts;
+    uint256[] internal depositorTwoParallelAlphaAmounts;
 
     /// @dev sets up PerpetualMint for testing
     function setUp() public virtual override {
@@ -84,8 +91,8 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
 
         perpetualMint = IPerpetualMintTest(address(l2CoreDiamond));
 
-        parallelAlphaTokenIds[0] = 10951;
-        parallelAlphaTokenIds[1] = 11022;
+        // parallelAlphaTokenIds[0] = 10951;
+        // parallelAlphaTokenIds[1] = 11022;
 
         perpetualMint.setVRFConfig(
             Storage.VRFConfig({
@@ -175,28 +182,49 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
 
     /// @dev deposits bong bear tokens into the PerpetualMint contracts
     function depositParallelAlphaAssetsMock() internal {
-        vm.prank(depositorOne);
-        perpetualMint.depositAsset(
+        // set up encoded deposit data for depositor one
+        depositorOneParallelAlphaRisks.push(riskThree);
+        depositorOneParallelAlphaTokenIds.push(PARALLEL_ALPHA_TOKEN_ID_ONE);
+        depositorOneParallelAlphaAmounts.push(parallelAlphaTokenAmount);
+        depositorOneParallelAlphaRisks.push(riskThree);
+        depositorOneParallelAlphaTokenIds.push(PARALLEL_ALPHA_TOKEN_ID_TWO);
+        depositorOneParallelAlphaAmounts.push(parallelAlphaTokenAmount);
+
+        // set up encoded deposit data for depositor two
+        depositorTwoParallelAlphaRisks.push(riskThree);
+        depositorTwoParallelAlphaTokenIds.push(PARALLEL_ALPHA_TOKEN_ID_ONE);
+        depositorTwoParallelAlphaAmounts.push(parallelAlphaTokenAmount);
+
+        bytes memory depositOneData = abi.encode(
+            AssetType.ERC1155,
+            depositorOne,
             PARALLEL_ALPHA,
-            parallelAlphaTokenIds[0],
-            uint64(parallelAlphaTokenAmount),
-            riskThree
+            depositorOneParallelAlphaRisks,
+            depositorOneParallelAlphaTokenIds,
+            depositorOneParallelAlphaAmounts
         );
 
-        vm.prank(depositorTwo);
-        perpetualMint.depositAsset(
+        bytes memory depositTwoData = abi.encode(
+            AssetType.ERC1155,
+            depositorTwo,
             PARALLEL_ALPHA,
-            parallelAlphaTokenIds[0],
-            uint64(parallelAlphaTokenAmount),
-            riskThree
+            depositorTwoParallelAlphaRisks,
+            depositorTwoParallelAlphaTokenIds,
+            depositorTwoParallelAlphaAmounts
         );
 
-        vm.prank(depositorOne);
-        perpetualMint.depositAsset(
-            PARALLEL_ALPHA,
-            parallelAlphaTokenIds[1],
-            uint64(parallelAlphaTokenAmount),
-            riskThree
+        perpetualMint.mock_HandleLayerZeroMessage(
+            DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
+            TEST_PATH, // would be the expected path in production, here this is a dummy value
+            TEST_NONCE, // dummy nonce value
+            depositOneData
+        );
+
+        perpetualMint.mock_HandleLayerZeroMessage(
+            DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
+            TEST_PATH, // would be the expected path in production, here this is a dummy value
+            TEST_NONCE, // dummy nonce value
+            depositTwoData
         );
     }
 }

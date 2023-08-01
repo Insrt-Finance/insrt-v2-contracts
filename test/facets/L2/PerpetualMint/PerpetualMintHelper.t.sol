@@ -7,9 +7,7 @@ import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidSt
 
 import { IPerpetualMint } from "../../../../contracts/facets/L2/PerpetualMint/IPerpetualMint.sol";
 import { PerpetualMintStorage as Storage } from "../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
-import { IDepositFacetMock } from "../../../interfaces/IDepositFacetMock.sol";
 import { L2AssetHandlerMock } from "../../../mocks/L2AssetHandlerMock.t.sol";
-import { DepositFacetMock } from "../../../mocks/DepositFacetMock.t.sol";
 import { IPerpetualMintHarness } from "./IPerpetualMintHarness.t.sol";
 import { PerpetualMintHarness } from "./PerpetualMintHarness.t.sol";
 
@@ -17,32 +15,28 @@ import { PerpetualMintHarness } from "./PerpetualMintHarness.t.sol";
 /// @dev Test helper contract for setting up PerpetualMint facet for diamond cutting and testing
 contract PerpetualMintHelper {
     PerpetualMintHarness public perpetualMintHarnessImplementation;
-    DepositFacetMock public depositFacetMockImplementation;
     L2AssetHandlerMock public l2AssetHandlerMockImplementation;
 
     // Arbitrum mainnet Chainlink VRF Coordinator address
     address public constant VRF_COORDINATOR =
         address(0x41034678D6C633D8a95c75e1138A360a28bA15d1);
 
-    /// @dev deploys DepositFacetMock and PerpetualMintHarness implementations
+    /// @dev deploys L2AssetHandlerMock and PerpetualMintHarness implementations
     constructor() {
         perpetualMintHarnessImplementation = new PerpetualMintHarness(
             VRF_COORDINATOR
         );
 
-        depositFacetMockImplementation = new DepositFacetMock();
-
         l2AssetHandlerMockImplementation = new L2AssetHandlerMock();
     }
 
-    /// @dev provides the facet cuts for setting up PerpetualMint and DepositFacetMock in L1CoreDiamond
+    /// @dev provides the facet cuts for setting up PerpetualMint and L2AssetHandlerMock in L1CoreDiamond
     function getFacetCuts()
         public
         view
         returns (ISolidStateDiamond.FacetCut[] memory)
     {
         bytes4[] memory mintingSelectors = new bytes4[](22);
-        bytes4[] memory depositSelectors = new bytes4[](1);
         bytes4[] memory l2AssetHandlerSelectors = new bytes4[](1);
 
         // map the function selectors to their respective interfaces
@@ -87,8 +81,6 @@ contract PerpetualMintHelper {
             .exposed_assignEscrowedERC1155Asset
             .selector;
 
-        depositSelectors[0] = IDepositFacetMock.depositAsset.selector;
-
         l2AssetHandlerSelectors[0] = L2AssetHandlerMock
             .mock_HandleLayerZeroMessage
             .selector;
@@ -101,13 +93,6 @@ contract PerpetualMintHelper {
             });
 
         ISolidStateDiamond.FacetCut
-            memory stakingFacetCut = IDiamondWritableInternal.FacetCut({
-                target: address(depositFacetMockImplementation),
-                action: IDiamondWritableInternal.FacetCutAction.ADD,
-                selectors: depositSelectors
-            });
-
-        ISolidStateDiamond.FacetCut
             memory assetHandlerFacetCut = IDiamondWritableInternal.FacetCut({
                 target: address(l2AssetHandlerMockImplementation),
                 action: IDiamondWritableInternal.FacetCutAction.ADD,
@@ -115,11 +100,10 @@ contract PerpetualMintHelper {
             });
 
         ISolidStateDiamond.FacetCut[]
-            memory facetCuts = new ISolidStateDiamond.FacetCut[](3);
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](2);
 
         facetCuts[0] = mintFacetCut;
-        facetCuts[1] = stakingFacetCut;
-        facetCuts[2] = assetHandlerFacetCut;
+        facetCuts[1] = assetHandlerFacetCut;
 
         return facetCuts;
     }

@@ -11,13 +11,12 @@ import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidSt
 import { AssetType } from "../../../../contracts/enums/AssetType.sol";
 import { PerpetualMintStorage as Storage } from "../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 import { L2CoreTest } from "../../../diamonds/L2/Core.t.sol";
-import { IDepositFacetMock } from "../../../interfaces/IDepositFacetMock.sol";
 import { StorageRead } from "../common/StorageRead.t.sol";
 import { IPerpetualMintTest } from "./IPerpetualMintTest.t.sol";
 import { PerpetualMintHelper } from "./PerpetualMintHelper.t.sol";
 
 /// @title PerpetualMintTest
-/// @dev PerpetualMintTest helper contract. Configures PerpetualMint and DepositFacetMock as facets of L1Core test.
+/// @dev PerpetualMintTest helper contract. Configures PerpetualMint and L2AssetHandlerMock as facets of L1Core test.
 /// @dev Should functoin identically across all forks given appropriate Chainlink VRF details are set.
 abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     using stdStorage for StdStorage;
@@ -128,7 +127,7 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
         );
     }
 
-    /// @dev initialzies PerpetualMint and DepositFacetMock as facets by executing a diamond cut on L1CoreDiamond.
+    /// @dev initialzies PerpetualMint and L2AssetHandlerMock as facets by executing a diamond cut on L1CoreDiamond.
     function initPerpetualMint() internal {
         PerpetualMintHelper perpetualMintHelper = new PerpetualMintHelper();
 

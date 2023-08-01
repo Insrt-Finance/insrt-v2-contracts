@@ -4,6 +4,7 @@ pragma solidity 0.8.21;
 
 import { IPerpetualMint } from "../../../../contracts/facets/L2/PerpetualMint/IPerpetualMint.sol";
 import { IDepositFacetMock } from "../../../interfaces/IDepositFacetMock.sol";
+import { IL2AssetHandlerMock } from "../../../interfaces/IL2AssetHandlerMock.t.sol";
 import { IPerpetualMintHarness } from "./IPerpetualMintHarness.t.sol";
 
 /// @title IPerpetualMintTest
@@ -11,7 +12,8 @@ import { IPerpetualMintHarness } from "./IPerpetualMintHarness.t.sol";
 interface IPerpetualMintTest is
     IPerpetualMint,
     IPerpetualMintHarness,
-    IDepositFacetMock
+    IDepositFacetMock,
+    IL2AssetHandlerMock
 {
 
 }

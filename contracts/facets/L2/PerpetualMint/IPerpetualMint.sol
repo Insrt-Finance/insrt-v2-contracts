@@ -65,6 +65,18 @@ interface IPerpetualMint {
         uint256[] calldata tokenIds
     ) external;
 
+    /// @notice Used to reactivate idled ERC721 tokens.
+    /// @dev Reactivates a set of idled ERC721 tokens by setting their risks to the given values.
+    /// @param collection The address of the collection.
+    /// @param risks The new risk settings for the tokens.
+    /// @param tokenIds An array of token ids to reactivate.
+    /// @notice The length of the `risks` and `tokenIds` arrays should be the same.
+    function reactivateERC721Assets(
+        address collection,
+        uint256[] calldata risks,
+        uint256[] calldata tokenIds
+    ) external;
+
     /// @notice set the mint price for a given collection
     /// @param collection address of collection
     /// @param price mint price of the collection

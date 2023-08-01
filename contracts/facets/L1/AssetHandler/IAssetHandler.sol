@@ -42,7 +42,7 @@ interface IL1AssetHandler is IAssetHandler {
     /// @param risks The risk settings for the assets being deposited.
     /// @param tokenIds An array of token IDs that the user wants to deposit.
     /// @param amounts An array of amounts for each respective token ID to be deposited.
-    /// @notice The length of `tokenIds` and `amounts` arrays should be the same.
+    /// @notice The length of the `risks`, `tokenIds` and `amounts` arrays should be the same.
     function depositERC1155Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
@@ -58,6 +58,7 @@ interface IL1AssetHandler is IAssetHandler {
     /// @param risks The risk settings for the assets being deposited.
     /// @param tokenIds An array of token IDs that the user wants to deposit.
     /// @notice Note: Each token ID in the array represents a unique asset to be deposited.
+    /// The length of the `risks` and `tokenIds` arrays should be the same.
     function depositERC721Assets(
         address collection,
         uint16 layerZeroDestinationChainId,

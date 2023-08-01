@@ -25,7 +25,7 @@ contract PerpetualMint_selectERC1155Owner is
 
     /// @dev tests selecting an ERC1155 owner after an ERC1155 asset has been won
     function testFuzz_selectERC1155Owner(uint64 randomOwnerValue) public view {
-        uint256 selectedTokenId = parallelAlphaTokenIds[0];
+        uint256 selectedTokenId = PARALLEL_ALPHA_TOKEN_ID_ONE;
 
         // make sure random value is within 0 - tokenRisk range
         uint64 normalizedValue = randomOwnerValue %

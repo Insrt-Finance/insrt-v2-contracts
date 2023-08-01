@@ -29,7 +29,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
         depositParallelAlphaAssetsMock();
 
         // instantiate variables used in testing
-        tokenId = parallelAlphaTokenIds[0];
+        tokenId = PARALLEL_ALPHA_TOKEN_ID_ONE;
         tokenRisk = _depositorTokenRisk(
             address(perpetualMint),
             depositorOne,

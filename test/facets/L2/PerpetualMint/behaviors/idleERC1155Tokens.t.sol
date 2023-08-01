@@ -32,7 +32,7 @@ contract PerpetualMint_idleERC721Tokens is
     function setUp() public override {
         super.setUp();
 
-        PARALLEL_ALPHA_ID = parallelAlphaTokenIds[0];
+        PARALLEL_ALPHA_ID = PARALLEL_ALPHA_TOKEN_ID_ONE;
 
         depositParallelAlphaAssetsMock();
 

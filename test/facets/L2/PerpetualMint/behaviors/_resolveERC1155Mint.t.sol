@@ -61,7 +61,7 @@ contract PerpetualMint_resolveERC1155Mint is
             bytes32(COLLECTION_EARNINGS)
         );
 
-        expectedTokenId = parallelAlphaTokenIds[0];
+        expectedTokenId = PARALLEL_ALPHA_TOKEN_ID_ONE;
         randomWords.push(tokenOneDepositorOneSelectValue);
         totalRisk = _totalRisk(address(perpetualMint), PARALLEL_ALPHA);
         oldOwner = depositorOne;

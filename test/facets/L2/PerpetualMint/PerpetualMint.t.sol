@@ -43,8 +43,6 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     uint256 PARALLEL_ALPHA_TOKEN_ID_ONE = 10951;
     uint256 PARALLEL_ALPHA_TOKEN_ID_TWO = 11022;
 
-    uint256[] internal boredApeYachtClubTokenIds = new uint256[](2);
-
     uint256[] internal parallelAlphaTokenIds = new uint256[](2);
 
     // all depositors will deposit the same amount of ParallelAlpha tokens
@@ -85,9 +83,6 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
         initPerpetualMint();
 
         perpetualMint = IPerpetualMintTest(address(l2CoreDiamond));
-
-        boredApeYachtClubTokenIds[0] = 101;
-        boredApeYachtClubTokenIds[1] = 102;
 
         parallelAlphaTokenIds[0] = 10951;
         parallelAlphaTokenIds[1] = 11022;

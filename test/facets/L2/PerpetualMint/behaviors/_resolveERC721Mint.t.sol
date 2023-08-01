@@ -62,7 +62,7 @@ contract PerpetualMint_resolveERC721Mint is
         randomWords.push(tokenOneWinValue); // add token one win roll
 
         // set all common variables by reading directly from storage
-        expectedTokenId = boredApeYachtClubTokenIds[0];
+        expectedTokenId = BORED_APE_YACHT_CLUB_TOKEN_ID_ONE;
         totalRisk = _totalRisk(address(perpetualMint), BORED_APE_YACHT_CLUB);
         oldOwner = _escrowedERC721Owner(
             address(perpetualMint),
@@ -277,7 +277,7 @@ contract PerpetualMint_resolveERC721Mint is
             _tokenRisk(
                 address(perpetualMint),
                 BORED_APE_YACHT_CLUB,
-                boredApeYachtClubTokenIds[0]
+                BORED_APE_YACHT_CLUB_TOKEN_ID_ONE
             ) == 0
         );
     }

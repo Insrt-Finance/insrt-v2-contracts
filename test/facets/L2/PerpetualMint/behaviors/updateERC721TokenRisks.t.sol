@@ -34,7 +34,7 @@ contract PerpetualMint_updateERC721TokenRisks is
     function setUp() public override {
         super.setUp();
 
-        BAYC_ID = boredApeYachtClubTokenIds[0];
+        BAYC_ID = BORED_APE_YACHT_CLUB_TOKEN_ID_ONE;
 
         depositBoredApeYachtClubAssetsMock();
 

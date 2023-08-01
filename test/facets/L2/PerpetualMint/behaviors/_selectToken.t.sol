@@ -21,8 +21,8 @@ contract PerpetualMint_selectToken is PerpetualMintTest, L2ForkTest {
         uint64 pickingNumber = uint64(randomValue % totalRisk);
 
         uint256 expectedId = riskOne < pickingNumber
-            ? boredApeYachtClubTokenIds[1]
-            : boredApeYachtClubTokenIds[0];
+            ? BORED_APE_YACHT_CLUB_TOKEN_ID_TWO
+            : BORED_APE_YACHT_CLUB_TOKEN_ID_ONE;
 
         assert(
             perpetualMint.exposed_selectToken(

@@ -26,12 +26,12 @@ contract PerpetualMint_averageCollectionRisk is PerpetualMintTest, L2ForkTest {
         uint64 storedRiskOne = _tokenRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB,
-            boredApeYachtClubTokenIds[0]
+            BORED_APE_YACHT_CLUB_TOKEN_ID_ONE
         );
         uint64 storedRiskTwo = _tokenRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB,
-            boredApeYachtClubTokenIds[1]
+            BORED_APE_YACHT_CLUB_TOKEN_ID_TWO
         );
 
         assert(riskOne == storedRiskOne);

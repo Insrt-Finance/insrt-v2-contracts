@@ -516,7 +516,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
                         keccak256(
                             abi.encode(
                                 msg.sender, // the active ERC1155 token depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the activeERC1155Tokens storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 23 // the activeERC1155Tokens storage slot
                             )
                         )
                     )

@@ -452,7 +452,7 @@ contract L2AssetHandler_withdrawERC721Assets is
                 keccak256(
                     abi.encode(
                         BORED_APE_YACHT_CLUB, // the deposited ERC721 collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 13 // the escrowedERC721Owner mapping slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // the escrowedERC721Owner mapping slot
                     )
                 )
             )

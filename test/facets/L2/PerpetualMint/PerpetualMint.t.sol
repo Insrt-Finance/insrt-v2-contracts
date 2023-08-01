@@ -91,9 +91,6 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
 
         perpetualMint = IPerpetualMintTest(address(l2CoreDiamond));
 
-        // parallelAlphaTokenIds[0] = 10951;
-        // parallelAlphaTokenIds[1] = 11022;
-
         perpetualMint.setVRFConfig(
             Storage.VRFConfig({
                 // Arbitrum 150 GWEI keyhash

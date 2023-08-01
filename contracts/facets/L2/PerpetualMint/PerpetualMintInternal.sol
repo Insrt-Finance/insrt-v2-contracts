@@ -378,6 +378,174 @@ abstract contract PerpetualMintInternal is
         normalizedValue = value % basis;
     }
 
+    /// @notice Reactivates a set of idled ERC1155 tokens by setting their risks to the provided values
+    /// @param depositor address of depositor
+    /// @param collection address of ERC1155 collection
+    /// @param risks an array of new risks for each token
+    /// @param tokenIds an array of token ids to reactivate
+    /// @param amounts an array of token amounts to reactivate
+    function _reactivateERC1155Assets(
+        address depositor,
+        address collection,
+        uint256[] calldata risks,
+        uint256[] calldata tokenIds,
+        uint256[] calldata amounts
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        uint256 tokenIdsLength = tokenIds.length;
+
+        // ensure tokenIds, risks, and amounts arrays are the same length
+        if (
+            tokenIdsLength != risks.length || tokenIdsLength != amounts.length
+        ) {
+            revert ArrayLengthMismatch();
+        }
+
+        // ensure collection is ERC1155
+        if (l.collectionType[collection] != AssetType.ERC1155) {
+            revert CollectionTypeMismatch();
+        }
+
+        // update the depositor's collection earnings
+        _updateDepositorEarnings(depositor, collection);
+
+        // iterate over the token ids
+        for (uint256 i; i < tokenIdsLength; ++i) {
+            _reactivateSingleERC1155Asset(
+                l,
+                depositor,
+                collection,
+                tokenIds[i],
+                amounts[i],
+                risks[i]
+            );
+        }
+
+        // add the collection to the set of active collections
+        l.activeCollections.add(collection);
+
+        emit ERC1155AssetsReactivated(
+            depositor,
+            collection,
+            risks,
+            tokenIds,
+            amounts
+        );
+    }
+
+    /// @notice Reactivates a single idled ERC1155 token by setting its risk to the provided value
+    /// @param storageLayout the PerpetualMint storage layout
+    /// @param depositor address of depositor
+    /// @param collection address of ERC1155 collection
+    /// @param tokenId token id to reactivate
+    /// @param amount token amount to reactivate
+    /// @param risk new risk value for the token
+    function _reactivateSingleERC1155Asset(
+        Storage.Layout storage storageLayout,
+        address depositor,
+        address collection,
+        uint256 tokenId,
+        uint256 amount,
+        uint256 risk
+    ) internal {
+        // If the sender does not have any ERC1155 tokens of the specified ID available to reactivate, revert the transaction
+        if (
+            storageLayout.inactiveERC1155Tokens[msg.sender][collection][
+                tokenId
+            ] == 0
+        ) {
+            revert OnlyEscrowedTokenOwner();
+        }
+
+        // ensure the new risk is within the BASIS range
+        _enforceBasis(risk);
+
+        // ensure the new risk is greater than zero
+        _enforceNonZeroRisk(risk);
+
+        // get the old risk value for the token
+        uint256 oldRisk = storageLayout.depositorTokenRisk[depositor][
+            collection
+        ][tokenId];
+
+        uint256 riskChange;
+
+        // If the new risk is greater than the old risk, calculate the change in risk and
+        // update the token risk, total depositor risk, and total risk
+        if (risk > oldRisk) {
+            riskChange =
+                (risk - oldRisk) *
+                storageLayout.activeERC1155Tokens[depositor][collection][
+                    tokenId
+                ] +
+                risk *
+                amount;
+
+            storageLayout.tokenRisk[collection][tokenId] += riskChange;
+
+            storageLayout.totalDepositorRisk[depositor][
+                collection
+            ] += riskChange;
+
+            storageLayout.totalRisk[collection] += riskChange;
+        } else {
+            // Otherwise, calculate the change in active and inactive token risks
+            // and adjust the token risk, total depositor risk, and total risk accordingly
+            uint256 activeTokenRiskChange = (oldRisk - risk) *
+                storageLayout.activeERC1155Tokens[depositor][collection][
+                    tokenId
+                ];
+
+            uint256 inactiveTokenRiskChange = risk * amount;
+
+            if (activeTokenRiskChange > inactiveTokenRiskChange) {
+                riskChange = activeTokenRiskChange - inactiveTokenRiskChange;
+
+                storageLayout.tokenRisk[collection][tokenId] -= riskChange;
+
+                storageLayout.totalDepositorRisk[depositor][
+                    collection
+                ] -= riskChange;
+
+                storageLayout.totalRisk[collection] -= riskChange;
+            } else {
+                riskChange = inactiveTokenRiskChange - activeTokenRiskChange;
+
+                storageLayout.tokenRisk[collection][tokenId] += riskChange;
+
+                storageLayout.totalDepositorRisk[depositor][
+                    collection
+                ] += riskChange;
+
+                storageLayout.totalRisk[collection] += riskChange;
+            }
+        }
+
+        // add the depositor to the set of active owners for the token ID in the collection
+        storageLayout.activeERC1155Owners[collection][tokenId].add(depositor);
+
+        // update the amount of active ERC1155 tokens for the depositor and the token ID in the collection
+        storageLayout.activeERC1155Tokens[depositor][collection][
+            tokenId
+        ] += amount;
+
+        // add the token ID to the set of active token IDs in the collection
+        storageLayout.activeTokenIds[collection].add(tokenId);
+
+        // set the new risk for the depositor and the token ID in the collection
+        // currently for ERC1155 tokens, the risk is always the same for all token IDs in the collection
+        storageLayout.depositorTokenRisk[depositor][collection][tokenId] = risk;
+
+        // subtract the amount of inactive ERC1155 tokens for the depositor and the token ID in the collection
+        storageLayout.inactiveERC1155Tokens[depositor][collection][
+            tokenId
+        ] -= amount;
+
+        // update the total number of active tokens in the collection
+        storageLayout.totalActiveTokens[collection] += amount;
+    }
+
     /// @notice Reactivates a set of idled ERC721 tokens by setting their risks to the provided values
     /// @param depositor address of depositor
     /// @param collection address of ERC721 collection

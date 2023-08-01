@@ -23,8 +23,6 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     using stdStorage for StdStorage;
 
     IPerpetualMintTest public perpetualMint;
-    IERC1155 public parallelAlpha;
-    IERC721 public boredApeYachtClub;
 
     //denominator used in percentage calculations
     uint32 internal constant BASIS = 1000000000;
@@ -36,6 +34,14 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     //Ethereum mainnet Bored Ape Yacht Club contract address.
     address internal constant BORED_APE_YACHT_CLUB =
         0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D;
+
+    // Token Ids used of Bored Ape Yacht Club collection
+    uint256 BORED_APE_YACHT_CLUB_TOKEN_ID_ONE = 101;
+    uint256 BORED_APE_YACHT_CLUB_TOKEN_ID_TWO = 102;
+
+    // Token Ids used of Parallel Alpha collection
+    uint256 PARALLEL_ALPHA_TOKEN_ID_ONE = 10951;
+    uint256 PARALLEL_ALPHA_TOKEN_ID_TWO = 11022;
 
     uint256[] internal boredApeYachtClubTokenIds = new uint256[](2);
 
@@ -57,6 +63,21 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     uint64 internal constant riskTwo = 800; // for BAYC
     uint64 internal constant riskThree = 100; //for parallelAlpha
 
+    /// @dev Dummy trusted remote test path.
+    bytes internal TEST_PATH =
+        bytes.concat(bytes20(vm.addr(1234)), bytes20(vm.addr(5678)));
+
+    /// @dev Dummy test nonce value.
+    uint64 internal constant TEST_NONCE = 0;
+
+    /// @dev The LayerZero proprietary chain ID for setting Ethereum mainnet as the destination blockchain.
+    uint16 internal constant DESTINATION_LAYER_ZERO_CHAIN_ID = 101;
+
+    uint64[] internal depositorOneBAYCRisks;
+    uint64[] internal depositorTwoBAYCRisks;
+    uint256[] internal depositorOneBAYCIds;
+    uint256[] internal depositorTwoBAYCIds;
+
     /// @dev sets up PerpetualMint for testing
     function setUp() public virtual override {
         super.setUp();
@@ -64,8 +85,6 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
         initPerpetualMint();
 
         perpetualMint = IPerpetualMintTest(address(l2CoreDiamond));
-        boredApeYachtClub = IERC721(BORED_APE_YACHT_CLUB);
-        parallelAlpha = IERC1155(PARALLEL_ALPHA);
 
         boredApeYachtClubTokenIds[0] = 101;
         boredApeYachtClubTokenIds[1] = 102;
@@ -121,21 +140,41 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     }
 
     /// @dev deposits bored ape tokens from depositors into the PerpetualMint contracts
+    /// using the L2AssetHandlerMock facet logic
     function depositBoredApeYachtClubAssetsMock() internal {
-        vm.prank(depositorOne);
-        perpetualMint.depositAsset(
+        depositorOneBAYCRisks.push(riskOne);
+        depositorTwoBAYCRisks.push(riskTwo);
+        depositorOneBAYCIds.push(BORED_APE_YACHT_CLUB_TOKEN_ID_ONE);
+        depositorTwoBAYCIds.push(BORED_APE_YACHT_CLUB_TOKEN_ID_TWO);
+
+        bytes memory depositOneData = abi.encode(
+            AssetType.ERC721,
+            depositorOne,
             BORED_APE_YACHT_CLUB,
-            boredApeYachtClubTokenIds[0],
-            1,
-            riskOne
+            depositorOneBAYCRisks,
+            depositorOneBAYCIds
         );
 
-        vm.prank(depositorTwo);
-        perpetualMint.depositAsset(
+        bytes memory depositTwoData = abi.encode(
+            AssetType.ERC721,
+            depositorTwo,
             BORED_APE_YACHT_CLUB,
-            boredApeYachtClubTokenIds[1],
-            1,
-            riskTwo
+            depositorTwoBAYCRisks,
+            depositorTwoBAYCIds
+        );
+
+        perpetualMint.mock_HandleLayerZeroMessage(
+            DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
+            TEST_PATH, // would be the expected path in production, here this is a dummy value
+            TEST_NONCE, // dummy nonce value
+            depositOneData
+        );
+
+        perpetualMint.mock_HandleLayerZeroMessage(
+            DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
+            TEST_PATH, // would be the expected path in production, here this is a dummy value
+            TEST_NONCE, // dummy nonce value
+            depositTwoData
         );
     }
 

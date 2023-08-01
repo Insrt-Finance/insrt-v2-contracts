@@ -378,6 +378,78 @@ abstract contract PerpetualMintInternal is
         normalizedValue = value % basis;
     }
 
+    /// @notice Reactivates a set of idled ERC721 tokens by setting their risks to the provided values
+    /// @param depositor address of depositor
+    /// @param collection address of ERC721 collection
+    /// @param risks an array of new risks for each token
+    /// @param tokenIds an array of token ids
+    function _reactivateERC721Assets(
+        address depositor,
+        address collection,
+        uint256[] calldata risks,
+        uint256[] calldata tokenIds
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        uint256 numberOfTokens = tokenIds.length;
+
+        // ensure tokenIds and risks arrays are the same length
+        if (numberOfTokens != risks.length) {
+            revert ArrayLengthMismatch();
+        }
+
+        // ensure collection is ERC721
+        if (l.collectionType[collection] != AssetType.ERC721) {
+            revert CollectionTypeMismatch();
+        }
+
+        // update the depositor's collection earnings
+        _updateDepositorEarnings(depositor, collection);
+
+        // iterate over the token ids
+        for (uint256 i; i < numberOfTokens; ++i) {
+            // ensure the depositor owns the token
+            _enforceERC721Ownership(l, depositor, collection, tokenIds[i]);
+
+            // ensure the new risk is within the BASIS range
+            _enforceBasis(risks[i]);
+
+            // ensure the new risk is non-zero
+            _enforceNonZeroRisk(risks[i]);
+
+            // ensure the specified token is actually inactive & idled
+            if (
+                l.tokenRisk[collection][tokenIds[i]] != 0 ||
+                l.activeTokenIds[collection].contains(tokenIds[i])
+            ) {
+                revert TokenAlreadyActive();
+            }
+
+            // set the new token risk
+            l.tokenRisk[collection][tokenIds[i]] = risks[i];
+
+            // update the global collection risk
+            l.totalRisk[collection] += risks[i];
+
+            // add the token to the active token list
+            l.activeTokenIds[collection].add(tokenIds[i]);
+
+            // update the depositor's total risk for the collection
+            l.totalDepositorRisk[depositor][collection] += risks[i];
+        }
+
+        // update the global active token count for the collection
+        l.totalActiveTokens[collection] += numberOfTokens;
+
+        // update the depositor's active token count for the collection
+        l.activeTokens[depositor][collection] += numberOfTokens;
+
+        // update the depositor's inactive token count for the collection
+        l.inactiveTokens[depositor][collection] -= numberOfTokens;
+
+        emit ERC721AssetsReactivated(depositor, collection, risks, tokenIds);
+    }
+
     /// @notice requests random values from Chainlink VRF
     /// @param minter address calling this function
     /// @param collection address of collection to attempt mint for

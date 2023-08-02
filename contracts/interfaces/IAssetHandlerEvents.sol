@@ -14,7 +14,7 @@ interface IAssetHandlerEvents {
     event ERC1155AssetsDeposited(
         address indexed depositor,
         address indexed collection,
-        uint64[] risks,
+        uint256[] risks,
         uint256[] tokenIds,
         uint256[] amounts
     );
@@ -39,7 +39,7 @@ interface IAssetHandlerEvents {
     event ERC721AssetsDeposited(
         address indexed depositor,
         address indexed collection,
-        uint64[] risks,
+        uint256[] risks,
         uint256[] tokenIds
     );
 

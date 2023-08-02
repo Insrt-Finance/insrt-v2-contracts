@@ -18,7 +18,7 @@ library PayloadEncoder {
     function encodeDepositERC1155AssetsPayload(
         address depositor,
         address collection,
-        uint64[] calldata risks,
+        uint256[] calldata risks,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts
     ) internal pure returns (bytes memory payload) {
@@ -42,7 +42,7 @@ library PayloadEncoder {
     function encodeDepositERC721AssetsPayload(
         address depositor,
         address collection,
-        uint64[] calldata risks,
+        uint256[] calldata risks,
         uint256[] calldata tokenIds
     ) internal pure returns (bytes memory payload) {
         // Pack the parameters into a dynamically-sized byte array

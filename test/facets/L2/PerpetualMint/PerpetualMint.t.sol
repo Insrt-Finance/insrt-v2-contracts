@@ -12,7 +12,7 @@ import { AssetType } from "../../../../contracts/enums/AssetType.sol";
 import { PerpetualMintStorage as Storage } from "../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 import { L2CoreTest } from "../../../diamonds/L2/Core.t.sol";
 import { StorageRead } from "../common/StorageRead.t.sol";
-import { IPerpetualMintTest } from "./IPerpetualMintTest.t.sol";
+import { IPerpetualMintTest } from "./IPerpetualMintTest.sol";
 import { PerpetualMintHelper } from "./PerpetualMintHelper.t.sol";
 
 /// @title PerpetualMintTest

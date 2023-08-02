@@ -323,17 +323,13 @@ abstract contract PerpetualMintInternal is
                 tokenId
             ];
 
-            uint256 riskChange = uint256(amount) *
+            uint256 riskChange = amount *
                 l.depositorTokenRisk[depositor][collection][tokenId];
             l.totalRisk[collection] -= riskChange;
             l.totalActiveTokens[collection] -= amount;
             l.totalDepositorRisk[depositor][collection] -= riskChange;
-            l.activeERC1155Tokens[depositor][collection][tokenId] -= uint256(
-                amount
-            );
-            l.inactiveERC1155Tokens[depositor][collection][tokenId] += uint256(
-                amount
-            );
+            l.activeERC1155Tokens[depositor][collection][tokenId] -= amount;
+            l.inactiveERC1155Tokens[depositor][collection][tokenId] += amount;
 
             if (amount == activeTokens) {
                 l.depositorTokenRisk[depositor][collection][tokenId] = 0;
@@ -617,7 +613,7 @@ abstract contract PerpetualMintInternal is
                 depositor,
                 collection,
                 tokenIds[i],
-                uint256(amounts[i]),
+                amounts[i],
                 risks[i]
             );
         }

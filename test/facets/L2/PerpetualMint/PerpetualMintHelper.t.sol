@@ -37,7 +37,7 @@ contract PerpetualMintHelper {
         returns (ISolidStateDiamond.FacetCut[] memory)
     {
         bytes4[] memory mintingSelectors = new bytes4[](20);
-        bytes4[] memory depositSelectors = new bytes4[](1);
+        bytes4[] memory l2AssetHandlerSelectors = new bytes4[](1);
 
         // map the function selectors to their respective interfaces
         mintingSelectors[0] = IPerpetualMint.attemptMint.selector;

@@ -68,7 +68,7 @@ abstract contract PerpetualMintInternal is
         address to,
         address collection,
         uint256 tokenId,
-        uint64 tokenRisk
+        uint256 tokenRisk
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
@@ -104,7 +104,7 @@ abstract contract PerpetualMintInternal is
         address to,
         address collection,
         uint256 tokenId,
-        uint64 tokenRisk
+        uint256 tokenRisk
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
@@ -167,37 +167,9 @@ abstract contract PerpetualMintInternal is
     /// @return risk value of collection-wide risk
     function _averageCollectionRisk(
         address collection
-    ) internal view returns (uint128 risk) {
+    ) internal view returns (uint256 risk) {
         Storage.Layout storage l = Storage.layout();
-        risk =
-            l.totalRisk[collection] /
-            uint128(l.totalActiveTokens[collection]);
-    }
-
-    /// @notice splits a uint128 value into 2 uint64 values
-    /// @param value uint128 value
-    /// @return chunks array of 2 uint64 values
-    function _chunk128to64(
-        uint128 value
-    ) internal pure returns (uint64[2] memory chunks) {
-        unchecked {
-            for (uint64 i = 0; i < 2; ++i) {
-                chunks[i] = uint64(value >> (i * 64));
-            }
-        }
-    }
-
-    /// @notice splits a uint256 value into 2 uint128 values
-    /// @param value uint256 value
-    /// @return chunks array of 2 uint128 values
-    function _chunk256to128(
-        uint256 value
-    ) internal pure returns (uint128[2] memory chunks) {
-        unchecked {
-            for (uint256 i = 0; i < 2; ++i) {
-                chunks[i] = uint128(value >> (i * 128));
-            }
-        }
+        risk = l.totalRisk[collection] / l.totalActiveTokens[collection];
     }
 
     /// @notice claims all earnings across collections of a depositor
@@ -231,7 +203,7 @@ abstract contract PerpetualMintInternal is
 
     /// @notice enforces that a value does not exceed the BASIS
     /// @param value value to check
-    function _enforceBasis(uint64 value) internal pure {
+    function _enforceBasis(uint256 value) internal pure {
         if (value > BASIS) {
             revert BasisExceeded();
         }
@@ -276,7 +248,7 @@ abstract contract PerpetualMintInternal is
 
     /// @notice enforces that a risk value is non-zero
     /// @param risk value to check
-    function _enforceNonZeroRisk(uint64 risk) internal pure {
+    function _enforceNonZeroRisk(uint256 risk) internal pure {
         if (risk == 0) {
             revert TokenRiskMustBeNonZero();
         }
@@ -347,19 +319,19 @@ abstract contract PerpetualMintInternal is
 
             _enforceERC1155Ownership(l, depositor, collection, tokenId);
 
-            uint64 activeTokens = l.activeERC1155Tokens[depositor][collection][
+            uint256 activeTokens = l.activeERC1155Tokens[depositor][collection][
                 tokenId
             ];
 
-            uint64 riskChange = uint64(amount) *
+            uint256 riskChange = uint256(amount) *
                 l.depositorTokenRisk[depositor][collection][tokenId];
             l.totalRisk[collection] -= riskChange;
             l.totalActiveTokens[collection] -= amount;
             l.totalDepositorRisk[depositor][collection] -= riskChange;
-            l.activeERC1155Tokens[depositor][collection][tokenId] -= uint64(
+            l.activeERC1155Tokens[depositor][collection][tokenId] -= uint256(
                 amount
             );
-            l.inactiveERC1155Tokens[depositor][collection][tokenId] += uint64(
+            l.inactiveERC1155Tokens[depositor][collection][tokenId] += uint256(
                 amount
             );
 
@@ -388,7 +360,7 @@ abstract contract PerpetualMintInternal is
             uint256 tokenId = tokenIds[i];
             _enforceERC721Ownership(l, depositor, collection, tokenId);
 
-            uint64 oldRisk = l.tokenRisk[collection][tokenId];
+            uint256 oldRisk = l.tokenRisk[collection][tokenId];
 
             l.totalRisk[collection] -= oldRisk;
             l.activeTokenIds[collection].remove(tokenId);
@@ -404,9 +376,9 @@ abstract contract PerpetualMintInternal is
     /// @param value value to normalize
     /// @return normalizedValue value after normalization
     function _normalizeValue(
-        uint128 value,
-        uint128 basis
-    ) internal pure returns (uint128 normalizedValue) {
+        uint256 value,
+        uint256 basis
+    ) internal pure returns (uint256 normalizedValue) {
         normalizedValue = value % basis;
     }
 
@@ -444,10 +416,8 @@ abstract contract PerpetualMintInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        uint128[2] memory randomValues = _chunk256to128(randomWords[0]);
-
         bool result = _averageCollectionRisk(collection) >
-            _normalizeValue(uint128(randomValues[0]), BASIS);
+            _normalizeValue(randomWords[0], BASIS);
 
         //TODO: update based on consolation spec
         if (!result) {
@@ -456,14 +426,12 @@ abstract contract PerpetualMintInternal is
         }
 
         if (result) {
-            uint64[2] memory randomValues64 = _chunk128to64(randomValues[1]);
-
-            uint256 tokenId = _selectToken(collection, randomValues64[0]);
+            uint256 tokenId = _selectToken(collection, randomWords[1]);
 
             address oldOwner = _selectERC1155Owner(
                 collection,
                 tokenId,
-                randomValues64[1]
+                randomWords[2]
             );
 
             _assignEscrowedERC1155Asset(
@@ -489,10 +457,8 @@ abstract contract PerpetualMintInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        uint128[2] memory randomValues = _chunk256to128(randomWords[0]);
-
         bool result = _averageCollectionRisk(collection) >
-            _normalizeValue(randomValues[0], BASIS);
+            _normalizeValue(randomWords[0], BASIS);
 
         //TODO: update based on consolation spec
         if (!result) {
@@ -501,7 +467,7 @@ abstract contract PerpetualMintInternal is
         }
 
         if (result) {
-            uint256 tokenId = _selectToken(collection, randomValues[1]);
+            uint256 tokenId = _selectToken(collection, randomWords[1]);
 
             _assignEscrowedERC721Asset(
                 l.escrowedERC721Owner[collection][tokenId],
@@ -523,7 +489,7 @@ abstract contract PerpetualMintInternal is
     function _selectERC1155Owner(
         address collection,
         uint256 tokenId,
-        uint64 randomValue
+        uint256 randomValue
     ) internal view returns (address owner) {
         Storage.Layout storage l = Storage.layout();
 
@@ -532,8 +498,9 @@ abstract contract PerpetualMintInternal is
         ][tokenId];
 
         uint256 tokenIndex;
-        uint64 cumulativeRisk;
-        uint64 normalizedValue = randomValue % l.tokenRisk[collection][tokenId];
+        uint256 cumulativeRisk;
+        uint256 normalizedValue = randomValue %
+            l.tokenRisk[collection][tokenId];
 
         /// @dev identifies the owner index at which the the cumulative risk is less than
         /// the normalized value, in order to select the owner at the index
@@ -552,15 +519,15 @@ abstract contract PerpetualMintInternal is
     /// @return tokenId id of won token
     function _selectToken(
         address collection,
-        uint128 randomValue
+        uint256 randomValue
     ) internal view returns (uint256 tokenId) {
         Storage.Layout storage l = Storage.layout();
 
         EnumerableSet.UintSet storage tokenIds = l.activeTokenIds[collection];
 
         uint256 tokenIndex;
-        uint64 cumulativeRisk;
-        uint64 normalizedValue = uint64(randomValue % l.totalRisk[collection]);
+        uint256 cumulativeRisk;
+        uint256 normalizedValue = randomValue % l.totalRisk[collection];
 
         /// @dev identifies the token index at which the the cumulative risk is less than
         /// the normalized value, in order to select the tokenId at the index
@@ -629,7 +596,7 @@ abstract contract PerpetualMintInternal is
         address collection,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts,
-        uint64[] calldata risks
+        uint256[] calldata risks
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
@@ -650,7 +617,7 @@ abstract contract PerpetualMintInternal is
                 depositor,
                 collection,
                 tokenIds[i],
-                uint64(amounts[i]),
+                uint256(amounts[i]),
                 risks[i]
             );
         }
@@ -665,7 +632,7 @@ abstract contract PerpetualMintInternal is
         address depositor,
         address collection,
         uint256[] calldata tokenIds,
-        uint64[] calldata risks
+        uint256[] calldata risks
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
@@ -681,7 +648,7 @@ abstract contract PerpetualMintInternal is
 
         for (uint256 i; i < tokenIds.length; ++i) {
             uint256 tokenId = tokenIds[i];
-            uint64 risk = risks[i];
+            uint256 risk = risks[i];
 
             if (risk > BASIS) {
                 revert BasisExceeded();
@@ -695,10 +662,10 @@ abstract contract PerpetualMintInternal is
                 revert OnlyEscrowedTokenOwner();
             }
 
-            uint64 oldRisk = l.tokenRisk[collection][tokenId];
+            uint256 oldRisk = l.tokenRisk[collection][tokenId];
 
             l.tokenRisk[collection][tokenId] = risk;
-            uint64 riskChange;
+            uint256 riskChange;
 
             if (risk > oldRisk) {
                 riskChange = risk - oldRisk;
@@ -722,8 +689,8 @@ abstract contract PerpetualMintInternal is
         address depositor,
         address collection,
         uint256 tokenId,
-        uint64 amount,
-        uint64 risk
+        uint256 amount,
+        uint256 risk
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
@@ -731,8 +698,8 @@ abstract contract PerpetualMintInternal is
         _enforceNonZeroRisk(risk);
         _enforceERC1155Ownership(l, depositor, collection, tokenId);
 
-        uint64 oldRisk = l.depositorTokenRisk[depositor][collection][tokenId];
-        uint64 riskChange;
+        uint256 oldRisk = l.depositorTokenRisk[depositor][collection][tokenId];
+        uint256 riskChange;
 
         if (risk > oldRisk) {
             riskChange =
@@ -743,9 +710,9 @@ abstract contract PerpetualMintInternal is
             l.totalDepositorRisk[depositor][collection] += riskChange;
             l.tokenRisk[collection][tokenId] += riskChange;
         } else {
-            uint64 activeTokenRiskChange = (oldRisk - risk) *
+            uint256 activeTokenRiskChange = (oldRisk - risk) *
                 l.activeERC1155Tokens[depositor][collection][tokenId];
-            uint64 inactiveTokenRiskChange = risk * amount;
+            uint256 inactiveTokenRiskChange = risk * amount;
 
             // determine whether overall risk increases or decreases - determined
             // from whether enough inactive tokens are activated to exceed the decrease

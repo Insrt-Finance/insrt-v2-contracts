@@ -3,7 +3,7 @@
 pragma solidity 0.8.21;
 
 import { PerpetualMint } from "../../../../contracts/facets/L2/PerpetualMint/PerpetualMint.sol";
-import { IPerpetualMintHarness } from "./IPerpetualMintHarness.t.sol";
+import { IPerpetualMintHarness } from "./IPerpetualMintHarness.sol";
 
 /// @title PerpetualMintHarness
 /// @dev exposes internal PerpetualMint internal functions for testing

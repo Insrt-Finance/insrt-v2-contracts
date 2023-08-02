@@ -8,7 +8,7 @@ import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidSt
 import { IPerpetualMint } from "../../../../contracts/facets/L2/PerpetualMint/IPerpetualMint.sol";
 import { PerpetualMintStorage as Storage } from "../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 import { L2AssetHandlerMock } from "../../../mocks/L2AssetHandlerMock.t.sol";
-import { IPerpetualMintHarness } from "./IPerpetualMintHarness.t.sol";
+import { IPerpetualMintHarness } from "./IPerpetualMintHarness.sol";
 import { PerpetualMintHarness } from "./PerpetualMintHarness.t.sol";
 
 /// @title PerpetualMintHelper

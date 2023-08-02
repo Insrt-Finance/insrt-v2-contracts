@@ -37,7 +37,7 @@ abstract contract L2AssetHandlerTest is IAssetHandlerEvents, L2CoreTest {
     uint16 internal constant DESTINATION_LAYER_ZERO_CHAIN_ID = 101;
 
     /// @dev The test risk settings for deposited assets.
-    uint64[] internal testRisks = new uint64[](1);
+    uint256[] internal testRisks = new uint256[](1);
 
     uint256[] internal boredApeYachtClubTokenIds = new uint256[](1);
 

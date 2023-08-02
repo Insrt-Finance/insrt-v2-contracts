@@ -27,7 +27,7 @@ interface IPerpetualMint {
     /// @return risk value of collection-wide risk
     function averageCollectionRisk(
         address collection
-    ) external view returns (uint128 risk);
+    ) external view returns (uint256 risk);
 
     /// @notice claims all earnings across collections of the msg.sender
     function claimAllEarnings() external;
@@ -83,7 +83,7 @@ interface IPerpetualMint {
         address collection,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts,
-        uint64[] calldata risks
+        uint256[] calldata risks
     ) external;
 
     /// @notice updates the risk associated with an escrowed ERC721 tokens of a depositor
@@ -93,6 +93,6 @@ interface IPerpetualMint {
     function updateERC721TokenRisks(
         address collection,
         uint256[] calldata tokenIds,
-        uint64[] calldata risks
+        uint256[] calldata risks
     ) external;
 }

@@ -37,7 +37,7 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
     /// @inheritdoc IPerpetualMint
     function averageCollectionRisk(
         address collection
-    ) external view returns (uint128 risk) {
+    ) external view returns (uint256 risk) {
         risk = _averageCollectionRisk(collection);
     }
 
@@ -96,7 +96,7 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
         address collection,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts,
-        uint64[] calldata risks
+        uint256[] calldata risks
     ) external {
         _updateERC1155TokenRisks(
             msg.sender,
@@ -111,7 +111,7 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
     function updateERC721TokenRisks(
         address collection,
         uint256[] calldata tokenIds,
-        uint64[] calldata risks
+        uint256[] calldata risks
     ) external {
         _updateERC721TokenRisks(msg.sender, collection, tokenIds, risks);
     }

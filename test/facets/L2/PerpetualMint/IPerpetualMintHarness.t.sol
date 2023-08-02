@@ -11,24 +11,14 @@ interface IPerpetualMintHarness {
         address to,
         address collection,
         uint256 tokenId,
-        uint64 tokenRisk
+        uint256 tokenRisk
     ) external;
-
-    /// @dev exposes _chunk128to64
-    function exposed_chunk128to64(
-        uint128 value
-    ) external pure returns (uint64[2] memory chunks);
-
-    /// @dev exposes _chunk256to128
-    function exposed_chunk256to128(
-        uint256 value
-    ) external pure returns (uint128[2] memory chunks);
 
     /// @dev exposes _normalizeValue
     function exposed_normalizeValue(
-        uint128 value,
-        uint128 basis
-    ) external pure returns (uint128 normalizedValue);
+        uint256 value,
+        uint256 basis
+    ) external pure returns (uint256 normalizedValue);
 
     /// @dev exposes _resolveERC1155Mint
     function exposed_resolveERC1155Mint(
@@ -48,13 +38,13 @@ interface IPerpetualMintHarness {
     function exposed_selectERC1155Owner(
         address collection,
         uint256 tokenId,
-        uint64 randomValue
+        uint256 randomValue
     ) external view returns (address owner);
 
     /// @dev exposes _selectToken
     function exposed_selectToken(
         address collection,
-        uint128 randomValue
+        uint256 randomValue
     ) external view returns (uint256 tokenId);
 
     /// @dev exposes _updateDepositorEarnings

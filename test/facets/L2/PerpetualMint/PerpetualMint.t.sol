@@ -16,7 +16,7 @@ import { IPerpetualMintTest } from "./IPerpetualMintTest.t.sol";
 import { PerpetualMintHelper } from "./PerpetualMintHelper.t.sol";
 
 /// @title PerpetualMintTest
-/// @dev PerpetualMintTest helper contract. Configures PerpetualMint and L2AssetHandlerMock as facets of L1Core test.
+/// @dev PerpetualMintTest helper contract. Configures PerpetualMint and L2AssetHandlerMock as facets of L2Core test.
 /// @dev Should functoin identically across all forks given appropriate Chainlink VRF details are set.
 abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     using stdStorage for StdStorage;
@@ -68,17 +68,25 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     /// @dev The LayerZero proprietary chain ID for setting Ethereum mainnet as the destination blockchain.
     uint16 internal constant DESTINATION_LAYER_ZERO_CHAIN_ID = 101;
 
-    /// @dev BAYC depositor data holders
+    /// @dev BAYC depositor test data holders
+    /// @dev BAYC risks for tokens that depositorOne and depositorTwo will deposit respectively
     uint64[] internal depositorOneBAYCRisks;
     uint64[] internal depositorTwoBAYCRisks;
+
+    /// @dev BAYC tokenIds for tokens that depositorOne and depositorTwo will deposit respectively
     uint256[] internal depositorOneBAYCIds;
     uint256[] internal depositorTwoBAYCIds;
 
-    /// @dev Parallel Alpha depositor data holders
+    /// @dev Parallel Alpha depositor test data holders
+    /// @dev Parallel Alpha token risks for tokens thatn depositorOne and depositorTwo will deposit respectively
     uint64[] internal depositorOneParallelAlphaRisks;
     uint64[] internal depositorTwoParallelAlphaRisks;
+
+    /// @dev Parallel Alpha token ids for tokens thatn depositorOne and depositorTwo will deposit respectively
     uint256[] internal depositorOneParallelAlphaTokenIds;
     uint256[] internal depositorTwoParallelAlphaTokenIds;
+
+    /// @dev Parallel Alpha token amounts for tokens thatn depositorOne and depositorTwo will deposit respectively
     uint256[] internal depositorOneParallelAlphaAmounts;
     uint256[] internal depositorTwoParallelAlphaAmounts;
 
@@ -127,7 +135,7 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
         );
     }
 
-    /// @dev initialzies PerpetualMint and L2AssetHandlerMock as facets by executing a diamond cut on L1CoreDiamond.
+    /// @dev initialzies PerpetualMint and L2AssetHandlerMock as facets by executing a diamond cut on L2CoreDiamond.
     function initPerpetualMint() internal {
         PerpetualMintHelper perpetualMintHelper = new PerpetualMintHelper();
 
@@ -140,8 +148,11 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     /// @dev deposits bored ape tokens from depositors into the PerpetualMint contracts
     /// using the L2AssetHandlerMock facet logic
     function depositBoredApeYachtClubAssetsMock() internal {
+        // add token risks to depositor risk arrays
         depositorOneBAYCRisks.push(riskOne);
         depositorTwoBAYCRisks.push(riskTwo);
+
+        // add token ids to depositor token arrays
         depositorOneBAYCIds.push(BORED_APE_YACHT_CLUB_TOKEN_ID_ONE);
         depositorTwoBAYCIds.push(BORED_APE_YACHT_CLUB_TOKEN_ID_TWO);
 
@@ -178,15 +189,19 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
 
     /// @dev deposits bong bear tokens into the PerpetualMint contracts
     function depositParallelAlphaAssetsMock() internal {
-        // set up encoded deposit data for depositor one
+        // each encoded deposit is done in sequence: risk, tokenId, amount, as arrays need to be ordered
+        // set up encoded deposit array data for depositorOne
+        // depositorOne deposits two different tokenIds, with the same amount and same risk
         depositorOneParallelAlphaRisks.push(riskThree);
         depositorOneParallelAlphaTokenIds.push(PARALLEL_ALPHA_TOKEN_ID_ONE);
         depositorOneParallelAlphaAmounts.push(parallelAlphaTokenAmount);
+
         depositorOneParallelAlphaRisks.push(riskThree);
         depositorOneParallelAlphaTokenIds.push(PARALLEL_ALPHA_TOKEN_ID_TWO);
         depositorOneParallelAlphaAmounts.push(parallelAlphaTokenAmount);
 
-        // set up encoded deposit data for depositor two
+        // set up encoded deposit array data for depositorTwo
+        // // depositorOne deposits one tokenId, with the same amount and same risk as depositorOne
         depositorTwoParallelAlphaRisks.push(riskThree);
         depositorTwoParallelAlphaTokenIds.push(PARALLEL_ALPHA_TOKEN_ID_ONE);
         depositorTwoParallelAlphaAmounts.push(parallelAlphaTokenAmount);

@@ -30,7 +30,7 @@ contract PerpetualMintHelper {
         l2AssetHandlerMockImplementation = new L2AssetHandlerMock();
     }
 
-    /// @dev provides the facet cuts for setting up PerpetualMint and L2AssetHandlerMock in L1CoreDiamond
+    /// @dev provides the facet cuts for setting up PerpetualMint and L2AssetHandlerMock in L2CoreDiamond
     function getFacetCuts()
         public
         view

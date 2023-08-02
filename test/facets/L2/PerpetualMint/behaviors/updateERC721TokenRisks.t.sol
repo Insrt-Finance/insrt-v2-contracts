@@ -20,7 +20,7 @@ contract PerpetualMint_updateERC721TokenRisks is
     address internal constant NON_OWNER = address(4);
     uint256 internal BAYC_ID;
     uint256[] tokenIds;
-    uint64[] risks;
+    uint256[] risks;
 
     // grab BAYC collection earnings storage slot
     bytes32 internal collectionEarningsStorageSlot =

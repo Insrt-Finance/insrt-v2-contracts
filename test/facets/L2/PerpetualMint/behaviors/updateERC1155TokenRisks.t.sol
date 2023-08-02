@@ -15,14 +15,14 @@ contract PerpetualMint_updateERC1155TokenRisks is
     L2ForkTest
 {
     uint256 internal constant COLLECTION_EARNINGS = 1 ether;
-    uint64 internal constant FAILING_RISK = 10000000000000;
-    uint64 internal constant NEW_RISK = 10000;
+    uint256 internal constant FAILING_RISK = 10000000000000;
+    uint256 internal constant NEW_RISK = 10000;
     address internal constant NON_OWNER = address(4);
     uint256 internal PARALLEL_ALPHA_ID;
     uint256[] tokenIds;
     uint256[] amounts;
     uint256[] amountsToIdle;
-    uint64[] risks;
+    uint256[] risks;
 
     // grab PARALLEL_ALPHA collection earnings storage slot
     bytes32 internal collectionEarningsStorageSlot =
@@ -118,8 +118,8 @@ contract PerpetualMint_updateERC1155TokenRisks is
     function test_updateERC1155TokenRisksUpdatesDepositorEarningsWhenTotalDepositorRiskIsNonZero()
         public
     {
-        uint64 totalRisk = _totalRisk(address(perpetualMint), PARALLEL_ALPHA);
-        uint64 totalDepositorRisk = _totalDepositorRisk(
+        uint256 totalRisk = _totalRisk(address(perpetualMint), PARALLEL_ALPHA);
+        uint256 totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA
@@ -172,19 +172,17 @@ contract PerpetualMint_updateERC1155TokenRisks is
     function test_updateERC1155TokenRisksIncreasesActiveTokensOfDepositorBySumOfInactiveTokensAmountsToBeActivatedOfEachTokenId()
         public
     {
-        uint64 oldActiveTokens;
-        uint64 tokensToActivate;
+        uint256 oldActiveTokens;
+        uint256 tokensToActivate;
 
         for (uint256 i; i < tokenIds.length; ++i) {
-            oldActiveTokens += uint64(
-                _activeERC1155Tokens(
-                    address(perpetualMint),
-                    depositorOne,
-                    PARALLEL_ALPHA,
-                    tokenIds[i]
-                )
+            oldActiveTokens += _activeERC1155Tokens(
+                address(perpetualMint),
+                depositorOne,
+                PARALLEL_ALPHA,
+                tokenIds[i]
             );
-            tokensToActivate += uint64(amounts[i]);
+            tokensToActivate += amounts[i];
         }
 
         vm.prank(depositorOne);
@@ -195,15 +193,13 @@ contract PerpetualMint_updateERC1155TokenRisks is
             risks
         );
 
-        uint64 newActiveTokens;
+        uint256 newActiveTokens;
         for (uint256 i; i < tokenIds.length; ++i) {
-            newActiveTokens += uint64(
-                _activeERC1155Tokens(
-                    address(perpetualMint),
-                    depositorOne,
-                    PARALLEL_ALPHA,
-                    tokenIds[i]
-                )
+            newActiveTokens += _activeERC1155Tokens(
+                address(perpetualMint),
+                depositorOne,
+                PARALLEL_ALPHA,
+                tokenIds[i]
             );
         }
 
@@ -216,8 +212,8 @@ contract PerpetualMint_updateERC1155TokenRisks is
         public
     {
         uint256 idsLength = tokenIds.length;
-        uint64[] memory oldActiveTokenAmounts = new uint64[](idsLength);
-        uint64[] memory oldDepositorTokenRisks = new uint64[](idsLength);
+        uint256[] memory oldActiveTokenAmounts = new uint256[](idsLength);
+        uint256[] memory oldDepositorTokenRisks = new uint256[](idsLength);
 
         for (uint256 i; i < tokenIds.length; ++i) {
             oldDepositorTokenRisks[i] = _depositorTokenRisk(
@@ -227,17 +223,15 @@ contract PerpetualMint_updateERC1155TokenRisks is
                 tokenIds[i]
             );
 
-            oldActiveTokenAmounts[i] = uint64(
-                _activeERC1155Tokens(
-                    address(perpetualMint),
-                    depositorOne,
-                    PARALLEL_ALPHA,
-                    tokenIds[i]
-                )
+            oldActiveTokenAmounts[i] = _activeERC1155Tokens(
+                address(perpetualMint),
+                depositorOne,
+                PARALLEL_ALPHA,
+                tokenIds[i]
             );
         }
 
-        uint64 oldTotalDepositorRisk = _totalDepositorRisk(
+        uint256 oldTotalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA
@@ -251,16 +245,16 @@ contract PerpetualMint_updateERC1155TokenRisks is
             risks
         );
 
-        uint64 newTotalDepositorRisk = _totalDepositorRisk(
+        uint256 newTotalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA
         );
 
-        uint64 expectedTotalRiskChange;
+        uint256 expectedTotalRiskChange;
         for (uint256 i; i < idsLength; ++i) {
             expectedTotalRiskChange +=
-                uint64(amounts[i]) *
+                amounts[i] *
                 risks[i] +
                 oldActiveTokenAmounts[i] *
                 (risks[i] - oldDepositorTokenRisks[i]);
@@ -277,8 +271,8 @@ contract PerpetualMint_updateERC1155TokenRisks is
         public
     {
         uint256 idsLength = tokenIds.length;
-        uint64[] memory oldActiveTokenAmounts = new uint64[](idsLength);
-        uint64[] memory oldDepositorTokenRisks = new uint64[](idsLength);
+        uint256[] memory oldActiveTokenAmounts = new uint256[](idsLength);
+        uint256[] memory oldDepositorTokenRisks = new uint256[](idsLength);
 
         // pick a value which is smaller than current risk and overall increases risk
         risks[0] =
@@ -298,17 +292,15 @@ contract PerpetualMint_updateERC1155TokenRisks is
                 tokenIds[i]
             );
 
-            oldActiveTokenAmounts[i] = uint64(
-                _activeERC1155Tokens(
-                    address(perpetualMint),
-                    depositorOne,
-                    PARALLEL_ALPHA,
-                    tokenIds[i]
-                )
+            oldActiveTokenAmounts[i] = _activeERC1155Tokens(
+                address(perpetualMint),
+                depositorOne,
+                PARALLEL_ALPHA,
+                tokenIds[i]
             );
         }
 
-        uint64 oldTotalDepositorRisk = _totalDepositorRisk(
+        uint256 oldTotalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA
@@ -322,18 +314,18 @@ contract PerpetualMint_updateERC1155TokenRisks is
             risks
         );
 
-        uint64 newTotalDepositorRisk = _totalDepositorRisk(
+        uint256 newTotalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA
         );
 
-        uint64 expectedTotalRiskChange;
+        uint256 expectedTotalRiskChange;
         for (uint256 i; i < idsLength; ++i) {
             // this only works because of the chosen value of risk with a given pre-state
             // could be made more general in future
             expectedTotalRiskChange +=
-                uint64(amounts[i]) *
+                amounts[i] *
                 risks[i] -
                 oldActiveTokenAmounts[i] *
                 (oldDepositorTokenRisks[i] - risks[i]);
@@ -351,8 +343,8 @@ contract PerpetualMint_updateERC1155TokenRisks is
         public
     {
         uint256 idsLength = tokenIds.length;
-        uint64[] memory oldActiveTokenAmounts = new uint64[](idsLength);
-        uint64[] memory oldDepositorTokenRisks = new uint64[](idsLength);
+        uint256[] memory oldActiveTokenAmounts = new uint256[](idsLength);
+        uint256[] memory oldDepositorTokenRisks = new uint256[](idsLength);
 
         // pick a value which is smaller than current risk and overall decreases risk
         risks[0] =
@@ -372,17 +364,15 @@ contract PerpetualMint_updateERC1155TokenRisks is
                 tokenIds[i]
             );
 
-            oldActiveTokenAmounts[i] = uint64(
-                _activeERC1155Tokens(
-                    address(perpetualMint),
-                    depositorOne,
-                    PARALLEL_ALPHA,
-                    tokenIds[i]
-                )
+            oldActiveTokenAmounts[i] = _activeERC1155Tokens(
+                address(perpetualMint),
+                depositorOne,
+                PARALLEL_ALPHA,
+                tokenIds[i]
             );
         }
 
-        uint64 oldTotalDepositorRisk = _totalDepositorRisk(
+        uint256 oldTotalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA
@@ -396,20 +386,20 @@ contract PerpetualMint_updateERC1155TokenRisks is
             risks
         );
 
-        uint64 newTotalDepositorRisk = _totalDepositorRisk(
+        uint256 newTotalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA
         );
 
-        uint64 expectedTotalRiskChange;
+        uint256 expectedTotalRiskChange;
         for (uint256 i; i < idsLength; ++i) {
             // this only works because of the chosen value of risk with a given pre-state
             // could be made more general in future
             expectedTotalRiskChange +=
                 oldActiveTokenAmounts[i] *
                 (oldDepositorTokenRisks[i] - risks[i]) -
-                uint64(amounts[i]) *
+                amounts[i] *
                 risks[i];
         }
 
@@ -425,9 +415,9 @@ contract PerpetualMint_updateERC1155TokenRisks is
         public
     {
         uint256 idsLength = tokenIds.length;
-        uint64[] memory oldTokenRisks = new uint64[](idsLength);
-        uint64[] memory oldActiveTokenAmounts = new uint64[](idsLength);
-        uint64[] memory oldDepositorTokenRisks = new uint64[](idsLength);
+        uint256[] memory oldTokenRisks = new uint256[](idsLength);
+        uint256[] memory oldActiveTokenAmounts = new uint256[](idsLength);
+        uint256[] memory oldDepositorTokenRisks = new uint256[](idsLength);
 
         for (uint256 i; i < idsLength; ++i) {
             oldTokenRisks[i] = _tokenRisk(
@@ -436,13 +426,11 @@ contract PerpetualMint_updateERC1155TokenRisks is
                 tokenIds[i]
             );
 
-            oldActiveTokenAmounts[i] = uint64(
-                _activeERC1155Tokens(
-                    address(perpetualMint),
-                    depositorOne,
-                    PARALLEL_ALPHA,
-                    tokenIds[i]
-                )
+            oldActiveTokenAmounts[i] = _activeERC1155Tokens(
+                address(perpetualMint),
+                depositorOne,
+                PARALLEL_ALPHA,
+                tokenIds[i]
             );
 
             oldDepositorTokenRisks[i] = _depositorTokenRisk(
@@ -461,7 +449,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
             risks
         );
 
-        uint64[] memory newTokenRisks = new uint64[](idsLength);
+        uint256[] memory newTokenRisks = new uint256[](idsLength);
 
         for (uint256 i; i < idsLength; ++i) {
             newTokenRisks[i] = _tokenRisk(
@@ -472,8 +460,8 @@ contract PerpetualMint_updateERC1155TokenRisks is
         }
 
         for (uint256 i; i < idsLength; ++i) {
-            uint64 expectedTokenRiskChange = risks[i] *
-                uint64(amounts[i]) +
+            uint256 expectedTokenRiskChange = risks[i] *
+                amounts[i] +
                 oldActiveTokenAmounts[i] *
                 (risks[i] - oldDepositorTokenRisks[i]);
 
@@ -489,9 +477,9 @@ contract PerpetualMint_updateERC1155TokenRisks is
         public
     {
         uint256 idsLength = tokenIds.length;
-        uint64[] memory oldTokenRisks = new uint64[](idsLength);
-        uint64[] memory oldActiveTokenAmounts = new uint64[](idsLength);
-        uint64[] memory oldDepositorTokenRisks = new uint64[](idsLength);
+        uint256[] memory oldTokenRisks = new uint256[](idsLength);
+        uint256[] memory oldActiveTokenAmounts = new uint256[](idsLength);
+        uint256[] memory oldDepositorTokenRisks = new uint256[](idsLength);
 
         // pick a value which is smaller than current risk and overall increases risk
         risks[0] =
@@ -510,13 +498,11 @@ contract PerpetualMint_updateERC1155TokenRisks is
                 tokenIds[i]
             );
 
-            oldActiveTokenAmounts[i] = uint64(
-                _activeERC1155Tokens(
-                    address(perpetualMint),
-                    depositorOne,
-                    PARALLEL_ALPHA,
-                    tokenIds[i]
-                )
+            oldActiveTokenAmounts[i] = _activeERC1155Tokens(
+                address(perpetualMint),
+                depositorOne,
+                PARALLEL_ALPHA,
+                tokenIds[i]
             );
 
             oldDepositorTokenRisks[i] = _depositorTokenRisk(
@@ -535,7 +521,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
             risks
         );
 
-        uint64[] memory newTokenRisks = new uint64[](idsLength);
+        uint256[] memory newTokenRisks = new uint256[](idsLength);
 
         for (uint256 i; i < idsLength; ++i) {
             newTokenRisks[i] = _tokenRisk(
@@ -546,10 +532,10 @@ contract PerpetualMint_updateERC1155TokenRisks is
         }
 
         for (uint256 i; i < idsLength; ++i) {
-            uint64 expectedTokenRiskChange = oldActiveTokenAmounts[i] *
+            uint256 expectedTokenRiskChange = oldActiveTokenAmounts[i] *
                 risks[i] -
                 (oldDepositorTokenRisks[i] - risks[i]) *
-                uint64(amounts[i]);
+                amounts[i];
 
             assert(
                 newTokenRisks[i] - oldTokenRisks[i] == expectedTokenRiskChange
@@ -563,9 +549,9 @@ contract PerpetualMint_updateERC1155TokenRisks is
         public
     {
         uint256 idsLength = tokenIds.length;
-        uint64[] memory oldTokenRisks = new uint64[](idsLength);
-        uint64[] memory oldActiveTokenAmounts = new uint64[](idsLength);
-        uint64[] memory oldDepositorTokenRisks = new uint64[](idsLength);
+        uint256[] memory oldTokenRisks = new uint256[](idsLength);
+        uint256[] memory oldActiveTokenAmounts = new uint256[](idsLength);
+        uint256[] memory oldDepositorTokenRisks = new uint256[](idsLength);
 
         // pick a value which is smaller than current risk and overall decreases risk
         risks[0] =
@@ -584,13 +570,11 @@ contract PerpetualMint_updateERC1155TokenRisks is
                 tokenIds[i]
             );
 
-            oldActiveTokenAmounts[i] = uint64(
-                _activeERC1155Tokens(
-                    address(perpetualMint),
-                    depositorOne,
-                    PARALLEL_ALPHA,
-                    tokenIds[i]
-                )
+            oldActiveTokenAmounts[i] = _activeERC1155Tokens(
+                address(perpetualMint),
+                depositorOne,
+                PARALLEL_ALPHA,
+                tokenIds[i]
             );
 
             oldDepositorTokenRisks[i] = _depositorTokenRisk(
@@ -609,7 +593,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
             risks
         );
 
-        uint64[] memory newTokenRisks = new uint64[](idsLength);
+        uint256[] memory newTokenRisks = new uint256[](idsLength);
 
         for (uint256 i; i < idsLength; ++i) {
             newTokenRisks[i] = _tokenRisk(
@@ -620,9 +604,9 @@ contract PerpetualMint_updateERC1155TokenRisks is
         }
 
         for (uint256 i; i < idsLength; ++i) {
-            uint64 expectedTokenRiskChange = (oldDepositorTokenRisks[i] -
+            uint256 expectedTokenRiskChange = (oldDepositorTokenRisks[i] -
                 risks[i]) *
-                uint64(amounts[i]) -
+                amounts[i] -
                 oldActiveTokenAmounts[i] *
                 risks[i];
 
@@ -663,16 +647,16 @@ contract PerpetualMint_updateERC1155TokenRisks is
     function test_updateERC1155TokenRisksReducesInactiveERC1155AmountForEachTokenIdUpdatedByAmount()
         public
     {
-        uint64[] memory oldInactiveTokenAmounts = new uint64[](tokenIds.length);
+        uint256[] memory oldInactiveTokenAmounts = new uint256[](
+            tokenIds.length
+        );
 
         for (uint256 i; i < tokenIds.length; ++i) {
-            oldInactiveTokenAmounts[i] = uint64(
-                _inactiveERC1155Tokens(
-                    address(perpetualMint),
-                    depositorOne,
-                    PARALLEL_ALPHA,
-                    tokenIds[i]
-                )
+            oldInactiveTokenAmounts[i] = _inactiveERC1155Tokens(
+                address(perpetualMint),
+                depositorOne,
+                PARALLEL_ALPHA,
+                tokenIds[i]
             );
         }
 
@@ -687,13 +671,11 @@ contract PerpetualMint_updateERC1155TokenRisks is
         for (uint256 i; i < tokenIds.length; ++i) {
             assert(
                 oldInactiveTokenAmounts[i] -
-                    uint64(
-                        _inactiveERC1155Tokens(
-                            address(perpetualMint),
-                            depositorOne,
-                            PARALLEL_ALPHA,
-                            tokenIds[i]
-                        )
+                    _inactiveERC1155Tokens(
+                        address(perpetualMint),
+                        depositorOne,
+                        PARALLEL_ALPHA,
+                        tokenIds[i]
                     ) ==
                     amounts[i]
             );

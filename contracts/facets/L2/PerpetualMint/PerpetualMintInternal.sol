@@ -650,13 +650,8 @@ abstract contract PerpetualMintInternal is
             uint256 tokenId = tokenIds[i];
             uint256 risk = risks[i];
 
-            if (risk > BASIS) {
-                revert BasisExceeded();
-            }
-
-            if (risk == 0) {
-                revert TokenRiskMustBeNonZero();
-            }
+            _enforceBasis(risk);
+            _enforceNonZeroRisk(risk);
 
             if (depositor != l.escrowedERC721Owner[collection][tokenIds[i]]) {
                 revert OnlyEscrowedTokenOwner();

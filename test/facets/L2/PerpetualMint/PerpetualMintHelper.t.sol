@@ -36,8 +36,8 @@ contract PerpetualMintHelper {
         view
         returns (ISolidStateDiamond.FacetCut[] memory)
     {
-        bytes4[] memory mintingSelectors = new bytes4[](22);
-        bytes4[] memory l2AssetHandlerSelectors = new bytes4[](1);
+        bytes4[] memory mintingSelectors = new bytes4[](20);
+        bytes4[] memory depositSelectors = new bytes4[](1);
 
         // map the function selectors to their respective interfaces
         mintingSelectors[0] = IPerpetualMint.attemptMint.selector;
@@ -66,18 +66,12 @@ contract PerpetualMintHelper {
             .exposed_selectERC1155Owner
             .selector;
         mintingSelectors[17] = IPerpetualMintHarness
-            .exposed_chunk128to64
-            .selector;
-        mintingSelectors[18] = IPerpetualMintHarness
-            .exposed_chunk256to128
-            .selector;
-        mintingSelectors[19] = IPerpetualMintHarness
             .exposed_normalizeValue
             .selector;
-        mintingSelectors[20] = IPerpetualMintHarness
+        mintingSelectors[18] = IPerpetualMintHarness
             .exposed_updateDepositorEarnings
             .selector;
-        mintingSelectors[21] = IPerpetualMintHarness
+        mintingSelectors[19] = IPerpetualMintHarness
             .exposed_assignEscrowedERC1155Asset
             .selector;
 

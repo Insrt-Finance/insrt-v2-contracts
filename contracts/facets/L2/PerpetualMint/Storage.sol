@@ -47,14 +47,14 @@ library PerpetualMintStorage {
         /// @dev price of mint attempt in ETH (native token) for a collection
         mapping(address collection => uint256 mintPrice) collectionMintPrice;
         /// @dev sum of risk of every asset in a collection
-        mapping(address collection => uint64 risk) totalRisk;
+        mapping(address collection => uint256 risk) totalRisk;
         /// @dev amount of token which may be minted for a collection
         mapping(address collection => uint256 amount) totalActiveTokens;
         /// @dev group of tokenIds which may be minted for a collection
         mapping(address collection => EnumerableSet.UintSet tokenIds) activeTokenIds;
         /// @dev sum of risk across all tokens of the same id for a collection
         /// for ERC721 collections, this is just for a single token
-        mapping(address collection => mapping(uint256 tokenId => uint64 risk)) tokenRisk;
+        mapping(address collection => mapping(uint256 tokenId => uint256 risk)) tokenRisk;
         //ERC721
         /// @dev links the current owner of an escrowed token of a collection
         /// source of truth for checking which address may change token state (withdraw, setRisk etc)
@@ -74,14 +74,14 @@ library PerpetualMintStorage {
         /// which are not able to be minted via mint attempts
         mapping(address depositor => mapping(address collection => uint256 amount)) inactiveTokens;
         /// @dev sum of risks of tokens deposited by a depositor for a collection
-        mapping(address depositor => mapping(address collection => uint64 risk)) totalDepositorRisk;
+        mapping(address depositor => mapping(address collection => uint256 risk)) totalDepositorRisk;
         /// @dev risk for a given tokenId in an ERC1155 for a depositor
         /// an implication is that even if a depositor has deposited 5 tokens of the same tokenId, each token has the same risk
-        mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint64 risk))) depositorTokenRisk;
+        mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint256 risk))) depositorTokenRisk;
         /// @dev number of tokens of particular tokenId for an ERC1155 collection of a user which are able to be minted
-        mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint64 amount))) activeERC1155Tokens;
+        mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint256 amount))) activeERC1155Tokens;
         /// @dev number of tokens of particular tokenId for an ERC1155 collection of a user which are not able to be minted
-        mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint64 amount))) inactiveERC1155Tokens;
+        mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint256 amount))) inactiveERC1155Tokens;
     }
 
     bytes32 internal constant STORAGE_SLOT =

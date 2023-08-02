@@ -24,7 +24,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
     function depositERC1155Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
-        uint64[] calldata risks,
+        uint256[] calldata risks,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts
     ) external payable {
@@ -64,7 +64,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
     function depositERC721Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
-        uint64[] calldata risks,
+        uint256[] calldata risks,
         uint256[] calldata tokenIds
     ) external payable {
         unchecked {
@@ -193,7 +193,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
     function _depositERC1155Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
-        uint64[] calldata risks,
+        uint256[] calldata risks,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts
     ) private {
@@ -221,7 +221,7 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
     function _depositERC721Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
-        uint64[] calldata risks,
+        uint256[] calldata risks,
         uint256[] calldata tokenIds
     ) private {
         _lzSend(

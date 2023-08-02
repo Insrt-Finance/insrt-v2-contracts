@@ -46,7 +46,7 @@ interface IL1AssetHandler is IAssetHandler {
     function depositERC1155Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
-        uint64[] calldata risks,
+        uint256[] calldata risks,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts
     ) external payable;
@@ -61,7 +61,7 @@ interface IL1AssetHandler is IAssetHandler {
     function depositERC721Assets(
         address collection,
         uint16 layerZeroDestinationChainId,
-        uint64[] calldata risks,
+        uint256[] calldata risks,
         uint256[] calldata tokenIds
     ) external payable;
 }

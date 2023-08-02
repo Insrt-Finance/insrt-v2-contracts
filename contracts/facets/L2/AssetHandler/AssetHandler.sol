@@ -52,7 +52,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             // Reduce the count of inactive ERC1155 tokens for the sender (claimer)
             perpetualMintStorageLayout.inactiveERC1155Tokens[msg.sender][
                 collection
-            ][tokenIds[i]] -= uint64(amounts[i]);
+            ][tokenIds[i]] -= amounts[i];
         }
 
         _withdrawERC1155Assets(
@@ -140,12 +140,12 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             // Reduce the count of active ERC1155 tokens for the sender (depositor)
             perpetualMintStorageLayout.activeERC1155Tokens[msg.sender][
                 collection
-            ][tokenIds[i]] -= uint64(amounts[i]);
+            ][tokenIds[i]] -= amounts[i];
 
             // Calculate the risk to be deducted based on the risk for each token and the amount to be withdrawn
-            uint64 riskToBeDeducted = perpetualMintStorageLayout
+            uint256 riskToBeDeducted = perpetualMintStorageLayout
                 .depositorTokenRisk[msg.sender][collection][tokenIds[i]] *
-                uint64(amounts[i]);
+                amounts[i];
 
             // If all tokens of a particular ID owned by the sender are withdrawn
             if (
@@ -247,7 +247,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             --perpetualMintStorageLayout.activeTokens[msg.sender][collection];
 
             // Calculate the risk to be deducted based on the sender's risk for the token ID in the collection
-            uint64 riskToBeDeducted = perpetualMintStorageLayout
+            uint256 riskToBeDeducted = perpetualMintStorageLayout
                 .depositorTokenRisk[msg.sender][collection][tokenIds[i]];
 
             // Reset the risk for the sender and the token ID in the collection
@@ -312,7 +312,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 ,
                 address depositor,
                 address collection,
-                uint64[] memory risks,
+                uint256[] memory risks,
                 uint256[] memory tokenIds,
                 uint256[] memory amounts
             ) = abi.decode(
@@ -321,7 +321,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                         AssetType,
                         address,
                         address,
-                        uint64[],
+                        uint256[],
                         uint256[],
                         uint256[]
                     )
@@ -336,7 +336,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 // Update the amount of active ERC1155 tokens for the depositor and the token ID in the collection
                 perpetualMintStorageLayout.activeERC1155Tokens[depositor][
                     collection
-                ][tokenIds[i]] += uint64(amounts[i]);
+                ][tokenIds[i]] += amounts[i];
 
                 // Add the token ID to the set of active token IDs in the collection
                 perpetualMintStorageLayout.activeTokenIds[collection].add(
@@ -349,7 +349,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                     collection
                 ][tokenIds[i]] = risks[i];
 
-                uint64 totalAddedRisk = risks[i] * uint64(amounts[i]);
+                uint256 totalAddedRisk = risks[i] * amounts[i];
 
                 // Update the total risk for the token ID in the collection
                 perpetualMintStorageLayout.tokenRisk[collection][
@@ -391,11 +391,11 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 ,
                 address depositor,
                 address collection,
-                uint64[] memory risks,
+                uint256[] memory risks,
                 uint256[] memory tokenIds
             ) = abi.decode(
                     data,
-                    (AssetType, address, address, uint64[], uint256[])
+                    (AssetType, address, address, uint256[], uint256[])
                 );
 
             // Iterate over each token ID

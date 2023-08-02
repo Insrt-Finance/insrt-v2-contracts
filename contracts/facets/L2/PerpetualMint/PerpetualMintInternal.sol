@@ -26,6 +26,11 @@ abstract contract PerpetualMintInternal is
     /// @dev denominator used in percentage calculations
     uint32 internal constant BASIS = 1000000000;
 
+    /// @dev random words to be requested from ChainlinkVRF for each mint attempt
+    /// depending on asset type attemping to be minted
+    uint32 internal constant NUM_WORDS_ERC721_MINT = 2;
+    uint32 internal constant NUM_WORDS_ERC1155_MINT = 3;
+
     /// @dev address of Chainlink VRFCoordinatorV2 contract
     address private immutable VRF;
 
@@ -132,7 +137,11 @@ abstract contract PerpetualMintInternal is
         l.protocolFees += mintFee;
         l.collectionEarnings[collection] += msg.value - mintFee;
 
-        _requestRandomWords(minter, collection, 1);
+        uint32 numWords = l.collectionType[collection] == AssetType.ERC721
+            ? NUM_WORDS_ERC721_MINT
+            : NUM_WORDS_ERC1155_MINT;
+
+        _requestRandomWords(minter, collection, numWords);
     }
 
     /// @notice calculates the available earnings for a depositor for a given collection

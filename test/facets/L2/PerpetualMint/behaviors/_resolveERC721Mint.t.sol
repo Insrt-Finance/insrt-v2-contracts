@@ -28,9 +28,9 @@ contract PerpetualMint_resolveERC721Mint is
             )
         );
 
-    /// @dev value of roll which will lead to a successful mint and token one being selected
-    uint256 internal constant tokenOneWinValue =
-        (uint256(300) << 128) | uint256(uint128(500));
+    /// @dev values of random numbers which will lead to a successful mint and token one being selected
+    uint256 internal constant winValue = 500;
+    uint256 internal constant tokenOneSelectValue = 300;
 
     /// @dev expected value of won token ID
     uint256 internal expectedTokenId;
@@ -59,7 +59,8 @@ contract PerpetualMint_resolveERC721Mint is
 
         depositBoredApeYachtClubAssetsMock(); // deposit BAYC assets
 
-        randomWords.push(tokenOneWinValue); // add token one win roll
+        randomWords.push(winValue); // add token one win roll
+        randomWords.push(tokenOneSelectValue);
 
         // set all common variables by reading directly from storage
         expectedTokenId = BORED_APE_YACHT_CLUB_TOKEN_ID_ONE;
@@ -82,8 +83,12 @@ contract PerpetualMint_resolveERC721Mint is
     }
 
     /// @dev tests that _resolveERC721Mint works with many random values
-    function testFuzz_resolveERC721Mint(uint256 randomValue) public {
-        randomWords.push(randomValue);
+    function testFuzz_resolveERC721Mint(
+        uint256 valueOne,
+        uint256 valueTwo
+    ) public {
+        randomWords.push(valueOne);
+        randomWords.push(valueTwo);
 
         vm.prank(minter);
         perpetualMint.exposed_resolveERC721Mint(

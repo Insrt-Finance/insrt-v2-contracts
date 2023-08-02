@@ -26,10 +26,10 @@ contract PerpetualMint_resolveERC1155Mint is
             )
         );
 
-    /// @dev value of roll which will lead to a successful mint and token one being selected from depositor one
-    uint256 internal constant tokenOneDepositorOneSelectValue =
-        (uint256(((uint128(90) << 64) | uint128(uint64(90)))) << 128) |
-            uint256(uint128(90));
+    /// @dev value of random values which will lead to a successful mint and token one being selected from depositor one
+    uint256 internal constant winValue = 90;
+    uint256 internal constant tokenOneSelectValue = 90;
+    uint256 internal constant depositorOneSelectValue = 90;
 
     // expected value of won token ID
     uint256 internal expectedTokenId;
@@ -62,7 +62,11 @@ contract PerpetualMint_resolveERC1155Mint is
         );
 
         expectedTokenId = PARALLEL_ALPHA_TOKEN_ID_ONE;
-        randomWords.push(tokenOneDepositorOneSelectValue);
+
+        randomWords.push(winValue);
+        randomWords.push(tokenOneSelectValue);
+        randomWords.push(depositorOneSelectValue);
+        
         totalRisk = _totalRisk(address(perpetualMint), PARALLEL_ALPHA);
         oldOwner = depositorOne;
         totalDepositorRisk = _totalDepositorRisk(
@@ -79,8 +83,14 @@ contract PerpetualMint_resolveERC1155Mint is
     }
 
     /// @dev tests that _resolveERC1155Mint works with many random values
-    function testFuzz_resolveERC1155Mint(uint256 randomValue) public {
-        randomWords.push(randomValue);
+    function testFuzz_resolveERC1155Mint(
+        uint256 valueOne,
+        uint256 valueTwo,
+        uint256 valueThree
+    ) public {
+        randomWords[0] = valueOne;
+        randomWords[1] = valueTwo;
+        randomWords[2] = valueThree;
 
         vm.prank(minter);
         perpetualMint.exposed_resolveERC1155Mint(
@@ -94,8 +104,6 @@ contract PerpetualMint_resolveERC1155Mint is
     /// @dev tests token selection && owner selection simultaneously via expectedTokenId
     /// and checking decrement of depositorOne activeERC1155Tokens
     function test_resolveERC1155MintWinOwnerIsMinter() public {
-        randomWords.push(tokenOneDepositorOneSelectValue);
-
         vm.prank(minter);
         perpetualMint.exposed_resolveERC1155Mint(
             minter,
@@ -125,8 +133,6 @@ contract PerpetualMint_resolveERC1155Mint is
     function test_resolveERC1155MintWinUpdateDepositorEarningsForMinterWhenMinterHasNoRisk()
         public
     {
-        randomWords.push(tokenOneDepositorOneSelectValue);
-
         vm.prank(minter);
         perpetualMint.exposed_resolveERC1155Mint(
             minter,
@@ -147,8 +153,6 @@ contract PerpetualMint_resolveERC1155Mint is
     function test_resolveERC1155MintWinUpdateDepositorEarningsForMinterWhenMinterHasRisk()
         public
     {
-        randomWords.push(tokenOneDepositorOneSelectValue);
-
         vm.prank(depositorTwo);
         perpetualMint.exposed_resolveERC1155Mint(
             depositorTwo,
@@ -182,8 +186,6 @@ contract PerpetualMint_resolveERC1155Mint is
     function test_resolveERC1155MintWinUpdateDepositorEarningsOfDepositor()
         public
     {
-        randomWords.push(tokenOneDepositorOneSelectValue);
-
         assert(totalDepositorRisk != 0);
         assert(totalRisk != 0);
 
@@ -218,7 +220,6 @@ contract PerpetualMint_resolveERC1155Mint is
 
     /// @dev test that activeTokens of depositor are decremented after successful mint
     function test_resolveERC1155MintDecrementsDepositorActiveTokens() public {
-        randomWords.push(tokenOneDepositorOneSelectValue);
         uint256 oldActiveTokens = _activeERC1155Tokens(
             address(perpetualMint),
             depositorOne,
@@ -245,7 +246,6 @@ contract PerpetualMint_resolveERC1155Mint is
 
     /// @dev test that inactiveTokens of minter address are increment after successful mint
     function test_resolveERC1155MintIncrementsMinterInactiveTokens() public {
-        randomWords.push(tokenOneDepositorOneSelectValue);
         uint256 oldInactiveTokens = _inactiveERC1155Tokens(
             address(perpetualMint),
             minter,
@@ -272,7 +272,6 @@ contract PerpetualMint_resolveERC1155Mint is
 
     /// @dev test that totalActiveTokens are decremented after successful mint
     function test_resolveERC1155MintDecrementsTotalAciveTokens() public {
-        randomWords.push(tokenOneDepositorOneSelectValue);
         uint256 oldActiveTokens = _totalActiveTokens(
             address(perpetualMint),
             PARALLEL_ALPHA
@@ -295,7 +294,6 @@ contract PerpetualMint_resolveERC1155Mint is
 
     /// @dev test that totalRisk is decremented after by tokenRisk after successful mint
     function test_resolveERC1155MintDecreasesTotalRiskByTokenRisk() public {
-        randomWords.push(tokenOneDepositorOneSelectValue);
         uint256 oldTotalRisk = _totalRisk(
             address(perpetualMint),
             PARALLEL_ALPHA
@@ -320,7 +318,6 @@ contract PerpetualMint_resolveERC1155Mint is
     function test_resolveERC1155MintDecreasesTokenRiskByDepositorTokenRisk()
         public
     {
-        randomWords.push(tokenOneDepositorOneSelectValue);
         uint256 oldTokenRisk = _tokenRisk(
             address(perpetualMint),
             PARALLEL_ALPHA,
@@ -347,7 +344,6 @@ contract PerpetualMint_resolveERC1155Mint is
     function test_resolveERC1155MintDecreasesTotalDepositorRiskByTokenRisk()
         public
     {
-        randomWords.push(tokenOneDepositorOneSelectValue);
         uint256 oldDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
@@ -374,8 +370,6 @@ contract PerpetualMint_resolveERC1155Mint is
     function test_resolveERC1155MintRemovesDepositorFromActiveERC1155OwnersIfDepositorActiveERC1155TokensIsZero()
         public
     {
-        randomWords.push(tokenOneDepositorOneSelectValue);
-
         // grab slot of activeERC1155Tokens
         bytes32 depositorOneSlot = keccak256(
             abi.encode(
@@ -454,8 +448,6 @@ contract PerpetualMint_resolveERC1155Mint is
     function test_resolveERC1155MintDeletesDepositorTokenRiskIfDepositorActiveERC1155TokensIsZero()
         public
     {
-        randomWords.push(tokenOneDepositorOneSelectValue);
-
         // grab slot of activeERC1155Tokens
         bytes32 depositorOneSlot = keccak256(
             abi.encode(

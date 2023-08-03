@@ -36,7 +36,7 @@ contract PerpetualMintHelper {
         view
         returns (ISolidStateDiamond.FacetCut[] memory)
     {
-        bytes4[] memory mintingSelectors = new bytes4[](21);
+        bytes4[] memory mintingSelectors = new bytes4[](22);
         bytes4[] memory l2AssetHandlerSelectors = new bytes4[](1);
 
         // map the function selectors to their respective interfaces
@@ -53,27 +53,28 @@ contract PerpetualMintHelper {
         mintingSelectors[10] = IPerpetualMint.updateERC721TokenRisks.selector;
         mintingSelectors[11] = IPerpetualMint.idleERC1155Tokens.selector;
         mintingSelectors[12] = IPerpetualMint.idleERC721Tokens.selector;
-        mintingSelectors[13] = IPerpetualMint.reactivateERC721Assets.selector;
+        mintingSelectors[13] = IPerpetualMint.reactivateERC1155Assets.selector;
+        mintingSelectors[14] = IPerpetualMint.reactivateERC721Assets.selector;
 
-        mintingSelectors[14] = IPerpetualMintHarness
+        mintingSelectors[15] = IPerpetualMintHarness
             .exposed_resolveERC721Mint
             .selector;
-        mintingSelectors[15] = IPerpetualMintHarness
+        mintingSelectors[16] = IPerpetualMintHarness
             .exposed_resolveERC1155Mint
             .selector;
-        mintingSelectors[16] = IPerpetualMintHarness
+        mintingSelectors[17] = IPerpetualMintHarness
             .exposed_selectToken
             .selector;
-        mintingSelectors[17] = IPerpetualMintHarness
+        mintingSelectors[18] = IPerpetualMintHarness
             .exposed_selectERC1155Owner
             .selector;
-        mintingSelectors[18] = IPerpetualMintHarness
+        mintingSelectors[19] = IPerpetualMintHarness
             .exposed_normalizeValue
             .selector;
-        mintingSelectors[19] = IPerpetualMintHarness
+        mintingSelectors[20] = IPerpetualMintHarness
             .exposed_updateDepositorEarnings
             .selector;
-        mintingSelectors[20] = IPerpetualMintHarness
+        mintingSelectors[21] = IPerpetualMintHarness
             .exposed_assignEscrowedERC1155Asset
             .selector;
 

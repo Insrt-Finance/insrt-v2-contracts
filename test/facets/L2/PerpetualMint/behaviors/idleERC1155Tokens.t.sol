@@ -9,7 +9,7 @@ import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
 /// @title PerpetualMint_idle1155Tokens
 /// @dev PerpetualMint test contract for testing expected behavior of the idleERC721Tokens function
-contract PerpetualMint_idleERC721Tokens is
+contract PerpetualMint_idleERC1155Tokens is
     IPerpetualMintInternal,
     PerpetualMintTest,
     L2ForkTest

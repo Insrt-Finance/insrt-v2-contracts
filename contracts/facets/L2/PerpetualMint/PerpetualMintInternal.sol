@@ -417,11 +417,8 @@ abstract contract PerpetualMintInternal is
             // ensure the new risk is non-zero
             _enforceNonZeroRisk(risks[i]);
 
-            // ensure the specified token is actually inactive & idled
-            if (
-                l.tokenRisk[collection][tokenIds[i]] != 0 ||
-                l.activeTokenIds[collection].contains(tokenIds[i])
-            ) {
+            // ensure the specified token is not currently active
+            if (l.tokenRisk[collection][tokenIds[i]] != 0) {
                 revert TokenAlreadyActive();
             }
 

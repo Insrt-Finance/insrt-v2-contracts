@@ -727,7 +727,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
     }
 
     /// @dev test that updateERC1155TokenRisks reverts if the risk to be set is larger than the BASIS
-    function test_updateERC155TokenRisksRevertsWhen_RiskExceedsBasis() public {
+    function test_updateERC1155TokenRisksRevertsWhen_RiskExceedsBasis() public {
         risks[0] = FAILING_RISK;
         vm.expectRevert(IPerpetualMintInternal.BasisExceeded.selector);
         vm.prank(depositorOne);

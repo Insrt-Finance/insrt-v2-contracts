@@ -15,6 +15,9 @@ contract PerpetualMint_reactivateERC721Assets is
     L2ForkTest
 {
     uint256 internal constant COLLECTION_EARNINGS = 1 ether;
+    uint64 internal constant FAILING_RISK = 10000000000000;
+    uint64 internal constant NEW_RISK = 10000;
+
     address internal constant NON_OWNER = address(4);
     uint256 internal BAYC_ID;
     uint256 internal RISK;
@@ -358,6 +361,80 @@ contract PerpetualMint_reactivateERC721Assets is
         vm.expectRevert(IPerpetualMintInternal.OnlyEscrowedTokenOwner.selector);
 
         vm.prank(NON_OWNER);
+        perpetualMint.reactivateERC721Assets(
+            BORED_APE_YACHT_CLUB,
+            risks,
+            tokenIds
+        );
+    }
+
+    /// @dev test that reactivateERC721Assets reverts if the collection is an ERC1155 collection
+    function test_reactivateERC721AssetsRevertsWhen_CollectionIsERC1155()
+        public
+    {
+        vm.expectRevert(IPerpetualMintInternal.CollectionTypeMismatch.selector);
+
+        vm.prank(depositorOne);
+        perpetualMint.reactivateERC721Assets(PARALLEL_ALPHA, risks, tokenIds);
+    }
+
+    /// @dev test that reactivateERC721Assets reverts if the risk to be set is larger than the BASIS
+    function test_reactivateERC721AssetsRevertsWhen_RiskExceedsBasis() public {
+        risks[0] = FAILING_RISK;
+
+        vm.expectRevert(IPerpetualMintInternal.BasisExceeded.selector);
+
+        vm.prank(depositorOne);
+        perpetualMint.reactivateERC721Assets(
+            BORED_APE_YACHT_CLUB,
+            risks,
+            tokenIds
+        );
+    }
+
+    /// @dev test that reactivateERC721Assets reverts if the risk to be set is 0
+    function test_reactivateERC721AssetsRevertsWhen_RiskIsSetToZero() public {
+        risks[0] = 0;
+
+        vm.expectRevert(IPerpetualMintInternal.TokenRiskMustBeNonZero.selector);
+
+        vm.prank(depositorOne);
+        perpetualMint.reactivateERC721Assets(
+            BORED_APE_YACHT_CLUB,
+            risks,
+            tokenIds
+        );
+    }
+
+    /// @dev test that reactivateERC721Assets reverts if the risk array and tokenIds array differ in length
+    function test_reactivateERC721AssetsRevertsWhen_TokenIdsAndRisksArrayLengthsMismatch()
+        public
+    {
+        risks.push(NEW_RISK);
+
+        vm.expectRevert(IPerpetualMintInternal.ArrayLengthMismatch.selector);
+
+        vm.prank(depositorOne);
+        perpetualMint.reactivateERC721Assets(
+            BORED_APE_YACHT_CLUB,
+            risks,
+            tokenIds
+        );
+    }
+
+    /// @dev test that reactivateERC721Assets reverts if the token is already active
+    function test_reactivateERC721AssetsRevertsWhen_TokenIsAlreadyActive()
+        public
+    {
+        vm.startPrank(depositorOne);
+        perpetualMint.reactivateERC721Assets(
+            BORED_APE_YACHT_CLUB,
+            risks,
+            tokenIds
+        );
+
+        vm.expectRevert(IPerpetualMintInternal.TokenAlreadyActive.selector);
+
         perpetualMint.reactivateERC721Assets(
             BORED_APE_YACHT_CLUB,
             risks,

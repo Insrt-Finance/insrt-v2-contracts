@@ -682,7 +682,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
         }
     }
 
-    /// @dev test that updateERC721TokenRisks reverts if the collection is an ERC721 collection
+    /// @dev test that updateERC1155TokenRisks reverts if the collection is an ERC721 collection
     function test_updateERC1155TokenRisksRevertsWhen_CollectionIsERC721()
         public
     {

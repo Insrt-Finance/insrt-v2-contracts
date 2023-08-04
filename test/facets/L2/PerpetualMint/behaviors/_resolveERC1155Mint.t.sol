@@ -41,13 +41,13 @@ contract PerpetualMint_resolveERC1155Mint is
     address internal oldOwner;
 
     /// @dev total risk of ERC1155 collection (PARALLEL_ALPHA) prior to minting
-    uint64 internal totalRisk;
+    uint256 internal totalRisk;
 
     /// @dev risk of token set by depositor
-    uint64 internal tokenRisk;
+    uint256 internal tokenRisk;
 
     /// @dev total depositor collection risk of depositor matching expectedTokenId (depositorOne) prior to minting
-    uint64 internal totalDepositorRisk;
+    uint256 internal totalDepositorRisk;
 
     function setUp() public override {
         super.setUp();
@@ -66,7 +66,7 @@ contract PerpetualMint_resolveERC1155Mint is
         randomWords.push(winValue);
         randomWords.push(tokenOneSelectValue);
         randomWords.push(depositorOneSelectValue);
-        
+
         totalRisk = _totalRisk(address(perpetualMint), PARALLEL_ALPHA);
         oldOwner = depositorOne;
         totalDepositorRisk = _totalDepositorRisk(

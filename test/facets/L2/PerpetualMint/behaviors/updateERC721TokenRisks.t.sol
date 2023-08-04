@@ -15,8 +15,8 @@ contract PerpetualMint_updateERC721TokenRisks is
     L2ForkTest
 {
     uint256 internal constant COLLECTION_EARNINGS = 1 ether;
-    uint64 internal constant FAILING_RISK = 10000000000000;
-    uint64 internal constant NEW_RISK = 10000;
+    uint256 internal constant FAILING_RISK = 10000000000000;
+    uint256 internal constant NEW_RISK = 10000;
     address internal constant NON_OWNER = address(4);
     uint256 internal BAYC_ID;
     uint256[] tokenIds;
@@ -94,11 +94,11 @@ contract PerpetualMint_updateERC721TokenRisks is
     function test_updateERC721TokenRisksUpdatesDepositorEarningsWhenTotalDepositorRiskIsNonZero()
         public
     {
-        uint64 totalRisk = _totalRisk(
+        uint256 totalRisk = _totalRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB
         );
-        uint64 totalDepositorRisk = _totalDepositorRisk(
+        uint256 totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -184,7 +184,7 @@ contract PerpetualMint_updateERC721TokenRisks is
             totalNewRisks += risks[i];
         }
 
-        uint64 oldTotalRisk = _totalRisk(
+        uint256 oldTotalRisk = _totalRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB
         );
@@ -196,7 +196,7 @@ contract PerpetualMint_updateERC721TokenRisks is
             risks
         );
 
-        uint64 firstTotalRisk = _totalRisk(
+        uint256 firstTotalRisk = _totalRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB
         );
@@ -205,7 +205,7 @@ contract PerpetualMint_updateERC721TokenRisks is
             firstTotalRisk - oldTotalRisk == totalNewRisks - totalOldTokenRisks
         );
 
-        uint64 secondTokenRisk = 10;
+        uint256 secondTokenRisk = 10;
 
         risks[0] = secondTokenRisk;
 
@@ -228,7 +228,7 @@ contract PerpetualMint_updateERC721TokenRisks is
             risks
         );
 
-        uint64 secondTotalRisk = _totalRisk(
+        uint256 secondTotalRisk = _totalRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB
         );
@@ -257,7 +257,7 @@ contract PerpetualMint_updateERC721TokenRisks is
             totalNewRisks += risks[i];
         }
 
-        uint64 oldDepositorRisk = _totalDepositorRisk(
+        uint256 oldDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -270,7 +270,7 @@ contract PerpetualMint_updateERC721TokenRisks is
             risks
         );
 
-        uint64 firstDepositorRisk = _totalDepositorRisk(
+        uint256 firstDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -281,7 +281,7 @@ contract PerpetualMint_updateERC721TokenRisks is
                 totalNewRisks - totalOldTokenRisks
         );
 
-        uint64 secondTokenRisk = 10;
+        uint256 secondTokenRisk = 10;
 
         risks[0] = secondTokenRisk;
 
@@ -304,7 +304,7 @@ contract PerpetualMint_updateERC721TokenRisks is
             risks
         );
 
-        uint64 secondDepositorRisk = _totalDepositorRisk(
+        uint256 secondDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB

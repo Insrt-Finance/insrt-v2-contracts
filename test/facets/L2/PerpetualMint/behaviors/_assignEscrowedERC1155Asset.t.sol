@@ -18,7 +18,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
     uint256 tokenId;
 
     /// @dev risk of token set by depositor prior to transfer
-    uint64 tokenRisk;
+    uint256 tokenRisk;
     /// @dev activeERC1155Tokens storage slot
     bytes32 slot;
 

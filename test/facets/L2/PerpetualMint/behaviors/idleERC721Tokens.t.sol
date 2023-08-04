@@ -50,11 +50,11 @@ contract PerpetualMint_idleERC721Tokens is
     function test_idleERC721TokensUpdatesDepositorEarningsWhenTotalDepositorRiskIsNonZero()
         public
     {
-        uint64 totalRisk = _totalRisk(
+        uint256 totalRisk = _totalRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB
         );
-        uint64 totalDepositorRisk = _totalDepositorRisk(
+        uint256 totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -102,13 +102,13 @@ contract PerpetualMint_idleERC721Tokens is
     function test_idleERC721TokensDecreasesTotalRiskBySumOfOldTokenRisks()
         public
     {
-        uint64 oldTotalRisk = _totalRisk(
+        uint256 oldTotalRisk = _totalRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB
         );
 
         uint256 idsLength = tokenIds.length;
-        uint64 expectedTotalRiskChange;
+        uint256 expectedTotalRiskChange;
 
         for (uint256 i; i < idsLength; ++i) {
             expectedTotalRiskChange += _tokenRisk(
@@ -121,7 +121,7 @@ contract PerpetualMint_idleERC721Tokens is
         vm.prank(depositorOne);
         perpetualMint.idleERC721Tokens(BORED_APE_YACHT_CLUB, tokenIds);
 
-        uint64 newTotalRisk = _totalRisk(
+        uint256 newTotalRisk = _totalRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB
         );
@@ -169,7 +169,7 @@ contract PerpetualMint_idleERC721Tokens is
     /// @dev tests that upon idling ERC721 tokens the active tokens of a depositor of the ERC721 collection
     /// are decreased by the amount of tokens idled
     function test_idleERC721TokensDecreasesActiveTokensOfDepositor() public {
-        uint64 oldActiveTokens = _activeTokens(
+        uint256 oldActiveTokens = _activeTokens(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -178,7 +178,7 @@ contract PerpetualMint_idleERC721Tokens is
         vm.prank(depositorOne);
         perpetualMint.idleERC721Tokens(BORED_APE_YACHT_CLUB, tokenIds);
 
-        uint64 newActiveTokens = _activeTokens(
+        uint256 newActiveTokens = _activeTokens(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -190,7 +190,7 @@ contract PerpetualMint_idleERC721Tokens is
     /// @dev tests that idling ERC721 tokens increases the inactive tokens of the depositor of that ERC721 collection
     /// by the amount of tokens idled
     function test_idleERC721TokensIncreasesInactiveTokensOfDepositor() public {
-        uint64 oldInactiveTokens = _inactiveTokens(
+        uint256 oldInactiveTokens = _inactiveTokens(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -199,7 +199,7 @@ contract PerpetualMint_idleERC721Tokens is
         vm.prank(depositorOne);
         perpetualMint.idleERC721Tokens(BORED_APE_YACHT_CLUB, tokenIds);
 
-        uint64 newInactiveTokens = _inactiveTokens(
+        uint256 newInactiveTokens = _inactiveTokens(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -213,13 +213,13 @@ contract PerpetualMint_idleERC721Tokens is
     function test_idleERC721TokensDecreasesTotalDepositorRiskByOldTotalTokenRisk()
         public
     {
-        uint64 oldRisk = _totalDepositorRisk(
+        uint256 oldRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
         );
 
-        uint64 oldTotalTokenRisk;
+        uint256 oldTotalTokenRisk;
 
         for (uint256 i; i < tokenIds.length; ++i) {
             oldTotalTokenRisk += _tokenRisk(
@@ -232,7 +232,7 @@ contract PerpetualMint_idleERC721Tokens is
         vm.prank(depositorOne);
         perpetualMint.idleERC721Tokens(BORED_APE_YACHT_CLUB, tokenIds);
 
-        uint64 newRisk = _totalDepositorRisk(
+        uint256 newRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB

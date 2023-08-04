@@ -15,8 +15,8 @@ contract PerpetualMint_reactivateERC721Assets is
     L2ForkTest
 {
     uint256 internal constant COLLECTION_EARNINGS = 1 ether;
-    uint64 internal constant FAILING_RISK = 10000000000000;
-    uint64 internal constant NEW_RISK = 10000;
+    uint256 internal constant FAILING_RISK = 10000000000000;
+    uint256 internal constant NEW_RISK = 10000;
 
     address internal constant NON_OWNER = address(4);
     uint256 internal BAYC_ID;
@@ -53,12 +53,12 @@ contract PerpetualMint_reactivateERC721Assets is
 
         risks.push(RISK);
 
-        uint64 totalRisk = _totalRisk(
+        uint256 totalRisk = _totalRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB
         );
 
-        uint64 totalDepositorRisk = _totalDepositorRisk(
+        uint256 totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -87,7 +87,7 @@ contract PerpetualMint_reactivateERC721Assets is
             BORED_APE_YACHT_CLUB
         );
 
-        uint64 newTotalDepositorRisk = _totalDepositorRisk(
+        uint256 newTotalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -115,12 +115,12 @@ contract PerpetualMint_reactivateERC721Assets is
     function test_reactivateERC721AssetsUpdatesDepositorEarningsWhenTotalDepositorRiskIsZero()
         public
     {
-        uint64 totalRisk = _totalRisk(
+        uint256 totalRisk = _totalRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB
         );
 
-        uint64 totalDepositorRisk = _totalDepositorRisk(
+        uint256 totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -171,7 +171,7 @@ contract PerpetualMint_reactivateERC721Assets is
     function test_reactivateERC721AssetsIncreasesTotalRiskBySumOfReactivatedTokenRisks()
         public
     {
-        uint64 oldTotalRisk = _totalRisk(
+        uint256 oldTotalRisk = _totalRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB
         );
@@ -189,7 +189,7 @@ contract PerpetualMint_reactivateERC721Assets is
             tokenIds
         );
 
-        uint64 newTotalRisk = _totalRisk(
+        uint256 newTotalRisk = _totalRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB
         );
@@ -251,7 +251,7 @@ contract PerpetualMint_reactivateERC721Assets is
     function test_reactivateERC721AssetsIncreasesActiveTokensOfDepositor()
         public
     {
-        uint64 oldActiveTokens = _activeTokens(
+        uint256 oldActiveTokens = _activeTokens(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -264,7 +264,7 @@ contract PerpetualMint_reactivateERC721Assets is
             tokenIds
         );
 
-        uint64 newActiveTokens = _activeTokens(
+        uint256 newActiveTokens = _activeTokens(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -278,7 +278,7 @@ contract PerpetualMint_reactivateERC721Assets is
     function test_reactivateERC721AssetsDecreasesInactiveTokensOfDepositor()
         public
     {
-        uint64 oldInactiveTokens = _inactiveTokens(
+        uint256 oldInactiveTokens = _inactiveTokens(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -291,7 +291,7 @@ contract PerpetualMint_reactivateERC721Assets is
             tokenIds
         );
 
-        uint64 newInactiveTokens = _inactiveTokens(
+        uint256 newInactiveTokens = _inactiveTokens(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -305,7 +305,7 @@ contract PerpetualMint_reactivateERC721Assets is
     function test_reactivateERC721AssetsIncreasesTotalDepositorRiskBySumOfReactivatedTokenRisks()
         public
     {
-        uint64 oldRisk = _totalDepositorRisk(
+        uint256 oldRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -324,7 +324,7 @@ contract PerpetualMint_reactivateERC721Assets is
             tokenIds
         );
 
-        uint64 newRisk = _totalDepositorRisk(
+        uint256 newRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB

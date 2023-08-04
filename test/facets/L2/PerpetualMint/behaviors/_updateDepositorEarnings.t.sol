@@ -78,11 +78,11 @@ contract PerpetualMint_updateDepositorEarnings is
     function test_updateDepositorEarningsWhenTotalDepositorRiskIsNonZero()
         public
     {
-        uint64 totalRisk = _totalRisk(
+        uint256 totalRisk = _totalRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB
         );
-        uint64 totalDepositorRisk = _totalDepositorRisk(
+        uint256 totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorTwo,
             BORED_APE_YACHT_CLUB

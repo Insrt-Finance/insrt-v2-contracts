@@ -15,10 +15,10 @@ contract PerpetualMint_selectToken is PerpetualMintTest, L2ForkTest {
     }
 
     /// @dev ensures correct token is selected
-    function testFuzz_selectToken(uint128 randomValue) public view {
+    function testFuzz_selectToken(uint256 randomValue) public view {
         /// calculate total risk and picking number
-        uint64 totalRisk = riskOne + riskTwo;
-        uint64 pickingNumber = uint64(randomValue % totalRisk);
+        uint256 totalRisk = riskOne + riskTwo;
+        uint256 pickingNumber = randomValue % totalRisk;
 
         uint256 expectedId = riskOne < pickingNumber
             ? BORED_APE_YACHT_CLUB_TOKEN_ID_TWO

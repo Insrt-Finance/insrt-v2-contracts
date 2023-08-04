@@ -9,7 +9,7 @@ import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 /// @dev PerpetualMint test contract for testing expected behavior of the normalizeValue function
 contract PerpetualMint_normalizeValue is PerpetualMintTest, L2ForkTest {
     /// @dev tests that values are normalized to a basis correctly
-    function testFuzz_normalizeValue(uint128 value, uint128 basis) public view {
+    function testFuzz_normalizeValue(uint256 value, uint256 basis) public view {
         // basis is assumed to never be 0 by default
         if (basis != 0) {
             assert(

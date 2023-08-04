@@ -21,14 +21,14 @@ contract PerpetualMint_averageCollectionRisk is PerpetualMintTest, L2ForkTest {
     /// @dev tests that the average collection risk value returned is as expected
     function test_averageCollectionRisk() public view {
         //calculate average risk of escrowed BAYC assets
-        uint64 averageRisk = (riskOne + riskTwo) / 2;
+        uint256 averageRisk = (riskOne + riskTwo) / 2;
 
-        uint64 storedRiskOne = _tokenRisk(
+        uint256 storedRiskOne = _tokenRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB,
             BORED_APE_YACHT_CLUB_TOKEN_ID_ONE
         );
-        uint64 storedRiskTwo = _tokenRisk(
+        uint256 storedRiskTwo = _tokenRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB,
             BORED_APE_YACHT_CLUB_TOKEN_ID_TWO

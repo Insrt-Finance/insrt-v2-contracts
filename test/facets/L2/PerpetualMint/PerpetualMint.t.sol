@@ -54,24 +54,24 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     address payable internal minter = payable(address(3));
 
     // token risk values
-    uint64 internal constant riskOne = 400; // for BAYC
-    uint64 internal constant riskTwo = 800; // for BAYC
-    uint64 internal constant riskThree = 100; //for parallelAlpha
+    uint256 internal constant riskOne = 400; // for BAYC
+    uint256 internal constant riskTwo = 800; // for BAYC
+    uint256 internal constant riskThree = 100; //for parallelAlpha
 
     /// @dev Dummy trusted remote test path.
     bytes internal TEST_PATH =
         bytes.concat(bytes20(vm.addr(1234)), bytes20(vm.addr(5678)));
 
     /// @dev Dummy test nonce value.
-    uint64 internal constant TEST_NONCE = 0;
+    uint256 internal constant TEST_NONCE = 0;
 
     /// @dev The LayerZero proprietary chain ID for setting Ethereum mainnet as the destination blockchain.
     uint16 internal constant DESTINATION_LAYER_ZERO_CHAIN_ID = 101;
 
     /// @dev BAYC depositor test data holders
     /// @dev BAYC risks for tokens that depositorOne and depositorTwo will deposit respectively
-    uint64[] internal depositorOneBAYCRisks;
-    uint64[] internal depositorTwoBAYCRisks;
+    uint256[] internal depositorOneBAYCRisks;
+    uint256[] internal depositorTwoBAYCRisks;
 
     /// @dev BAYC tokenIds for tokens that depositorOne and depositorTwo will deposit respectively
     uint256[] internal depositorOneBAYCIds;
@@ -79,8 +79,8 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
 
     /// @dev Parallel Alpha depositor test data holders
     /// @dev Parallel Alpha token risks for tokens thatn depositorOne and depositorTwo will deposit respectively
-    uint64[] internal depositorOneParallelAlphaRisks;
-    uint64[] internal depositorTwoParallelAlphaRisks;
+    uint256[] internal depositorOneParallelAlphaRisks;
+    uint256[] internal depositorTwoParallelAlphaRisks;
 
     /// @dev Parallel Alpha token ids for tokens thatn depositorOne and depositorTwo will deposit respectively
     uint256[] internal depositorOneParallelAlphaTokenIds;
@@ -105,7 +105,7 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
                     0x68d24f9a037a649944964c2a1ebd0b2918f4a243d2a99701cc22b548cf2daff0
                 ),
                 // Initiated Subscription ID
-                subscriptionId: uint64(5),
+                subscriptionId: uint256(5),
                 // Max Callback Gas Limit
                 callbackGasLimit: uint32(2500000),
                 // Minimum confimations:

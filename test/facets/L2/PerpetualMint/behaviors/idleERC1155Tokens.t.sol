@@ -59,8 +59,8 @@ contract PerpetualMint_idleERC721Tokens is
     function test_idleERC1155TokensUpdatesDepositorEarningsWhenTotalDepositorRiskIsNonZero()
         public
     {
-        uint64 totalRisk = _totalRisk(address(perpetualMint), PARALLEL_ALPHA);
-        uint64 totalDepositorRisk = _totalDepositorRisk(
+        uint256 totalRisk = _totalRisk(address(perpetualMint), PARALLEL_ALPHA);
+        uint256 totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA
@@ -111,7 +111,7 @@ contract PerpetualMint_idleERC721Tokens is
             PARALLEL_ALPHA
         );
 
-        uint64 totalRiskChange;
+        uint256 totalRiskChange;
 
         for (uint256 i; i < tokenIds.length; ++i) {
             totalRiskChange +=
@@ -121,7 +121,7 @@ contract PerpetualMint_idleERC721Tokens is
                     PARALLEL_ALPHA,
                     tokenIds[i]
                 ) *
-                uint64(amounts[i]);
+                uint256(amounts[i]);
         }
 
         vm.prank(depositorOne);
@@ -140,7 +140,7 @@ contract PerpetualMint_idleERC721Tokens is
     function test_idleERC1155TokensDecreasesTotalActiveTokensOfERC1155CollectionBySumOfAmountsToBeIdled()
         public
     {
-        uint64 oldTotalActiveTokens = uint64(
+        uint256 oldTotalActiveTokens = uint256(
             _totalActiveTokens(address(perpetualMint), PARALLEL_ALPHA)
         );
 
@@ -153,7 +153,7 @@ contract PerpetualMint_idleERC721Tokens is
         vm.prank(depositorOne);
         perpetualMint.idleERC1155Tokens(PARALLEL_ALPHA, tokenIds, amounts);
 
-        uint64 newTotalActiveTokens = uint64(
+        uint256 newTotalActiveTokens = uint256(
             _totalActiveTokens(address(perpetualMint), PARALLEL_ALPHA)
         );
 
@@ -166,7 +166,7 @@ contract PerpetualMint_idleERC721Tokens is
     function test_idleERC1155TokensDecreasesTotalDepositorRiskByRiskChange()
         public
     {
-        uint64 expectedRiskChange;
+        uint256 expectedRiskChange;
         for (uint256 i; i < tokenIds.length; ++i) {
             expectedRiskChange +=
                 _depositorTokenRisk(
@@ -175,10 +175,10 @@ contract PerpetualMint_idleERC721Tokens is
                     PARALLEL_ALPHA,
                     tokenIds[i]
                 ) *
-                uint64(amounts[i]);
+                uint256(amounts[i]);
         }
 
-        uint64 oldDepositorRisk = _totalDepositorRisk(
+        uint256 oldDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA
@@ -187,7 +187,7 @@ contract PerpetualMint_idleERC721Tokens is
         vm.prank(depositorOne);
         perpetualMint.idleERC1155Tokens(PARALLEL_ALPHA, tokenIds, amounts);
 
-        uint64 newDepositorRisk = _totalDepositorRisk(
+        uint256 newDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA

@@ -42,10 +42,10 @@ contract PerpetualMint_resolveERC721Mint is
     address internal oldOwner;
 
     /// @dev total risk of ERC721 collection (BAYC) prior to minting
-    uint64 internal totalRisk;
+    uint256 internal totalRisk;
 
     /// @dev total depositor collection risk of depositor matching expectedTokenId (depositorOne) prior to minting
-    uint64 internal totalDepositorRisk;
+    uint256 internal totalDepositorRisk;
 
     /// @dev sets up the context for _resolveERC721Mint tests
     function setUp() public override {
@@ -102,7 +102,7 @@ contract PerpetualMint_resolveERC721Mint is
     function test_resolveERC721MintWinIncrementsInactiveTokensOfWinner()
         public
     {
-        uint64 oldInactiveTokens = _inactiveTokens(
+        uint256 oldInactiveTokens = _inactiveTokens(
             address(perpetualMint),
             address(minter),
             BORED_APE_YACHT_CLUB
@@ -128,7 +128,7 @@ contract PerpetualMint_resolveERC721Mint is
 
     /// @dev tests that the number of active tokens is decremented for the old owner after win
     function test_resolveERC721MintDecrementsActiveTokensOfOldOwner() public {
-        uint64 oldActiveTokens = _activeTokens(
+        uint256 oldActiveTokens = _activeTokens(
             address(perpetualMint),
             oldOwner,
             BORED_APE_YACHT_CLUB
@@ -316,7 +316,7 @@ contract PerpetualMint_resolveERC721Mint is
     function test_resolveERC721MintWinReducesTotalDepositorRiskOfOldOwnerByWonTokenRisk()
         public
     {
-        uint64 tokenRisk = _tokenRisk(
+        uint256 tokenRisk = _tokenRisk(
             address(perpetualMint),
             BORED_APE_YACHT_CLUB,
             expectedTokenId
@@ -329,7 +329,7 @@ contract PerpetualMint_resolveERC721Mint is
             randomWords
         );
 
-        uint64 newDepositorRisk = _totalDepositorRisk(
+        uint256 newDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB

@@ -63,7 +63,7 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
         bytes.concat(bytes20(vm.addr(1234)), bytes20(vm.addr(5678)));
 
     /// @dev Dummy test nonce value.
-    uint256 internal constant TEST_NONCE = 0;
+    uint64 internal constant TEST_NONCE = 0;
 
     /// @dev The LayerZero proprietary chain ID for setting Ethereum mainnet as the destination blockchain.
     uint16 internal constant DESTINATION_LAYER_ZERO_CHAIN_ID = 101;
@@ -105,7 +105,7 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
                     0x68d24f9a037a649944964c2a1ebd0b2918f4a243d2a99701cc22b548cf2daff0
                 ),
                 // Initiated Subscription ID
-                subscriptionId: uint256(5),
+                subscriptionId: uint64(5),
                 // Max Callback Gas Limit
                 callbackGasLimit: uint32(2500000),
                 // Minimum confimations:

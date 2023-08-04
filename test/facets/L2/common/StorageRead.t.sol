@@ -187,7 +187,7 @@ abstract contract StorageRead is Test {
     function _totalRisk(
         address target,
         address collection
-    ) internal view returns (uint64 risk) {
+    ) internal view returns (uint256 risk) {
         bytes32 slot = keccak256(
             abi.encode(
                 collection, // address of collection
@@ -195,7 +195,7 @@ abstract contract StorageRead is Test {
             )
         );
 
-        risk = uint64(uint256(vm.load(target, slot)));
+        risk = uint256(vm.load(target, slot));
     }
 
     /// @dev read totalActiveTokens value directly from storage
@@ -255,7 +255,7 @@ abstract contract StorageRead is Test {
         address target,
         address collection,
         uint256 tokenId
-    ) internal view returns (uint64 risk) {
+    ) internal view returns (uint256 risk) {
         bytes32 slot = keccak256(
             abi.encode(
                 tokenId, // id of token
@@ -268,7 +268,7 @@ abstract contract StorageRead is Test {
             )
         );
 
-        risk = uint64(uint256(vm.load(target, slot)));
+        risk = uint256(vm.load(target, slot));
     }
 
     /// @dev read escrowedERC721Owner value directly from storage
@@ -394,7 +394,7 @@ abstract contract StorageRead is Test {
         address target,
         address depositor,
         address collection
-    ) internal view returns (uint64 amount) {
+    ) internal view returns (uint256 amount) {
         bytes32 slot = keccak256(
             abi.encode(
                 collection, // address of collection
@@ -407,7 +407,7 @@ abstract contract StorageRead is Test {
             )
         );
 
-        amount = uint64(uint256(vm.load(target, slot)));
+        amount = uint256(vm.load(target, slot));
     }
 
     /// @dev read inactiveTokens value directly from storage
@@ -419,7 +419,7 @@ abstract contract StorageRead is Test {
         address target,
         address depositor,
         address collection
-    ) internal view returns (uint64 amount) {
+    ) internal view returns (uint256 amount) {
         bytes32 slot = keccak256(
             abi.encode(
                 collection, // address of collection
@@ -432,7 +432,7 @@ abstract contract StorageRead is Test {
             )
         );
 
-        amount = uint64(uint256(vm.load(target, slot)));
+        amount = uint256(vm.load(target, slot));
     }
 
     /// @dev read totalDepositorRisk value directly from storage
@@ -444,7 +444,7 @@ abstract contract StorageRead is Test {
         address target,
         address depositor,
         address collection
-    ) internal view returns (uint64 risk) {
+    ) internal view returns (uint256 risk) {
         bytes32 slot = keccak256(
             abi.encode(
                 collection, // address of collection
@@ -457,7 +457,7 @@ abstract contract StorageRead is Test {
             )
         );
 
-        risk = uint64(uint256(vm.load(target, slot)));
+        risk = uint256(vm.load(target, slot));
     }
 
     /// @dev read depositor token Risk value directly from storage
@@ -471,7 +471,7 @@ abstract contract StorageRead is Test {
         address depositor,
         address collection,
         uint256 tokenId
-    ) internal view returns (uint64 risk) {
+    ) internal view returns (uint256 risk) {
         bytes32 slot = keccak256(
             abi.encode(
                 tokenId, //id of token
@@ -489,7 +489,7 @@ abstract contract StorageRead is Test {
             )
         );
 
-        risk = uint64(uint256(vm.load(target, slot)));
+        risk = uint256(vm.load(target, slot));
     }
 
     /// @dev read activeERC1155Tokens value directly from storage

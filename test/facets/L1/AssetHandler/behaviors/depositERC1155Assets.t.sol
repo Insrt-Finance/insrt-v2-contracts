@@ -277,7 +277,7 @@ contract L1AssetHandler_depositERC1155Assets is
             IAssetHandler.ERC1155TokenIdsAmountsAndRisksLengthMismatch.selector
         );
 
-        testRisks.push(uint64(1)); // mismatched lengths
+        testRisks.push(uint256(1)); // mismatched lengths
 
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,

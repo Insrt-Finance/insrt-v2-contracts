@@ -255,8 +255,8 @@ contract L2AssetHandler_withdrawERC1155Assets is
                 )
             );
 
-            uint64 depositorTokenRisk = uint64(
-                uint256(vm.load(address(this), depositorTokenRiskStorageSlot))
+            uint256 depositorTokenRisk = uint256(
+                vm.load(address(this), depositorTokenRiskStorageSlot)
             );
 
             // this assertion proves that the depositor token risk was reset 0 in depositorTokenRisk
@@ -291,10 +291,8 @@ contract L2AssetHandler_withdrawERC1155Assets is
             )
         );
 
-        uint64 totalDepositorRisk = uint64(
-            uint256(
-                uint256(vm.load(address(this), totalDepositorRiskStorageSlot))
-            )
+        uint256 totalDepositorRisk = uint256(
+            uint256(vm.load(address(this), totalDepositorRiskStorageSlot))
         );
 
         // this assertion proves that the total risk for the depositor in the collection was updated correctly
@@ -308,8 +306,8 @@ contract L2AssetHandler_withdrawERC1155Assets is
             )
         );
 
-        uint64 totalRisk = uint64(
-            uint256(vm.load(address(this), totalRiskStorageSlot))
+        uint256 totalRisk = uint256(
+            vm.load(address(this), totalRiskStorageSlot)
         );
 
         // this assertion proves that the total risk in the collection was updated correctly
@@ -328,8 +326,8 @@ contract L2AssetHandler_withdrawERC1155Assets is
             )
         );
 
-        uint64 tokenRisk = uint64(
-            uint256(vm.load(address(this), tokenRiskStorageSlot))
+        uint256 tokenRisk = uint256(
+            vm.load(address(this), tokenRiskStorageSlot)
         );
 
         // this assertion proves that the total risk for the token ID in the collection was updated correctly

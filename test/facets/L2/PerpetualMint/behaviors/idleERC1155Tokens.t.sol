@@ -25,7 +25,7 @@ contract PerpetualMint_idleERC721Tokens is
         keccak256(
             abi.encode(
                 PARALLEL_ALPHA, // the ERC1155 collection
-                uint256(Storage.STORAGE_SLOT) + 7 // the risk storage slot
+                uint256(Storage.STORAGE_SLOT) + 9 // the earnings storage slot
             )
         );
 

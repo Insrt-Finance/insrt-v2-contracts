@@ -19,7 +19,7 @@ contract PerpetualMint_updateDepositorEarnings is
         keccak256(
             abi.encode(
                 BORED_APE_YACHT_CLUB, // the ERC721 collection
-                uint256(Storage.STORAGE_SLOT) + 7 // the risk storage slot
+                uint256(Storage.STORAGE_SLOT) + 9 // the earnings storage slot
             )
         );
 
@@ -31,7 +31,7 @@ contract PerpetualMint_updateDepositorEarnings is
                 keccak256(
                     abi.encode(
                         depositorOne, // address of depositor
-                        uint256(Storage.STORAGE_SLOT) + 20 // totalDepositorRisk mapping storage slot
+                        uint256(Storage.STORAGE_SLOT) + 21 // totalDepositorRisk mapping storage slot
                     )
                 )
             )

@@ -282,7 +282,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
         bytes32 collectionTypeStorageSlot = keccak256(
             abi.encode(
                 BONG_BEARS, // the deposited ERC1155 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 6 // the collectionType storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 8 // the collectionType storage slot
             )
         );
 

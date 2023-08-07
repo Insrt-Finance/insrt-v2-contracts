@@ -272,7 +272,7 @@ contract L2AssetHandler_withdrawERC721Assets is
         bytes32 totalRiskStorageSlot = keccak256(
             abi.encode(
                 BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 9 // the totalRisk storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 11 // the totalRisk storage slot
             )
         );
 

@@ -621,9 +621,12 @@ abstract contract PerpetualMintInternal is
         emit VRFConfigSet(config);
     }
 
-    /// @notice updates the earnings of a depositor  based on current conditions
-    /// @param collection address of collection earnings relate to
-    /// @param depositor address of depositor
+    /// @notice updates the earnings of a depositor based on the current conditions
+    /// @dev This function calculates and updates the earnings for a given depositor and collection.
+    /// It takes into consideration the last known total risk, depositor risk, and collection earnings
+    /// to calculate the new earnings. If the total risk is 0, it only updates the depositor deductions.
+    /// @param depositor The address of the depositor whose earnings are to be updated
+    /// @param collection The address of the collection related to the earnings
     function _updateDepositorEarnings(
         address depositor,
         address collection
@@ -633,20 +636,39 @@ abstract contract PerpetualMintInternal is
         uint256 totalDepositorRisk = l.totalDepositorRisk[depositor][
             collection
         ];
+        uint256 totalRisk = l.totalRisk[collection];
+        uint256 collectionEarnings = l.collectionEarnings[collection];
+        uint256 lastTotalRisk = l.lastTotalRisk[depositor][collection];
+        uint256 lastDepositorRisk = l.lastDepositorRisk[depositor][collection];
+        uint256 lastCollectionEarnings = l.lastCollectionEarnings[depositor][
+            collection
+        ];
 
-        if (totalDepositorRisk != 0) {
-            l.depositorEarnings[depositor][collection] +=
-                ((l.collectionEarnings[collection] * totalDepositorRisk) /
-                    l.totalRisk[collection]) -
-                l.depositorDeductions[depositor][collection];
+        if (totalRisk > 0 && lastTotalRisk > 0) {
+            // Calculate earnings share based on the last state
+            uint256 previousEarningsShare = (lastDepositorRisk *
+                lastCollectionEarnings) / lastTotalRisk;
 
+            // Calculate additional earnings based on the new collection earnings and the previous share
+            uint256 additionalEarnings = ((collectionEarnings -
+                lastCollectionEarnings) * totalDepositorRisk) / totalRisk;
+
+            // Update depositor's earnings
+            l.depositorEarnings[depositor][collection] =
+                previousEarningsShare +
+                additionalEarnings;
             l.depositorDeductions[depositor][collection] = l.depositorEarnings[
                 depositor
             ][collection];
-        } else {
-            l.depositorDeductions[depositor][collection] = l.collectionEarnings[
+
+            // Update the last state for the depositor
+            l.lastTotalRisk[depositor][collection] = totalRisk;
+            l.lastDepositorRisk[depositor][collection] = totalDepositorRisk;
+            l.lastCollectionEarnings[depositor][
                 collection
-            ];
+            ] = collectionEarnings;
+        } else {
+            l.depositorDeductions[depositor][collection] = collectionEarnings;
         }
     }
 

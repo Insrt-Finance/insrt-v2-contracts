@@ -82,6 +82,15 @@ library PerpetualMintStorage {
         mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint256 amount))) activeERC1155Tokens;
         /// @dev number of tokens of particular tokenId for an ERC1155 collection of a user which are not able to be minted
         mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint256 amount))) inactiveERC1155Tokens;
+        /// @notice Mapping to store the last total risk associated with a specific depositor and collection.
+        /// @dev Keyed by depositor's address and collection's address.
+        mapping(address => mapping(address => uint256)) lastTotalRisk;
+        /// @notice Mapping to store the last depositor risk associated with a specific depositor and collection.
+        /// @dev Keyed by depositor's address and collection's address.
+        mapping(address => mapping(address => uint256)) lastDepositorRisk;
+        /// @notice Mapping to store the last collection earnings associated with a specific depositor and collection.
+        /// @dev Keyed by depositor's address and collection's address.
+        mapping(address => mapping(address => uint256)) lastCollectionEarnings;
     }
 
     bytes32 internal constant STORAGE_SLOT =

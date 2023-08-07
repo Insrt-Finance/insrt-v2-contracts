@@ -115,28 +115,6 @@ contract PerpetualMint_reactivateERC721Assets is
     function test_reactivateERC721AssetsUpdatesDepositorEarningsWhenTotalDepositorRiskIsZero()
         public
     {
-        uint256 totalRisk = _totalRisk(
-            address(perpetualMint),
-            BORED_APE_YACHT_CLUB
-        );
-
-        uint256 totalDepositorRisk = _totalDepositorRisk(
-            address(perpetualMint),
-            depositorOne,
-            BORED_APE_YACHT_CLUB
-        );
-
-        uint256 collectionEarnings = _collectionEarnings(
-            address(perpetualMint),
-            BORED_APE_YACHT_CLUB
-        );
-
-        uint256 oldDepositorDeductions = _depositorDeductions(
-            address(perpetualMint),
-            depositorOne,
-            BORED_APE_YACHT_CLUB
-        );
-
         vm.prank(depositorOne);
         perpetualMint.reactivateERC721Assets(
             BORED_APE_YACHT_CLUB,
@@ -144,26 +122,17 @@ contract PerpetualMint_reactivateERC721Assets is
             tokenIds
         );
 
-        uint256 newDepositorDeductions = _depositorDeductions(
-            address(perpetualMint),
-            depositorOne,
-            BORED_APE_YACHT_CLUB
-        );
-
-        uint256 expectedEarnings = (collectionEarnings * totalDepositorRisk) /
-            totalRisk -
-            oldDepositorDeductions;
-
         assert(
-            expectedEarnings ==
-                _depositorEarnings(
+            _depositorDeductions(
+                address(perpetualMint),
+                depositorOne,
+                BORED_APE_YACHT_CLUB
+            ) ==
+                _collectionEarnings(
                     address(perpetualMint),
-                    depositorOne,
                     BORED_APE_YACHT_CLUB
                 )
         );
-
-        assert(newDepositorDeductions == expectedEarnings);
     }
 
     /// @dev tests that upon reactivating ERC721 tokens, the total risk of the ERC721 collection increases by

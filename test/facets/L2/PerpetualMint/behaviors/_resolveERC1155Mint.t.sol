@@ -22,7 +22,7 @@ contract PerpetualMint_resolveERC1155Mint is
         keccak256(
             abi.encode(
                 PARALLEL_ALPHA, // the ERC721 collection
-                uint256(Storage.STORAGE_SLOT) + 9 // the risk storage slot
+                uint256(Storage.STORAGE_SLOT) + 9 // the collectionEarnings storage slot
             )
         );
 

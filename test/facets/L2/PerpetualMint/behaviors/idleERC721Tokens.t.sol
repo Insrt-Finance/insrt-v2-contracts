@@ -24,7 +24,7 @@ contract PerpetualMint_idleERC721Tokens is
         keccak256(
             abi.encode(
                 BORED_APE_YACHT_CLUB, // the ERC721 collection
-                uint256(Storage.STORAGE_SLOT) + 9 // the earnings storage slot
+                uint256(Storage.STORAGE_SLOT) + 9 // the collectionEarnings storage slot
             )
         );
 

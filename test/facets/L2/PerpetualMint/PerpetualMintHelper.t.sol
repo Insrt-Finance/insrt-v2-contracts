@@ -40,7 +40,7 @@ contract PerpetualMintHelper {
         bytes4[] memory l2AssetHandlerSelectors = new bytes4[](1);
 
         // map the function selectors to their respective interfaces
-        mintingSelectors[0] = IPerpetualMint.attemptMint.selector;
+        mintingSelectors[0] = IPerpetualMint.attemptBatchMint.selector;
         mintingSelectors[1] = IPerpetualMint.claimAllEarnings.selector;
         mintingSelectors[2] = IPerpetualMint.claimEarnings.selector;
         mintingSelectors[3] = IPerpetualMint.allAvailableEarnings.selector;

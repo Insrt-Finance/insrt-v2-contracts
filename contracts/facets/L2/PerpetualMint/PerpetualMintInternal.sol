@@ -122,26 +122,43 @@ abstract contract PerpetualMintInternal is
         l.tokenRisk[collection][tokenId] = 0;
     }
 
-    /// @notice attempts to mint a token from a collection for a minter
+    /// @notice attempts a batch mint for the minter for a single collection
     /// @param minter address of minter
-    /// @param collection address of collection which token may be minted from
-    function _attemptMint(address minter, address collection) internal {
+    /// @param collection address of collection for mint attempts
+    /// @param numberOfMints number of mints to attempt
+    function _attemptBatchMint(
+        address minter,
+        address collection,
+        uint32 numberOfMints
+    ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        if (msg.value != l.collectionMintPrice[collection]) {
+        uint256 msgValue = msg.value;
+
+        if (numberOfMints == 0) {
+            revert InvalidNumberOfMints();
+        }
+
+        if (!l.activeCollections.contains(collection)) {
+            revert CollectionNotActive();
+        }
+
+        if (msgValue != l.collectionMintPrice[collection] * numberOfMints) {
             revert IncorrectETHReceived();
         }
 
-        uint256 mintFee = (msg.value * l.mintFeeBP) / BASIS;
+        uint256 mintFee = (msgValue * l.mintFeeBP) / BASIS;
 
         l.protocolFees += mintFee;
-        l.collectionEarnings[collection] += msg.value - mintFee;
+        l.collectionEarnings[collection] += msgValue - mintFee;
 
+        // if the number of words requested is greater than the max allowed by the VRF coordinator,
+        // the request for random words will fail (max random words is currently 500 per request).
         uint32 numWords = l.collectionType[collection] == AssetType.ERC721
-            ? NUM_WORDS_ERC721_MINT
-            : NUM_WORDS_ERC1155_MINT;
+            ? NUM_WORDS_ERC721_MINT * numberOfMints // 2 words per mint, current max of 250 mints per tx
+            : NUM_WORDS_ERC1155_MINT * numberOfMints; // 3 words per mint, current max of 160 mints per tx
 
-        _requestRandomWords(minter, collection, numWords);
+        _requestRandomWords(l, minter, collection, numWords);
     }
 
     /// @notice calculates the available earnings for a depositor for a given collection

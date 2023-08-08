@@ -68,9 +68,9 @@ contract PerpetualMint_reactivateERC1155Assets is
         risks.push(NEW_RISK);
         risks.push(NEW_RISK);
 
-        uint64 totalRisk = _totalRisk(address(perpetualMint), PARALLEL_ALPHA);
+        uint256 totalRisk = _totalRisk(address(perpetualMint), PARALLEL_ALPHA);
 
-        uint64 totalDepositorRisk = _totalDepositorRisk(
+        uint256 totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA
@@ -99,7 +99,7 @@ contract PerpetualMint_reactivateERC1155Assets is
             PARALLEL_ALPHA
         );
 
-        uint64 newTotalDepositorRisk = _totalDepositorRisk(
+        uint256 newTotalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA
@@ -127,9 +127,9 @@ contract PerpetualMint_reactivateERC1155Assets is
     function test_reactivateERC1155AssetsUpdatesDepositorEarningsWhenTotalDepositorRiskIsZero()
         public
     {
-        uint64 totalRisk = _totalRisk(address(perpetualMint), PARALLEL_ALPHA);
+        uint256 totalRisk = _totalRisk(address(perpetualMint), PARALLEL_ALPHA);
 
-        uint64 totalDepositorRisk = _totalDepositorRisk(
+        uint256 totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA
@@ -253,7 +253,7 @@ contract PerpetualMint_reactivateERC1155Assets is
             expectedRiskChange += risks[i] * amounts[i];
         }
 
-        uint64 oldDepositorRisk = _totalDepositorRisk(
+        uint256 oldDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA
@@ -267,7 +267,7 @@ contract PerpetualMint_reactivateERC1155Assets is
             amounts
         );
 
-        uint64 newDepositorRisk = _totalDepositorRisk(
+        uint256 newDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA

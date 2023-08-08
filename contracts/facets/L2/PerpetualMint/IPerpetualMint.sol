@@ -11,9 +11,13 @@ interface IPerpetualMint {
     /// @return allEarnings amount of available earnings across all collections
     function allAvailableEarnings() external view returns (uint256 allEarnings);
 
-    /// @notice attempts a mint for the msg.sender from a collection
-    /// @param collection address of collection for mint attempt
-    function attemptMint(address collection) external;
+    /// @notice attempts a batch mint for the msg.sender for a single collection
+    /// @param collection address of collection for mint attempts
+    /// @param numberOfMints number of mints to attempt
+    function attemptBatchMint(
+        address collection,
+        uint32 numberOfMints
+    ) external payable;
 
     /// @notice calculates the available earnings for the msg.sender for a given collection
     /// @param collection address of collection

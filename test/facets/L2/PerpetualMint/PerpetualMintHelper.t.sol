@@ -19,7 +19,7 @@ contract PerpetualMintHelper {
 
     // Arbitrum mainnet Chainlink VRF Coordinator address
     address public constant VRF_COORDINATOR =
-        address(0x41034678D6C633D8a95c75e1138A360a28bA15d1);
+        0x41034678D6C633D8a95c75e1138A360a28bA15d1;
 
     /// @dev deploys L2AssetHandlerMock and PerpetualMintHarness implementations
     constructor() {

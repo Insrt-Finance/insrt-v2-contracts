@@ -31,6 +31,9 @@ interface IPerpetualMintInternal {
     /// @notice thrown when an incorrent amount of ETH is received
     error IncorrectETHReceived();
 
+    /// @notice thrown when attempting to mint 0 tokens
+    error InvalidNumberOfMints();
+
     /// @notice thrown when a non-owner is attempting to modify token parameters
     error OnlyEscrowedTokenOwner();
 

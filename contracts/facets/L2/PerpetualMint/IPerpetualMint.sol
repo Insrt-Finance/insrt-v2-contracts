@@ -100,6 +100,10 @@ interface IPerpetualMint {
     /// @param price mint price of the collection
     function setCollectionMintPrice(address collection, uint256 price) external;
 
+    /// @notice sets the mint fee in basis points
+    /// @param mintFeeBP mint fee in basis points
+    function setMintFeeBP(uint32 mintFeeBP) external;
+
     /// @notice sets the Chainlink VRF config
     /// @param config VRFConfig struct holding all related data to ChainlinkVRF setup
     function setVRFConfig(Storage.VRFConfig calldata config) external;

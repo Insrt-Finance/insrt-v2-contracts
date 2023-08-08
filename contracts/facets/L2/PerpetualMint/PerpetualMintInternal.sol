@@ -776,13 +776,21 @@ abstract contract PerpetualMintInternal is
         uint256 price
     ) internal {
         Storage.layout().collectionMintPrice[collection] = price;
+
         emit MintPriceSet(collection, price);
+    }
+
+    /// @notice sets the mint fee in basis points
+    /// @param mintFeeBP mint fee in basis points
+    function _setMintFeeBP(uint32 mintFeeBP) internal {
+        Storage.layout().mintFeeBP = mintFeeBP;
     }
 
     /// @notice sets the Chainlink VRF config
     /// @param config VRFConfig struct holding all related data to ChainlinkVRF
     function _setVRFConfig(Storage.VRFConfig calldata config) internal {
         Storage.layout().vrfConfig = config;
+
         emit VRFConfigSet(config);
     }
 

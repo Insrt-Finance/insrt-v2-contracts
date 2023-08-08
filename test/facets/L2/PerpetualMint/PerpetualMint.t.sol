@@ -90,6 +90,8 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     uint256[] internal depositorOneParallelAlphaAmounts;
     uint256[] internal depositorTwoParallelAlphaAmounts;
 
+    uint64 internal constant TEST_VRF_SUBSCRIPTION_ID = 5;
+
     /// @dev sets up PerpetualMint for testing
     function setUp() public virtual override {
         super.setUp();
@@ -105,7 +107,7 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
                     0x68d24f9a037a649944964c2a1ebd0b2918f4a243d2a99701cc22b548cf2daff0
                 ),
                 // Initiated Subscription ID
-                subscriptionId: uint64(5),
+                subscriptionId: TEST_VRF_SUBSCRIPTION_ID,
                 // Max Callback Gas Limit
                 callbackGasLimit: uint32(2500000),
                 // Minimum confimations:

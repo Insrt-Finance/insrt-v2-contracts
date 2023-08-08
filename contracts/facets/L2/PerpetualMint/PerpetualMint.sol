@@ -113,6 +113,11 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
     }
 
     /// @inheritdoc IPerpetualMint
+    function setMintFeeBP(uint32 mintFeeBP) external onlyOwner {
+        _setMintFeeBP(mintFeeBP);
+    }
+
+    /// @inheritdoc IPerpetualMint
     function setVRFConfig(
         Storage.VRFConfig calldata config
     ) external onlyOwner {

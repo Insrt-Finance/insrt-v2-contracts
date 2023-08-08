@@ -596,16 +596,16 @@ abstract contract PerpetualMintInternal is
     }
 
     /// @notice requests random values from Chainlink VRF
+    /// @param l the PerpetualMint storage layout
     /// @param minter address calling this function
     /// @param collection address of collection to attempt mint for
     /// @param numWords amount of random values to request
     function _requestRandomWords(
+        Storage.Layout storage l,
         address minter,
         address collection,
         uint32 numWords
     ) internal {
-        Storage.Layout storage l = Storage.layout();
-
         uint256 requestId = VRFCoordinatorV2Interface(VRF).requestRandomWords(
             l.vrfConfig.keyHash,
             l.vrfConfig.subscriptionId,

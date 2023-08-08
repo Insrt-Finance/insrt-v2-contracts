@@ -37,10 +37,8 @@ abstract contract StorageRead is Test {
     function _protocolFees(
         address target
     ) internal view returns (uint256 fees) {
-        bytes32 slot = keccak256(
-            abi.encode(
-                uint256(Storage.STORAGE_SLOT) + 2 //protocolFees storage slot
-            )
+        bytes32 slot = bytes32(
+            uint256(Storage.STORAGE_SLOT) + 2 // protocolFees storage slot
         );
 
         fees = uint256(vm.load(target, slot));

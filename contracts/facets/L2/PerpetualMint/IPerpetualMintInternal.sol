@@ -49,6 +49,9 @@ interface IPerpetualMintInternal {
     /// @notice thrown when an attempt is made to update token risk to 0
     error TokenRiskMustBeNonZero();
 
+    /// @notice thrown when fulfilled random words do not match for attempted mints
+    error UnmatchedRandomWords();
+
     /// @notice emitted when ERC1155 assets are successfully reactivated.
     /// @param depositor The indexed address of the depositor.
     /// @param collection The indexed address of the ERC1155 collection.

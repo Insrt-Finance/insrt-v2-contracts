@@ -762,15 +762,15 @@ abstract contract PerpetualMintInternal is
     }
 
     /// @notice selects the token which was won after a successfull mint attempt
+    /// @param l the PerpetualMint storage layout
     /// @param collection address of collection
     /// @param randomValue seed used to select the tokenId
     /// @return tokenId id of won token
     function _selectToken(
+        Storage.Layout storage l,
         address collection,
         uint256 randomValue
     ) internal view returns (uint256 tokenId) {
-        Storage.Layout storage l = Storage.layout();
-
         EnumerableSet.UintSet storage tokenIds = l.activeTokenIds[collection];
 
         uint256 tokenIndex;

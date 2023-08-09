@@ -74,8 +74,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
             depositorOne,
             minter,
             PARALLEL_ALPHA,
-            tokenId,
-            tokenRisk
+            tokenId
         );
 
         uint256 newActiveTokens = _activeERC1155Tokens(
@@ -103,8 +102,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
             depositorOne,
             minter,
             PARALLEL_ALPHA,
-            tokenId,
-            tokenRisk
+            tokenId
         );
 
         uint256 newInactiveTokens = _inactiveERC1155Tokens(
@@ -130,8 +128,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
             depositorOne,
             minter,
             PARALLEL_ALPHA,
-            tokenId,
-            tokenRisk
+            tokenId
         );
 
         uint256 newActiveTokens = _totalActiveTokens(
@@ -155,8 +152,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
             depositorOne,
             minter,
             PARALLEL_ALPHA,
-            tokenId,
-            tokenRisk
+            tokenId
         );
 
         uint256 newTotalRisk = _totalRisk(
@@ -181,8 +177,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
             depositorOne,
             minter,
             PARALLEL_ALPHA,
-            tokenId,
-            tokenRisk
+            tokenId
         );
 
         uint256 newTokenRisk = _tokenRisk(
@@ -208,8 +203,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
             depositorOne,
             minter,
             PARALLEL_ALPHA,
-            tokenId,
-            tokenRisk
+            tokenId
         );
 
         uint256 newDepositorRisk = _totalDepositorRisk(
@@ -229,8 +223,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
             depositorTwo,
             minter,
             PARALLEL_ALPHA,
-            tokenId,
-            tokenRisk
+            tokenId
         );
 
         address[] memory owners = _activeERC1155Owners(
@@ -252,8 +245,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
             depositorTwo,
             minter,
             PARALLEL_ALPHA,
-            tokenId,
-            tokenRisk
+            tokenId
         );
 
         uint256 risk = _depositorTokenRisk(
@@ -293,8 +285,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
             depositorTwo,
             minter,
             PARALLEL_ALPHA,
-            tokenId,
-            tokenRisk
+            tokenId
         );
 
         uint256[] memory tokenIds = _activeTokenIds(

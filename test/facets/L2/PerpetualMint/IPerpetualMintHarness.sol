@@ -7,11 +7,10 @@ pragma solidity 0.8.21;
 interface IPerpetualMintHarness {
     /// @dev exposes _assignEscrowedERC1155Asset method
     function exposed_assignEscrowedERC1155Asset(
-        address from,
-        address to,
+        address originalOwner,
+        address newOwner,
         address collection,
-        uint256 tokenId,
-        uint256 tokenRisk
+        uint256 tokenId
     ) external;
 
     /// @dev exposes _normalizeValue
@@ -20,15 +19,15 @@ interface IPerpetualMintHarness {
         uint256 basis
     ) external pure returns (uint256 normalizedValue);
 
-    /// @dev exposes _resolveERC1155Mint
-    function exposed_resolveERC1155Mint(
+    /// @dev exposes _resolveERC1155Mints
+    function exposed_resolveERC1155Mints(
         address account,
         address collection,
         uint256[] memory randomWords
     ) external;
 
-    /// @dev exposes _resolveERC721Mint
-    function exposed_resolveERC721Mint(
+    /// @dev exposes _resolveERC721Mints
+    function exposed_resolveERC721Mints(
         address account,
         address collection,
         uint256[] memory randomWords

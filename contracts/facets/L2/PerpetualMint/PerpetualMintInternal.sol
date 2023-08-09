@@ -653,45 +653,56 @@ abstract contract PerpetualMintInternal is
         l.requestCollection[requestId] = collection;
     }
 
-    /// @notice resolves the outcome of an attempted mint of an ERC1155 collection
-    /// @param minter address of mitner
-    /// @param collection address of collection which token may be minted from
-    /// @param randomWords random values relating to attempt
-    function _resolveERC1155Mint(
+    /// @notice resolves the outcome of attempted mints for an ERC1155 collection
+    /// @param l the PerpetualMint storage layout
+    /// @param minter address of minter
+    /// @param collection address of ERC1155 collection for mint attempts
+    /// @param randomWords an array of random values relating to number of attempts
+    function _resolveERC1155Mints(
+        Storage.Layout storage l,
         address minter,
         address collection,
         uint256[] memory randomWords
     ) internal {
-        Storage.Layout storage l = Storage.layout();
-
-        bool result = _averageCollectionRisk(collection) >
-            _normalizeValue(randomWords[0], BASIS);
-
-        //TODO: update based on consolation spec
-        if (!result) {
-            _mint(minter, l.id);
-            ++l.id;
+        // ensure the number of random words is a multiple of 3
+        // each valid ERC1155 mint attempt requires three random words
+        if (randomWords.length % 3 != 0) {
+            revert UnmatchedRandomWords();
         }
 
-        if (result) {
-            uint256 tokenId = _selectToken(collection, randomWords[1]);
+        for (uint256 i = 0; i < randomWords.length; i += 3) {
+            bool result = _averageCollectionRisk(l, collection) >
+                _normalizeValue(randomWords[i], BASIS);
 
-            address oldOwner = _selectERC1155Owner(
-                collection,
-                tokenId,
-                randomWords[2]
-            );
+            //TODO: update based on consolation spec
+            if (!result) {
+                _mint(minter, l.id);
+                ++l.id;
+            } else {
+                uint256 tokenId = _selectToken(
+                    l,
+                    collection,
+                    randomWords[i + 1]
+                );
 
-            _assignEscrowedERC1155Asset(
-                oldOwner,
-                minter,
-                collection,
-                tokenId,
-                l.depositorTokenRisk[oldOwner][collection][tokenId]
-            );
+                address originalOwner = _selectERC1155Owner(
+                    l,
+                    collection,
+                    tokenId,
+                    randomWords[i + 2]
+                );
+
+                _assignEscrowedERC1155Asset(
+                    l,
+                    originalOwner,
+                    minter,
+                    collection,
+                    tokenId
+                );
+            }
+
+            emit ERC1155MintResolved(collection, result);
         }
-
-        emit ERC1155MintResolved(collection, result);
     }
 
     /// @notice resolves the outcome of an attempted mint of an ERC721 collection

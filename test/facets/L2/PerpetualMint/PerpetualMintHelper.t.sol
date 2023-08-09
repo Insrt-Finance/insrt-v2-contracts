@@ -58,10 +58,10 @@ contract PerpetualMintHelper {
         mintingSelectors[15] = IPerpetualMint.reactivateERC721Assets.selector;
 
         mintingSelectors[16] = IPerpetualMintHarness
-            .exposed_resolveERC721Mint
+            .exposed_resolveERC721Mints
             .selector;
         mintingSelectors[17] = IPerpetualMintHarness
-            .exposed_resolveERC1155Mint
+            .exposed_resolveERC1155Mints
             .selector;
         mintingSelectors[18] = IPerpetualMintHarness
             .exposed_selectToken

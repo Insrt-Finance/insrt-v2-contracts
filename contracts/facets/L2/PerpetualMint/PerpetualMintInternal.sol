@@ -326,9 +326,9 @@ abstract contract PerpetualMintInternal is
         address collection = l.requestCollection[requestId];
 
         if (l.collectionType[collection] == AssetType.ERC721) {
-            _resolveERC721Mint(minter, collection, randomWords);
+            _resolveERC721Mints(l, minter, collection, randomWords);
         } else {
-            _resolveERC1155Mint(minter, collection, randomWords);
+            _resolveERC1155Mints(l, minter, collection, randomWords);
         }
     }
 

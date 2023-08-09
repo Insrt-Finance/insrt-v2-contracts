@@ -94,6 +94,7 @@ library PerpetualMintStorage {
         /////////// EXPERIMENTAL ///////////
         /// @dev all the snapshots for a given collection **in order** of occurence (increasing timestamp)
         mapping(address collection => Snapshot[] snapshots) collectionSnapshots;
+        /// @dev collection earnings at the time of the last snapshot for a collection
         mapping(address collection => uint256 amount) lastSnapshotEarnings;
         /// @dev index of the last snapshot which a depositor altered their risk
         mapping(address depositor => mapping(address collection => uint256 snapshotIndex)) lastSnapshotIndex;

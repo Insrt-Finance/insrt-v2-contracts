@@ -522,7 +522,7 @@ contract PerpetualMint_resolveERC1155Mints is
     }
 
     /// @dev test that tokenId is removed from activeTokenIds if tokenId tokenRisk is zero after successful mint
-    function test_assignEscrowedERC1155RemovesTokenIdFromActiveTokenIdsIfTokenRiskIsZero()
+    function test_resolveERC1155MintsRemovesTokenIdFromActiveTokenIdsIfTokenRiskIsZero()
         public
     {
         bytes32 tokenRiskSlot = keccak256(

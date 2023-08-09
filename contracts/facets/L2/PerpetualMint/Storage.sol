@@ -23,6 +23,15 @@ library PerpetualMintStorage {
         uint16 minConfirmations;
     }
 
+    struct Snapshot {
+        /// @dev timestamp of snapshot
+        uint256 timestamp; //may be redundant
+        /// @dev earnings earnt from previous snapshot until current snapshot
+        uint256 earnings;
+        /// @dev total risk of collection at snapshot
+        uint256 totalRisk;
+    }
+
     struct Layout {
         /// @dev all variables related to Chainlink VRF configuration
         VRFConfig vrfConfig;
@@ -82,6 +91,12 @@ library PerpetualMintStorage {
         mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint256 amount))) activeERC1155Tokens;
         /// @dev number of tokens of particular tokenId for an ERC1155 collection of a user which are not able to be minted
         mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint256 amount))) inactiveERC1155Tokens;
+        /////////// EXPERIMENTAL ///////////
+        /// @dev all the snapshots for a given collection **in order** of occurence (increasing timestamp)
+        mapping(address collection => Snapshot[] snapshots) collectionSnapshots;
+        mapping(address collection => uint256 amount) lastSnapshotEarnings;
+        /// @dev index of the last snapshot which a depositor altered their risk
+        mapping(address depositor => mapping(address collection => uint256 snapshotIndex)) lastSnapshotIndex;
     }
 
     bytes32 internal constant STORAGE_SLOT =

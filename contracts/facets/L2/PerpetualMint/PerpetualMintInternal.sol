@@ -108,8 +108,9 @@ abstract contract PerpetualMintInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        _updateDepositorEarnings(from, collection);
-        _updateDepositorEarnings(to, collection);
+        _snapshot(collection);
+        _newUpdateDepositorEarnings(from, collection);
+        _newUpdateDepositorEarnings(to, collection);
 
         --l.activeTokens[from][collection];
         ++l.inactiveTokens[to][collection];
@@ -621,9 +622,26 @@ abstract contract PerpetualMintInternal is
         emit VRFConfigSet(config);
     }
 
-    /// @notice updates the earnings of a depositor  based on current conditions
-    /// @param collection address of collection earnings relate to
+    /// @notice captures a snapshot of the current totalRisk of a collection, and the
+    /// amount of earnings earnt from the last snapshot until this one
+    /// @param collection address of collection which snapshotted variables pertain to
+    function _snapshot(address collection) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        Storage.Snapshot memory snapshot = Storage.Snapshot({
+            timestamp: block.timestamp,
+            totalRisk: l.totalRisk[collection],
+            earnings: l.collectionEarnings[collection] -
+                l.lastSnapshotEarnings[collection]
+        });
+
+        l.collectionSnapshots[collection].push(snapshot);
+        l.lastSnapshotEarnings[collection] = l.collectionEarnings[collection];
+    }
+
+    /// @notice updates the earnings of a depositor based on current conditions
     /// @param depositor address of depositor
+    /// @param collection address of collection
     function _updateDepositorEarnings(
         address depositor,
         address collection
@@ -648,6 +666,41 @@ abstract contract PerpetualMintInternal is
                 collection
             ];
         }
+    }
+
+    /// @notice updates the earnings of a depositor based on snapshot history
+    /// @param depositor address of depositor
+    /// @param collection address of collection
+    function _newUpdateDepositorEarnings(
+        address depositor,
+        address collection
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        Storage.Snapshot[] storage snapshots = l.collectionSnapshots[
+            collection
+        ];
+        // find index of snapshot where depositor was last active
+        uint256 lastIndex = l.lastSnapshotIndex[depositor][collection];
+
+        // find index of latest snapshot
+        uint256 finalIndex = snapshots.length;
+
+        uint256 newEarnings;
+
+        // calculate depositor earnings for each elapsed snapshot
+        // and increment depositor earnings amount
+        for (lastIndex; lastIndex < finalIndex; ++lastIndex) {
+            newEarnings +=
+                (l.totalDepositorRisk[depositor][collection] *
+                    snapshots[lastIndex].earnings) /
+                snapshots[lastIndex].totalRisk;
+        }
+
+        // add newEarnings to depositor earnings
+        l.depositorEarnings[depositor][collection] += newEarnings;
+        // update lastSnapshotIndex for depositor
+        l.lastSnapshotIndex[depositor][collection] = lastIndex;
     }
 
     /// @notice updates the risk associated with escrowed ERC1155 tokens of a depositor

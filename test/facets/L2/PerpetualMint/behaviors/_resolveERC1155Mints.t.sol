@@ -7,9 +7,9 @@ import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
-/// @title PerpetualMint_resolveERC1155Mint
-/// @dev PerpetualMint test contract for testing expected behavior of the _resolveERC1155Mint function
-contract PerpetualMint_resolveERC1155Mint is
+/// @title PerpetualMint_resolveERC1155Mints
+/// @dev PerpetualMint test contract for testing expected behavior of the _resolveERC1155Mints function
+contract PerpetualMint_resolveERC1155Mints is
     IPerpetualMintInternal,
     PerpetualMintTest,
     L2ForkTest
@@ -82,8 +82,8 @@ contract PerpetualMint_resolveERC1155Mint is
         tokenRisk = riskThree;
     }
 
-    /// @dev tests that _resolveERC1155Mint works with many random values
-    function testFuzz_resolveERC1155Mint(
+    /// @dev tests that _resolveERC1155Mints works with many random values
+    function testFuzz_resolveERC1155Mints(
         uint256 valueOne,
         uint256 valueTwo,
         uint256 valueThree
@@ -93,7 +93,7 @@ contract PerpetualMint_resolveERC1155Mint is
         randomWords[2] = valueThree;
 
         vm.prank(minter);
-        perpetualMint.exposed_resolveERC1155Mint(
+        perpetualMint.exposed_resolveERC1155Mints(
             minter,
             PARALLEL_ALPHA,
             randomWords
@@ -103,9 +103,9 @@ contract PerpetualMint_resolveERC1155Mint is
     /// @dev tests that after a successful mint the minter is one of the owners of the tokenId
     /// @dev tests token selection && owner selection simultaneously via expectedTokenId
     /// and checking decrement of depositorOne activeERC1155Tokens
-    function test_resolveERC1155MintWinOwnerIsMinter() public {
+    function test_resolveERC1155MintsWinOwnerIsMinter() public {
         vm.prank(minter);
-        perpetualMint.exposed_resolveERC1155Mint(
+        perpetualMint.exposed_resolveERC1155Mints(
             minter,
             PARALLEL_ALPHA,
             randomWords
@@ -130,11 +130,11 @@ contract PerpetualMint_resolveERC1155Mint is
     }
 
     /// @dev tests that depositEarnings are updated correctly when depositor has no risk, after a win
-    function test_resolveERC1155MintWinUpdateDepositorEarningsForMinterWhenMinterHasNoRisk()
+    function test_resolveERC1155MintsWinUpdateDepositorEarningsForMinterWhenMinterHasNoRisk()
         public
     {
         vm.prank(minter);
-        perpetualMint.exposed_resolveERC1155Mint(
+        perpetualMint.exposed_resolveERC1155Mints(
             minter,
             PARALLEL_ALPHA,
             randomWords
@@ -150,11 +150,11 @@ contract PerpetualMint_resolveERC1155Mint is
     }
 
     /// @dev tests that depositEarnings are updated correctly when minter has risk, after a win
-    function test_resolveERC1155MintWinUpdateDepositorEarningsForMinterWhenMinterHasRisk()
+    function test_resolveERC1155MintsWinUpdateDepositorEarningsForMinterWhenMinterHasRisk()
         public
     {
         vm.prank(depositorTwo);
-        perpetualMint.exposed_resolveERC1155Mint(
+        perpetualMint.exposed_resolveERC1155Mints(
             depositorTwo,
             PARALLEL_ALPHA,
             randomWords
@@ -183,14 +183,14 @@ contract PerpetualMint_resolveERC1155Mint is
     }
 
     /// @dev tests that depositorEarnings of depositor are updated correctly after a succesful mint
-    function test_resolveERC1155MintWinUpdateDepositorEarningsOfDepositor()
+    function test_resolveERC1155MintsWinUpdateDepositorEarningsOfDepositor()
         public
     {
         assert(totalDepositorRisk != 0);
         assert(totalRisk != 0);
 
         vm.prank(minter);
-        perpetualMint.exposed_resolveERC1155Mint(
+        perpetualMint.exposed_resolveERC1155Mints(
             minter,
             PARALLEL_ALPHA,
             randomWords
@@ -219,7 +219,7 @@ contract PerpetualMint_resolveERC1155Mint is
     }
 
     /// @dev test that activeTokens of depositor are decremented after successful mint
-    function test_resolveERC1155MintDecrementsDepositorActiveTokens() public {
+    function test_resolveERC1155MintsDecrementsDepositorActiveTokens() public {
         uint256 oldActiveTokens = _activeERC1155Tokens(
             address(perpetualMint),
             depositorOne,
@@ -228,7 +228,7 @@ contract PerpetualMint_resolveERC1155Mint is
         );
 
         vm.prank(minter);
-        perpetualMint.exposed_resolveERC1155Mint(
+        perpetualMint.exposed_resolveERC1155Mints(
             minter,
             PARALLEL_ALPHA,
             randomWords
@@ -245,7 +245,7 @@ contract PerpetualMint_resolveERC1155Mint is
     }
 
     /// @dev test that inactiveTokens of minter address are increment after successful mint
-    function test_resolveERC1155MintIncrementsMinterInactiveTokens() public {
+    function test_resolveERC1155MintsIncrementsMinterInactiveTokens() public {
         uint256 oldInactiveTokens = _inactiveERC1155Tokens(
             address(perpetualMint),
             minter,
@@ -254,7 +254,7 @@ contract PerpetualMint_resolveERC1155Mint is
         );
 
         vm.prank(minter);
-        perpetualMint.exposed_resolveERC1155Mint(
+        perpetualMint.exposed_resolveERC1155Mints(
             minter,
             PARALLEL_ALPHA,
             randomWords
@@ -271,14 +271,14 @@ contract PerpetualMint_resolveERC1155Mint is
     }
 
     /// @dev test that totalActiveTokens are decremented after successful mint
-    function test_resolveERC1155MintDecrementsTotalAciveTokens() public {
+    function test_resolveERC1155MintsDecrementsTotalAciveTokens() public {
         uint256 oldActiveTokens = _totalActiveTokens(
             address(perpetualMint),
             PARALLEL_ALPHA
         );
 
         vm.prank(minter);
-        perpetualMint.exposed_resolveERC1155Mint(
+        perpetualMint.exposed_resolveERC1155Mints(
             minter,
             PARALLEL_ALPHA,
             randomWords
@@ -293,14 +293,14 @@ contract PerpetualMint_resolveERC1155Mint is
     }
 
     /// @dev test that totalRisk is decremented after by tokenRisk after successful mint
-    function test_resolveERC1155MintDecreasesTotalRiskByTokenRisk() public {
+    function test_resolveERC1155MintsDecreasesTotalRiskByTokenRisk() public {
         uint256 oldTotalRisk = _totalRisk(
             address(perpetualMint),
             PARALLEL_ALPHA
         );
 
         vm.prank(minter);
-        perpetualMint.exposed_resolveERC1155Mint(
+        perpetualMint.exposed_resolveERC1155Mints(
             minter,
             PARALLEL_ALPHA,
             randomWords
@@ -315,7 +315,7 @@ contract PerpetualMint_resolveERC1155Mint is
     }
 
     /// @dev test that tokenRisk of tokenId is decreased by the depositor depositorTokenRisk after successful mint
-    function test_resolveERC1155MintDecreasesTokenRiskByDepositorTokenRisk()
+    function test_resolveERC1155MintsDecreasesTokenRiskByDepositorTokenRisk()
         public
     {
         uint256 oldTokenRisk = _tokenRisk(
@@ -325,7 +325,7 @@ contract PerpetualMint_resolveERC1155Mint is
         );
 
         vm.prank(minter);
-        perpetualMint.exposed_resolveERC1155Mint(
+        perpetualMint.exposed_resolveERC1155Mints(
             minter,
             PARALLEL_ALPHA,
             randomWords
@@ -341,7 +341,7 @@ contract PerpetualMint_resolveERC1155Mint is
     }
 
     /// @dev test that depositor totalDepositorRisk is decreased by the depositorTokenRisk after successful mint
-    function test_resolveERC1155MintDecreasesTotalDepositorRiskByTokenRisk()
+    function test_resolveERC1155MintsDecreasesTotalDepositorRiskByTokenRisk()
         public
     {
         uint256 oldDepositorRisk = _totalDepositorRisk(
@@ -351,7 +351,7 @@ contract PerpetualMint_resolveERC1155Mint is
         );
 
         vm.prank(minter);
-        perpetualMint.exposed_resolveERC1155Mint(
+        perpetualMint.exposed_resolveERC1155Mints(
             minter,
             PARALLEL_ALPHA,
             randomWords
@@ -367,7 +367,7 @@ contract PerpetualMint_resolveERC1155Mint is
     }
 
     /// @dev test that depositor address is removed from activeERC1155Owners if depositor activeERC1155Tokens is zero
-    function test_resolveERC1155MintRemovesDepositorFromActiveERC1155OwnersIfDepositorActiveERC1155TokensIsZero()
+    function test_resolveERC1155MintsRemovesDepositorFromActiveERC1155OwnersIfDepositorActiveERC1155TokensIsZero()
         public
     {
         // grab slot of activeERC1155Tokens
@@ -427,7 +427,7 @@ contract PerpetualMint_resolveERC1155Mint is
         ); // only two active tokens
 
         vm.prank(minter);
-        perpetualMint.exposed_resolveERC1155Mint(
+        perpetualMint.exposed_resolveERC1155Mints(
             minter,
             PARALLEL_ALPHA,
             randomWords
@@ -445,7 +445,7 @@ contract PerpetualMint_resolveERC1155Mint is
     }
 
     /// @dev test that depostior depositorTokenRisk is deleted if despositor activeERC1155 tokens are zero
-    function test_resolveERC1155MintDeletesDepositorTokenRiskIfDepositorActiveERC1155TokensIsZero()
+    function test_resolveERC1155MintsDeletesDepositorTokenRiskIfDepositorActiveERC1155TokensIsZero()
         public
     {
         // grab slot of activeERC1155Tokens
@@ -505,7 +505,7 @@ contract PerpetualMint_resolveERC1155Mint is
         ); // only two active tokens
 
         vm.prank(minter);
-        perpetualMint.exposed_resolveERC1155Mint(
+        perpetualMint.exposed_resolveERC1155Mints(
             minter,
             PARALLEL_ALPHA,
             randomWords
@@ -545,7 +545,7 @@ contract PerpetualMint_resolveERC1155Mint is
         );
 
         vm.prank(minter);
-        perpetualMint.exposed_resolveERC1155Mint(
+        perpetualMint.exposed_resolveERC1155Mints(
             minter,
             PARALLEL_ALPHA,
             randomWords

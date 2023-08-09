@@ -2,8 +2,9 @@
 
 pragma solidity 0.8.21;
 
-import { PerpetualMint } from "../../../../contracts/facets/L2/PerpetualMint/PerpetualMint.sol";
 import { IPerpetualMintHarness } from "./IPerpetualMintHarness.sol";
+import { PerpetualMint } from "../../../../contracts/facets/L2/PerpetualMint/PerpetualMint.sol";
+import { PerpetualMintStorage as Storage } from "../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
 /// @title PerpetualMintHarness
 /// @dev exposes internal PerpetualMint internal functions for testing
@@ -12,13 +13,20 @@ contract PerpetualMintHarness is IPerpetualMintHarness, PerpetualMint {
 
     /// @dev exposes _assignEscrowedERC1155Asset method
     function exposed_assignEscrowedERC1155Asset(
-        address from,
-        address to,
+        address originalOwner,
+        address newOwner,
         address collection,
-        uint256 tokenId,
-        uint256 tokenRisk
+        uint256 tokenId
     ) external {
-        _assignEscrowedERC1155Asset(from, to, collection, tokenId, tokenRisk);
+        Storage.Layout storage l = Storage.layout();
+
+        _assignEscrowedERC1155Asset(
+            l,
+            originalOwner,
+            newOwner,
+            collection,
+            tokenId
+        );
     }
 
     /// @dev exposes _normalizeValue method
@@ -29,22 +37,26 @@ contract PerpetualMintHarness is IPerpetualMintHarness, PerpetualMint {
         normalizedValue = _normalizeValue(value, basis);
     }
 
-    /// @dev exposes _resolve1155Mint method
-    function exposed_resolveERC1155Mint(
+    /// @dev exposes _resolve1155Mints method
+    function exposed_resolveERC1155Mints(
         address account,
         address collection,
         uint256[] memory randomWords
     ) external {
-        _resolveERC1155Mint(account, collection, randomWords);
+        Storage.Layout storage l = Storage.layout();
+
+        _resolveERC1155Mints(l, account, collection, randomWords);
     }
 
-    /// @dev exposes _resolveERC721Mint method
-    function exposed_resolveERC721Mint(
+    /// @dev exposes _resolveERC721Mints method
+    function exposed_resolveERC721Mints(
         address account,
         address collection,
         uint256[] memory randomWords
     ) external {
-        _resolveERC721Mint(account, collection, randomWords);
+        Storage.Layout storage l = Storage.layout();
+
+        _resolveERC721Mints(l, account, collection, randomWords);
     }
 
     /// @dev exposis _selectERC1155Owner
@@ -53,7 +65,9 @@ contract PerpetualMintHarness is IPerpetualMintHarness, PerpetualMint {
         uint256 tokenId,
         uint256 randomValue
     ) external view returns (address owner) {
-        owner = _selectERC1155Owner(collection, tokenId, randomValue);
+        Storage.Layout storage l = Storage.layout();
+
+        owner = _selectERC1155Owner(l, collection, tokenId, randomValue);
     }
 
     /// @dev exposes _selectToken method
@@ -61,7 +75,9 @@ contract PerpetualMintHarness is IPerpetualMintHarness, PerpetualMint {
         address collection,
         uint256 randomValue
     ) external view returns (uint256 tokenId) {
-        tokenId = _selectToken(collection, randomValue);
+        Storage.Layout storage l = Storage.layout();
+
+        tokenId = _selectToken(l, collection, randomValue);
     }
 
     /// @dev exposes _updateDepositorEarnings method
@@ -69,6 +85,8 @@ contract PerpetualMintHarness is IPerpetualMintHarness, PerpetualMint {
         address depositor,
         address collection
     ) external {
-        _updateDepositorEarnings(depositor, collection);
+        Storage.Layout storage l = Storage.layout();
+
+        _updateDepositorEarnings(l, depositor, collection);
     }
 }

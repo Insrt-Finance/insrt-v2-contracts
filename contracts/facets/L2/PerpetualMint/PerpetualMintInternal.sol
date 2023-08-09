@@ -730,17 +730,17 @@ abstract contract PerpetualMintInternal is
     }
 
     /// @notice selects the account which will have an ERC1155 reassigned to the successful minter
+    /// @param l the PerpetualMint storage layout
     /// @param collection address of ERC1155 collection
     /// @param tokenId id of token
     /// @param randomValue random value used for selection
     /// @return owner address of selected account
     function _selectERC1155Owner(
+        Storage.Layout storage l,
         address collection,
         uint256 tokenId,
         uint256 randomValue
     ) internal view returns (address owner) {
-        Storage.Layout storage l = Storage.layout();
-
         EnumerableSet.AddressSet storage owners = l.activeERC1155Owners[
             collection
         ][tokenId];

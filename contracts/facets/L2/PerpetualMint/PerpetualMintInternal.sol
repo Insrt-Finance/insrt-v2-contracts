@@ -180,12 +180,13 @@ abstract contract PerpetualMintInternal is
     }
 
     /// @notice calculations the weighted collection-wide risk of a collection
+    /// @param l the PerpetualMint storage layout
     /// @param collection address of collection
     /// @return risk value of collection-wide risk
     function _averageCollectionRisk(
+        Storage.Layout storage l,
         address collection
     ) internal view returns (uint256 risk) {
-        Storage.Layout storage l = Storage.layout();
         risk = l.totalRisk[collection] / l.totalActiveTokens[collection];
     }
 

@@ -41,7 +41,9 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
     function averageCollectionRisk(
         address collection
     ) external view returns (uint256 risk) {
-        risk = _averageCollectionRisk(collection);
+        Storage.Layout storage l = Storage.layout();
+
+        risk = _averageCollectionRisk(l, collection);
     }
 
     /// @inheritdoc IPerpetualMint

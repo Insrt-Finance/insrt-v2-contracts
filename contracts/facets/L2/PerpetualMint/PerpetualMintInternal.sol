@@ -212,7 +212,7 @@ abstract contract PerpetualMintInternal is
     function _claimEarnings(address depositor, address collection) internal {
         Storage.Layout storage l = Storage.layout();
 
-        _updateDepositorEarnings(depositor, collection);
+        _updateDepositorEarnings(l, depositor, collection);
         uint256 earnings = l.depositorEarnings[depositor][collection];
 
         //TODO: should set to depositorDeductions and not to 0
@@ -346,7 +346,7 @@ abstract contract PerpetualMintInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        _updateDepositorEarnings(depositor, collection);
+        _updateDepositorEarnings(l, depositor, collection);
 
         for (uint256 i; i < tokenIds.length; ++i) {
             uint256 tokenId = tokenIds[i];
@@ -385,7 +385,7 @@ abstract contract PerpetualMintInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        _updateDepositorEarnings(depositor, collection);
+        _updateDepositorEarnings(l, depositor, collection);
 
         for (uint256 i; i < tokenIds.length; ++i) {
             uint256 tokenId = tokenIds[i];
@@ -443,7 +443,7 @@ abstract contract PerpetualMintInternal is
         }
 
         // update the depositor's collection earnings
-        _updateDepositorEarnings(depositor, collection);
+        _updateDepositorEarnings(l, depositor, collection);
 
         // iterate over the token ids
         for (uint256 i; i < tokenIdsLength; ++i) {
@@ -587,7 +587,7 @@ abstract contract PerpetualMintInternal is
         }
 
         // update the depositor's collection earnings
-        _updateDepositorEarnings(depositor, collection);
+        _updateDepositorEarnings(l, depositor, collection);
 
         // iterate over the token ids
         for (uint256 i; i < numberOfTokens; ++i) {
@@ -812,15 +812,15 @@ abstract contract PerpetualMintInternal is
         emit VRFConfigSet(config);
     }
 
-    /// @notice updates the earnings of a depositor  based on current conditions
+    /// @notice updates the earnings of a depositor based on current conditions
+    /// @param l the PerpetualMint storage layout
     /// @param collection address of collection earnings relate to
     /// @param depositor address of depositor
     function _updateDepositorEarnings(
+        Storage.Layout storage l,
         address depositor,
         address collection
     ) internal {
-        Storage.Layout storage l = Storage.layout();
-
         uint256 totalDepositorRisk = l.totalDepositorRisk[depositor][
             collection
         ];
@@ -862,7 +862,7 @@ abstract contract PerpetualMintInternal is
             revert CollectionTypeMismatch();
         }
 
-        _updateDepositorEarnings(depositor, collection);
+        _updateDepositorEarnings(l, depositor, collection);
 
         for (uint256 i; i < tokenIds.length; ++i) {
             _updateSingleERC1155TokenRisk(
@@ -896,7 +896,7 @@ abstract contract PerpetualMintInternal is
             revert CollectionTypeMismatch();
         }
 
-        _updateDepositorEarnings(depositor, collection);
+        _updateDepositorEarnings(l, depositor, collection);
 
         for (uint256 i; i < tokenIds.length; ++i) {
             uint256 tokenId = tokenIds[i];

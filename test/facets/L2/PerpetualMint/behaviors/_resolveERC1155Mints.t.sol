@@ -560,4 +560,32 @@ contract PerpetualMint_resolveERC1155Mints is
             assert(tokenIds[i] != expectedTokenId);
         }
     }
+
+    /// @dev tests that _resolveERC1155Mints reverts when random words are unmatched
+    function test_resolveERC1155MintsRevertsWhen_RandomWordsAreUnmatched()
+        public
+    {
+        // remove one word to cause unmatched random words revert
+        randomWords.pop();
+
+        vm.expectRevert(IPerpetualMintInternal.UnmatchedRandomWords.selector);
+
+        vm.startPrank(minter);
+        perpetualMint.exposed_resolveERC1155Mints(
+            minter,
+            PARALLEL_ALPHA,
+            randomWords
+        );
+
+        // add extra word to cause unmatched random words revert
+        randomWords.push(1);
+        randomWords.push(2);
+
+        vm.expectRevert(IPerpetualMintInternal.UnmatchedRandomWords.selector);
+        perpetualMint.exposed_resolveERC1155Mints(
+            minter,
+            PARALLEL_ALPHA,
+            randomWords
+        );
+    }
 }

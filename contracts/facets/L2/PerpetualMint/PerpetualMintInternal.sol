@@ -96,30 +96,29 @@ abstract contract PerpetualMintInternal is
 
     /// @notice assigns an ERC721 asset from one account to another, updating the required
     /// state variables simultaneously
-    /// @param from address asset currently is escrowed for
-    /// @param to address that asset will be assigned to
+    /// @param l the PerpetualMint storage layout
+    /// @param newOwner address that asset will be assigned to
     /// @param collection address of ERC721 collection
     /// @param tokenId token id
-    /// @param tokenRisk risk of token set by from address prior to transfer
     function _assignEscrowedERC721Asset(
-        address from,
-        address to,
+        Storage.Layout storage l,
+        address newOwner,
         address collection,
-        uint256 tokenId,
-        uint256 tokenRisk
+        uint256 tokenId
     ) internal {
-        Storage.Layout storage l = Storage.layout();
+        address originalOwner = l.escrowedERC721Owner[collection][tokenId];
+        uint256 tokenRisk = l.tokenRisk[collection][tokenId];
 
-        _updateDepositorEarnings(from, collection);
-        _updateDepositorEarnings(to, collection);
+        _updateDepositorEarnings(l, originalOwner, collection);
+        _updateDepositorEarnings(l, newOwner, collection);
 
-        --l.activeTokens[from][collection];
-        ++l.inactiveTokens[to][collection];
+        --l.activeTokens[originalOwner][collection];
+        ++l.inactiveTokens[newOwner][collection];
 
         l.activeTokenIds[collection].remove(tokenId);
-        l.escrowedERC721Owner[collection][tokenId] = to;
+        l.escrowedERC721Owner[collection][tokenId] = newOwner;
         l.totalRisk[collection] -= tokenRisk;
-        l.totalDepositorRisk[from][collection] -= tokenRisk;
+        l.totalDepositorRisk[originalOwner][collection] -= tokenRisk;
         --l.totalActiveTokens[collection];
         l.tokenRisk[collection][tokenId] = 0;
     }

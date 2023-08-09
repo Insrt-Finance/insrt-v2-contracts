@@ -58,33 +58,35 @@ abstract contract PerpetualMintInternal is
 
     /// @notice assigns an ERC1155 asset from one account to another, updating the required
     /// state variables simultaneously
-    /// @param from address asset currently is escrowed for
-    /// @param to address that asset will be assigned to
+    /// @param l the PerpetualMint storage layout
+    /// @param originalOwner address asset currently is escrowed for
+    /// @param newOwner address that asset will be assigned to
     /// @param collection address of ERC1155 collection
     /// @param tokenId token id
-    /// @param tokenRisk risk of token set by from address prior to transfer
     function _assignEscrowedERC1155Asset(
-        address from,
-        address to,
+        Storage.Layout storage l,
+        address originalOwner,
+        address newOwner,
         address collection,
-        uint256 tokenId,
-        uint256 tokenRisk
+        uint256 tokenId
     ) internal {
-        Storage.Layout storage l = Storage.layout();
+        uint256 tokenRisk = l.depositorTokenRisk[originalOwner][collection][
+            tokenId
+        ];
 
-        _updateDepositorEarnings(from, collection);
-        _updateDepositorEarnings(to, collection);
+        _updateDepositorEarnings(l, originalOwner, collection);
+        _updateDepositorEarnings(l, newOwner, collection);
 
-        --l.activeERC1155Tokens[from][collection][tokenId];
-        ++l.inactiveERC1155Tokens[to][collection][tokenId];
+        --l.activeERC1155Tokens[originalOwner][collection][tokenId];
+        ++l.inactiveERC1155Tokens[newOwner][collection][tokenId];
         --l.totalActiveTokens[collection];
         l.totalRisk[collection] -= tokenRisk;
         l.tokenRisk[collection][tokenId] -= tokenRisk;
-        l.totalDepositorRisk[from][collection] -= tokenRisk;
+        l.totalDepositorRisk[originalOwner][collection] -= tokenRisk;
 
-        if (l.activeERC1155Tokens[from][collection][tokenId] == 0) {
-            l.activeERC1155Owners[collection][tokenId].remove(from);
-            l.depositorTokenRisk[from][collection][tokenId] = 0;
+        if (l.activeERC1155Tokens[originalOwner][collection][tokenId] == 0) {
+            l.activeERC1155Owners[collection][tokenId].remove(originalOwner);
+            l.depositorTokenRisk[originalOwner][collection][tokenId] = 0;
         }
 
         if (l.tokenRisk[collection][tokenId] == 0) {

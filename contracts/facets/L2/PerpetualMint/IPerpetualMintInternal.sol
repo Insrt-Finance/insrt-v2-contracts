@@ -28,6 +28,9 @@ interface IPerpetualMintInternal {
     /// type than that specified in the functional call
     error CollectionTypeMismatch();
 
+    /// @notice thrown when attempting to update a risk to be the same as the previous risk
+    error IdenticalRisk();
+
     /// @notice thrown when an incorrent amount of ETH is received
     error IncorrectETHReceived();
 
@@ -36,6 +39,9 @@ interface IPerpetualMintInternal {
 
     /// @notice thrown when a non-owner is attempting to modify token parameters
     error OnlyEscrowedTokenOwner();
+
+    /// @notice thrown when a depositor without active tokens attempts to update their token risk
+    error OwnerInactive();
 
     /// @notice thrown when a token that is not idled (inactive) is attempted to be reactivated
     error TokenAlreadyActive();

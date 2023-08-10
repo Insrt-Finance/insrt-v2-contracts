@@ -226,6 +226,22 @@ abstract contract PerpetualMintInternal is
         }
     }
 
+    /// @notice enforces that a depositor has active ERC1155 tokens of that particular token Id
+    /// @param l storage struct for PerpetualMint
+    /// @param depositor address of depositor
+    /// @param collection address of ERC1155 collection
+    /// @param tokenId id of token
+    function _enforceERC1155Activity(
+        Storage.Layout storage l,
+        address depositor,
+        address collection,
+        uint256 tokenId
+    ) internal view {
+        if (l.activeERC1155Tokens[depositor][collection][tokenId] == 0) {
+            revert OwnerInactive();
+        }
+    }
+
     /// @notice enforces that a depositor is an owner of a tokenId in an ERC1155 collection
     /// @param l storage struct for PerpetualMint
     /// @param depositor address of depositor
@@ -827,20 +843,16 @@ abstract contract PerpetualMintInternal is
     /// @param depositor address of escrowed token owner
     /// @param collection address of token collection
     /// @param tokenIds array of token ids
-    /// @param amounts amount of inactive tokens to activate for each tokenId
     /// @param risks array of new risk values for token ids
     function _updateERC1155TokenRisks(
         address depositor,
         address collection,
         uint256[] calldata tokenIds,
-        uint256[] calldata amounts,
         uint256[] calldata risks
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        if (
-            tokenIds.length != amounts.length || tokenIds.length != risks.length
-        ) {
+        if (tokenIds.length != risks.length) {
             revert ArrayLengthMismatch();
         }
 
@@ -855,7 +867,6 @@ abstract contract PerpetualMintInternal is
                 depositor,
                 collection,
                 tokenIds[i],
-                amounts[i],
                 risks[i]
             );
         }
@@ -916,56 +927,41 @@ abstract contract PerpetualMintInternal is
     /// @param depositor address of escrowed token owner
     /// @param collection address of token collection
     /// @param tokenId id of token
-    /// @param amount amount of inactive tokens to activate for tokenId
     /// @param risk new risk value for token id
     function _updateSingleERC1155TokenRisk(
         address depositor,
         address collection,
         uint256 tokenId,
-        uint256 amount,
         uint256 risk
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
         _enforceBasis(risk);
         _enforceNonZeroRisk(risk);
-        _enforceERC1155Ownership(l, depositor, collection, tokenId);
+        _enforceERC1155Activity(l, depositor, collection, tokenId);
 
         uint256 oldRisk = l.depositorTokenRisk[depositor][collection][tokenId];
+
+        if (oldRisk == risk) {
+            revert IdenticalRisk();
+        }
+
         uint256 riskChange;
 
         if (risk > oldRisk) {
             riskChange =
                 (risk - oldRisk) *
-                l.activeERC1155Tokens[depositor][collection][tokenId] +
-                risk *
-                amount;
+                l.activeERC1155Tokens[depositor][collection][tokenId];
             l.totalDepositorRisk[depositor][collection] += riskChange;
             l.tokenRisk[collection][tokenId] += riskChange;
         } else {
-            uint256 activeTokenRiskChange = (oldRisk - risk) *
+            riskChange =
+                (oldRisk - risk) *
                 l.activeERC1155Tokens[depositor][collection][tokenId];
-            uint256 inactiveTokenRiskChange = risk * amount;
-
-            // determine whether overall risk increases or decreases - determined
-            // from whether enough inactive tokens are activated to exceed the decrease
-            // of active token risk
-            // if the changes are equal, no state changes need to be made - eg when the risk
-            // value is set to half of its previous amount, and the inactive tokens are equal to
-            // the active tokens
-            if (activeTokenRiskChange > inactiveTokenRiskChange) {
-                riskChange = activeTokenRiskChange - inactiveTokenRiskChange;
-                l.totalDepositorRisk[depositor][collection] -= riskChange;
-                l.tokenRisk[collection][tokenId] -= riskChange;
-            } else {
-                riskChange = inactiveTokenRiskChange - activeTokenRiskChange;
-                l.totalDepositorRisk[depositor][collection] += riskChange;
-                l.tokenRisk[collection][tokenId] += riskChange;
-            }
+            l.totalDepositorRisk[depositor][collection] -= riskChange;
+            l.tokenRisk[collection][tokenId] -= riskChange;
         }
 
-        l.activeERC1155Tokens[depositor][collection][tokenId] += amount;
-        l.inactiveERC1155Tokens[depositor][collection][tokenId] -= amount;
         l.depositorTokenRisk[depositor][collection][tokenId] = risk;
     }
 }

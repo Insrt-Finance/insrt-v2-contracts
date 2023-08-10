@@ -111,12 +111,10 @@ interface IPerpetualMint {
     /// @notice updates the risk associated with escrowed ERC1155 tokens of a depositor
     /// @param collection address of token collection
     /// @param tokenIds array of token ids
-    /// @param amounts amount of inactive tokens to activate for each tokenId
     /// @param risks array of new risk values for token ids
     function updateERC1155TokenRisks(
         address collection,
         uint256[] calldata tokenIds,
-        uint256[] calldata amounts,
         uint256[] calldata risks
     ) external;
 

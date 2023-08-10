@@ -128,16 +128,9 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
     function updateERC1155TokenRisks(
         address collection,
         uint256[] calldata tokenIds,
-        uint256[] calldata amounts,
         uint256[] calldata risks
     ) external {
-        _updateERC1155TokenRisks(
-            msg.sender,
-            collection,
-            tokenIds,
-            amounts,
-            risks
-        );
+        _updateERC1155TokenRisks(msg.sender, collection, tokenIds, risks);
     }
 
     /// @inheritdoc IPerpetualMint

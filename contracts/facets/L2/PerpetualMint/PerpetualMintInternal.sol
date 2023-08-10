@@ -864,6 +864,7 @@ abstract contract PerpetualMintInternal is
 
         for (uint256 i; i < tokenIds.length; ++i) {
             _updateSingleERC1155TokenRisk(
+                l,
                 depositor,
                 collection,
                 tokenIds[i],
@@ -924,18 +925,18 @@ abstract contract PerpetualMintInternal is
     }
 
     /// @notice updates the risk for a single ERC1155 tokenId
+    /// @param l the PerpetualMint storage layout
     /// @param depositor address of escrowed token owner
     /// @param collection address of token collection
     /// @param tokenId id of token
     /// @param risk new risk value for token id
     function _updateSingleERC1155TokenRisk(
+        Storage.Layout storage l,
         address depositor,
         address collection,
         uint256 tokenId,
         uint256 risk
     ) internal {
-        Storage.Layout storage l = Storage.layout();
-
         _enforceBasis(risk);
         _enforceNonZeroRisk(risk);
         _enforceERC1155Activity(l, depositor, collection, tokenId);

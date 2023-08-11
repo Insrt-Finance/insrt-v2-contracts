@@ -11,10 +11,10 @@
   "solidity.packageDefaultDependenciesContractsDirectory": "src",
   "solidity.packageDefaultDependenciesDirectory": "lib",
   "solidity.remappings": [
-    "@chainlink/interfaces/=lib/chainlink/contracts/src/v0.8/interfaces/",
+    "@chainlink=lib/chainlink/contracts/src/v0.8/",
     "@chainlink/vrf/=lib/chainlink/contracts/src/v0.8/vrf/",
     "@solidstate/contracts/=lib/solidstate-solidity/contracts/",
     "@solidstate/layerzero-client/=lib/layerzero-client/contracts/",
-    "forge-std/=lib/forge-std/src/",
+    "forge-std/=lib/forge-std/src/"
   ]
 }

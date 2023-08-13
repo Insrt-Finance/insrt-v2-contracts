@@ -44,6 +44,10 @@ library PerpetualMintStorage {
         mapping(address collection => AssetType) collectionType;
         /// @dev total amount of ETH (native token) earned for a collection from mint attempts
         mapping(address collection => uint256 amount) collectionEarnings;
+        /// @dev value of collectionEarnings when totalRisk of collection was last updated
+        mapping(address collection => uint256 earnings) lastCollectionEarnings;
+        /// @dev base multiplier for earnings for a collection - increased every time totalRisk is updated
+        mapping(address collection => uint256 multiplier) baseMultiplier;
         /// @dev price of mint attempt in ETH (native token) for a collection
         mapping(address collection => uint256 mintPrice) collectionMintPrice;
         /// @dev sum of risk of every asset in a collection
@@ -63,8 +67,8 @@ library PerpetualMintStorage {
         /// @dev set of ERC1155 token owners which have tokens escrowed and available for minting, of a given tokenId for a collection
         mapping(address collection => mapping(uint256 tokenId => EnumerableSet.AddressSet owners)) activeERC1155Owners;
         ///User specific
-        /// @dev amount of deductions in ETH (native token) for a depositor for a collection
-        mapping(address depositor => mapping(address collection => uint256 amount)) depositorDeductions;
+        /// @dev earnings multiplier deducted from globalEarningsMultiplier for a depositor for a collection
+        mapping(address depositor => mapping(address collection => uint256 multiplier)) multiplierOffset;
         /// @dev amount of earnings in ETH (native token) for a depositor for a collection
         mapping(address depositor => mapping(address collection => uint256 amount)) depositorEarnings;
         /// @dev amount of tokens escrowed by the contract on behalf of a depositor for an ERC721 collection
@@ -82,13 +86,6 @@ library PerpetualMintStorage {
         mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint256 amount))) activeERC1155Tokens;
         /// @dev number of tokens of particular tokenId for an ERC1155 collection of a user which are not able to be minted
         mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint256 amount))) inactiveERC1155Tokens;
-        ////////// EXPERIMENTAL //////////
-        /// @dev global multiplier for earnings for a collection - increased every time totalRisk is updated
-        mapping(address collection => uint256 multiplier) globalEarningsMultiplier;
-        /// @dev value of collectionEarnings when totalRisk of collection was updated
-        mapping(address collection => uint256 earnings) lastCollectionEarnings;
-        /// @dev earnings multiplier deducted from globalEarningsMultiplier for a depositor for a collection
-        mapping(address depositor => mapping(address collection => uint256 multiplier)) deductedMultiplier;
     }
 
     bytes32 internal constant STORAGE_SLOT =

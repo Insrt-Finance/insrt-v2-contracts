@@ -47,7 +47,8 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     // all depositors will deposit the same amount of ParallelAlpha tokens
     uint256 internal parallelAlphaTokenAmount = 10;
 
-    uint256 MINT_PRICE = 0.5 ether;
+    // realistic mint price in ETH given mint price of 50USD and ETH price 1850USD
+    uint256 MINT_PRICE = 0.027 ether;
 
     // depositors
     address payable internal depositorOne = payable(address(1));
@@ -119,6 +120,19 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
 
         perpetualMint.setCollectionMintPrice(BORED_APE_YACHT_CLUB, MINT_PRICE);
         perpetualMint.setCollectionMintPrice(PARALLEL_ALPHA, MINT_PRICE);
+
+        assert(
+            MINT_PRICE ==
+                _collectionMintPrice(
+                    address(perpetualMint),
+                    BORED_APE_YACHT_CLUB
+                )
+        );
+
+        assert(
+            MINT_PRICE ==
+                _collectionMintPrice(address(perpetualMint), PARALLEL_ALPHA)
+        );
 
         bytes32 collectionTypeSlot = keccak256(
             abi.encode(
@@ -240,6 +254,36 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
             TEST_PATH, // would be the expected path in production, here this is a dummy value
             TEST_NONCE, // dummy nonce value
             depositTwoData
+        );
+    }
+
+    /// @dev mocks earnings accrued by an amount of unsuccessful mints
+    /// @dev assumes 0 mint fees for simplicity
+    /// @param collection address of collection
+    /// @param mintAmount amount of unsuccessful mint attemps
+    function mockUnsuccessfulCollectionMints(
+        address collection,
+        uint256 mintAmount
+    ) internal {
+        // grab collection earnings storage slot
+        bytes32 collectionEarningsStorageSlot = keccak256(
+            abi.encode(
+                collection, // the collection address
+                uint256(Storage.STORAGE_SLOT) + 9 // the collectionEarnings storage slot
+            )
+        );
+
+        uint256 newEarnings = _collectionEarnings(
+            address(perpetualMint),
+            collection
+        ) +
+            _collectionMintPrice(address(perpetualMint), collection) *
+            mintAmount;
+
+        vm.store(
+            address(perpetualMint),
+            collectionEarningsStorageSlot,
+            bytes32(newEarnings)
         );
     }
 }

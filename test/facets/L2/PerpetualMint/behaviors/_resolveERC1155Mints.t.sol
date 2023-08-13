@@ -74,7 +74,7 @@ contract PerpetualMint_resolveERC1155Mints is
             oldOwner,
             PARALLEL_ALPHA
         );
-        oldDepositorDeductions = _depositorDeductions(
+        oldDepositorDeductions = _multiplierOffset(
             address(perpetualMint),
             oldOwner,
             PARALLEL_ALPHA
@@ -141,11 +141,8 @@ contract PerpetualMint_resolveERC1155Mints is
         );
 
         assert(
-            _depositorDeductions(
-                address(perpetualMint),
-                minter,
-                PARALLEL_ALPHA
-            ) == COLLECTION_EARNINGS
+            _multiplierOffset(address(perpetualMint), minter, PARALLEL_ALPHA) ==
+                COLLECTION_EARNINGS
         );
     }
 
@@ -160,7 +157,7 @@ contract PerpetualMint_resolveERC1155Mints is
             randomWords
         );
 
-        uint256 newDepositorDeductions = _depositorDeductions(
+        uint256 newDepositorDeductions = _multiplierOffset(
             address(perpetualMint),
             oldOwner,
             PARALLEL_ALPHA
@@ -196,7 +193,7 @@ contract PerpetualMint_resolveERC1155Mints is
             randomWords
         );
 
-        uint256 newDepositorDeductions = _depositorDeductions(
+        uint256 newDepositorDeductions = _multiplierOffset(
             address(perpetualMint),
             oldOwner,
             PARALLEL_ALPHA

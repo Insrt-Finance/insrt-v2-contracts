@@ -69,7 +69,7 @@ contract PerpetualMint_reactivateERC721Assets is
             BORED_APE_YACHT_CLUB
         );
 
-        uint256 oldDepositorDeductions = _depositorDeductions(
+        uint256 oldDepositorDeductions = _multiplierOffset(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -81,7 +81,7 @@ contract PerpetualMint_reactivateERC721Assets is
         vm.prank(depositorOne);
         perpetualMint.idleERC721Tokens(BORED_APE_YACHT_CLUB, tokenIds);
 
-        uint256 newDepositorDeductions = _depositorDeductions(
+        uint256 newDepositorDeductions = _multiplierOffset(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -123,7 +123,7 @@ contract PerpetualMint_reactivateERC721Assets is
         );
 
         assert(
-            _depositorDeductions(
+            _multiplierOffset(
                 address(perpetualMint),
                 depositorOne,
                 BORED_APE_YACHT_CLUB

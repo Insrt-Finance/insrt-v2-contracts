@@ -74,7 +74,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
             address(perpetualMint),
             PARALLEL_ALPHA
         );
-        uint256 oldDepositorDeductions = _depositorDeductions(
+        uint256 oldDepositorDeductions = _multiplierOffset(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA
@@ -86,7 +86,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
         vm.prank(depositorOne);
         perpetualMint.updateERC1155TokenRisks(PARALLEL_ALPHA, tokenIds, risks);
 
-        uint256 newDepositorDeductions = _depositorDeductions(
+        uint256 newDepositorDeductions = _multiplierOffset(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA

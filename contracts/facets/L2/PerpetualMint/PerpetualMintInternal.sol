@@ -836,23 +836,33 @@ abstract contract PerpetualMintInternal is
         address depositor,
         address collection
     ) internal {
-        uint256 totalDepositorRisk = l.totalDepositorRisk[depositor][
-            collection
-        ];
+        uint256 totalRisk = l.totalRisk[collection];
 
-        if (totalDepositorRisk != 0) {
-            l.depositorEarnings[depositor][collection] +=
-                ((l.collectionEarnings[collection] * totalDepositorRisk) /
-                    l.totalRisk[collection]) -
-                l.depositorDeductions[depositor][collection];
+        // if totalRisk of collection is non-zero, it means collection has been active and
+        // so globalEarningsMultierplier must be updated upon risk change
+        if (totalRisk != 0) {
+            // update global earnings by dividing the collection earnings increment from last risk update
+            // until current risk update by total collection risk
+            _updateGlobalEarningsMultiplier(l, collection, totalRisk);
 
-            l.depositorDeductions[depositor][collection] = l.depositorEarnings[
-                depositor
-            ][collection];
-        } else {
-            l.depositorDeductions[depositor][collection] = l.collectionEarnings[
+            uint256 totalDepositorRisk = l.totalDepositorRisk[depositor][
                 collection
             ];
+
+            // if totalDepositorRisk is non-zero, depositor must have their earnings updated
+            if (totalDepositorRisk != 0) {
+                // increase depositorEarnings by difference in globalEarningsMultiplier and deductedMultiplier
+                // of depositor multiplied by totalDepositorRisk of collection
+                l.depositorEarnings[depositor][collection] +=
+                    totalDepositorRisk *
+                    (l.globalEarningsMultiplier[collection] -
+                        l.deductedMultiplier[depositor][collection]);
+            }
+
+            // update deductedMultiplier of depositor for collection by setting it to
+            // globalEarningsMultipler of collection
+            l.deductedMultiplier[depositor][collection] = l
+                .globalEarningsMultiplier[collection];
         }
     }
 
@@ -939,6 +949,25 @@ abstract contract PerpetualMintInternal is
                 l.totalDepositorRisk[depositor][collection] -= riskChange;
             }
         }
+    }
+
+    /// @notice updates the globealEarningsMultiplier for a given collection
+    /// @param l the PerpetualMint storage layout
+    /// @param collection address of token collection
+    /// @param totalRisk total risk of collection
+    function _updateGlobalEarningsMultiplier(
+        Storage.Layout storage l,
+        address collection,
+        uint256 totalRisk
+    ) internal {
+        // update global earnings by dividing the collection earnings increment from last risk update
+        // until current risk update by total collection risk
+        l.globalEarningsMultiplier[collection] +=
+            (l.collectionEarnings[collection] -
+                l.lastCollectionEarnings[collection]) /
+            totalRisk;
+
+        l.lastCollectionEarnings[collection] = l.collectionEarnings[collection];
     }
 
     /// @notice updates the risk for a single ERC1155 tokenId

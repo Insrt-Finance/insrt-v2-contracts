@@ -77,7 +77,7 @@ contract PerpetualMint_updateERC721TokenRisks is
         );
 
         assert(
-            _depositorDeductions(
+            _multiplierOffset(
                 address(perpetualMint),
                 depositorOne,
                 BORED_APE_YACHT_CLUB
@@ -107,7 +107,7 @@ contract PerpetualMint_updateERC721TokenRisks is
             address(perpetualMint),
             BORED_APE_YACHT_CLUB
         );
-        uint256 oldDepositorDeductions = _depositorDeductions(
+        uint256 oldDepositorDeductions = _multiplierOffset(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB
@@ -123,7 +123,7 @@ contract PerpetualMint_updateERC721TokenRisks is
             risks
         );
 
-        uint256 newDepositorDeductions = _depositorDeductions(
+        uint256 newDepositorDeductions = _multiplierOffset(
             address(perpetualMint),
             depositorOne,
             BORED_APE_YACHT_CLUB

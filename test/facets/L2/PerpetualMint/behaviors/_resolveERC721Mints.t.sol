@@ -75,7 +75,7 @@ contract PerpetualMint_resolveERC721Mints is
             oldOwner,
             BORED_APE_YACHT_CLUB
         );
-        oldDepositorDeductions = _depositorDeductions(
+        oldDepositorDeductions = _multiplierOffset(
             address(perpetualMint),
             oldOwner,
             BORED_APE_YACHT_CLUB
@@ -186,7 +186,7 @@ contract PerpetualMint_resolveERC721Mints is
             randomWords
         );
 
-        uint256 newDepositorDeductions = _depositorDeductions(
+        uint256 newDepositorDeductions = _multiplierOffset(
             address(perpetualMint),
             oldOwner,
             BORED_APE_YACHT_CLUB
@@ -221,7 +221,7 @@ contract PerpetualMint_resolveERC721Mints is
         );
 
         assert(
-            _depositorDeductions(
+            _multiplierOffset(
                 address(perpetualMint),
                 address(minter),
                 BORED_APE_YACHT_CLUB
@@ -261,7 +261,7 @@ contract PerpetualMint_resolveERC721Mints is
 
         assert(
             expectedEarnings ==
-                _depositorDeductions(
+                _multiplierOffset(
                     address(perpetualMint),
                     depositorTwo,
                     BORED_APE_YACHT_CLUB

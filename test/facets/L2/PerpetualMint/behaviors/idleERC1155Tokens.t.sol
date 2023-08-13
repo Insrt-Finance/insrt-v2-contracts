@@ -69,7 +69,7 @@ contract PerpetualMint_idleERC1155Tokens is
             address(perpetualMint),
             PARALLEL_ALPHA
         );
-        uint256 oldDepositorDeductions = _depositorDeductions(
+        uint256 oldDepositorDeductions = _multiplierOffset(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA
@@ -81,7 +81,7 @@ contract PerpetualMint_idleERC1155Tokens is
         vm.prank(depositorOne);
         perpetualMint.idleERC1155Tokens(PARALLEL_ALPHA, tokenIds, amounts);
 
-        uint256 newDepositorDeductions = _depositorDeductions(
+        uint256 newDepositorDeductions = _multiplierOffset(
             address(perpetualMint),
             depositorOne,
             PARALLEL_ALPHA

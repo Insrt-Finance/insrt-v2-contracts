@@ -172,12 +172,17 @@ abstract contract PerpetualMintInternal is
     ) internal view returns (uint256 earnings) {
         Storage.Layout storage l = Storage.layout();
 
-        earnings =
-            l.depositorEarnings[depositor][collection] +
-            ((l.collectionEarnings[collection] *
-                l.totalDepositorRisk[depositor][collection]) /
-                l.totalRisk[collection]) -
-            l.depositorDeductions[depositor][collection];
+        earnings = l.depositorEarnings[depositor][collection];
+
+        if (l.totalDepositorRisk[depositor][collection] != 0) {
+            uint256 virtualBaseMultiplier = (l.collectionEarnings[collection] -
+                l.lastCollectionEarnings[collection]) / l.totalRisk[collection];
+
+            earnings +=
+                l.totalDepositorRisk[depositor][collection] *
+                (virtualBaseMultiplier -
+                    l.multiplierOffset[depositor][collection]);
+        }
     }
 
     /// @notice calculations the weighted collection-wide risk of a collection
@@ -213,10 +218,10 @@ abstract contract PerpetualMintInternal is
         Storage.Layout storage l = Storage.layout();
 
         _updateDepositorEarnings(l, depositor, collection);
-        uint256 earnings = l.depositorEarnings[depositor][collection];
 
-        //TODO: should set to depositorDeductions and not to 0
+        uint256 earnings = l.depositorEarnings[depositor][collection];
         l.depositorEarnings[depositor][collection] = 0;
+
         payable(depositor).sendValue(earnings);
     }
 
@@ -827,6 +832,25 @@ abstract contract PerpetualMintInternal is
         emit VRFConfigSet(config);
     }
 
+    /// @notice updates the baseMultiplier for a given collection
+    /// @param l the PerpetualMint storage layout
+    /// @param collection address of token collection
+    /// @param totalRisk total risk of collection
+    function _updateBaseMultiplier(
+        Storage.Layout storage l,
+        address collection,
+        uint256 totalRisk
+    ) internal {
+        // update global earnings by dividing the collection earnings increment from last risk update
+        // until current risk update by total collection risk
+        l.baseMultiplier[collection] +=
+            (l.collectionEarnings[collection] -
+                l.lastCollectionEarnings[collection]) /
+            totalRisk;
+
+        l.lastCollectionEarnings[collection] = l.collectionEarnings[collection];
+    }
+
     /// @notice updates the earnings of a depositor based on current conditions
     /// @param l the PerpetualMint storage layout
     /// @param collection address of collection earnings relate to
@@ -950,25 +974,6 @@ abstract contract PerpetualMintInternal is
                 l.totalDepositorRisk[depositor][collection] -= riskChange;
             }
         }
-    }
-
-    /// @notice updates the baseMultiplier for a given collection
-    /// @param l the PerpetualMint storage layout
-    /// @param collection address of token collection
-    /// @param totalRisk total risk of collection
-    function _updateBaseMultiplier(
-        Storage.Layout storage l,
-        address collection,
-        uint256 totalRisk
-    ) internal {
-        // update global earnings by dividing the collection earnings increment from last risk update
-        // until current risk update by total collection risk
-        l.baseMultiplier[collection] +=
-            (l.collectionEarnings[collection] -
-                l.lastCollectionEarnings[collection]) /
-            totalRisk;
-
-        l.lastCollectionEarnings[collection] = l.collectionEarnings[collection];
     }
 
     /// @notice updates the risk for a single ERC1155 tokenId

@@ -6,8 +6,6 @@ import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
-import "forge-std/console.sol";
-
 /// @title PerpetuaMint_updateDepositorEarnings
 /// @dev PerpetualMint test contract for testing expected behavior of the updateDepositorEarnings function
 contract PerpetualMint_updateDepositorEarnings is
@@ -16,19 +14,6 @@ contract PerpetualMint_updateDepositorEarnings is
 {
     uint256 internal constant unsuccessfulMintAttemps = 1;
     address internal constant COLLECTION = BORED_APE_YACHT_CLUB;
-    // grab totalDepositorsRisk storage slot
-    bytes32 internal totalDepositorRiskStorageSlot =
-        keccak256(
-            abi.encode(
-                COLLECTION, // the ERC721 collection
-                keccak256(
-                    abi.encode(
-                        depositorOne, // address of depositor
-                        uint256(Storage.STORAGE_SLOT) + 22 // totalDepositorRisk mapping storage slot
-                    )
-                )
-            )
-        );
 
     /// @dev sets up the context for the test cases
     function setUp() public override {

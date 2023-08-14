@@ -13,6 +13,11 @@ interface IPerpetualMintHarness {
         uint256 tokenId
     ) external;
 
+    /// @dev exposes _balanceOf method
+    function exposed_balanceOf(
+        address account
+    ) external view returns (uint256 balance);
+
     /// @dev exposes _normalizeValue
     function exposed_normalizeValue(
         uint256 value,

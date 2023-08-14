@@ -29,6 +29,13 @@ contract PerpetualMintHarness is IPerpetualMintHarness, PerpetualMint {
         );
     }
 
+    /// @dev IPerpetualMintHarness
+    function exposed_balanceOf(
+        address account
+    ) external view returns (uint256 balance) {
+        balance = _balanceOf(account);
+    }
+
     /// @dev exposes _normalizeValue method
     function exposed_normalizeValue(
         uint256 value,

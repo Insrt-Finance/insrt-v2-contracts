@@ -20,10 +20,6 @@ contract PerpetualMint_attemptBatchMint is
     PerpetualMintTest,
     L2ForkTest
 {
-    // Arbitrum mainnet Chainlink VRF Coordinator address
-    address internal constant VRF_COORDINATOR =
-        0x41034678D6C633D8a95c75e1138A360a28bA15d1;
-
     uint64 internal TEST_VRF_CONSUMER_NONCE = 1;
 
     uint32 internal constant TEST_MINT_ATTEMPTS = 3;
@@ -59,7 +55,7 @@ contract PerpetualMint_attemptBatchMint is
         );
 
         vm.store(
-            VRF_COORDINATOR,
+            this.perpetualMintHelper().VRF_COORDINATOR(),
             s_consumersStorageSlot,
             bytes32(uint256(TEST_VRF_CONSUMER_NONCE)) // set nonce to 1 to activate the consumer
         );
@@ -148,7 +144,7 @@ contract PerpetualMint_attemptBatchMint is
         );
 
         vm.store(
-            VRF_COORDINATOR,
+            this.perpetualMintHelper().VRF_COORDINATOR(),
             s_consumersStorageSlot,
             bytes32(uint256(TEST_VRF_CONSUMER_NONCE)) // set nonce to 1 to activate the consumer
         );

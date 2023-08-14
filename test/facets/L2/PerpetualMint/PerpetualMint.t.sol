@@ -23,6 +23,8 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
 
     IPerpetualMintTest public perpetualMint;
 
+    PerpetualMintHelper public perpetualMintHelper;
+
     //denominator used in percentage calculations
     uint32 internal constant BASIS = 1000000000;
 
@@ -139,7 +141,7 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
 
     /// @dev initialzies PerpetualMint and L2AssetHandlerMock as facets by executing a diamond cut on L2CoreDiamond.
     function initPerpetualMint() internal {
-        PerpetualMintHelper perpetualMintHelper = new PerpetualMintHelper();
+        perpetualMintHelper = new PerpetualMintHelper();
 
         ISolidStateDiamond.FacetCut[] memory facetCuts = perpetualMintHelper
             .getFacetCuts();

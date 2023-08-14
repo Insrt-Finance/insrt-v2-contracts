@@ -3,12 +3,17 @@
 pragma solidity 0.8.21;
 
 import { IPerpetualMintHarness } from "./IPerpetualMintHarness.sol";
+import { VRFConsumerBaseV2Mock } from "../../../mocks/VRFConsumerBaseV2Mock.sol";
 import { PerpetualMint } from "../../../../contracts/facets/L2/PerpetualMint/PerpetualMint.sol";
 import { PerpetualMintStorage as Storage } from "../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
 /// @title PerpetualMintHarness
 /// @dev exposes internal PerpetualMint internal functions for testing
-contract PerpetualMintHarness is IPerpetualMintHarness, PerpetualMint {
+contract PerpetualMintHarness is
+    IPerpetualMintHarness,
+    PerpetualMint,
+    VRFConsumerBaseV2Mock
+{
     constructor(address vrf) PerpetualMint(vrf) {}
 
     /// @dev exposes _assignEscrowedERC1155Asset method

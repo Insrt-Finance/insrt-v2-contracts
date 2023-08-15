@@ -18,15 +18,11 @@ contract L1AssetHandler_handleLayerZeroMessage is
 {
     using stdStorage for StdStorage;
 
-    /// @dev Dummy trusted remote test path.
-    bytes internal TEST_PATH =
-        bytes.concat(bytes20(vm.addr(1234)), bytes20(vm.addr(5678)));
+    /// @dev Sets up the test case environment.
+    function setUp() public override {
+        super.setUp();
 
-    /// @dev Dummy test nonce value.
-    uint64 internal constant TEST_NONCE = 0;
-
-    /// @dev Tests _handleLayerZeroMessage functionality for withdrawing ERC1155 tokens.
-    function test_handleLayerZeroMessageERC1155Withdrawal() public {
+        // set up the Bong Bear balance for L1AssetHandler
         stdstore
             .target(BONG_BEARS)
             .sig(bongBears.balanceOf.selector)
@@ -39,6 +35,30 @@ contract L1AssetHandler_handleLayerZeroMessage is
                 bongBearTokenAmounts[0]
         );
 
+        bongBears.setApprovalForAll(address(l1AssetHandler), true);
+
+        // set up the Bored Ape Yacht Club balance for L1AssetHandler
+        address ownerToImpersonate = boredApeYachtClub.ownerOf(
+            boredApeYachtClubTokenIds[0]
+        );
+
+        vm.prank(ownerToImpersonate);
+        boredApeYachtClub.transferFrom(
+            ownerToImpersonate,
+            address(this),
+            boredApeYachtClubTokenIds[0]
+        );
+
+        assert(
+            boredApeYachtClub.ownerOf(boredApeYachtClubTokenIds[0]) ==
+                address(this)
+        );
+
+        boredApeYachtClub.setApprovalForAll(address(l1AssetHandler), true);
+    }
+
+    /// @dev Tests _handleLayerZeroMessage functionality for withdrawing ERC1155 tokens.
+    function test_handleLayerZeroMessageERC1155Withdrawal() public {
         bytes memory encodedData = abi.encode(
             AssetType.ERC1155,
             msg.sender,
@@ -46,6 +66,8 @@ contract L1AssetHandler_handleLayerZeroMessage is
             bongBearTokenIds,
             bongBearTokenAmounts
         );
+
+        assert(bongBears.balanceOf(msg.sender, bongBearTokenIds[0]) == 0);
 
         this.mock_HandleLayerZeroMessage(
             DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
@@ -58,19 +80,13 @@ contract L1AssetHandler_handleLayerZeroMessage is
             bongBears.balanceOf(msg.sender, bongBearTokenIds[0]) ==
                 bongBearTokenAmounts[0]
         );
+        assert(bongBears.balanceOf(address(this), bongBearTokenIds[0]) == 0);
     }
 
     /// @dev Tests that _handleLayerZeroMessage emits an ERC1155AssetsWithdrawn event when withdrawing ERC1155 tokens.
     function test_handleLayerZeroMessageERC1155WithdrawalEmitsERC1155AssetsWithdrawnEvent()
         public
     {
-        stdstore
-            .target(BONG_BEARS)
-            .sig(bongBears.balanceOf.selector)
-            .with_key(address(this))
-            .with_key(bongBearTokenIds[0])
-            .checked_write(1);
-
         bytes memory encodedData = abi.encode(
             AssetType.ERC1155,
             msg.sender,
@@ -97,27 +113,16 @@ contract L1AssetHandler_handleLayerZeroMessage is
 
     /// @dev Tests _handleLayerZeroMessage functionality for withdrawing ERC721 tokens.
     function test_handleLayerZeroMessageERC721Withdrawal() public {
-        address ownerToImpersonate = boredApeYachtClub.ownerOf(
-            boredApeYachtClubTokenIds[0]
-        );
-
-        vm.prank(ownerToImpersonate);
-        boredApeYachtClub.transferFrom(
-            ownerToImpersonate,
-            address(this),
-            boredApeYachtClubTokenIds[0]
-        );
-
-        assert(
-            boredApeYachtClub.ownerOf(boredApeYachtClubTokenIds[0]) ==
-                address(this)
-        );
-
         bytes memory encodedData = abi.encode(
             AssetType.ERC721,
             msg.sender,
             BORED_APE_YACHT_CLUB,
             boredApeYachtClubTokenIds
+        );
+
+        assert(
+            boredApeYachtClub.ownerOf(boredApeYachtClubTokenIds[0]) !=
+                msg.sender
         );
 
         this.mock_HandleLayerZeroMessage(
@@ -126,23 +131,17 @@ contract L1AssetHandler_handleLayerZeroMessage is
             TEST_NONCE, // dummy nonce value
             encodedData
         );
+
+        assert(
+            boredApeYachtClub.ownerOf(boredApeYachtClubTokenIds[0]) ==
+                msg.sender
+        );
     }
 
     /// @dev Tests that _handleLayerZeroMessage emits an ERC721AssetsWithdrawn event when withdrawing ERC721 tokens.
     function test_handleLayerZeroMessageERC721WithdrawalEmitsERC721AssetsWithdrawnEvent()
         public
     {
-        address ownerToImpersonate = boredApeYachtClub.ownerOf(
-            boredApeYachtClubTokenIds[0]
-        );
-
-        vm.prank(ownerToImpersonate);
-        boredApeYachtClub.transferFrom(
-            ownerToImpersonate,
-            address(this),
-            boredApeYachtClubTokenIds[0]
-        );
-
         bytes memory encodedData = abi.encode(
             AssetType.ERC721,
             msg.sender,
@@ -166,7 +165,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
     }
 
     /// @dev Tests that _handleLayerZeroMessage reverts when an invalid asset type is received.
-    function test_handleLayerZeroMessageRevertsWhenInvalidAssetTypeIsReceived()
+    function test_handleLayerZeroMessageRevertsWhen_InvalidAssetTypeIsReceived()
         public
     {
         bytes memory encodedData = abi.encode(

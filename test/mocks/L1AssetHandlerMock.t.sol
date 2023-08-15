@@ -2,11 +2,21 @@
 
 pragma solidity 0.8.21;
 
+import "forge-std/Test.sol";
+
+import { IL1AssetHandlerMock } from "../interfaces/IL1AssetHandlerMock.sol";
 import { L1AssetHandler } from "../../contracts/facets/L1/AssetHandler/AssetHandler.sol";
 
 /// @title L1AssetHandlerMock
 /// @dev Mock contract for L1AssetHandler test cases.
-contract L1AssetHandlerMock is L1AssetHandler {
+contract L1AssetHandlerMock is IL1AssetHandlerMock, L1AssetHandler, Test {
+    /// @dev Dummy trusted remote test path.
+    bytes internal TEST_PATH =
+        bytes.concat(bytes20(vm.addr(1234)), bytes20(vm.addr(5678)));
+
+    /// @dev Dummy test nonce value.
+    uint64 internal constant TEST_NONCE = 0;
+
     /// @notice Mock function wrapper to call _handleLayerZeroMessage.
     /// @dev Allows for testing of _handleLayerZeroMessage behavior.
     /// All values except for data can be dummy values.

@@ -4,8 +4,8 @@ pragma solidity 0.8.21;
 
 import "forge-std/Test.sol";
 
-import { L2AssetHandler } from "../../contracts/facets/L2/AssetHandler/AssetHandler.sol";
 import { IL2AssetHandlerMock } from "../interfaces/IL2AssetHandlerMock.sol";
+import { L2AssetHandler } from "../../contracts/facets/L2/AssetHandler/AssetHandler.sol";
 
 /// @title L2AssetHandlerMock
 /// @dev Mock contract for L2AssetHandler test cases.

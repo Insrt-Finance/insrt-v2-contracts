@@ -166,7 +166,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
     }
 
     /// @dev Tests that _handleLayerZeroMessage reverts when an invalid asset type is received.
-    function test_handleLayerZeroMessageRevertsWhenInvalidAssetTypeIsReceived()
+    function test_handleLayerZeroMessageRevertsWhen_InvalidAssetTypeIsReceived()
         public
     {
         bytes memory encodedData = abi.encode(

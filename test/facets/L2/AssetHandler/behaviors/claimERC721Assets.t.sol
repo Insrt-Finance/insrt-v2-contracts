@@ -243,7 +243,7 @@ contract L2AssetHandler_claimERC721Assets is
     }
 
     /// @dev Tests that claimERC721Assets functionality reverts when attempting to claim more ERC721 tokens than the msg.sender has assigned to them.
-    function test_claimERC721AssetsRevertsWhenAttemptingToClaimMoreThanDepositedAmount()
+    function test_claimERC721AssetsRevertsWhen_AttemptingToClaimMoreThanDepositedAmount()
         public
     {
         vm.prank(msg.sender);
@@ -267,7 +267,7 @@ contract L2AssetHandler_claimERC721Assets is
     }
 
     /// @dev Tests that claimERC721Assets functionality reverts when attempting to claim ERC721 tokens on an unsupported remote chain.
-    function test_claimERC721AssetsRevertsWhenAttemptingToClaimOnAnUnsupportedRemoteChain()
+    function test_claimERC721AssetsRevertsWhen_AttemptingToClaimOnAnUnsupportedRemoteChain()
         public
     {
         vm.prank(msg.sender);
@@ -293,7 +293,7 @@ contract L2AssetHandler_claimERC721Assets is
     }
 
     /// @dev Tests that claimERC721Assets functionality reverts when attempting to claim deposited ERC721 tokens that are not assigned to the msg.sender.
-    function test_claimERC721AssetsRevertsWhenAttemptingToClaimSomeoneElsesDepositedTokens()
+    function test_claimERC721AssetsRevertsWhen_AttemptingToClaimSomeoneElsesDepositedTokens()
         public
     {
         vm.prank(msg.sender);
@@ -339,7 +339,7 @@ contract L2AssetHandler_claimERC721Assets is
     }
 
     /// @dev Tests that claimERC721Assets functionality reverts when LayerZero endpoint is not set.
-    function test_claimERC721AssetsRevertsWhenLayerZeroEndpointIsNotSet()
+    function test_claimERC721AssetsRevertsWhen_LayerZeroEndpointIsNotSet()
         public
     {
         vm.expectRevert(
@@ -356,7 +356,7 @@ contract L2AssetHandler_claimERC721Assets is
     }
 
     /// @dev Tests that claimERC721Assets functionality reverts when LayerZero endpoint is set incorrectly.
-    function test_claimERC721AssetsRevertsWhenLayerZeroEndpointIsSetIncorrectly()
+    function test_claimERC721AssetsRevertsWhen_LayerZeroEndpointIsSetIncorrectly()
         public
     {
         vm.prank(msg.sender);
@@ -376,7 +376,7 @@ contract L2AssetHandler_claimERC721Assets is
     }
 
     /// @dev Tests that claimERC721Assets functionality reverts when LayerZero message fee is not sent.
-    function test_claimERC721AssetsRevertsWhenLayerZeroMessageFeeIsNotSent()
+    function test_claimERC721AssetsRevertsWhen_LayerZeroMessageFeeIsNotSent()
         public
     {
         vm.prank(msg.sender);
@@ -398,7 +398,7 @@ contract L2AssetHandler_claimERC721Assets is
     }
 
     /// @dev Tests that claimERC721Assets functionality reverts when LayerZero message fee sent is insufficient.
-    function test_claimERC721AssetsRevertsWhenLayerZeroMessageFeeSentIsInsufficient()
+    function test_claimERC721AssetsRevertsWhen_LayerZeroMessageFeeSentIsInsufficient()
         public
     {
         vm.prank(msg.sender);
@@ -420,7 +420,7 @@ contract L2AssetHandler_claimERC721Assets is
     }
 
     /// @dev Tests that claimERC721Assets functionality reverts when LayerZero trusted remote address is not set.
-    function test_claimERC721AssetsRevertsWhenLayerZeroTrustedRemoteAddressIsNotSet()
+    function test_claimERC721AssetsRevertsWhen_LayerZeroTrustedRemoteAddressIsNotSet()
         public
     {
         vm.prank(msg.sender);

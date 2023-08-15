@@ -434,7 +434,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
     }
 
     /// @dev Tests that withdrawERC1155Assets functionality reverts when attempting to withdraw more ERC1155 tokens than the msg.sender has deposited.
-    function test_withdrawERC1155AssetsRevertsWhenAttemptingToWithdrawMoreThanDepositedAmount()
+    function test_withdrawERC1155AssetsRevertsWhen_AttemptingToWithdrawMoreThanDepositedAmount()
         public
     {
         vm.prank(msg.sender);
@@ -459,7 +459,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
     }
 
     /// @dev Tests that withdrawERC1155Assets functionality reverts when attempting to withdraw ERC1155 tokens on an unsupported remote chain.
-    function test_withdrawERC1155AssetsRevertsWhenAttemptingToWithdrawOnAnUnsupportedRemoteChain()
+    function test_withdrawERC1155AssetsRevertsWhen_AttemptingToWithdrawOnAnUnsupportedRemoteChain()
         public
     {
         vm.prank(msg.sender);
@@ -486,7 +486,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
     }
 
     /// @dev Tests that withdrawERC1155Assets functionality reverts when attempting to withdraw deposited ERC1155 tokens that are not owned by the msg.sender.
-    function test_withdrawERC1155AssetsRevertsWhenAttemptingToWithdrawSomeoneElsesDepositedTokens()
+    function test_withdrawERC1155AssetsRevertsWhen_AttemptingToWithdrawSomeoneElsesDepositedTokens()
         public
     {
         vm.prank(msg.sender);
@@ -540,7 +540,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
     }
 
     /// @dev Tests that withdrawERC1155Assets functionality reverts when LayerZero endpoint is not set.
-    function test_withdrawERC1155AssetsRevertsWhenLayerZeroEndpointIsNotSet()
+    function test_withdrawERC1155AssetsRevertsWhen_LayerZeroEndpointIsNotSet()
         public
     {
         vm.expectRevert(
@@ -558,7 +558,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
     }
 
     /// @dev Tests that withdrawERC1155Assets functionality reverts when LayerZero endpoint is set incorrectly.
-    function test_withdrawERC1155AssetsRevertsWhenLayerZeroEndpointIsSetIncorrectly()
+    function test_withdrawERC1155AssetsRevertsWhen_LayerZeroEndpointIsSetIncorrectly()
         public
     {
         vm.prank(msg.sender);
@@ -579,7 +579,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
     }
 
     /// @dev Tests that withdrawERC1155Assets functionality reverts when LayerZero message fee is not sent.
-    function test_withdrawERC1155AssetsRevertsWhenLayerZeroMessageFeeIsNotSent()
+    function test_withdrawERC1155AssetsRevertsWhen_LayerZeroMessageFeeIsNotSent()
         public
     {
         vm.prank(msg.sender);
@@ -602,7 +602,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
     }
 
     /// @dev Tests that withdrawERC1155Assets functionality reverts when LayerZero message fee sent is insufficient.
-    function test_withdrawERC1155AssetsRevertsWhenLayerZeroMessageFeeSentIsInsufficient()
+    function test_withdrawERC1155AssetsRevertsWhen_LayerZeroMessageFeeSentIsInsufficient()
         public
     {
         vm.prank(msg.sender);
@@ -625,7 +625,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
     }
 
     /// @dev Tests that withdrawERC1155Assets functionality reverts when LayerZero trusted remote address is not set.
-    function test_withdrawERC1155AssetsRevertsWhenLayerZeroTrustedRemoteAddressIsNotSet()
+    function test_withdrawERC1155AssetsRevertsWhen_LayerZeroTrustedRemoteAddressIsNotSet()
         public
     {
         vm.prank(msg.sender);
@@ -646,7 +646,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
     }
 
     /// @dev Tests that withdrawERC1155Assets functionality reverts when tokenIds and amounts length mismatch.
-    function test_withdrawERC1155AssetsRevertsWhenTokenIdsAndAmountsLengthMismatch()
+    function test_withdrawERC1155AssetsRevertsWhen_TokenIdsAndAmountsLengthMismatch()
         public
     {
         vm.expectRevert(

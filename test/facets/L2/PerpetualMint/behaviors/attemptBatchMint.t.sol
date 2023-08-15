@@ -190,7 +190,7 @@ contract PerpetualMint_attemptBatchMint is
     }
 
     /// @dev Tests that attemptBatchMint functionality reverts when attempting to mint inactive collections.
-    function test_attemptBatchMintRevertsWhenAttemptingToMintInactiveCollections()
+    function test_attemptBatchMintRevertsWhen_AttemptingToMintInactiveCollections()
         public
     {
         vm.expectRevert(IPerpetualMintInternal.CollectionNotActive.selector);
@@ -199,7 +199,7 @@ contract PerpetualMint_attemptBatchMint is
     }
 
     /// @dev Tests that attemptBatchMint functionality reverts when attempting to mint with an incorrect msg value amount.
-    function test_attemptBatchMintRevertsWhenAttemptingToMintWithIncorrectMsgValue()
+    function test_attemptBatchMintRevertsWhen_AttemptingToMintWithIncorrectMsgValue()
         public
     {
         vm.expectRevert(IPerpetualMintInternal.IncorrectETHReceived.selector);
@@ -211,7 +211,7 @@ contract PerpetualMint_attemptBatchMint is
     }
 
     /// @dev Tests that attemptBatchMint functionality reverts when attempting zero mints.
-    function test_attemptBatchMintRevertsWhenAttemptingZeroMints() public {
+    function test_attemptBatchMintRevertsWhen_AttemptingZeroMints() public {
         vm.expectRevert(IPerpetualMintInternal.InvalidNumberOfMints.selector);
 
         perpetualMint.attemptBatchMint(
@@ -221,7 +221,7 @@ contract PerpetualMint_attemptBatchMint is
     }
 
     /// @dev Tests that attemptBatchMint functionality reverts when the VRF consumer is not set.
-    function test_attemptBatchMintRevertsWhenVRFConsumerIsNotSet() public {
+    function test_attemptBatchMintRevertsWhen_VRFConsumerIsNotSet() public {
         vm.expectRevert(
             abi.encodeWithSelector(
                 VRFCoordinatorV2.InvalidConsumer.selector,

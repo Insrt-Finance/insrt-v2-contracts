@@ -140,7 +140,7 @@ contract L1AssetHandler_depositERC1155Assets is
     }
 
     /// @dev Tests that depositERC1155Assets functionality reverts when attempting to deposit ERC1155 tokens on an unsupported remote chain.
-    function test_depositERC1155AssetsRevertsWhenAttemptingToDepositOnAnUnsupportedRemoteChain()
+    function test_depositERC1155AssetsRevertsWhen_AttemptingToDepositOnAnUnsupportedRemoteChain()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
@@ -165,7 +165,7 @@ contract L1AssetHandler_depositERC1155Assets is
     }
 
     /// @dev Tests that depositERC1155Assets functionality reverts when LayerZero endpoint is not set.
-    function test_depositERC1155AssetsRevertsWhenLayerZeroEndpointIsNotSet()
+    function test_depositERC1155AssetsRevertsWhen_LayerZeroEndpointIsNotSet()
         public
     {
         vm.expectRevert(
@@ -184,7 +184,7 @@ contract L1AssetHandler_depositERC1155Assets is
     }
 
     /// @dev Tests that depositERC1155Assets functionality reverts when LayerZero endpoint is set incorrectly.
-    function test_depositERC1155AssetsRevertsWhenLayerZeroEndpointIsSetIncorrectly()
+    function test_depositERC1155AssetsRevertsWhen_LayerZeroEndpointIsSetIncorrectly()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(address(this)); // incorrect endpoint
@@ -205,7 +205,7 @@ contract L1AssetHandler_depositERC1155Assets is
     }
 
     /// @dev Tests that depositERC1155Assets functionality reverts when LayerZero message fee is not sent.
-    function test_depositERC1155AssetsRevertsWhenLayerZeroMessageFeeIsNotSent()
+    function test_depositERC1155AssetsRevertsWhen_LayerZeroMessageFeeIsNotSent()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
@@ -226,7 +226,7 @@ contract L1AssetHandler_depositERC1155Assets is
     }
 
     /// @dev Tests that depositERC1155Assets functionality reverts when LayerZero message fee sent is insufficient.
-    function test_depositERC1155AssetsRevertsWhenLayerZeroMessageFeeSentIsInsufficient()
+    function test_depositERC1155AssetsRevertsWhen_LayerZeroMessageFeeSentIsInsufficient()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
@@ -249,7 +249,7 @@ contract L1AssetHandler_depositERC1155Assets is
     }
 
     /// @dev Tests that depositERC1155Assets functionality reverts when LayerZero trusted remote address is not set.
-    function test_depositERC1155AssetsRevertsWhenLayerZeroTrustedRemoteAddressIsNotSet()
+    function test_depositERC1155AssetsRevertsWhen_LayerZeroTrustedRemoteAddressIsNotSet()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
@@ -270,7 +270,7 @@ contract L1AssetHandler_depositERC1155Assets is
     }
 
     /// @dev Tests that depositERC1155Assets functionality reverts when risks and amounts length mismatch.
-    function test_depositERC1155AssetsRevertsWhenRisksAndAmountsLengthMismatch()
+    function test_depositERC1155AssetsRevertsWhen_RisksAndAmountsLengthMismatch()
         public
     {
         vm.expectRevert(
@@ -289,7 +289,7 @@ contract L1AssetHandler_depositERC1155Assets is
     }
 
     /// @dev Tests that depositERC1155Assets functionality reverts when tokenIds and amounts length mismatch.
-    function test_depositERC1155AssetsRevertsWhenTokenIdsAndAmountsLengthMismatch()
+    function test_depositERC1155AssetsRevertsWhen_TokenIdsAndAmountsLengthMismatch()
         public
     {
         vm.expectRevert(

@@ -64,7 +64,7 @@ contract L1AssetHandler_setLayerZeroTrustedRemoteAddress is
     }
 
     /// @dev Tests that setLayerZeroTrustedRemoteAddress reverts when called by a non-owner address.
-    function test_setLayerZeroTrustedRemoteAddressRevertsWhenCallerNotOwner()
+    function test_setLayerZeroTrustedRemoteAddressRevertsWhen_CallerNotOwner()
         public
     {
         vm.prank(NON_OWNER_TEST_ADDRESS);
@@ -77,7 +77,7 @@ contract L1AssetHandler_setLayerZeroTrustedRemoteAddress is
     }
 
     /// @dev Tests that setLayerZeroTrustedRemoteAddress reverts when passed an empty remote address.
-    function test_setLayerZeroTrustedRemoteAddressRevertsWhenPassedAnEmptyRemoteAddress()
+    function test_setLayerZeroTrustedRemoteAddressRevertsWhen_PassedAnEmptyRemoteAddress()
         public
     {
         vm.expectRevert(

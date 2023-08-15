@@ -33,7 +33,7 @@ contract L1AssetHandler_setLayerZeroEndpoint is L1AssetHandlerTest {
     }
 
     /// @dev Tests that setLayerZeroEndpoint reverts when called by a non-owner address.
-    function test_setLayerZeroEndpointRevertsWhenCallerNotOwner() public {
+    function test_setLayerZeroEndpointRevertsWhen_CallerNotOwner() public {
         vm.prank(NON_OWNER_TEST_ADDRESS);
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 

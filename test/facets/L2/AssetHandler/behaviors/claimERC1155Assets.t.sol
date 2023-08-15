@@ -224,7 +224,7 @@ contract L2AssetHandler_claimERC1155Assets is
     }
 
     /// @dev Tests that claimERC1155Assets functionality reverts when attempting to claim more ERC1155 tokens than the msg.sender has assigned to them.
-    function test_claimERC1155AssetsRevertsWhenAttemptingToClaimMoreThanDepositedAmount()
+    function test_claimERC1155AssetsRevertsWhen_AttemptingToClaimMoreThanDepositedAmount()
         public
     {
         vm.prank(msg.sender);
@@ -249,7 +249,7 @@ contract L2AssetHandler_claimERC1155Assets is
     }
 
     /// @dev Tests that claimERC1155Assets functionality reverts when attempting to claim ERC1155 tokens on an unsupported remote chain.
-    function test_claimERC1155AssetsRevertsWhenAttemptingToClaimOnAnUnsupportedRemoteChain()
+    function test_claimERC1155AssetsRevertsWhen_AttemptingToClaimOnAnUnsupportedRemoteChain()
         public
     {
         vm.prank(msg.sender);
@@ -276,7 +276,7 @@ contract L2AssetHandler_claimERC1155Assets is
     }
 
     /// @dev Tests that claimERC1155Assets functionality reverts when attempting to claim deposited ERC1155 tokens that are not assigned to the msg.sender.
-    function test_claimERC1155AssetsRevertsWhenAttemptingToClaimSomeoneElsesDepositedTokens()
+    function test_claimERC1155AssetsRevertsWhen_AttemptingToClaimSomeoneElsesDepositedTokens()
         public
     {
         vm.prank(msg.sender);
@@ -330,7 +330,7 @@ contract L2AssetHandler_claimERC1155Assets is
     }
 
     /// @dev Tests that claimERC1155Assets functionality reverts when LayerZero endpoint is not set.
-    function test_claimERC1155AssetsRevertsWhenLayerZeroEndpointIsNotSet()
+    function test_claimERC1155AssetsRevertsWhen_LayerZeroEndpointIsNotSet()
         public
     {
         vm.expectRevert(
@@ -348,7 +348,7 @@ contract L2AssetHandler_claimERC1155Assets is
     }
 
     /// @dev Tests that claimERC1155Assets functionality reverts when LayerZero endpoint is set incorrectly.
-    function test_claimERC1155AssetsRevertsWhenLayerZeroEndpointIsSetIncorrectly()
+    function test_claimERC1155AssetsRevertsWhen_LayerZeroEndpointIsSetIncorrectly()
         public
     {
         vm.prank(msg.sender);
@@ -369,7 +369,7 @@ contract L2AssetHandler_claimERC1155Assets is
     }
 
     /// @dev Tests that claimERC1155Assets functionality reverts when LayerZero message fee is not sent.
-    function test_claimERC1155AssetsRevertsWhenLayerZeroMessageFeeIsNotSent()
+    function test_claimERC1155AssetsRevertsWhen_LayerZeroMessageFeeIsNotSent()
         public
     {
         vm.prank(msg.sender);
@@ -392,7 +392,7 @@ contract L2AssetHandler_claimERC1155Assets is
     }
 
     /// @dev Tests that claimERC1155Assets functionality reverts when LayerZero message fee sent is insufficient.
-    function test_claimERC1155AssetsRevertsWhenLayerZeroMessageFeeSentIsInsufficient()
+    function test_claimERC1155AssetsRevertsWhen_LayerZeroMessageFeeSentIsInsufficient()
         public
     {
         vm.prank(msg.sender);
@@ -415,7 +415,7 @@ contract L2AssetHandler_claimERC1155Assets is
     }
 
     /// @dev Tests that claimERC1155Assets functionality reverts when LayerZero trusted remote address is not set.
-    function test_claimERC1155AssetsRevertsWhenLayerZeroTrustedRemoteAddressIsNotSet()
+    function test_claimERC1155AssetsRevertsWhen_LayerZeroTrustedRemoteAddressIsNotSet()
         public
     {
         vm.prank(msg.sender);
@@ -436,7 +436,7 @@ contract L2AssetHandler_claimERC1155Assets is
     }
 
     /// @dev Tests that claimERC1155Assets functionality reverts when tokenIds and amounts length mismatch.
-    function test_claimERC1155AssetsRevertsWhenTokenIdsAndAmountsLengthMismatch()
+    function test_claimERC1155AssetsRevertsWhen_TokenIdsAndAmountsLengthMismatch()
         public
     {
         vm.expectRevert(

@@ -379,7 +379,7 @@ contract L2AssetHandler_withdrawERC721Assets is
     }
 
     /// @dev Tests that withdrawERC721Assets functionality reverts when attempting to withdraw more ERC721 tokens than the msg.sender has deposited.
-    function test_withdrawERC721AssetsRevertsWhenAttemptingToWithdrawMoreThanDepositedAmount()
+    function test_withdrawERC721AssetsRevertsWhen_AttemptingToWithdrawMoreThanDepositedAmount()
         public
     {
         vm.prank(msg.sender);
@@ -403,7 +403,7 @@ contract L2AssetHandler_withdrawERC721Assets is
     }
 
     /// @dev Tests that withdrawERC721Assets functionality reverts when attempting to withdraw ERC721 tokens on an unsupported remote chain.
-    function test_withdrawERC721AssetsRevertsWhenAttemptingToWithdrawOnAnUnsupportedRemoteChain()
+    function test_withdrawERC721AssetsRevertsWhen_AttemptingToWithdrawOnAnUnsupportedRemoteChain()
         public
     {
         vm.prank(msg.sender);
@@ -429,7 +429,7 @@ contract L2AssetHandler_withdrawERC721Assets is
     }
 
     /// @dev Tests that withdrawERC721Assets functionality reverts when attempting to withdraw deposited ERC721 tokens that are not owned by the msg.sender.
-    function test_withdrawERC721AssetsRevertsWhenAttemptingToWithdrawSomeoneElsesDepositedTokens()
+    function test_withdrawERC721AssetsRevertsWhen_AttemptingToWithdrawSomeoneElsesDepositedTokens()
         public
     {
         vm.prank(msg.sender);
@@ -475,7 +475,7 @@ contract L2AssetHandler_withdrawERC721Assets is
     }
 
     /// @dev Tests that withdrawERC721Assets functionality reverts when LayerZero endpoint is not set.
-    function test_withdrawERC721AssetsRevertsWhenLayerZeroEndpointIsNotSet()
+    function test_withdrawERC721AssetsRevertsWhen_LayerZeroEndpointIsNotSet()
         public
     {
         vm.expectRevert(
@@ -492,7 +492,7 @@ contract L2AssetHandler_withdrawERC721Assets is
     }
 
     /// @dev Tests that withdrawERC721Assets functionality reverts when LayerZero endpoint is set incorrectly.
-    function test_withdrawERC721AssetsRevertsWhenLayerZeroEndpointIsSetIncorrectly()
+    function test_withdrawERC721AssetsRevertsWhen_LayerZeroEndpointIsSetIncorrectly()
         public
     {
         vm.prank(msg.sender);
@@ -512,7 +512,7 @@ contract L2AssetHandler_withdrawERC721Assets is
     }
 
     /// @dev Tests that withdrawERC721Assets functionality reverts when LayerZero message fee is not sent.
-    function test_withdrawERC721AssetsRevertsWhenLayerZeroMessageFeeIsNotSent()
+    function test_withdrawERC721AssetsRevertsWhen_LayerZeroMessageFeeIsNotSent()
         public
     {
         vm.prank(msg.sender);
@@ -534,7 +534,7 @@ contract L2AssetHandler_withdrawERC721Assets is
     }
 
     /// @dev Tests that withdrawERC721Assets functionality reverts when LayerZero message fee sent is insufficient.
-    function test_withdrawERC721AssetsRevertsWhenLayerZeroMessageFeeSentIsInsufficient()
+    function test_withdrawERC721AssetsRevertsWhen_LayerZeroMessageFeeSentIsInsufficient()
         public
     {
         vm.prank(msg.sender);
@@ -556,7 +556,7 @@ contract L2AssetHandler_withdrawERC721Assets is
     }
 
     /// @dev Tests that withdrawERC721Assets functionality reverts when LayerZero trusted remote address is not set.
-    function test_withdrawERC721AssetsRevertsWhenLayerZeroTrustedRemoteAddressIsNotSet()
+    function test_withdrawERC721AssetsRevertsWhen_LayerZeroTrustedRemoteAddressIsNotSet()
         public
     {
         vm.prank(msg.sender);

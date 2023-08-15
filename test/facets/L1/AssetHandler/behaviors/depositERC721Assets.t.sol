@@ -133,7 +133,7 @@ contract L1AssetHandler_depositERC721Assets is
     }
 
     /// @dev Tests that depositERC721Assets functionality reverts when attempting to deposit ERC721 tokens on an unsupported remote chain.
-    function test_depositERC721AssetsRevertsWhenAttemptingToDepositOnAnUnsupportedRemoteChain()
+    function test_depositERC721AssetsRevertsWhen_AttemptingToDepositOnAnUnsupportedRemoteChain()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
@@ -157,7 +157,7 @@ contract L1AssetHandler_depositERC721Assets is
     }
 
     /// @dev Tests that depositERC721Assets functionality reverts when LayerZero endpoint is not set.
-    function test_depositERC721AssetsRevertsWhenLayerZeroEndpointIsNotSet()
+    function test_depositERC721AssetsRevertsWhen_LayerZeroEndpointIsNotSet()
         public
     {
         vm.expectRevert(
@@ -175,7 +175,7 @@ contract L1AssetHandler_depositERC721Assets is
     }
 
     /// @dev Tests that depositERC721Assets functionality reverts when LayerZero endpoint is set incorrectly.
-    function test_depositERC721AssetsRevertsWhenLayerZeroEndpointIsSetIncorrectly()
+    function test_depositERC721AssetsRevertsWhen_LayerZeroEndpointIsSetIncorrectly()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(address(this)); // incorrect endpoint
@@ -195,7 +195,7 @@ contract L1AssetHandler_depositERC721Assets is
     }
 
     /// @dev Tests that depositERC721Assets functionality reverts when LayerZero message fee is not sent.
-    function test_depositERC721AssetsRevertsWhenLayerZeroMessageFeeIsNotSent()
+    function test_depositERC721AssetsRevertsWhen_LayerZeroMessageFeeIsNotSent()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
@@ -215,7 +215,7 @@ contract L1AssetHandler_depositERC721Assets is
     }
 
     /// @dev Tests that depositERC721Assets functionality reverts when LayerZero message fee sent is insufficient.
-    function test_depositERC721AssetsRevertsWhenLayerZeroMessageFeeSentIsInsufficient()
+    function test_depositERC721AssetsRevertsWhen_LayerZeroMessageFeeSentIsInsufficient()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
@@ -235,7 +235,7 @@ contract L1AssetHandler_depositERC721Assets is
     }
 
     /// @dev Tests that depositERC721Assets functionality reverts when LayerZero trusted remote address is not set.
-    function test_depositERC721AssetsRevertsWhenLayerZeroTrustedRemoteAddressIsNotSet()
+    function test_depositERC721AssetsRevertsWhen_LayerZeroTrustedRemoteAddressIsNotSet()
         public
     {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);

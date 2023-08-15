@@ -9,7 +9,7 @@ import { AssetType } from "../../../../../contracts/enums/AssetType.sol";
 import { PerpetualMintStorage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
 /// @title L2AssetHandler_handleLayerZeroMessage
-/// @dev L2AssetHandler test contract for testing expected L2 _handleLayerZeroMessage behavior. Tested on a Mainnet fork.
+/// @dev L2AssetHandler test contract for testing expected L2 _handleLayerZeroMessage behavior. Tested on an Arbitrum fork.
 contract L2AssetHandler_handleLayerZeroMessage is
     L2AssetHandlerMock,
     L2AssetHandlerTest,

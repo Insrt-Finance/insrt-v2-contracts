@@ -108,7 +108,7 @@ contract PerpetualMint_fulfillRandomWords is
     }
 
     /// @dev Tests fulfillRandomWords functionality.
-    function test_fulfillRandomWords() public {
+    function test_fulfillRandomWords(uint256 randomness) public {
         // store current block number to use as the mint block number
         uint256 mintBlockNumber = block.number;
 
@@ -175,9 +175,7 @@ contract PerpetualMint_fulfillRandomWords is
 
         // generate random words
         for (uint256 i = 0; i < numberOfRandomWordsRequested; ++i) {
-            randomWords[i] = uint256(
-                keccak256(abi.encode(block.prevrandao, i)) // use prevrandao as a source of randomness
-            );
+            randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
         }
 
         // mock the VRF Coordinator fulfill random words call
@@ -188,10 +186,10 @@ contract PerpetualMint_fulfillRandomWords is
         );
     }
 
-    /// @dev Tests that fulfillRandomWords correctly uses request minter and request colletion data to resolve ERC1155 mints.
-    function test_fulfillRandomWordsUsesStoredRequestDataToCorrectlyDetermineERC1155Resolution()
-        public
-    {
+    /// @dev Tests that fulfillRandomWords correctly uses request minter and request collection data to resolve ERC1155 mints.
+    function test_fulfillRandomWordsUsesStoredRequestDataToCorrectlyDetermineERC1155Resolution(
+        uint256 randomness
+    ) public {
         // store current block number to use as the mint block number
         uint256 mintBlockNumber = block.number;
 
@@ -258,9 +256,7 @@ contract PerpetualMint_fulfillRandomWords is
 
         // generate random words
         for (uint256 i = 0; i < numberOfRandomWordsRequested; ++i) {
-            randomWords[i] = uint256(
-                keccak256(abi.encode(block.prevrandao, i)) // use prevrandao as a source of randomness
-            );
+            randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
         }
 
         // only check the first & second topic (the collection address)
@@ -281,9 +277,9 @@ contract PerpetualMint_fulfillRandomWords is
     }
 
     /// @dev Tests that fulfillRandomWords correctly uses request minter and request colletion data to resolve ERC721 mints.
-    function test_fulfillRandomWordsUsesStoredRequestDataToCorrectlyDetermineERC721Resolution()
-        public
-    {
+    function test_fulfillRandomWordsUsesStoredRequestDataToCorrectlyDetermineERC721Resolution(
+        uint256 randomness
+    ) public {
         // store current block number to use as the mint block number
         uint256 mintBlockNumber = block.number;
 
@@ -350,9 +346,7 @@ contract PerpetualMint_fulfillRandomWords is
 
         // generate random words
         for (uint256 i = 0; i < numberOfRandomWordsRequested; ++i) {
-            randomWords[i] = uint256(
-                keccak256(abi.encode(block.prevrandao, i)) // use prevrandao as a source of randomness
-            );
+            randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
         }
 
         // only check the first & second topic (the collection address)
@@ -373,9 +367,9 @@ contract PerpetualMint_fulfillRandomWords is
     }
 
     /// @dev Tests that fulfillRandomWords can currently handle at most 20 attempted mints for ERC1155 assets.
-    function test_fulfillRandomWordsCanHandleMaximumTwentyERC1155MintAttempts()
-        public
-    {
+    function test_fulfillRandomWordsCanHandleMaximumTwentyERC1155MintAttempts(
+        uint256 randomness
+    ) public {
         // store current block number to use as the mint block number
         uint256 mintBlockNumber = block.number;
 
@@ -444,9 +438,7 @@ contract PerpetualMint_fulfillRandomWords is
 
         // generate random words
         for (uint256 i = 0; i < numberOfRandomWordsRequested; ++i) {
-            randomWords[i] = uint256(
-                keccak256(abi.encode(block.prevrandao, i)) // use prevrandao as a source of randomness
-            );
+            randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
         }
 
         // mock the VRF Coordinator fulfill random words call
@@ -506,9 +498,7 @@ contract PerpetualMint_fulfillRandomWords is
         randomWords = new uint256[](numberOfRandomWordsRequested + 3);
 
         for (uint256 i = 0; i < randomWords.length; ++i) {
-            randomWords[i] = uint256(
-                keccak256(abi.encode(block.prevrandao, i)) // use prevrandao as a source of randomness
-            );
+            randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
         }
 
         bool success = vrfCoordinatorV2Mock.fulfillRandomWordsWithOverridePlus(
@@ -533,9 +523,9 @@ contract PerpetualMint_fulfillRandomWords is
     }
 
     /// @dev Tests that fulfillRandomWords can currently handle at most 20 attempted mints for ERC721 assets.
-    function test_fulfillRandomWordsCanHandleMaximumTwentyERC721MintAttempts()
-        public
-    {
+    function test_fulfillRandomWordsCanHandleMaximumTwentyERC721MintAttempts(
+        uint256 randomness
+    ) public {
         // store current block number to use as the mint block number
         uint256 mintBlockNumber = block.number;
 
@@ -604,9 +594,7 @@ contract PerpetualMint_fulfillRandomWords is
 
         // generate random words
         for (uint256 i = 0; i < numberOfRandomWordsRequested; ++i) {
-            randomWords[i] = uint256(
-                keccak256(abi.encode(block.prevrandao, i)) // use prevrandao as a source of randomness
-            );
+            randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
         }
 
         // mock the VRF Coordinator fulfill random words call
@@ -666,9 +654,7 @@ contract PerpetualMint_fulfillRandomWords is
 
         // generate 42 new random words
         for (uint256 i = 0; i < randomWords.length; ++i) {
-            randomWords[i] = uint256(
-                keccak256(abi.encode(block.prevrandao, i)) // use prevrandao as a source of randomness
-            );
+            randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
         }
 
         bool success = vrfCoordinatorV2Mock.fulfillRandomWordsWithOverridePlus(
@@ -693,9 +679,9 @@ contract PerpetualMint_fulfillRandomWords is
     }
 
     /// @dev Tests that fulfillRandomWords reverts when the VRF subscription balance is insufficient.
-    function test_fulfillRandomWordsRevertsWhen_VRFSubscriptionBalanceIsInsufficient()
-        public
-    {
+    function test_fulfillRandomWordsRevertsWhen_VRFSubscriptionBalanceIsInsufficient(
+        uint256 randomness
+    ) public {
         // create a new mock VRF subscription, but don't fund it
         mockVRFSubscriptionId = vrfCoordinatorV2Mock.createSubscription();
 
@@ -742,9 +728,7 @@ contract PerpetualMint_fulfillRandomWords is
 
         // generate random words
         for (uint256 i = 0; i < numberOfRandomWordsRequested; ++i) {
-            randomWords[i] = uint256(
-                keccak256(abi.encode(block.prevrandao, i)) // use prevrandao as a source of randomness
-            );
+            randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
         }
 
         vm.expectRevert(VRFCoordinatorV2.InsufficientBalance.selector);

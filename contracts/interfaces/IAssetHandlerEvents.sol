@@ -6,14 +6,16 @@ pragma solidity 0.8.21;
 /// @dev Defines the base interface for AssetHandler contract events.
 interface IAssetHandlerEvents {
     /// @notice Emitted when ERC1155 assets are successfully deposited.
-    /// @param depositor The indexed address of the depositor.
+    /// @param beneficiary The indexed address that will receive credit for the deposited assets on the destination chain.
     /// @param collection The indexed address of the ERC1155 collection.
+    /// @param depositor The indexed address of the depositor.
     /// @param risks The risk settings for the deposited assets.
     /// @param tokenIds Token IDs of the deposited ERC1155 assets.
     /// @param amounts Amount of deposited ERC1155 assets for each tokenId.
     event ERC1155AssetsDeposited(
-        address indexed depositor,
+        address indexed beneficiary,
         address indexed collection,
+        address indexed depositor,
         uint256[] risks,
         uint256[] tokenIds,
         uint256[] amounts

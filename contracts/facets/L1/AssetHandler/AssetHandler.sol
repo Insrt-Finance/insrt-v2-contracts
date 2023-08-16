@@ -54,8 +54,9 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
         );
 
         emit ERC1155AssetsDeposited(
-            msg.sender,
+            beneficiary,
             collection,
+            msg.sender,
             risks,
             tokenIds,
             amounts

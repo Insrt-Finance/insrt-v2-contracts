@@ -130,6 +130,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
         emit ERC1155AssetsDeposited(
             msg.sender,
             BONG_BEARS,
+            msg.sender,
             testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts

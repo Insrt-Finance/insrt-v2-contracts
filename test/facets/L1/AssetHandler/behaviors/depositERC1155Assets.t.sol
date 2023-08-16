@@ -100,6 +100,7 @@ contract L1AssetHandler_depositERC1155Assets is
         emit ERC1155AssetsDeposited(
             address(this),
             BONG_BEARS,
+            address(this),
             testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts

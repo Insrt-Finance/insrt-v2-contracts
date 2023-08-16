@@ -56,6 +56,7 @@ contract L2AssetHandler_claimERC1155Assets is
             AssetType.ERC1155,
             address(this),
             BONG_BEARS,
+            address(this),
             testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts

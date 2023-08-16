@@ -36,7 +36,8 @@ interface IL1AssetHandler is IAssetHandler {
     ) external pure returns (bytes4);
 
     /// @notice Used to deposit ERC1155 assets.
-    /// @dev Transfers the specified ERC1155 tokens from the user to this contract and deposits them cross-chain.
+    /// @dev Transfers the specified ERC1155 tokens from the depositor to this contract and credits a beneficiary cross-chain.
+    /// @param beneficiary The address that will receive credit for the deposited assets on the destination chain.
     /// @param collection The address of the ERC1155 token contract.
     /// @param layerZeroDestinationChainId The LayerZero destination chain ID.
     /// @param risks The risk settings for the assets being deposited.
@@ -44,6 +45,7 @@ interface IL1AssetHandler is IAssetHandler {
     /// @param amounts An array of amounts for each respective token ID to be deposited.
     /// @notice The length of the `risks`, `tokenIds` and `amounts` arrays should be the same.
     function depositERC1155Assets(
+        address beneficiary,
         address collection,
         uint16 layerZeroDestinationChainId,
         uint256[] calldata risks,

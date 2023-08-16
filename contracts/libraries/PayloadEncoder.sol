@@ -9,15 +9,17 @@ import { AssetType } from "../enums/AssetType.sol";
 /// Used to relay cross-chain messages using LayerZero.
 library PayloadEncoder {
     /// @notice Encodes the payload for depositing ERC-1155 assets cross-chain.
-    /// @param depositor Address of the depositor.
+    /// @param beneficiary Address of the beneficiary.
     /// @param collection Address of the collection.
+    /// @param depositor Address of the depositor.
     /// @param risks The risk settings for the assets being deposited.
     /// @param tokenIds Array of token ids.
     /// @param amounts Array of amounts, corresponding to the token ids.
     /// @return payload The encoded payload.
     function encodeDepositERC1155AssetsPayload(
-        address depositor,
+        address beneficiary,
         address collection,
+        address depositor,
         uint256[] calldata risks,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts
@@ -25,8 +27,9 @@ library PayloadEncoder {
         // Pack the parameters into a dynamically-sized byte array
         payload = abi.encode(
             AssetType.ERC1155,
-            depositor,
+            beneficiary,
             collection,
+            depositor,
             risks,
             tokenIds,
             amounts

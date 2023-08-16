@@ -21,6 +21,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             AssetType.ERC1155,
             msg.sender,
             BONG_BEARS,
+            msg.sender,
             testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
@@ -119,6 +120,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             AssetType.ERC1155,
             msg.sender,
             BONG_BEARS,
+            msg.sender,
             testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts

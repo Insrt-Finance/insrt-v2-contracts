@@ -228,6 +228,7 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
             AssetType.ERC1155,
             depositorOne,
             PARALLEL_ALPHA,
+            depositorOne,
             depositorOneParallelAlphaRisks,
             depositorOneParallelAlphaTokenIds,
             depositorOneParallelAlphaAmounts
@@ -237,6 +238,7 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
             AssetType.ERC1155,
             depositorTwo,
             PARALLEL_ALPHA,
+            depositorTwo,
             depositorTwoParallelAlphaRisks,
             depositorTwoParallelAlphaTokenIds,
             depositorTwoParallelAlphaAmounts

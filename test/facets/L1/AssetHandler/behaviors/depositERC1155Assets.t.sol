@@ -37,6 +37,7 @@ contract L1AssetHandler_depositERC1155Assets is
             AssetType.ERC1155,
             address(this),
             BONG_BEARS,
+            address(this),
             testRisks,
             bongBearTokenIds,
             bongBearTokenAmounts
@@ -76,6 +77,7 @@ contract L1AssetHandler_depositERC1155Assets is
         );
 
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            msg.sender,
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             testRisks,
@@ -104,6 +106,7 @@ contract L1AssetHandler_depositERC1155Assets is
         );
 
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             testRisks,
@@ -131,6 +134,7 @@ contract L1AssetHandler_depositERC1155Assets is
         );
 
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             testRisks,
@@ -156,6 +160,7 @@ contract L1AssetHandler_depositERC1155Assets is
         );
 
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID + 1, // unsupported remote chain
             testRisks,
@@ -175,6 +180,7 @@ contract L1AssetHandler_depositERC1155Assets is
         );
 
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             testRisks,
@@ -196,6 +202,7 @@ contract L1AssetHandler_depositERC1155Assets is
         );
 
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             testRisks,
@@ -217,6 +224,7 @@ contract L1AssetHandler_depositERC1155Assets is
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
         l1AssetHandler.depositERC1155Assets( // message fee not sent
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             testRisks,
@@ -240,6 +248,7 @@ contract L1AssetHandler_depositERC1155Assets is
         l1AssetHandler.depositERC1155Assets{
             value: LAYER_ZERO_MESSAGE_FEE / 3
         }( // insufficient message fee
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             testRisks,
@@ -261,6 +270,7 @@ contract L1AssetHandler_depositERC1155Assets is
         );
 
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             testRisks,
@@ -280,6 +290,7 @@ contract L1AssetHandler_depositERC1155Assets is
         testRisks.push(uint256(1)); // mismatched lengths
 
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             testRisks,
@@ -299,6 +310,7 @@ contract L1AssetHandler_depositERC1155Assets is
         bongBearTokenAmounts.push(uint256(1)); // mismatched lengths
 
         l1AssetHandler.depositERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             testRisks,

@@ -47,7 +47,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
                         keccak256(
                             abi.encode(
                                 depositorTwo, // address of depositor
-                                uint256(Storage.STORAGE_SLOT) + 23 // activeERC1155Tokens mapping storage slot
+                                uint256(Storage.STORAGE_SLOT) + 25 // activeERC1155Tokens mapping storage slot
                             )
                         )
                     )
@@ -237,8 +237,8 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
         }
     }
 
-    /// @dev test that 'from' address is depositTokenRisk is deleted if 'from' activeERC1155 tokens are zero
-    function test_assignEscrowedERC1155AssetDeletesFromDepositorTokenRiskIfFromActiveERC1155TokensIsZero()
+    /// @dev test that originOwner depositTokenRisk is deleted if originalOwner activeERC1155 tokens are zero
+    function test_assignEscrowedERC1155AssetDeletesOriginalOwnerDepositorTokenRiskIfOriginalOwnerActiveERC1155TokensIsZero()
         public
     {
         perpetualMint.exposed_assignEscrowedERC1155Asset(
@@ -268,7 +268,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
                 keccak256(
                     abi.encode(
                         PARALLEL_ALPHA, // address of collection
-                        uint256(Storage.STORAGE_SLOT) + 14 // tokenRisk mapping storage slot
+                        uint256(Storage.STORAGE_SLOT) + 16 // tokenRisk mapping storage slot
                     )
                 )
             )

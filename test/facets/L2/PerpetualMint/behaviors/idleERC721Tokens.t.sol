@@ -19,11 +19,13 @@ contract PerpetualMint_idleERC721Tokens is
     uint256 internal BAYC_ID;
     uint256[] tokenIds;
 
+    address internal constant COLLECTION = BORED_APE_YACHT_CLUB;
+
     // grab BAYC collection earnings storage slot
     bytes32 internal collectionEarningsStorageSlot =
         keccak256(
             abi.encode(
-                BORED_APE_YACHT_CLUB, // the ERC721 collection
+                COLLECTION, // the ERC721 collection
                 uint256(Storage.STORAGE_SLOT) + 9 // the collectionEarnings storage slot
             )
         );
@@ -50,51 +52,60 @@ contract PerpetualMint_idleERC721Tokens is
     function test_idleERC721TokensUpdatesDepositorEarningsWhenTotalDepositorRiskIsNonZero()
         public
     {
-        uint256 totalRisk = _totalRisk(
+        uint256 currentEarnings = _collectionEarnings(
             address(perpetualMint),
-            BORED_APE_YACHT_CLUB
+            COLLECTION
+        );
+        uint256 lastEarnings = _lastCollectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 baseMultiplier = (currentEarnings - lastEarnings) /
+            _totalRisk(address(perpetualMint), COLLECTION);
+
+        uint256 oldDepositorEarnings = _depositorEarnings(
+            address(perpetualMint),
+            depositorOne,
+            COLLECTION
         );
         uint256 totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
-        uint256 collectionEarnings = _collectionEarnings(
-            address(perpetualMint),
-            BORED_APE_YACHT_CLUB
-        );
-        uint256 oldDepositorDeductions = _multiplierOffset(
+        uint256 multiplierOffset = _multiplierOffset(
             address(perpetualMint),
             depositorOne,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
+
+        uint256 expectedEarnings = (baseMultiplier - multiplierOffset) *
+            totalDepositorRisk;
 
         assert(totalDepositorRisk != 0);
-        assert(totalRisk != 0);
+        assert(_totalRisk(address(perpetualMint), COLLECTION) != 0);
 
         vm.prank(depositorOne);
-        perpetualMint.idleERC721Tokens(BORED_APE_YACHT_CLUB, tokenIds);
-
-        uint256 newDepositorDeductions = _multiplierOffset(
-            address(perpetualMint),
-            depositorOne,
-            BORED_APE_YACHT_CLUB
-        );
-
-        uint256 expectedEarnings = (collectionEarnings * totalDepositorRisk) /
-            totalRisk -
-            oldDepositorDeductions;
+        perpetualMint.idleERC721Tokens(COLLECTION, tokenIds);
 
         assert(
-            expectedEarnings ==
+            baseMultiplier ==
+                _baseMultiplier(address(perpetualMint), COLLECTION)
+        );
+
+        assert(
+            currentEarnings ==
+                _lastCollectionEarnings(address(perpetualMint), COLLECTION)
+        );
+
+        assert(
+            expectedEarnings + oldDepositorEarnings ==
                 _depositorEarnings(
                     address(perpetualMint),
                     depositorOne,
-                    BORED_APE_YACHT_CLUB
+                    COLLECTION
                 )
         );
-
-        assert(newDepositorDeductions == expectedEarnings);
     }
 
     /// @dev tests that upon idling ERC721 tokens the total risk of the ERC721 collection decreases by sum of
@@ -102,10 +113,7 @@ contract PerpetualMint_idleERC721Tokens is
     function test_idleERC721TokensDecreasesTotalRiskBySumOfOldTokenRisks()
         public
     {
-        uint256 oldTotalRisk = _totalRisk(
-            address(perpetualMint),
-            BORED_APE_YACHT_CLUB
-        );
+        uint256 oldTotalRisk = _totalRisk(address(perpetualMint), COLLECTION);
 
         uint256 idsLength = tokenIds.length;
         uint256 expectedTotalRiskChange;
@@ -113,18 +121,15 @@ contract PerpetualMint_idleERC721Tokens is
         for (uint256 i; i < idsLength; ++i) {
             expectedTotalRiskChange += _tokenRisk(
                 address(perpetualMint),
-                BORED_APE_YACHT_CLUB,
+                COLLECTION,
                 tokenIds[i]
             );
         }
 
         vm.prank(depositorOne);
-        perpetualMint.idleERC721Tokens(BORED_APE_YACHT_CLUB, tokenIds);
+        perpetualMint.idleERC721Tokens(COLLECTION, tokenIds);
 
-        uint256 newTotalRisk = _totalRisk(
-            address(perpetualMint),
-            BORED_APE_YACHT_CLUB
-        );
+        uint256 newTotalRisk = _totalRisk(address(perpetualMint), COLLECTION);
 
         assert(oldTotalRisk - newTotalRisk == expectedTotalRiskChange);
     }
@@ -133,11 +138,11 @@ contract PerpetualMint_idleERC721Tokens is
     /// of the ERC721 collection
     function test_idleERC721TokensRemovesTokenIdsFromActivetokenIds() public {
         vm.prank(depositorOne);
-        perpetualMint.idleERC721Tokens(BORED_APE_YACHT_CLUB, tokenIds);
+        perpetualMint.idleERC721Tokens(COLLECTION, tokenIds);
 
         uint256[] memory activeTokenIds = _activeTokenIds(
             address(perpetualMint),
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         for (uint256 i; i < activeTokenIds.length; ++i) {
@@ -152,15 +157,15 @@ contract PerpetualMint_idleERC721Tokens is
     function test_idleERC712TokensDecreasesTotalActiveTokens() public {
         uint256 oldActiveTokens = _totalActiveTokens(
             address(perpetualMint),
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         vm.prank(depositorOne);
-        perpetualMint.idleERC721Tokens(BORED_APE_YACHT_CLUB, tokenIds);
+        perpetualMint.idleERC721Tokens(COLLECTION, tokenIds);
 
         uint256 newActiveTokens = _totalActiveTokens(
             address(perpetualMint),
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         assert(oldActiveTokens - newActiveTokens == tokenIds.length);
@@ -172,16 +177,16 @@ contract PerpetualMint_idleERC721Tokens is
         uint256 oldActiveTokens = _activeTokens(
             address(perpetualMint),
             depositorOne,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         vm.prank(depositorOne);
-        perpetualMint.idleERC721Tokens(BORED_APE_YACHT_CLUB, tokenIds);
+        perpetualMint.idleERC721Tokens(COLLECTION, tokenIds);
 
         uint256 newActiveTokens = _activeTokens(
             address(perpetualMint),
             depositorOne,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         assert(oldActiveTokens - newActiveTokens == tokenIds.length);
@@ -193,16 +198,16 @@ contract PerpetualMint_idleERC721Tokens is
         uint256 oldInactiveTokens = _inactiveTokens(
             address(perpetualMint),
             depositorOne,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         vm.prank(depositorOne);
-        perpetualMint.idleERC721Tokens(BORED_APE_YACHT_CLUB, tokenIds);
+        perpetualMint.idleERC721Tokens(COLLECTION, tokenIds);
 
         uint256 newInactiveTokens = _inactiveTokens(
             address(perpetualMint),
             depositorOne,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         assert(newInactiveTokens - oldInactiveTokens == tokenIds.length);
@@ -216,7 +221,7 @@ contract PerpetualMint_idleERC721Tokens is
         uint256 oldRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         uint256 oldTotalTokenRisk;
@@ -224,18 +229,18 @@ contract PerpetualMint_idleERC721Tokens is
         for (uint256 i; i < tokenIds.length; ++i) {
             oldTotalTokenRisk += _tokenRisk(
                 address(perpetualMint),
-                BORED_APE_YACHT_CLUB,
+                COLLECTION,
                 tokenIds[i]
             );
         }
 
         vm.prank(depositorOne);
-        perpetualMint.idleERC721Tokens(BORED_APE_YACHT_CLUB, tokenIds);
+        perpetualMint.idleERC721Tokens(COLLECTION, tokenIds);
 
         uint256 newRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         assert(oldRisk - newRisk == oldTotalTokenRisk);
@@ -244,16 +249,11 @@ contract PerpetualMint_idleERC721Tokens is
     /// @dev tests that upon idling ERC721 tokens the risk of each ERC721 token is deleted
     function test_idleERC721TokensSetsTokenRiskOfEachTokenToZero() public {
         vm.prank(depositorOne);
-        perpetualMint.idleERC721Tokens(BORED_APE_YACHT_CLUB, tokenIds);
+        perpetualMint.idleERC721Tokens(COLLECTION, tokenIds);
 
         for (uint256 i; i < tokenIds.length; ++i) {
             assert(
-                0 ==
-                    _tokenRisk(
-                        address(perpetualMint),
-                        BORED_APE_YACHT_CLUB,
-                        tokenIds[i]
-                    )
+                0 == _tokenRisk(address(perpetualMint), COLLECTION, tokenIds[i])
             );
         }
     }
@@ -264,6 +264,6 @@ contract PerpetualMint_idleERC721Tokens is
     {
         vm.expectRevert(IPerpetualMintInternal.OnlyEscrowedTokenOwner.selector);
         vm.prank(NON_OWNER);
-        perpetualMint.idleERC721Tokens(BORED_APE_YACHT_CLUB, tokenIds);
+        perpetualMint.idleERC721Tokens(COLLECTION, tokenIds);
     }
 }

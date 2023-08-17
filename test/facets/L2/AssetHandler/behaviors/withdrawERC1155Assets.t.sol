@@ -35,7 +35,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
 
         TEST_ERC1155_WITHDRAW_PAYLOAD = abi.encode(
             AssetType.ERC1155,
-            address(this),
+            msg.sender,
             BONG_BEARS,
             bongBearTokenIds,
             bongBearTokenAmounts
@@ -108,6 +108,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         );
 
         this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            msg.sender,
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -397,6 +398,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         );
 
         this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            msg.sender,
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -426,6 +428,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         );
 
         this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            msg.sender,
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -451,6 +454,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         bongBearTokenAmounts[0]++;
 
         this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            msg.sender,
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -478,6 +482,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         );
 
         this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            msg.sender,
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID + 1, // unsupported remote chain
             bongBearTokenIds,
@@ -532,6 +537,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         vm.expectRevert();
 
         this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            msg.sender,
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -550,6 +556,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         );
 
         this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            msg.sender,
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -571,6 +578,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         );
 
         this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            msg.sender,
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -594,6 +602,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
         this.withdrawERC1155Assets( // message fee not sent
+            msg.sender,
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -617,6 +626,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
         this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE / 6 }( // insufficient message fee
+            msg.sender,
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -638,6 +648,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         );
 
         this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            msg.sender,
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -656,6 +667,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         bongBearTokenAmounts.push(uint256(1)); // mismatched lengths
 
         this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            msg.sender,
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,

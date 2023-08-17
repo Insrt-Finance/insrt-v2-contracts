@@ -56,20 +56,20 @@ library PayloadEncoder {
     }
 
     /// @notice Encodes the payload for withdrawing ERC-1155 assets cross-chain.
-    /// @param depositor Address of the depositor.
+    /// @param beneficiary Address of the beneficiary.
     /// @param collection Address of the collection.
     /// @param tokenIds Array of token ids.
     /// @param amounts Array of amounts, corresponding to the token ids.
     /// @return payload The encoded payload.
     function encodeWithdrawERC1155AssetsPayload(
-        address depositor,
+        address beneficiary,
         address collection,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts
     ) internal pure returns (bytes memory payload) {
         payload = abi.encode(
             AssetType.ERC1155,
-            depositor,
+            beneficiary,
             collection,
             tokenIds,
             amounts

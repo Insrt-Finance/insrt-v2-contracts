@@ -38,13 +38,15 @@ interface IL2AssetHandler is IAssetHandler {
     ) external payable;
 
     /// @notice Used to withdraw ERC1155 assets.
-    /// @dev Debits specified ERC1155 tokens from the user and withdraws them cross-chain.
+    /// @dev Debits specified ERC1155 tokens from the msg.sender and withdraws them to a beneficiary cross-chain.
+    /// @param beneficiary The address that will receive the withdrawn assets on the destination chain.
     /// @param collection The address of the ERC1155 token contract.
     /// @param layerZeroDestinationChainId The destination chain ID.
-    /// @param tokenIds An array of token IDs that the user wants to withdraw.
+    /// @param tokenIds An array of token IDs that the msg.sender wants to withdraw.
     /// @param amounts An array of amounts for each respective token ID to be withdrawn.
     /// @notice The length of `tokenIds` and `amounts` arrays should be the same.
     function withdrawERC1155Assets(
+        address beneficiary,
         address collection,
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds,

@@ -56,6 +56,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         }
 
         _withdrawERC1155Assets(
+            msg.sender,
             collection,
             layerZeroDestinationChainId,
             tokenIds,
@@ -122,6 +123,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
     /// @inheritdoc IL2AssetHandler
     function withdrawERC1155Assets(
+        address beneficiary,
         address collection,
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds,
@@ -137,7 +139,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
         // Iterate over each token ID
         for (uint256 i = 0; i < tokenIds.length; ++i) {
-            // Reduce the count of active ERC1155 tokens for the sender (depositor)
+            // Reduce the count of active ERC1155 tokens for the sender (executor)
             perpetualMintStorageLayout.activeERC1155Tokens[msg.sender][
                 collection
             ][tokenIds[i]] -= amounts[i];
@@ -203,6 +205,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         }
 
         _withdrawERC1155Assets(
+            beneficiary,
             collection,
             layerZeroDestinationChainId,
             tokenIds,
@@ -448,11 +451,13 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     }
 
     /// @notice Withdraws ERC1155 assets cross-chain using LayerZero.
+    /// @param beneficiary Address that will receive the deposited assets on the destination chain.
     /// @param collection Address of the ERC1155 collection.
     /// @param layerZeroDestinationChainId The LayerZero destination chain ID.
     /// @param tokenIds IDs of the tokens to be withdrawn.
     /// @param amounts The amounts of the tokens to be withdrawn.
     function _withdrawERC1155Assets(
+        address beneficiary,
         address collection,
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds,
@@ -461,7 +466,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         _lzSend(
             layerZeroDestinationChainId,
             PayloadEncoder.encodeWithdrawERC1155AssetsPayload(
-                msg.sender,
+                beneficiary,
                 collection,
                 tokenIds,
                 amounts

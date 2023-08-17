@@ -23,11 +23,13 @@ contract PerpetualMint_updateERC1155TokenRisks is
     uint256[] amountsToIdle;
     uint256[] risks;
 
-    // grab PARALLEL_ALPHA collection earnings storage slot
+    address internal constant COLLECTION = PARALLEL_ALPHA;
+
+    // grab COLLECTION collection earnings storage slot
     bytes32 internal collectionEarningsStorageSlot =
         keccak256(
             abi.encode(
-                PARALLEL_ALPHA, // the ERC1155 collection
+                COLLECTION, // the ERC1155 collection
                 uint256(Storage.STORAGE_SLOT) + 9 // the collectionEarnings storage slot
             )
         );
@@ -43,7 +45,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
             _activeERC1155Tokens(
                 address(perpetualMint),
                 depositorOne,
-                PARALLEL_ALPHA,
+                COLLECTION,
                 PARALLEL_ALPHA_ID
             )
         );
@@ -64,48 +66,60 @@ contract PerpetualMint_updateERC1155TokenRisks is
     function test_updateERC1155TokenRisksUpdatesDepositorEarningsWhenTotalDepositorRiskIsNonZero()
         public
     {
-        uint256 totalRisk = _totalRisk(address(perpetualMint), PARALLEL_ALPHA);
+        uint256 currentEarnings = _collectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 lastEarnings = _lastCollectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 baseMultiplier = (currentEarnings - lastEarnings) /
+            _totalRisk(address(perpetualMint), COLLECTION);
+
+        uint256 oldDepositorEarnings = _depositorEarnings(
+            address(perpetualMint),
+            depositorOne,
+            COLLECTION
+        );
         uint256 totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA
+            COLLECTION
         );
-        uint256 collectionEarnings = _collectionEarnings(
-            address(perpetualMint),
-            PARALLEL_ALPHA
-        );
-        uint256 oldDepositorDeductions = _multiplierOffset(
+        uint256 multiplierOffset = _multiplierOffset(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA
+            COLLECTION
         );
+
+        uint256 expectedEarnings = (baseMultiplier - multiplierOffset) *
+            totalDepositorRisk;
 
         assert(totalDepositorRisk != 0);
-        assert(totalRisk != 0);
+        assert(_totalRisk(address(perpetualMint), COLLECTION) != 0);
 
         vm.prank(depositorOne);
-        perpetualMint.updateERC1155TokenRisks(PARALLEL_ALPHA, tokenIds, risks);
-
-        uint256 newDepositorDeductions = _multiplierOffset(
-            address(perpetualMint),
-            depositorOne,
-            PARALLEL_ALPHA
-        );
-
-        uint256 expectedEarnings = (collectionEarnings * totalDepositorRisk) /
-            totalRisk -
-            oldDepositorDeductions;
+        perpetualMint.updateERC1155TokenRisks(COLLECTION, tokenIds, risks);
 
         assert(
-            expectedEarnings ==
+            expectedEarnings + oldDepositorEarnings ==
                 _depositorEarnings(
                     address(perpetualMint),
                     depositorOne,
-                    PARALLEL_ALPHA
+                    COLLECTION
                 )
         );
 
-        assert(newDepositorDeductions == expectedEarnings);
+        assert(
+            baseMultiplier ==
+                _baseMultiplier(address(perpetualMint), COLLECTION)
+        );
+
+        assert(
+            currentEarnings ==
+                _lastCollectionEarnings(address(perpetualMint), COLLECTION)
+        );
     }
 
     /// @dev tests that when updating the risk of a ERC1155 tokens the total depositor risk of that collection is changed
@@ -121,14 +135,14 @@ contract PerpetualMint_updateERC1155TokenRisks is
             oldDepositorTokenRisks[i] = _depositorTokenRisk(
                 address(perpetualMint),
                 depositorOne,
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
 
             oldActiveTokenAmounts[i] = _activeERC1155Tokens(
                 address(perpetualMint),
                 depositorOne,
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
         }
@@ -136,16 +150,16 @@ contract PerpetualMint_updateERC1155TokenRisks is
         uint256 oldTotalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
         vm.prank(depositorOne);
-        perpetualMint.updateERC1155TokenRisks(PARALLEL_ALPHA, tokenIds, risks);
+        perpetualMint.updateERC1155TokenRisks(COLLECTION, tokenIds, risks);
 
         uint256 newTotalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
         uint256 expectedTotalRiskChange;
@@ -174,7 +188,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
             (_depositorTokenRisk(
                 address(perpetualMint),
                 depositorOne,
-                PARALLEL_ALPHA,
+                COLLECTION,
                 PARALLEL_ALPHA_ID
             ) * 3) /
             10;
@@ -183,14 +197,14 @@ contract PerpetualMint_updateERC1155TokenRisks is
             oldDepositorTokenRisks[i] = _depositorTokenRisk(
                 address(perpetualMint),
                 depositorOne,
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
 
             oldActiveTokenAmounts[i] = _activeERC1155Tokens(
                 address(perpetualMint),
                 depositorOne,
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
         }
@@ -198,16 +212,16 @@ contract PerpetualMint_updateERC1155TokenRisks is
         uint256 oldTotalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
         vm.prank(depositorOne);
-        perpetualMint.updateERC1155TokenRisks(PARALLEL_ALPHA, tokenIds, risks);
+        perpetualMint.updateERC1155TokenRisks(COLLECTION, tokenIds, risks);
 
         uint256 newTotalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
         uint256 expectedTotalRiskChange;
@@ -238,34 +252,34 @@ contract PerpetualMint_updateERC1155TokenRisks is
         for (uint256 i; i < idsLength; ++i) {
             oldTokenRisks[i] = _tokenRisk(
                 address(perpetualMint),
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
 
             oldActiveTokenAmounts[i] = _activeERC1155Tokens(
                 address(perpetualMint),
                 depositorOne,
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
 
             oldDepositorTokenRisks[i] = _depositorTokenRisk(
                 address(perpetualMint),
                 depositorOne,
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
         }
 
         vm.prank(depositorOne);
-        perpetualMint.updateERC1155TokenRisks(PARALLEL_ALPHA, tokenIds, risks);
+        perpetualMint.updateERC1155TokenRisks(COLLECTION, tokenIds, risks);
 
         uint256[] memory newTokenRisks = new uint256[](idsLength);
 
         for (uint256 i; i < idsLength; ++i) {
             newTokenRisks[i] = _tokenRisk(
                 address(perpetualMint),
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
         }
@@ -295,7 +309,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
             (_depositorTokenRisk(
                 address(perpetualMint),
                 depositorOne,
-                PARALLEL_ALPHA,
+                COLLECTION,
                 PARALLEL_ALPHA_ID
             ) * 3) /
             10;
@@ -303,34 +317,34 @@ contract PerpetualMint_updateERC1155TokenRisks is
         for (uint256 i; i < idsLength; ++i) {
             oldTokenRisks[i] = _tokenRisk(
                 address(perpetualMint),
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
 
             oldActiveTokenAmounts[i] = _activeERC1155Tokens(
                 address(perpetualMint),
                 depositorOne,
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
 
             oldDepositorTokenRisks[i] = _depositorTokenRisk(
                 address(perpetualMint),
                 depositorOne,
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
         }
 
         vm.prank(depositorOne);
-        perpetualMint.updateERC1155TokenRisks(PARALLEL_ALPHA, tokenIds, risks);
+        perpetualMint.updateERC1155TokenRisks(COLLECTION, tokenIds, risks);
 
         uint256[] memory newTokenRisks = new uint256[](idsLength);
 
         for (uint256 i; i < idsLength; ++i) {
             newTokenRisks[i] = _tokenRisk(
                 address(perpetualMint),
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
         }
@@ -351,7 +365,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
         public
     {
         vm.prank(depositorOne);
-        perpetualMint.updateERC1155TokenRisks(PARALLEL_ALPHA, tokenIds, risks);
+        perpetualMint.updateERC1155TokenRisks(COLLECTION, tokenIds, risks);
 
         for (uint256 i; i < tokenIds.length; ++i) {
             assert(
@@ -359,7 +373,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
                     _depositorTokenRisk(
                         address(perpetualMint),
                         depositorOne,
-                        PARALLEL_ALPHA,
+                        COLLECTION,
                         tokenIds[i]
                     )
             );
@@ -386,7 +400,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
         risks.push(NEW_RISK);
         vm.expectRevert(IPerpetualMintInternal.ArrayLengthMismatch.selector);
         vm.prank(depositorOne);
-        perpetualMint.updateERC1155TokenRisks(PARALLEL_ALPHA, tokenIds, risks);
+        perpetualMint.updateERC1155TokenRisks(COLLECTION, tokenIds, risks);
     }
 
     /// @dev test that updateERC1155TokenRisks reverts if the risk to be set is larger than the BASIS
@@ -394,7 +408,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
         risks[0] = FAILING_RISK;
         vm.expectRevert(IPerpetualMintInternal.BasisExceeded.selector);
         vm.prank(depositorOne);
-        perpetualMint.updateERC1155TokenRisks(PARALLEL_ALPHA, tokenIds, risks);
+        perpetualMint.updateERC1155TokenRisks(COLLECTION, tokenIds, risks);
     }
 
     /// @dev test that updateERC1155TokenRisks reverts if the risk to be set is 0
@@ -402,7 +416,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
         risks[0] = 0;
         vm.expectRevert(IPerpetualMintInternal.TokenRiskMustBeNonZero.selector);
         vm.prank(depositorOne);
-        perpetualMint.updateERC1155TokenRisks(PARALLEL_ALPHA, tokenIds, risks);
+        perpetualMint.updateERC1155TokenRisks(COLLECTION, tokenIds, risks);
     }
 
     /// @dev test that updateERC1155TokenRisks reverts if the caller does not have active ERC1155 tokens in that tokenId for that collection
@@ -411,7 +425,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
     {
         vm.expectRevert(IPerpetualMintInternal.OwnerInactive.selector);
         vm.prank(NON_OWNER);
-        perpetualMint.updateERC1155TokenRisks(PARALLEL_ALPHA, tokenIds, risks);
+        perpetualMint.updateERC1155TokenRisks(COLLECTION, tokenIds, risks);
     }
 
     /// @dev test that updateERC1155TokenRisks reverts if the caller is attempting to set the same risk as the previous risk
@@ -421,11 +435,11 @@ contract PerpetualMint_updateERC1155TokenRisks is
         risks[0] = _depositorTokenRisk(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA,
+            COLLECTION,
             PARALLEL_ALPHA_ID
         );
         vm.expectRevert(IPerpetualMintInternal.IdenticalRisk.selector);
         vm.prank(depositorOne);
-        perpetualMint.updateERC1155TokenRisks(PARALLEL_ALPHA, tokenIds, risks);
+        perpetualMint.updateERC1155TokenRisks(COLLECTION, tokenIds, risks);
     }
 }

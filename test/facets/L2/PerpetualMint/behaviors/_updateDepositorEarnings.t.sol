@@ -12,7 +12,7 @@ contract PerpetualMint_updateDepositorEarnings is
     PerpetualMintTest,
     L2ForkTest
 {
-    uint256 internal constant unsuccessfulMintAttemps = 1;
+    uint256 internal constant unsuccessfulMintAttempts = 1;
     address internal constant COLLECTION = BORED_APE_YACHT_CLUB;
 
     /// @dev sets up the context for the test cases
@@ -21,7 +21,7 @@ contract PerpetualMint_updateDepositorEarnings is
 
         depositBoredApeYachtClubAssetsMock();
 
-        mockUnsuccessfulCollectionMints(COLLECTION, unsuccessfulMintAttemps);
+        mockUnsuccessfulCollectionMints(COLLECTION, unsuccessfulMintAttempts);
     }
 
     /// @dev asserts that _updateBaseMultiplier is called so the baseMultiplier and lastCollectionEarnings

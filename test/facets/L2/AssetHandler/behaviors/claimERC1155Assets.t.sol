@@ -67,26 +67,11 @@ contract L2AssetHandler_claimERC1155Assets is
             encodedData
         );
 
-        // active ERC1155 tokens are stored in a mapping, so we need to compute the storage slot
-        bytes32 activeERC1155TokenAmountStorageSlot = keccak256(
-            abi.encode(
-                bongBearTokenIds[0], // the active ERC1155 token ID
-                keccak256(
-                    abi.encode(
-                        BONG_BEARS, // the active ERC1155 token collection
-                        keccak256(
-                            abi.encode(
-                                address(this), // the active ERC1155 token depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 23 // the activeERC1155Tokens storage slot
-                            )
-                        )
-                    )
-                )
-            )
-        );
-
-        uint256 activeERC1155TokenAmount = uint256(
-            vm.load(address(this), activeERC1155TokenAmountStorageSlot)
+        uint256 activeERC1155TokenAmount = _activeERC1155Tokens(
+            address(this),
+            address(this),
+            BONG_BEARS,
+            bongBearTokenIds[0]
         );
 
         // mappings are hash tables, so this assertion proves that the active ERC1155 token amount was
@@ -104,7 +89,7 @@ contract L2AssetHandler_claimERC1155Assets is
                         keccak256(
                             abi.encode(
                                 address(this), // the ERC1155 token winner
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 24 // the inactiveERC1155Tokens storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 26 // the inactiveERC1155Tokens storage slot
                             )
                         )
                     )
@@ -140,26 +125,11 @@ contract L2AssetHandler_claimERC1155Assets is
             bongBearTokenAmounts
         );
 
-        // inactive ERC1155 tokens are stored in a mapping, so we need to compute the storage slot
-        bytes32 inactiveERC1155TokenAmountStorageSlot = keccak256(
-            abi.encode(
-                bongBearTokenIds[0], // the inactive ERC1155 token ID
-                keccak256(
-                    abi.encode(
-                        BONG_BEARS, // the ERC1155 token collection
-                        keccak256(
-                            abi.encode(
-                                address(this), // the ERC1155 token winner
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 24 // the inactiveERC1155Tokens storage slot
-                            )
-                        )
-                    )
-                )
-            )
-        );
-
-        uint256 inactiveERC1155TokenAmount = uint256(
-            vm.load(address(this), inactiveERC1155TokenAmountStorageSlot)
+        uint256 inactiveERC1155TokenAmount = _inactiveERC1155Tokens(
+            address(this),
+            address(this),
+            BONG_BEARS,
+            bongBearTokenIds[0]
         );
 
         // mappings are hash tables, so this assertion proves that the inactive ERC1155 token amount was
@@ -304,7 +274,7 @@ contract L2AssetHandler_claimERC1155Assets is
                         keccak256(
                             abi.encode(
                                 msg.sender, // the ERC1155 token winner
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 24 // the inactiveERC1155Tokens storage slot
+                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 26 // the inactiveERC1155Tokens storage slot
                             )
                         )
                     )
@@ -321,6 +291,7 @@ contract L2AssetHandler_claimERC1155Assets is
 
         vm.expectRevert(IL2AssetHandler.ERC1155TokenNotEscrowed.selector);
 
+        vm.prank(msg.sender);
         this.claimERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,

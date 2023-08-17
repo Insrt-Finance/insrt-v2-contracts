@@ -80,15 +80,23 @@ library PayloadEncoder {
     }
 
     /// @notice Encodes the payload for withdrawing ERC-721 assets cross-chain.
-    /// @param depositor Address of the depositor.
+    /// @param beneficiary Address of the beneficiary.
     /// @param collection Address of the collection.
+    /// @param executor Address of the executor.
     /// @param tokenIds Array of token ids.
     /// @return payload The encoded payload.
     function encodeWithdrawERC721AssetsPayload(
-        address depositor,
+        address beneficiary,
         address collection,
+        address executor,
         uint256[] calldata tokenIds
     ) internal pure returns (bytes memory payload) {
-        payload = abi.encode(AssetType.ERC721, depositor, collection, tokenIds);
+        payload = abi.encode(
+            AssetType.ERC721,
+            beneficiary,
+            collection,
+            executor,
+            tokenIds
+        );
     }
 }

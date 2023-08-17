@@ -104,6 +104,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         }
 
         _withdrawERC721Assets(
+            msg.sender,
             collection,
             layerZeroDestinationChainId,
             tokenIds
@@ -229,6 +230,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
     /// @inheritdoc IL2AssetHandler
     function withdrawERC721Assets(
+        address beneficiary,
         address collection,
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds
@@ -298,6 +300,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         }
 
         _withdrawERC721Assets(
+            beneficiary,
             collection,
             layerZeroDestinationChainId,
             tokenIds
@@ -492,10 +495,12 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     }
 
     /// @notice Withdraws ERC721 assets cross-chain using LayerZero.
+    /// @param beneficiary Address that will receive the deposited assets on the destination chain.
     /// @param collection Address of the ERC721 collection.
     /// @param layerZeroDestinationChainId The LayerZero destination chain ID.
     /// @param tokenIds IDs of the tokens to be withdrawn.
     function _withdrawERC721Assets(
+        address beneficiary,
         address collection,
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds
@@ -503,8 +508,9 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         _lzSend(
             layerZeroDestinationChainId,
             PayloadEncoder.encodeWithdrawERC721AssetsPayload(
-                msg.sender,
+                beneficiary,
                 collection,
+                msg.sender,
                 tokenIds
             ),
             payable(msg.sender),

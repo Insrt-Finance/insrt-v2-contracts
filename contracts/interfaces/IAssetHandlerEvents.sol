@@ -41,8 +41,9 @@ interface IAssetHandlerEvents {
     /// @param risks The risk settings for the deposited assets.
     /// @param tokenIds Token IDs of the deposited ERC721 assets.
     event ERC721AssetsDeposited(
-        address indexed depositor,
+        address indexed beneficiary,
         address indexed collection,
+        address indexed depositor,
         uint256[] risks,
         uint256[] tokenIds
     );

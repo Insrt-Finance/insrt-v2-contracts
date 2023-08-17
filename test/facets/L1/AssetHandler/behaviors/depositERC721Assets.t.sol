@@ -96,6 +96,7 @@ contract L1AssetHandler_depositERC721Assets is
         emit ERC721AssetsDeposited(
             address(this),
             BORED_APE_YACHT_CLUB,
+            address(this),
             testRisks,
             boredApeYachtClubTokenIds
         );

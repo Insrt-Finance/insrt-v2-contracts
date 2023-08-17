@@ -475,7 +475,13 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             // Set the asset type for the collection
             perpetualMintStorageLayout.collectionType[collection] = assetType;
 
-            emit ERC721AssetsDeposited(depositor, collection, risks, tokenIds);
+            emit ERC721AssetsDeposited(
+                beneficiary,
+                collection,
+                depositor,
+                risks,
+                tokenIds
+            );
         }
     }
 

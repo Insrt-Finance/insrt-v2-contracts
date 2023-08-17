@@ -90,7 +90,13 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
             tokenIds
         );
 
-        emit ERC721AssetsDeposited(msg.sender, collection, risks, tokenIds);
+        emit ERC721AssetsDeposited(
+            beneficiary,
+            collection,
+            msg.sender,
+            risks,
+            tokenIds
+        );
     }
 
     /// @inheritdoc IL1AssetHandler

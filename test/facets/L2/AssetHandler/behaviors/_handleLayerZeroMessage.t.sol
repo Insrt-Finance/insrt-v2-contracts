@@ -33,264 +33,82 @@ contract L2AssetHandler_handleLayerZeroMessage is
             encodedData
         );
 
-        // active ERC1155 owners are stored as an AddressSet in a mapping, so we need to compute the storage slot
-        // this slot defaults to the storage slot of the AddressSet._inner._values array length
-        bytes32 activeERC1155OwnersAddressSetStorageSlot = keccak256(
-            abi.encode(
-                bongBearTokenIds[0], // the active ERC1155 token ID
-                keccak256(
-                    abi.encode(
-                        BONG_BEARS, // the active ERC1155 token collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 16 // the activeERC1155Owners storage slot
-                    )
-                )
-            )
-        );
-
-        bytes32 activeERC1155OwnersAddressSetIndexStorageSlot = keccak256(
-            abi.encode(
-                msg.sender, // the active ERC1155 token owner
-                uint256(activeERC1155OwnersAddressSetStorageSlot) + 1 // AddressSet._inner._indexes storage slot
-            )
-        );
-
-        bytes32 activeERC1155OwnersAddressSetIndex = vm.load(
+        address[] memory activeERC1155Owners = _activeERC1155Owners(
             address(this),
-            activeERC1155OwnersAddressSetIndexStorageSlot
-        );
-
-        bytes32 activeERC1155OwnersValueAtAddressSetIndexStorageSlot = keccak256(
-                abi.encode(
-                    uint256(activeERC1155OwnersAddressSetStorageSlot) +
-                        // add index to storage slot to get the storage slot of the value at the index
-                        uint256(activeERC1155OwnersAddressSetIndex) -
-                        // subtract 1 to convert to zero-indexing
-                        1
-                )
-            );
-
-        bytes32 activeERC1155OwnersValueAtAddressSetIndex = vm.load(
-            address(this),
-            activeERC1155OwnersValueAtAddressSetIndexStorageSlot
+            BONG_BEARS,
+            bongBearTokenIds[0]
         );
 
         // this assertion proves that the active ERC1155 owner was added to the activeERC1155Owners AddressSet for the given token ID
-        assertEq(
-            address(
-                uint160(uint256(activeERC1155OwnersValueAtAddressSetIndex))
-            ),
-            msg.sender
-        );
+        assertEq(activeERC1155Owners[0], msg.sender);
 
-        // active ERC1155 tokens are stored in a mapping, so we need to compute the storage slot
-        bytes32 activeERC1155TokenAmountStorageSlot = keccak256(
-            abi.encode(
-                bongBearTokenIds[0], // the active ERC1155 token ID
-                keccak256(
-                    abi.encode(
-                        BONG_BEARS, // the active ERC1155 token collection
-                        keccak256(
-                            abi.encode(
-                                msg.sender, // the active ERC1155 token depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 23 // the activeERC1155Tokens storage slot
-                            )
-                        )
-                    )
-                )
-            )
-        );
-
-        uint256 activeERC1155TokenAmount = uint256(
-            vm.load(address(this), activeERC1155TokenAmountStorageSlot)
+        uint256 activeERC1155TokenAmount = _activeERC1155Tokens(
+            address(this),
+            msg.sender,
+            BONG_BEARS,
+            bongBearTokenIds[0]
         );
 
         // this assertion proves that the ERC1155 token amount was added to activeERC1155Tokens
         assertEq(activeERC1155TokenAmount, bongBearTokenAmounts[0]);
 
-        // active token ids eligible to be minted are stored as a UintSet in a mapping, so we need to compute the storage slot
-        // this slot defaults to the storage slot of the UintSet._inner._values array length
-        bytes32 activeTokenIdsUintSetStorageSlot = keccak256(
-            abi.encode(
-                BONG_BEARS, // the active ERC1155 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 13 // the activeTokenIds storage slot
-            )
-        );
-
-        bytes32 activeTokenIdUintSetIndexStorageSlot = keccak256(
-            abi.encode(
-                bongBearTokenIds[0], // the active ERC1155 token ID
-                uint256(activeTokenIdsUintSetStorageSlot) + 1 // UintSet._inner._indexes storage slot
-            )
-        );
-
-        bytes32 activeTokenIdUintSetIndex = vm.load(
+        uint256[] memory activeTokenIds = _activeTokenIds(
             address(this),
-            activeTokenIdUintSetIndexStorageSlot
-        );
-
-        bytes32 activeTokenIdValueAtUintSetIndexStorageSlot = keccak256(
-            abi.encode(
-                uint256(activeTokenIdsUintSetStorageSlot) +
-                    // add index to storage slot to get the storage slot of the value at the index
-                    uint256(activeTokenIdUintSetIndex) -
-                    // subtract 1 to convert to zero-indexing
-                    1
-            )
-        );
-
-        uint256 activeTokenIdValueAtUintSetIndex = uint256(
-            vm.load(address(this), activeTokenIdValueAtUintSetIndexStorageSlot)
+            BONG_BEARS
         );
 
         // this assertion proves that the active token ID was added to the activeTokenIds UintSet
-        assertEq(activeTokenIdValueAtUintSetIndex, bongBearTokenIds[0]);
+        assertEq(activeTokenIds[0], bongBearTokenIds[0]);
 
-        // depositor token risk values are stored in a mapping, so we need to compute the storage slot
-        bytes32 depositorTokenRiskStorageSlot = keccak256(
-            abi.encode(
-                bongBearTokenIds[0], // the active ERC1155 token ID
-                keccak256(
-                    abi.encode(
-                        BONG_BEARS, // the active ERC1155 token collection
-                        keccak256(
-                            abi.encode(
-                                msg.sender, // the active ERC1155 token depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // the depositorTokenRisk storage slot
-                            )
-                        )
-                    )
-                )
-            )
-        );
-
-        uint256 depositorTokenRisk = uint256(
-            vm.load(address(this), depositorTokenRiskStorageSlot)
+        uint256 depositorTokenRisk = _depositorTokenRisk(
+            address(this),
+            msg.sender,
+            BONG_BEARS,
+            bongBearTokenIds[0]
         );
 
         // this assertion proves that the depositor token risk was added to depositorTokenRisk
         assertEq(depositorTokenRisk, testRisks[0]);
 
-        // the total number of active tokens in the collection is stored in a mapping
-        bytes32 totalActiveTokenAmountStorageSlot = keccak256(
-            abi.encode(
-                BONG_BEARS, // the active ERC1155 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 12 // the totalActiveTokens storage slot
-            )
-        );
-
-        uint256 totalActiveTokens = uint256(
-            vm.load(address(this), totalActiveTokenAmountStorageSlot)
+        uint256 totalActiveTokens = _totalActiveTokens(
+            address(this),
+            BONG_BEARS
         );
 
         // this assertion proves that the total number of active tokens in the collection was updated correctly
         assertEq(totalActiveTokens, bongBearTokenAmounts[0]);
 
-        // the total risk for the depositor in the collection is stored in a mapping
-        bytes32 totalDepositorRiskStorageSlot = keccak256(
-            abi.encode(
-                BONG_BEARS, // the active ERC1155 token collection
-                keccak256(
-                    abi.encode(
-                        msg.sender, // the depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the totalDepositorRisk storage slot
-                    )
-                )
-            )
-        );
-
-        uint256 totalDepositorRisk = uint256(
-            uint256(vm.load(address(this), totalDepositorRiskStorageSlot))
+        uint256 totalDepositorRisk = _totalDepositorRisk(
+            address(this),
+            msg.sender,
+            BONG_BEARS
         );
 
         // this assertion proves that the total risk for the depositor in the collection was updated correctly
         assertEq(totalDepositorRisk, testRisks[0] * bongBearTokenAmounts[0]);
 
-        // the total risk for the depositor in the collection is stored in a mapping
-        bytes32 totalRiskStorageSlot = keccak256(
-            abi.encode(
-                BONG_BEARS,
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 11 // the totalRisk storage slot
-            )
-        );
-
-        uint256 totalRisk = uint256(
-            vm.load(address(this), totalRiskStorageSlot)
-        );
+        uint256 totalRisk = _totalRisk(address(this), BONG_BEARS);
 
         // this assertion proves that the total risk in the collection was updated correctly
         assertEq(totalRisk, testRisks[0] * bongBearTokenAmounts[0]);
 
-        // the total risk for the token ID in the collection is stored in a mapping
-        bytes32 tokenRiskStorageSlot = keccak256(
-            abi.encode(
-                bongBearTokenIds[0], // the active ERC1155 token ID
-                keccak256(
-                    abi.encode(
-                        BONG_BEARS, // the active ERC1155 token collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 14 // the tokenRisk storage slot
-                    )
-                )
-            )
-        );
-
-        uint256 tokenRisk = uint256(
-            vm.load(address(this), tokenRiskStorageSlot)
+        uint256 tokenRisk = _tokenRisk(
+            address(this),
+            BONG_BEARS,
+            bongBearTokenIds[0]
         );
 
         // this assertion proves that the total risk for the token ID in the collection was updated correctly
         assertEq(tokenRisk, testRisks[0] * bongBearTokenAmounts[0]);
 
-        // the set of active collections is stored in an AddressSet data structure
-        // this slot defaults to the storage slot of the AddressSet._values array length
-        bytes32 activeCollectionsSetStorageSlot = bytes32(
-            uint256(PerpetualMintStorage.STORAGE_SLOT) + 5 // the activeCollections storage slot
-        );
-
-        bytes32 activeCollectionsSetIndexStorageSlot = keccak256(
-            abi.encode(
-                BONG_BEARS, // the active ERC1155 token collection
-                uint256(activeCollectionsSetStorageSlot) + 1 // Set._inner._indexes storage slot
-            )
-        );
-
-        bytes32 activeCollectionsSetIndex = vm.load(
-            address(this),
-            activeCollectionsSetIndexStorageSlot
-        );
-
-        bytes32 activeCollectionsValueAtSetIndexStorageSlot = keccak256(
-            abi.encode(
-                uint256(activeCollectionsSetStorageSlot) +
-                    // add index to storage slot to get the storage slot of the value at the index
-                    uint256(activeCollectionsSetIndex) -
-                    // subtract 1 to convert to zero-indexing
-                    1
-            )
-        );
-
-        bytes32 activeCollectionsValueAtSetIndex = vm.load(
-            address(this),
-            activeCollectionsValueAtSetIndexStorageSlot
-        );
+        address[] memory activeCollections = _activeCollections(address(this));
 
         // this assertion proves that the collection was added to the set of active collections
-        assertEq(
-            address(uint160(uint256(activeCollectionsValueAtSetIndex))),
-            BONG_BEARS
-        );
+        assertEq(activeCollections[0], BONG_BEARS);
 
-        bytes32 collectionTypeStorageSlot = keccak256(
-            abi.encode(
-                BONG_BEARS, // the deposited ERC1155 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 8 // the collectionType storage slot
-            )
-        );
+        AssetType collectionType = _collectionType(address(this), BONG_BEARS);
 
-        uint8 collectionType = uint8(
-            uint256(vm.load(address(this), collectionTypeStorageSlot))
-        );
-
-        assertEq(collectionType, uint8(AssetType.ERC1155));
+        assert(collectionType == AssetType.ERC1155);
     }
 
     /// @dev Tests that _handleLayerZeroMessage emits an ERC1155AssetsDeposited event when depositing ERC1155 tokens.
@@ -340,165 +158,63 @@ contract L2AssetHandler_handleLayerZeroMessage is
             encodedData
         );
 
-        // escrowed ERC721 owners are stored in a mapping, so we need to compute the storage slot
-        bytes32 escrowedERC721OwnerStorageSlot = keccak256(
-            abi.encode(
-                boredApeYachtClubTokenIds[0], // the deposited ERC721 token ID
-                keccak256(
-                    abi.encode(
-                        BORED_APE_YACHT_CLUB, // the deposited ERC721 collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // the escrowedERC721Owner mapping slot
-                    )
-                )
-            )
-        );
-
-        address escrowedERC721Owner = address(
-            uint160(
-                uint256(vm.load(address(this), escrowedERC721OwnerStorageSlot))
-            )
+        address escrowedERC721Owner = _escrowedERC721Owner(
+            address(this),
+            BORED_APE_YACHT_CLUB,
+            boredApeYachtClubTokenIds[0]
         );
 
         // mappings are hash tables, so this assertion proves that the escrowed ERC721 owner
         // was set correctly for the collection and the given token ID.
         assertEq(escrowedERC721Owner, msg.sender);
 
-        // the active token IDs in the collection is stored in a UintSet data structure, so we need to compute the storage slot
-        // this slot defaults to the storage slot of the UintSet._values array length
-        bytes32 activeTokenIdsUintSetStorageSlot = keccak256(
-            abi.encode(
-                BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 13 // the activeTokenIds storage slot
-            )
-        );
-
-        bytes32 activeTokenIdUintSetIndexStorageSlot = keccak256(
-            abi.encode(
-                boredApeYachtClubTokenIds[0], // the active ERC721 token ID
-                uint256(activeTokenIdsUintSetStorageSlot) + 1 // Set._inner._indexes storage slot
-            )
-        );
-
-        bytes32 activeTokenIdUintSetIndex = vm.load(
+        uint256[] memory activeTokenIds = _activeTokenIds(
             address(this),
-            activeTokenIdUintSetIndexStorageSlot
-        );
-
-        bytes32 activeTokenIdValueAtUintSetIndexStorageSlot = keccak256(
-            abi.encode(
-                uint256(activeTokenIdsUintSetStorageSlot) +
-                    // add index to storage slot to get the storage slot of the value at the index
-                    uint256(activeTokenIdUintSetIndex) -
-                    // subtract 1 to convert to zero-indexing
-                    1
-            )
-        );
-
-        uint256 activeTokenIdValueAtUintSetIndex = uint256(
-            vm.load(address(this), activeTokenIdValueAtUintSetIndexStorageSlot)
+            BORED_APE_YACHT_CLUB
         );
 
         // this assertion proves that the token ID was added to the set of active token IDs in the collection
-        assertEq(
-            activeTokenIdValueAtUintSetIndex,
-            boredApeYachtClubTokenIds[0]
-        );
+        assertEq(activeTokenIds[0], boredApeYachtClubTokenIds[0]);
 
-        // the count of active tokens for the depositor in the collection is stored in a mapping
-        bytes32 activeTokensCountStorageSlot = keccak256(
-            abi.encode(
-                BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                keccak256(
-                    abi.encode(
-                        msg.sender, // the depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 19 // the activeTokens storage slot
-                    )
-                )
-            )
-        );
-
-        uint256 activeTokensCount = uint256(
-            vm.load(address(this), activeTokensCountStorageSlot)
+        uint256 activeTokensCount = _totalActiveTokens(
+            address(this),
+            BORED_APE_YACHT_CLUB
         );
 
         // this assertion proves that the count of active tokens for the depositor in the collection was incremented correctly
         assertEq(activeTokensCount, boredApeYachtClubTokenIds.length);
 
-        // the risk for the depositor and the token ID in the collection is stored in a mapping
-        bytes32 depositorTokenRiskStorageSlot = keccak256(
-            abi.encode(
-                boredApeYachtClubTokenIds[0], // the active ERC721 token ID
-                keccak256(
-                    abi.encode(
-                        BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                        keccak256(
-                            abi.encode(
-                                msg.sender, // the depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // the depositorTokenRisk storage slot
-                            )
-                        )
-                    )
-                )
-            )
-        );
-
-        uint256 depositorTokenRisk = uint256(
-            vm.load(address(this), depositorTokenRiskStorageSlot)
+        uint256 depositorTokenRisk = _depositorTokenRisk(
+            address(this),
+            msg.sender,
+            BORED_APE_YACHT_CLUB,
+            boredApeYachtClubTokenIds[0]
         );
 
         // this assertion proves that the risk for the depositor and the token ID in the collection was set correctly
         assertEq(depositorTokenRisk, testRisks[0]);
 
-        // the risk for the token ID in the collection is stored in a mapping
-        bytes32 tokenRiskStorageSlot = keccak256(
-            abi.encode(
-                boredApeYachtClubTokenIds[0], // the active ERC721 token ID
-                keccak256(
-                    abi.encode(
-                        BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 14 // the tokenRisk storage slot
-                    )
-                )
-            )
-        );
-
-        uint256 tokenRisk = uint256(
-            vm.load(address(this), tokenRiskStorageSlot)
+        uint256 tokenRisk = _tokenRisk(
+            address(this),
+            BORED_APE_YACHT_CLUB,
+            boredApeYachtClubTokenIds[0]
         );
 
         // this assertion proves that the risk for the token ID in the collection was incremented correctly
         assertEq(tokenRisk, testRisks[0]);
 
-        // the total number of active tokens in the collection is stored in a mapping
-        bytes32 totalActiveTokensStorageSlot = keccak256(
-            abi.encode(
-                BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 12 // the totalActiveTokens storage slot
-            )
-        );
-
-        uint256 totalActiveTokens = uint256(
-            vm.load(address(this), totalActiveTokensStorageSlot)
+        uint256 totalActiveTokens = _totalActiveTokens(
+            address(this),
+            BORED_APE_YACHT_CLUB
         );
 
         // this assertion proves that the total number of active tokens in the collection was incremented correctly
         assertEq(totalActiveTokens, boredApeYachtClubTokenIds.length);
 
-        // the total risk for the depositor in the collection is stored in a mapping, so we need to compute the storage slot
-        bytes32 totalDepositorRiskStorageSlot = keccak256(
-            abi.encode(
-                BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                keccak256(
-                    abi.encode(
-                        msg.sender, // the depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the totalDepositorRisk storage slot
-                    )
-                )
-            )
-        );
-
-        uint256 totalDepositorRisk = uint256(
-            vm.load(address(this), totalDepositorRiskStorageSlot)
+        uint256 totalDepositorRisk = _totalDepositorRisk(
+            address(this),
+            msg.sender,
+            BORED_APE_YACHT_CLUB
         );
 
         // this assertion proves that the total risk for the depositor in the collection was incremented correctly
@@ -507,72 +223,22 @@ contract L2AssetHandler_handleLayerZeroMessage is
             testRisks[0] * boredApeYachtClubTokenIds.length
         );
 
-        // the total risk in the collection is stored in a mapping
-        bytes32 totalRiskStorageSlot = keccak256(
-            abi.encode(
-                BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 11 // the totalRisk storage slot
-            )
-        );
-
-        uint256 totalRisk = uint256(
-            vm.load(address(this), totalRiskStorageSlot)
-        );
+        uint256 totalRisk = _totalRisk(address(this), BORED_APE_YACHT_CLUB);
 
         // this assertion proves that the total risk in the collection was incremented correctly
         assertEq(totalRisk, testRisks[0] * boredApeYachtClubTokenIds.length);
 
-        // the set of active collections is stored in an AddressSet data structure
-        // this slot defaults to the storage slot of the AddressSet._values array length
-        bytes32 activeCollectionsSetStorageSlot = bytes32(
-            uint256(PerpetualMintStorage.STORAGE_SLOT) + 5 // the activeCollections storage slot
-        );
-
-        bytes32 activeCollectionsSetIndexStorageSlot = keccak256(
-            abi.encode(
-                BORED_APE_YACHT_CLUB, // the active ERCE721 token collection
-                uint256(activeCollectionsSetStorageSlot) + 1 // Set._inner._indexes storage slot
-            )
-        );
-
-        bytes32 activeCollectionsSetIndex = vm.load(
-            address(this),
-            activeCollectionsSetIndexStorageSlot
-        );
-
-        bytes32 activeCollectionsValueAtSetIndexStorageSlot = keccak256(
-            abi.encode(
-                uint256(activeCollectionsSetStorageSlot) +
-                    // add index to storage slot to get the storage slot of the value at the index
-                    uint256(activeCollectionsSetIndex) -
-                    // subtract 1 to convert to zero-indexing
-                    1
-            )
-        );
-
-        bytes32 activeCollectionsValueAtSetIndex = vm.load(
-            address(this),
-            activeCollectionsValueAtSetIndexStorageSlot
-        );
+        address[] memory activeCollections = _activeCollections(address(this));
 
         // this assertion proves that the collection was added to the set of active collections
-        assertEq(
-            address(uint160(uint256(activeCollectionsValueAtSetIndex))),
+        assertEq(activeCollections[0], BORED_APE_YACHT_CLUB);
+
+        AssetType collectionType = _collectionType(
+            address(this),
             BORED_APE_YACHT_CLUB
         );
 
-        bytes32 collectionTypeStorageSlot = keccak256(
-            abi.encode(
-                BORED_APE_YACHT_CLUB, // the active ERCE721 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 8 // the collectionType storage slot
-            )
-        );
-
-        uint8 collectionType = uint8(
-            uint256(vm.load(address(this), collectionTypeStorageSlot))
-        );
-
-        assertEq(collectionType, uint8(AssetType.ERC721));
+        assert(collectionType == AssetType.ERC721);
     }
 
     /// @dev Tests that _handleLayerZeroMessage emits an ERC721AssetsDeposited event when depositing ERC721 tokens.

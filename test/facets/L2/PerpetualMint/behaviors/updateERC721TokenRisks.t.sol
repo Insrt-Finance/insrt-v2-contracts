@@ -22,11 +22,13 @@ contract PerpetualMint_updateERC721TokenRisks is
     uint256[] tokenIds;
     uint256[] risks;
 
+    address internal constant COLLECTION = BORED_APE_YACHT_CLUB;
+
     // grab BAYC collection earnings storage slot
     bytes32 internal collectionEarningsStorageSlot =
         keccak256(
             abi.encode(
-                BORED_APE_YACHT_CLUB, // the ERC721 collection
+                COLLECTION, // the ERC721 collection
                 uint256(Storage.STORAGE_SLOT) + 9 // the collectionEarnings storage slot
             )
         );
@@ -51,13 +53,13 @@ contract PerpetualMint_updateERC721TokenRisks is
 
     /// @dev tests that upon updating ERC721 token risks, the depositor deductions are set to be equal to the
     /// collection earnings of the collection of the updated token
-    function test_updateERC721TokenRisksUpdatesDepositorEarningsOfCallerWhenTotalDepositorRiskOfCallerIsZero()
+    function test_updateERC721TokenRisksUpdatesDepositorEarningsOfDepositorWhenTotalDepositorRiskIsZero()
         public
     {
         // grab totalDepositorsRisk storage slot
         bytes32 totalDepositorRiskStorageSlot = keccak256(
             abi.encode(
-                BORED_APE_YACHT_CLUB, // the ERC721 collection
+                COLLECTION, // the ERC721 collection
                 keccak256(
                     abi.encode(
                         depositorOne, // address of depositor
@@ -69,23 +71,28 @@ contract PerpetualMint_updateERC721TokenRisks is
 
         vm.store(address(perpetualMint), totalDepositorRiskStorageSlot, 0);
 
+        uint256 currentEarnings = _collectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 lastEarnings = _lastCollectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 baseMultiplier = (currentEarnings - lastEarnings) /
+            _totalRisk(address(perpetualMint), COLLECTION);
+
         vm.prank(depositorOne);
-        perpetualMint.updateERC721TokenRisks(
-            BORED_APE_YACHT_CLUB,
-            tokenIds,
-            risks
+        perpetualMint.updateERC721TokenRisks(COLLECTION, tokenIds, risks);
+
+        assert(
+            baseMultiplier ==
+                _baseMultiplier(address(perpetualMint), COLLECTION)
         );
 
         assert(
-            _multiplierOffset(
-                address(perpetualMint),
-                depositorOne,
-                BORED_APE_YACHT_CLUB
-            ) ==
-                _collectionEarnings(
-                    address(perpetualMint),
-                    BORED_APE_YACHT_CLUB
-                )
+            currentEarnings ==
+                _lastCollectionEarnings(address(perpetualMint), COLLECTION)
         );
     }
 
@@ -94,75 +101,62 @@ contract PerpetualMint_updateERC721TokenRisks is
     function test_updateERC721TokenRisksUpdatesDepositorEarningsWhenTotalDepositorRiskIsNonZero()
         public
     {
-        uint256 totalRisk = _totalRisk(
+        uint256 currentEarnings = _collectionEarnings(
             address(perpetualMint),
-            BORED_APE_YACHT_CLUB
+            COLLECTION
+        );
+        uint256 lastEarnings = _lastCollectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 baseMultiplier = (currentEarnings - lastEarnings) /
+            _totalRisk(address(perpetualMint), COLLECTION);
+
+        uint256 oldDepositorEarnings = _depositorEarnings(
+            address(perpetualMint),
+            depositorOne,
+            COLLECTION
         );
         uint256 totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
-        uint256 collectionEarnings = _collectionEarnings(
-            address(perpetualMint),
-            BORED_APE_YACHT_CLUB
-        );
-        uint256 oldDepositorDeductions = _multiplierOffset(
+        uint256 multiplierOffset = _multiplierOffset(
             address(perpetualMint),
             depositorOne,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
+
+        uint256 expectedEarnings = (baseMultiplier - multiplierOffset) *
+            totalDepositorRisk;
 
         assert(totalDepositorRisk != 0);
-        assert(totalRisk != 0);
+        assert(_totalRisk(address(perpetualMint), COLLECTION) != 0);
 
         vm.prank(depositorOne);
-        perpetualMint.updateERC721TokenRisks(
-            BORED_APE_YACHT_CLUB,
-            tokenIds,
-            risks
-        );
-
-        uint256 newDepositorDeductions = _multiplierOffset(
-            address(perpetualMint),
-            depositorOne,
-            BORED_APE_YACHT_CLUB
-        );
-
-        uint256 expectedEarnings = (collectionEarnings * totalDepositorRisk) /
-            totalRisk -
-            oldDepositorDeductions;
+        perpetualMint.updateERC721TokenRisks(COLLECTION, tokenIds, risks);
 
         assert(
-            expectedEarnings ==
+            expectedEarnings + oldDepositorEarnings ==
                 _depositorEarnings(
                     address(perpetualMint),
                     depositorOne,
-                    BORED_APE_YACHT_CLUB
+                    COLLECTION
                 )
         );
-
-        assert(newDepositorDeductions == expectedEarnings);
     }
 
     /// @dev tests that the token risk of an ERC721 collection is updated to the new token risk
     /// when updateERC721TokenRisks is called, for each tokenId in tokenIds
     function test_updateERC721TokenRisksSetsTheTokenRiskToNewRisk() public {
         vm.prank(depositorOne);
-        perpetualMint.updateERC721TokenRisks(
-            BORED_APE_YACHT_CLUB,
-            tokenIds,
-            risks
-        );
+        perpetualMint.updateERC721TokenRisks(COLLECTION, tokenIds, risks);
 
         for (uint256 i; i < tokenIds.length; ++i) {
             assert(
                 risks[i] ==
-                    _tokenRisk(
-                        address(perpetualMint),
-                        BORED_APE_YACHT_CLUB,
-                        tokenIds[i]
-                    )
+                    _tokenRisk(address(perpetualMint), COLLECTION, tokenIds[i])
             );
         }
     }
@@ -178,28 +172,18 @@ contract PerpetualMint_updateERC721TokenRisks is
         for (uint256 i; i < tokenIds.length; ++i) {
             totalOldTokenRisks += _tokenRisk(
                 address(perpetualMint),
-                BORED_APE_YACHT_CLUB,
+                COLLECTION,
                 tokenIds[i]
             );
             totalNewRisks += risks[i];
         }
 
-        uint256 oldTotalRisk = _totalRisk(
-            address(perpetualMint),
-            BORED_APE_YACHT_CLUB
-        );
+        uint256 oldTotalRisk = _totalRisk(address(perpetualMint), COLLECTION);
 
         vm.prank(depositorOne);
-        perpetualMint.updateERC721TokenRisks(
-            BORED_APE_YACHT_CLUB,
-            tokenIds,
-            risks
-        );
+        perpetualMint.updateERC721TokenRisks(COLLECTION, tokenIds, risks);
 
-        uint256 firstTotalRisk = _totalRisk(
-            address(perpetualMint),
-            BORED_APE_YACHT_CLUB
-        );
+        uint256 firstTotalRisk = _totalRisk(address(perpetualMint), COLLECTION);
 
         assert(
             firstTotalRisk - oldTotalRisk == totalNewRisks - totalOldTokenRisks
@@ -215,22 +199,18 @@ contract PerpetualMint_updateERC721TokenRisks is
         for (uint256 i; i < tokenIds.length; ++i) {
             totalOldTokenRisks += _tokenRisk(
                 address(perpetualMint),
-                BORED_APE_YACHT_CLUB,
+                COLLECTION,
                 tokenIds[i]
             );
             totalNewRisks += risks[i];
         }
 
         vm.prank(depositorOne);
-        perpetualMint.updateERC721TokenRisks(
-            BORED_APE_YACHT_CLUB,
-            tokenIds,
-            risks
-        );
+        perpetualMint.updateERC721TokenRisks(COLLECTION, tokenIds, risks);
 
         uint256 secondTotalRisk = _totalRisk(
             address(perpetualMint),
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         assert(secondTotalRisk < firstTotalRisk);
@@ -251,7 +231,7 @@ contract PerpetualMint_updateERC721TokenRisks is
         for (uint256 i; i < tokenIds.length; ++i) {
             totalOldTokenRisks += _tokenRisk(
                 address(perpetualMint),
-                BORED_APE_YACHT_CLUB,
+                COLLECTION,
                 tokenIds[i]
             );
             totalNewRisks += risks[i];
@@ -260,20 +240,16 @@ contract PerpetualMint_updateERC721TokenRisks is
         uint256 oldDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         vm.prank(depositorOne);
-        perpetualMint.updateERC721TokenRisks(
-            BORED_APE_YACHT_CLUB,
-            tokenIds,
-            risks
-        );
+        perpetualMint.updateERC721TokenRisks(COLLECTION, tokenIds, risks);
 
         uint256 firstDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         assert(
@@ -291,23 +267,19 @@ contract PerpetualMint_updateERC721TokenRisks is
         for (uint256 i; i < tokenIds.length; ++i) {
             totalOldTokenRisks += _tokenRisk(
                 address(perpetualMint),
-                BORED_APE_YACHT_CLUB,
+                COLLECTION,
                 tokenIds[i]
             );
             totalNewRisks += risks[i];
         }
 
         vm.prank(depositorOne);
-        perpetualMint.updateERC721TokenRisks(
-            BORED_APE_YACHT_CLUB,
-            tokenIds,
-            risks
-        );
+        perpetualMint.updateERC721TokenRisks(COLLECTION, tokenIds, risks);
 
         uint256 secondDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         assert(secondDepositorRisk < firstDepositorRisk);
@@ -333,11 +305,7 @@ contract PerpetualMint_updateERC721TokenRisks is
         risks.push(NEW_RISK);
         vm.expectRevert(IPerpetualMintInternal.ArrayLengthMismatch.selector);
         vm.prank(depositorOne);
-        perpetualMint.updateERC721TokenRisks(
-            BORED_APE_YACHT_CLUB,
-            tokenIds,
-            risks
-        );
+        perpetualMint.updateERC721TokenRisks(COLLECTION, tokenIds, risks);
     }
 
     /// @dev test that updateERC721TokenRisks reverts if the risk to be set is larger than the BASIS
@@ -345,11 +313,7 @@ contract PerpetualMint_updateERC721TokenRisks is
         risks[0] = FAILING_RISK;
         vm.expectRevert(IPerpetualMintInternal.BasisExceeded.selector);
         vm.prank(depositorOne);
-        perpetualMint.updateERC721TokenRisks(
-            BORED_APE_YACHT_CLUB,
-            tokenIds,
-            risks
-        );
+        perpetualMint.updateERC721TokenRisks(COLLECTION, tokenIds, risks);
     }
 
     /// @dev test that updateERC721TokenRisks reverts if the risk to be set is 0
@@ -357,11 +321,7 @@ contract PerpetualMint_updateERC721TokenRisks is
         risks[0] = 0;
         vm.expectRevert(IPerpetualMintInternal.TokenRiskMustBeNonZero.selector);
         vm.prank(depositorOne);
-        perpetualMint.updateERC721TokenRisks(
-            BORED_APE_YACHT_CLUB,
-            tokenIds,
-            risks
-        );
+        perpetualMint.updateERC721TokenRisks(COLLECTION, tokenIds, risks);
     }
 
     /// @dev test that updateERC721TokenRisks reverts if the caller is not the escrowedERC721Owner if the collection selected
@@ -371,10 +331,6 @@ contract PerpetualMint_updateERC721TokenRisks is
     {
         vm.expectRevert(IPerpetualMintInternal.OnlyEscrowedTokenOwner.selector);
         vm.prank(NON_OWNER);
-        perpetualMint.updateERC721TokenRisks(
-            BORED_APE_YACHT_CLUB,
-            tokenIds,
-            risks
-        );
+        perpetualMint.updateERC721TokenRisks(COLLECTION, tokenIds, risks);
     }
 }

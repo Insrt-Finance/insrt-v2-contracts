@@ -2,10 +2,10 @@
 
 pragma solidity 0.8.21;
 
-import { PerpetualMintTest } from "../PerpetualMint.t.sol";
-import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
+import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
 /// @dev PerpetualMint_resolveERC721Mints
 /// @dev PerpetualMint test contract for testing expected behavior of the _resolveERC721Mints function
@@ -19,24 +19,14 @@ contract PerpetualMint_resolveERC721Mints is
     /// @dev mimics random values sent by Chainlink VRF
     uint256[] randomWords;
 
-    // grab BAYC collection earnings storage slot
-    bytes32 internal constant collectionEarningsStorageSlot =
-        keccak256(
-            abi.encode(
-                BORED_APE_YACHT_CLUB, // the ERC721 collection
-                uint256(Storage.STORAGE_SLOT) + 9 // the collectionEarnings storage slot
-            )
-        );
-
     /// @dev values of random numbers which will lead to a successful mint and token one being selected
     uint256 internal constant winValue = 500;
     uint256 internal constant tokenOneSelectValue = 300;
 
+    address constant COLLECTION = BORED_APE_YACHT_CLUB;
+
     /// @dev expected value of won token ID
     uint256 internal expectedTokenId;
-
-    /// @dev depositor deductions of depositor matching expectedTokenId (depositorOne) prior to minting
-    uint256 internal oldDepositorDeductions;
 
     /// @dev address of depositor matching expectedTokenId (depositorOne) prior to minting
     address internal oldOwner;
@@ -46,6 +36,15 @@ contract PerpetualMint_resolveERC721Mints is
 
     /// @dev total depositor collection risk of depositor matching expectedTokenId (depositorOne) prior to minting
     uint256 internal totalDepositorRisk;
+
+    // grab BAYC collection earnings storage slot
+    bytes32 internal constant collectionEarningsStorageSlot =
+        keccak256(
+            abi.encode(
+                COLLECTION, // the ERC721 collection
+                uint256(Storage.STORAGE_SLOT) + 9 // the collectionEarnings storage slot
+            )
+        );
 
     /// @dev sets up the context for _resolveERC721Mints tests
     function setUp() public override {
@@ -64,21 +63,16 @@ contract PerpetualMint_resolveERC721Mints is
 
         // set all common variables by reading directly from storage
         expectedTokenId = BORED_APE_YACHT_CLUB_TOKEN_ID_ONE;
-        totalRisk = _totalRisk(address(perpetualMint), BORED_APE_YACHT_CLUB);
+        totalRisk = _totalRisk(address(perpetualMint), COLLECTION);
         oldOwner = _escrowedERC721Owner(
             address(perpetualMint),
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             expectedTokenId
         );
         totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             oldOwner,
-            BORED_APE_YACHT_CLUB
-        );
-        oldDepositorDeductions = _multiplierOffset(
-            address(perpetualMint),
-            oldOwner,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
     }
 
@@ -93,7 +87,7 @@ contract PerpetualMint_resolveERC721Mints is
         vm.prank(minter);
         perpetualMint.exposed_resolveERC721Mints(
             minter,
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             randomWords
         );
     }
@@ -105,13 +99,13 @@ contract PerpetualMint_resolveERC721Mints is
         uint256 oldInactiveTokens = _inactiveTokens(
             address(perpetualMint),
             address(minter),
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         vm.prank(minter);
         perpetualMint.exposed_resolveERC721Mints(
             minter,
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             randomWords
         );
 
@@ -119,7 +113,7 @@ contract PerpetualMint_resolveERC721Mints is
             _inactiveTokens(
                 address(perpetualMint),
                 address(minter),
-                BORED_APE_YACHT_CLUB
+                COLLECTION
             ) -
                 oldInactiveTokens ==
                 1
@@ -131,23 +125,19 @@ contract PerpetualMint_resolveERC721Mints is
         uint256 oldActiveTokens = _activeTokens(
             address(perpetualMint),
             oldOwner,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         vm.prank(minter);
         perpetualMint.exposed_resolveERC721Mints(
             minter,
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             randomWords
         );
 
         assert(
             oldActiveTokens -
-                _activeTokens(
-                    address(perpetualMint),
-                    oldOwner,
-                    BORED_APE_YACHT_CLUB
-                ) ==
+                _activeTokens(address(perpetualMint), oldOwner, COLLECTION) ==
                 1
         );
     }
@@ -158,7 +148,7 @@ contract PerpetualMint_resolveERC721Mints is
         vm.prank(minter);
         perpetualMint.exposed_resolveERC721Mints(
             minter,
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             randomWords
         );
 
@@ -166,7 +156,7 @@ contract PerpetualMint_resolveERC721Mints is
             address(minter) ==
                 _escrowedERC721Owner(
                     address(perpetualMint),
-                    BORED_APE_YACHT_CLUB,
+                    COLLECTION,
                     expectedTokenId
                 )
         );
@@ -179,33 +169,58 @@ contract PerpetualMint_resolveERC721Mints is
         assert(totalDepositorRisk != 0);
         assert(totalRisk != 0);
 
+        uint256 currentEarnings = _collectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 lastEarnings = _lastCollectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 baseMultiplier = (currentEarnings - lastEarnings) /
+            _totalRisk(address(perpetualMint), COLLECTION);
+
+        uint256 oldDepositorEarnings = _depositorEarnings(
+            address(perpetualMint),
+            oldOwner,
+            COLLECTION
+        );
+        uint256 multiplierOffset = _multiplierOffset(
+            address(perpetualMint),
+            oldOwner,
+            COLLECTION
+        );
+
+        uint256 expectedEarnings = (baseMultiplier - multiplierOffset) *
+            totalDepositorRisk;
+
         vm.prank(minter);
         perpetualMint.exposed_resolveERC721Mints(
             minter,
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             randomWords
         );
 
         uint256 newDepositorDeductions = _multiplierOffset(
             address(perpetualMint),
             oldOwner,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
-
-        uint256 expectedEarnings = (COLLECTION_EARNINGS * totalDepositorRisk) /
-            totalRisk -
-            oldDepositorDeductions;
 
         assert(
-            expectedEarnings ==
-                _depositorEarnings(
-                    address(perpetualMint),
-                    oldOwner,
-                    BORED_APE_YACHT_CLUB
-                )
+            expectedEarnings + oldDepositorEarnings ==
+                _depositorEarnings(address(perpetualMint), oldOwner, COLLECTION)
         );
 
-        assert(newDepositorDeductions == expectedEarnings);
+        assert(
+            baseMultiplier ==
+                _baseMultiplier(address(perpetualMint), COLLECTION)
+        );
+
+        assert(
+            currentEarnings ==
+                _lastCollectionEarnings(address(perpetualMint), COLLECTION)
+        );
     }
 
     /// @dev tests that the depositor earnings of the minter are updated correctly after when, when a minter
@@ -213,23 +228,32 @@ contract PerpetualMint_resolveERC721Mints is
     function test_resolveERC721MintsWinUpdateDepositorEarningsOfMinterWhenMinterHasNoDeposits()
         public
     {
+        uint256 currentEarnings = _collectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 lastEarnings = _lastCollectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 baseMultiplier = (currentEarnings - lastEarnings) /
+            _totalRisk(address(perpetualMint), COLLECTION);
+
         vm.prank(minter); //has zero risk since they have not deposited
         perpetualMint.exposed_resolveERC721Mints(
             minter,
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             randomWords
         );
 
         assert(
-            _multiplierOffset(
-                address(perpetualMint),
-                address(minter),
-                BORED_APE_YACHT_CLUB
-            ) ==
-                _collectionEarnings(
-                    address(perpetualMint),
-                    BORED_APE_YACHT_CLUB
-                )
+            baseMultiplier ==
+                _baseMultiplier(address(perpetualMint), COLLECTION)
+        );
+
+        assert(
+            currentEarnings ==
+                _lastCollectionEarnings(address(perpetualMint), COLLECTION)
         );
     }
 
@@ -238,34 +262,56 @@ contract PerpetualMint_resolveERC721Mints is
     function test_resolveERC721MintsWinUpdateDepositorEarningsOfMinterWhenMinterHasPreviousDeposits()
         public
     {
+        uint256 currentEarnings = _collectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 lastEarnings = _lastCollectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 baseMultiplier = (currentEarnings - lastEarnings) /
+            _totalRisk(address(perpetualMint), COLLECTION);
+
+        uint256 oldDepositorEarnings = _depositorEarnings(
+            address(perpetualMint),
+            depositorOne,
+            COLLECTION
+        );
+
+        uint256 multiplierOffset = _multiplierOffset(
+            address(perpetualMint),
+            depositorOne,
+            COLLECTION
+        );
+
+        uint256 expectedEarnings = (baseMultiplier - multiplierOffset) *
+            totalDepositorRisk;
+
         vm.prank(depositorTwo);
         perpetualMint.exposed_resolveERC721Mints(
             depositorTwo,
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             randomWords
         );
 
-        uint256 expectedEarnings = (COLLECTION_EARNINGS * riskTwo) /
-            totalRisk -
-            oldDepositorDeductions;
-
-        //previous earnings are not accounted for because there are none from the setup
         assert(
-            expectedEarnings ==
+            expectedEarnings + oldDepositorEarnings ==
                 _depositorEarnings(
                     address(perpetualMint),
-                    depositorTwo,
-                    BORED_APE_YACHT_CLUB
+                    depositorOne,
+                    COLLECTION
                 )
         );
 
         assert(
-            expectedEarnings ==
-                _multiplierOffset(
-                    address(perpetualMint),
-                    depositorTwo,
-                    BORED_APE_YACHT_CLUB
-                )
+            baseMultiplier ==
+                _baseMultiplier(address(perpetualMint), COLLECTION)
+        );
+
+        assert(
+            currentEarnings ==
+                _lastCollectionEarnings(address(perpetualMint), COLLECTION)
         );
     }
 
@@ -274,16 +320,12 @@ contract PerpetualMint_resolveERC721Mints is
         vm.prank(minter);
         perpetualMint.exposed_resolveERC721Mints(
             minter,
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             randomWords
         );
 
         assert(
-            _tokenRisk(
-                address(perpetualMint),
-                BORED_APE_YACHT_CLUB,
-                BORED_APE_YACHT_CLUB_TOKEN_ID_ONE
-            ) == 0
+            _tokenRisk(address(perpetualMint), COLLECTION, expectedTokenId) == 0
         );
     }
 
@@ -294,19 +336,19 @@ contract PerpetualMint_resolveERC721Mints is
     {
         uint256 oldActiveTokens = _totalActiveTokens(
             address(perpetualMint),
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         vm.prank(minter);
         perpetualMint.exposed_resolveERC721Mints(
             minter,
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             randomWords
         );
 
         uint256 newActiveTokens = _totalActiveTokens(
             address(perpetualMint),
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
         assert(oldActiveTokens - 1 == newActiveTokens);
     }
@@ -318,21 +360,21 @@ contract PerpetualMint_resolveERC721Mints is
     {
         uint256 tokenRisk = _tokenRisk(
             address(perpetualMint),
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             expectedTokenId
         );
 
         vm.prank(minter);
         perpetualMint.exposed_resolveERC721Mints(
             minter,
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             randomWords
         );
 
         uint256 newDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         assert(totalDepositorRisk - tokenRisk == newDepositorRisk);
@@ -341,12 +383,12 @@ contract PerpetualMint_resolveERC721Mints is
     /// @dev tests that the ERC721MintResolved event is emitted
     function test_resolveERC721TokenMintEmitsERC721MintResolved() public {
         vm.expectEmit();
-        emit ERC721MintResolved(BORED_APE_YACHT_CLUB, true);
+        emit ERC721MintResolved(COLLECTION, true);
 
         vm.prank(minter);
         perpetualMint.exposed_resolveERC721Mints(
             minter,
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             randomWords
         );
     }
@@ -357,19 +399,19 @@ contract PerpetualMint_resolveERC721Mints is
     {
         uint256[] memory oldActiveTokenIds = _activeTokenIds(
             address(perpetualMint),
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         vm.prank(minter);
         perpetualMint.exposed_resolveERC721Mints(
             minter,
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             randomWords
         );
 
         uint256[] memory newActiveTokenIds = _activeTokenIds(
             address(perpetualMint),
-            BORED_APE_YACHT_CLUB
+            COLLECTION
         );
 
         assert(newActiveTokenIds.length + 1 == oldActiveTokenIds.length);
@@ -391,7 +433,7 @@ contract PerpetualMint_resolveERC721Mints is
         vm.startPrank(minter);
         perpetualMint.exposed_resolveERC721Mints(
             minter,
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             randomWords
         );
 
@@ -402,7 +444,7 @@ contract PerpetualMint_resolveERC721Mints is
         vm.expectRevert(IPerpetualMintInternal.UnmatchedRandomWords.selector);
         perpetualMint.exposed_resolveERC721Mints(
             minter,
-            BORED_APE_YACHT_CLUB,
+            COLLECTION,
             randomWords
         );
     }

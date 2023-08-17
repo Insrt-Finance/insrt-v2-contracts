@@ -63,7 +63,13 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             amounts
         );
 
-        emit ERC1155AssetsWithdrawn(msg.sender, collection, tokenIds, amounts);
+        emit ERC1155AssetsWithdrawn(
+            msg.sender,
+            collection,
+            msg.sender,
+            tokenIds,
+            amounts
+        );
     }
 
     /// @inheritdoc IL2AssetHandler
@@ -212,7 +218,13 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             amounts
         );
 
-        emit ERC1155AssetsWithdrawn(msg.sender, collection, tokenIds, amounts);
+        emit ERC1155AssetsWithdrawn(
+            beneficiary,
+            collection,
+            msg.sender,
+            tokenIds,
+            amounts
+        );
     }
 
     /// @inheritdoc IL2AssetHandler
@@ -468,6 +480,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             PayloadEncoder.encodeWithdrawERC1155AssetsPayload(
                 beneficiary,
                 collection,
+                msg.sender,
                 tokenIds,
                 amounts
             ),

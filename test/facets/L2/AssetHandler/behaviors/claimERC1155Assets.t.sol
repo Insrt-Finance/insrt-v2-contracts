@@ -37,6 +37,7 @@ contract L2AssetHandler_claimERC1155Assets is
             AssetType.ERC1155,
             address(this),
             BONG_BEARS,
+            address(this),
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -182,6 +183,7 @@ contract L2AssetHandler_claimERC1155Assets is
         emit ERC1155AssetsWithdrawn(
             address(this),
             BONG_BEARS,
+            address(this),
             bongBearTokenIds,
             bongBearTokenAmounts
         );

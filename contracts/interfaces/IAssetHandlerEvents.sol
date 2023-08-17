@@ -20,13 +20,15 @@ interface IAssetHandlerEvents {
     );
 
     /// @notice Emitted when ERC1155 assets are successfully withdrawn.
-    /// @param depositor The indexed address of the depositor.
+    /// @param beneficiary The indexed address that will receive the deposited assets on the destination chain.
     /// @param collection The indexed address of the ERC1155 collection.
+    /// @param executor The indexed address of the withdrawal msg.sender.
     /// @param tokenIds Token IDs of the withdrawn ERC1155 assets.
     /// @param amounts Amount of withdrawn ERC1155 assets for each tokenId.
     event ERC1155AssetsWithdrawn(
-        address indexed depositor,
+        address indexed beneficiary,
         address indexed collection,
+        address indexed executor,
         uint256[] tokenIds,
         uint256[] amounts
     );

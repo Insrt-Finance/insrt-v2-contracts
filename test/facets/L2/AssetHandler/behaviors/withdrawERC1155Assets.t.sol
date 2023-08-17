@@ -35,8 +35,9 @@ contract L2AssetHandler_withdrawERC1155Assets is
 
         TEST_ERC1155_WITHDRAW_PAYLOAD = abi.encode(
             AssetType.ERC1155,
-            msg.sender,
+            address(this),
             BONG_BEARS,
+            address(this),
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -393,12 +394,13 @@ contract L2AssetHandler_withdrawERC1155Assets is
         emit ERC1155AssetsWithdrawn(
             address(this),
             BONG_BEARS,
+            address(this),
             bongBearTokenIds,
             bongBearTokenAmounts
         );
 
         this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
-            msg.sender,
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -428,7 +430,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
         );
 
         this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
-            msg.sender,
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,

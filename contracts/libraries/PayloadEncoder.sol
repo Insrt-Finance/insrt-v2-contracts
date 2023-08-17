@@ -58,12 +58,14 @@ library PayloadEncoder {
     /// @notice Encodes the payload for withdrawing ERC-1155 assets cross-chain.
     /// @param beneficiary Address of the beneficiary.
     /// @param collection Address of the collection.
+    /// @param executor Address of the executor.
     /// @param tokenIds Array of token ids.
     /// @param amounts Array of amounts, corresponding to the token ids.
     /// @return payload The encoded payload.
     function encodeWithdrawERC1155AssetsPayload(
         address beneficiary,
         address collection,
+        address executor,
         uint256[] calldata tokenIds,
         uint256[] calldata amounts
     ) internal pure returns (bytes memory payload) {
@@ -71,6 +73,7 @@ library PayloadEncoder {
             AssetType.ERC1155,
             beneficiary,
             collection,
+            executor,
             tokenIds,
             amounts
         );

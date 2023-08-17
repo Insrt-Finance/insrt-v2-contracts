@@ -63,6 +63,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
             AssetType.ERC1155,
             msg.sender,
             BONG_BEARS,
+            msg.sender,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -91,6 +92,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
             AssetType.ERC1155,
             msg.sender,
             BONG_BEARS,
+            msg.sender,
             bongBearTokenIds,
             bongBearTokenAmounts
         );
@@ -99,6 +101,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
         emit ERC1155AssetsWithdrawn(
             msg.sender,
             BONG_BEARS,
+            msg.sender,
             bongBearTokenIds,
             bongBearTokenAmounts
         );

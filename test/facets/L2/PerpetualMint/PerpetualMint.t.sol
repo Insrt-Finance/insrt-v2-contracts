@@ -178,6 +178,7 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
             AssetType.ERC721,
             depositorOne,
             BORED_APE_YACHT_CLUB,
+            depositorOne,
             depositorOneBAYCRisks,
             depositorOneBAYCIds
         );
@@ -186,6 +187,7 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
             AssetType.ERC721,
             depositorTwo,
             BORED_APE_YACHT_CLUB,
+            depositorTwo,
             depositorTwoBAYCRisks,
             depositorTwoBAYCIds
         );

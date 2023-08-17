@@ -417,16 +417,17 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 amounts
             );
         } else {
-            // Decode the payload to get the depositor, the collection, and the tokenIds
+            // Decode the payload to get the beneficiary, the collection, the depositor, and the tokenIds
             (
                 ,
-                address depositor,
+                address beneficiary,
                 address collection,
+                address depositor,
                 uint256[] memory risks,
                 uint256[] memory tokenIds
             ) = abi.decode(
                     data,
-                    (AssetType, address, address, uint256[], uint256[])
+                    (AssetType, address, address, address, uint256[], uint256[])
                 );
 
             // Iterate over each token ID
@@ -436,20 +437,20 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                     tokenIds[i]
                 );
 
-                // Increment the count of active tokens for the depositor in the collection
-                ++perpetualMintStorageLayout.activeTokens[depositor][
+                // Increment the count of active tokens for the beneficiary in the collection
+                ++perpetualMintStorageLayout.activeTokens[beneficiary][
                     collection
                 ];
 
-                // Set the risk for the depositor and the token ID in the collection
-                perpetualMintStorageLayout.depositorTokenRisk[depositor][
+                // Set the risk for the beneficiary and the token ID in the collection
+                perpetualMintStorageLayout.depositorTokenRisk[beneficiary][
                     collection
                 ][tokenIds[i]] = risks[i];
 
-                // Mark the deposited ERC721 token as escrowed by the depositor in the collection
+                // Mark the deposited ERC721 token as escrowed by the beneficiary in the collection
                 perpetualMintStorageLayout.escrowedERC721Owner[collection][
                     tokenIds[i]
-                ] = depositor;
+                ] = beneficiary;
 
                 // Set the risk for the token ID in the collection
                 perpetualMintStorageLayout.tokenRisk[collection][
@@ -459,8 +460,8 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 // Increment the total number of active tokens in the collection
                 ++perpetualMintStorageLayout.totalActiveTokens[collection];
 
-                // Increase the total risk for the depositor in the collection
-                perpetualMintStorageLayout.totalDepositorRisk[depositor][
+                // Increase the total risk for the beneficiary in the collection
+                perpetualMintStorageLayout.totalDepositorRisk[beneficiary][
                     collection
                 ] += risks[i];
 

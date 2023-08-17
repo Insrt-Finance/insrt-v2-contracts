@@ -150,6 +150,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             AssetType.ERC721,
             msg.sender,
             BORED_APE_YACHT_CLUB,
+            msg.sender,
             testRisks,
             boredApeYachtClubTokenIds
         );
@@ -252,6 +253,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             AssetType.ERC721,
             msg.sender,
             BORED_APE_YACHT_CLUB,
+            msg.sender,
             testRisks,
             boredApeYachtClubTokenIds
         );

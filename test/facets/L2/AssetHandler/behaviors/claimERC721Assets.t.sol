@@ -64,23 +64,10 @@ contract L2AssetHandler_claimERC721Assets is
             encodedData
         );
 
-        // escrowed ERC721 owners are stored in a mapping, so we need to compute the storage slot
-        bytes32 escrowedERC721OwnerStorageSlot = keccak256(
-            abi.encode(
-                boredApeYachtClubTokenIds[0], // the deposited ERC721 token ID
-                keccak256(
-                    abi.encode(
-                        BORED_APE_YACHT_CLUB, // the deposited ERC721 collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // the escrowedERC721Owner mapping slot
-                    )
-                )
-            )
-        );
-
-        address escrowedERC721Owner = address(
-            uint160(
-                uint256(vm.load(address(this), escrowedERC721OwnerStorageSlot))
-            )
+        address escrowedERC721Owner = _escrowedERC721Owner(
+            address(this),
+            BORED_APE_YACHT_CLUB,
+            boredApeYachtClubTokenIds[0]
         );
 
         // mappings are hash tables, so this assertion proves that the escrowed ERC721 owner
@@ -93,7 +80,7 @@ contract L2AssetHandler_claimERC721Assets is
         bytes32 activeTokenIdsUintSetStorageSlot = keccak256(
             abi.encode(
                 BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 13 // the activeTokenIds storage slot
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // the activeTokenIds storage slot
             )
         );
 
@@ -165,23 +152,10 @@ contract L2AssetHandler_claimERC721Assets is
             boredApeYachtClubTokenIds
         );
 
-        // escrowed ERC721 owners are stored in a mapping, so we need to compute the storage slot
-        bytes32 escrowedERC721OwnerStorageSlot = keccak256(
-            abi.encode(
-                boredApeYachtClubTokenIds[0], // the deposited ERC721 token ID
-                keccak256(
-                    abi.encode(
-                        BORED_APE_YACHT_CLUB, // the deposited ERC721 collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // the escrowedERC721Owner mapping slot
-                    )
-                )
-            )
-        );
-
-        address escrowedERC721Owner = address(
-            uint160(
-                uint256(vm.load(address(this), escrowedERC721OwnerStorageSlot))
-            )
+        address escrowedERC721Owner = _escrowedERC721Owner(
+            address(this),
+            BORED_APE_YACHT_CLUB,
+            boredApeYachtClubTokenIds[0]
         );
 
         // mappings are hash tables, so this assertion proves that the escrowed ERC721 owner
@@ -316,7 +290,7 @@ contract L2AssetHandler_claimERC721Assets is
                 keccak256(
                     abi.encode(
                         BORED_APE_YACHT_CLUB, // the deposited ERC721 collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // the escrowedERC721Owner mapping slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 17 // the escrowedERC721Owner mapping slot
                     )
                 )
             )

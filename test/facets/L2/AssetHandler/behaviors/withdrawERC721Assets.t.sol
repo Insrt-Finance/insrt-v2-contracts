@@ -14,6 +14,8 @@ import { AssetType } from "../../../../../contracts/enums/AssetType.sol";
 import { IL2AssetHandler } from "../../../../../contracts/facets/L2/AssetHandler/IAssetHandler.sol";
 import { PerpetualMintStorage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
+import "forge-std/console.sol";
+
 /// @title L2AssetHandler_withdrawERC721Assets
 /// @dev L2AssetHandler test contract for testing expected L2 withdrawERC721Assets behavior. Tested on an Arbitrum fork.
 contract L2AssetHandler_withdrawERC721Assets is
@@ -64,23 +66,10 @@ contract L2AssetHandler_withdrawERC721Assets is
             encodedData
         );
 
-        // escrowed ERC721 owners are stored in a mapping, so we need to compute the storage slot
-        bytes32 escrowedERC721OwnerStorageSlot = keccak256(
-            abi.encode(
-                boredApeYachtClubTokenIds[0], // the deposited ERC721 token ID
-                keccak256(
-                    abi.encode(
-                        BORED_APE_YACHT_CLUB, // the deposited ERC721 collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // the escrowedERC721Owner mapping slot
-                    )
-                )
-            )
-        );
-
-        address escrowedERC721Owner = address(
-            uint160(
-                uint256(vm.load(address(this), escrowedERC721OwnerStorageSlot))
-            )
+        address escrowedERC721Owner = _escrowedERC721Owner(
+            address(this),
+            BORED_APE_YACHT_CLUB,
+            boredApeYachtClubTokenIds[0]
         );
 
         // mappings are hash tables, so this assertion proves that the escrowed ERC721 owner
@@ -107,221 +96,83 @@ contract L2AssetHandler_withdrawERC721Assets is
             boredApeYachtClubTokenIds
         );
 
-        // escrowed ERC721 owners are stored in a mapping, so we need to compute the storage slot
-        bytes32 escrowedERC721OwnerStorageSlot = keccak256(
-            abi.encode(
-                boredApeYachtClubTokenIds[0], // the deposited ERC721 token ID
-                keccak256(
-                    abi.encode(
-                        BORED_APE_YACHT_CLUB, // the deposited ERC721 collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // the escrowedERC721Owner mapping slot
-                    )
-                )
-            )
-        );
-
-        address escrowedERC721Owner = address(
-            uint160(
-                uint256(vm.load(address(this), escrowedERC721OwnerStorageSlot))
-            )
+        address escrowedERC721Owner = _escrowedERC721Owner(
+            address(this),
+            BORED_APE_YACHT_CLUB,
+            boredApeYachtClubTokenIds[0]
         );
 
         // mappings are hash tables, so this assertion proves that the escrowed ERC721 owner
         // was updated correctly for the collection, and the given token ID.
         assertEq(escrowedERC721Owner, address(0));
 
-        // the active token IDs in the collection is stored in a UintSet data structure
-        // this slot defaults to the storage slot of the UintSet._values array length
-        bytes32 activeTokenIdsUintSetStorageSlot = keccak256(
-            abi.encode(
-                BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 13 // the activeTokenIds storage slot
-            )
-        );
-
-        bytes32 activeTokenIdUintSetIndexStorageSlot = keccak256(
-            abi.encode(
-                boredApeYachtClubTokenIds[0], // the active ERC721 token ID
-                uint256(activeTokenIdsUintSetStorageSlot) + 1 // Set._inner._indexes storage slot
-            )
-        );
-
-        bytes32 activeTokenIdUintSetIndex = vm.load(
+        uint256[] memory activeTokenIds = _activeTokenIds(
             address(this),
-            activeTokenIdUintSetIndexStorageSlot
-        );
-
-        bytes32 activeTokenIdValueAtUintSetIndexStorageSlot = keccak256(
-            abi.encode(
-                uint256(activeTokenIdsUintSetStorageSlot) +
-                    // add index to storage slot to get the storage slot of the value at the index
-                    uint256(activeTokenIdUintSetIndex) -
-                    // subtract 1 to convert to zero-indexing
-                    1
-            )
-        );
-
-        uint256 activeTokenIdValueAtUintSetIndex = uint256(
-            vm.load(address(this), activeTokenIdValueAtUintSetIndexStorageSlot)
+            BORED_APE_YACHT_CLUB
         );
 
         // this assertion proves that the token ID was removed from the set of active token IDs in the collection
-        assertEq(activeTokenIdValueAtUintSetIndex, 0);
+        // only a single token was deposited so removing one would leave 0 active tokens
+        assert(activeTokenIds.length == 0);
 
-        // the count of active tokens for the depositor in the collection is stored in a mapping
-        bytes32 activeTokensCountStorageSlot = keccak256(
-            abi.encode(
-                BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                keccak256(
-                    abi.encode(
-                        address(this), // the depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 19 // the activeTokens storage slot
-                    )
-                )
-            )
-        );
-
-        uint256 activeTokensCount = uint256(
-            vm.load(address(this), activeTokensCountStorageSlot)
+        uint256 activeTokensCount = _activeTokens(
+            address(this),
+            address(this),
+            BORED_APE_YACHT_CLUB
         );
 
         // this assertion proves that the count of active tokens for the depositor in the collection was decremented correctly
         assertEq(activeTokensCount, 0);
 
-        // the risk for the depositor and the token ID in the collection is stored in a mapping
-        bytes32 depositorTokenRiskStorageSlot = keccak256(
-            abi.encode(
-                boredApeYachtClubTokenIds[0], // the active ERC721 token ID
-                keccak256(
-                    abi.encode(
-                        BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                        keccak256(
-                            abi.encode(
-                                address(this), // the depositor
-                                uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // the depositorTokenRisk storage slot
-                            )
-                        )
-                    )
-                )
-            )
-        );
-
-        uint256 depositorTokenRisk = uint256(
-            vm.load(address(this), depositorTokenRiskStorageSlot)
+        uint256 depositorTokenRisk = _depositorTokenRisk(
+            address(this),
+            address(this),
+            BORED_APE_YACHT_CLUB,
+            boredApeYachtClubTokenIds[0]
         );
 
         // this assertion proves that the risk for the depositor and the token ID in the collection was reset correctly
         assertEq(depositorTokenRisk, 0);
 
-        // the risk for the token ID in the collection is stored in a mapping
-        bytes32 tokenRiskStorageSlot = keccak256(
-            abi.encode(
-                boredApeYachtClubTokenIds[0], // the active ERC721 token ID
-                keccak256(
-                    abi.encode(
-                        BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 14 // the tokenRisk storage slot
-                    )
-                )
-            )
-        );
-
-        uint256 tokenRisk = uint256(
-            vm.load(address(this), tokenRiskStorageSlot)
+        uint256 tokenRisk = _tokenRisk(
+            address(this),
+            BORED_APE_YACHT_CLUB,
+            boredApeYachtClubTokenIds[0]
         );
 
         // this assertion proves that the risk for the token ID in the collection was decremented correctly
         assertEq(tokenRisk, 0);
 
-        // the total number of active tokens in the collection is stored in a mapping
-        bytes32 totalActiveTokensStorageSlot = keccak256(
-            abi.encode(
-                BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 12 // the totalActiveTokens storage slot
-            )
-        );
-
-        uint256 totalActiveTokens = uint256(
-            vm.load(address(this), totalActiveTokensStorageSlot)
+        uint256 totalActiveTokens = _totalActiveTokens(
+            address(this),
+            BORED_APE_YACHT_CLUB
         );
 
         // this assertion proves that the total number of active tokens in the collection was decremented correctly
         assertEq(totalActiveTokens, 0);
 
-        // the total risk for the depositor in the collection is stored in a mapping
-        bytes32 totalDepositorRiskStorageSlot = keccak256(
-            abi.encode(
-                BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                keccak256(
-                    abi.encode(
-                        address(this), // the depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the totalDepositorRisk storage slot
-                    )
-                )
-            )
-        );
-
-        uint256 totalDepositorRisk = uint256(
-            vm.load(address(this), totalDepositorRiskStorageSlot)
+        uint256 totalDepositorRisk = _totalDepositorRisk(
+            address(this),
+            address(this),
+            BORED_APE_YACHT_CLUB
         );
 
         // this assertion proves that the total risk for the depositor in the collection was decremented correctly
         assertEq(totalDepositorRisk, 0);
 
-        // the total risk in the collection is stored in a mapping
-        bytes32 totalRiskStorageSlot = keccak256(
-            abi.encode(
-                BORED_APE_YACHT_CLUB, // the active ERC721 token collection
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 11 // the totalRisk storage slot
-            )
-        );
-
-        uint256 totalRisk = uint256(
-            vm.load(address(this), totalRiskStorageSlot)
-        );
+        uint256 totalRisk = _totalRisk(address(this), BORED_APE_YACHT_CLUB);
 
         // this assertion proves that the total risk in the collection was decremented correctly
         assertEq(totalRisk, 0);
 
         if (totalActiveTokens == 0) {
-            // the set of active collections is stored in an AddressSet data structure
-            // this slot defaults to the storage slot of the AddressSet._values array length
-            bytes32 activeCollectionsSetStorageSlot = bytes32(
-                uint256(PerpetualMintStorage.STORAGE_SLOT) + 5 // the activeCollections storage slot
-            );
-
-            bytes32 activeCollectionsSetIndexStorageSlot = keccak256(
-                abi.encode(
-                    BORED_APE_YACHT_CLUB, // the active ERCE721 token collection
-                    uint256(activeCollectionsSetStorageSlot) + 1 // Set._inner._indexes storage slot
-                )
-            );
-
-            bytes32 activeCollectionsSetIndex = vm.load(
-                address(this),
-                activeCollectionsSetIndexStorageSlot
-            );
-
-            bytes32 activeCollectionsValueAtSetIndexStorageSlot = keccak256(
-                abi.encode(
-                    uint256(activeCollectionsSetStorageSlot) +
-                        // add index to storage slot to get the storage slot of the value at the index
-                        uint256(activeCollectionsSetIndex) -
-                        // subtract 1 to convert to zero-indexing
-                        1
-                )
-            );
-
-            bytes32 activeCollectionsValueAtSetIndex = vm.load(
-                address(this),
-                activeCollectionsValueAtSetIndexStorageSlot
+            address[] memory activeCollections = _activeCollections(
+                address(this)
             );
 
             // this assertion proves that the collection was removed from the set of active collections
-            assertEq(
-                address(uint160(uint256(activeCollectionsValueAtSetIndex))),
-                address(0)
-            );
+            // since there was only one active collection earlier
+            assert(activeCollections.length == 0);
         }
     }
 
@@ -452,7 +303,7 @@ contract L2AssetHandler_withdrawERC721Assets is
                 keccak256(
                     abi.encode(
                         BORED_APE_YACHT_CLUB, // the deposited ERC721 collection
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 15 // the escrowedERC721Owner mapping slot
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 17 // the escrowedERC721Owner mapping slot
                     )
                 )
             )

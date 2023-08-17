@@ -61,11 +61,7 @@ abstract contract StorageRead is Test {
     function _activeCollections(
         address target
     ) internal view returns (address[] memory collections) {
-        bytes32 enumerableSetSlot = keccak256(
-            abi.encode(
-                uint256(Storage.STORAGE_SLOT) + 4 // activeCollections mapping storage slot
-            )
-        );
+        bytes32 enumerableSetSlot = bytes32(uint256(Storage.STORAGE_SLOT) + 4); // activeCollections storage slot;
 
         uint256 length = uint256(vm.load(target, enumerableSetSlot)); // read length of array
 

@@ -110,7 +110,12 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             tokenIds
         );
 
-        emit ERC721AssetsWithdrawn(msg.sender, collection, tokenIds);
+        emit ERC721AssetsWithdrawn(
+            msg.sender,
+            collection,
+            msg.sender,
+            tokenIds
+        );
     }
 
     /// @inheritdoc IAssetHandler
@@ -306,7 +311,12 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             tokenIds
         );
 
-        emit ERC721AssetsWithdrawn(msg.sender, collection, tokenIds);
+        emit ERC721AssetsWithdrawn(
+            msg.sender,
+            collection,
+            beneficiary,
+            tokenIds
+        );
     }
 
     /// @notice Handles received LayerZero cross-chain messages.

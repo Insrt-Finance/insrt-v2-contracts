@@ -170,24 +170,33 @@ contract L1AssetHandler is IL1AssetHandler, SolidStateLayerZeroClient {
             // Decode the payload to get the sender, the collection, and the tokenIds
             (
                 ,
-                address sender,
+                address beneficiary,
                 address collection,
+                address executor,
                 uint256[] memory tokenIds
-            ) = abi.decode(data, (AssetType, address, address, uint256[]));
+            ) = abi.decode(
+                    data,
+                    (AssetType, address, address, address, uint256[])
+                );
 
-            // Transfer the ERC721 assets to the sender
+            // Transfer the ERC721 assets to the beneficiary
             unchecked {
                 for (uint256 i = 0; i < tokenIds.length; ++i) {
                     IERC721(collection).safeTransferFrom(
                         address(this),
-                        sender,
+                        beneficiary,
                         tokenIds[i],
                         ""
                     );
                 }
             }
 
-            emit ERC721AssetsWithdrawn(sender, collection, tokenIds);
+            emit ERC721AssetsWithdrawn(
+                beneficiary,
+                collection,
+                executor,
+                tokenIds
+            );
         }
     }
 

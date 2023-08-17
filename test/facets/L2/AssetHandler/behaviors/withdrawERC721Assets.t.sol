@@ -342,6 +342,7 @@ contract L2AssetHandler_withdrawERC721Assets is
         emit ERC721AssetsWithdrawn(
             address(this),
             BORED_APE_YACHT_CLUB,
+            address(this),
             boredApeYachtClubTokenIds
         );
 

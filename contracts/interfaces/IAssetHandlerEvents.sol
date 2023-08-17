@@ -46,12 +46,14 @@ interface IAssetHandlerEvents {
     );
 
     /// @notice Emitted when ERC721 assets are successfully withdrawn.
-    /// @param depositor The indexed address of the depositor.
+    /// @param beneficiary The indexed address that will receive the deposited assets on the destination chain.
     /// @param collection The indexed address of the ERC721 collection.
+    /// @param executor The indexed address of the withdrawal msg.sender.
     /// @param tokenIds Token IDs of the withdrawn ERC721 assets.
     event ERC721AssetsWithdrawn(
-        address indexed depositor,
+        address indexed beneficiary,
         address indexed collection,
+        address indexed executor,
         uint256[] tokenIds
     );
 }

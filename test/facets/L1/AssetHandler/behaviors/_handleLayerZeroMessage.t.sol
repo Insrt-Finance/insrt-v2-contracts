@@ -120,6 +120,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
             AssetType.ERC721,
             msg.sender,
             BORED_APE_YACHT_CLUB,
+            msg.sender,
             boredApeYachtClubTokenIds
         );
 
@@ -149,6 +150,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
             AssetType.ERC721,
             msg.sender,
             BORED_APE_YACHT_CLUB,
+            msg.sender,
             boredApeYachtClubTokenIds
         );
 
@@ -156,6 +158,7 @@ contract L1AssetHandler_handleLayerZeroMessage is
         emit ERC721AssetsWithdrawn(
             msg.sender,
             BORED_APE_YACHT_CLUB,
+            msg.sender,
             boredApeYachtClubTokenIds
         );
 

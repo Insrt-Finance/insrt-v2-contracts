@@ -131,6 +131,40 @@ contract PerpetualMint_resolveERC1155Mints is
         );
     }
 
+    /// @dev ensures that baseMultiplier and lastCollectionEarnings are updated when minter has no risk
+    /// and wins the mint
+    function test_resolveERC1155MintWinUpdateDepositorEarningsForMinterWhenMinterHasNoRisk()
+        public
+    {
+        uint256 currentEarnings = _collectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 lastEarnings = _lastCollectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 baseMultiplier = (currentEarnings - lastEarnings) /
+            _totalRisk(address(perpetualMint), COLLECTION);
+
+        vm.prank(minter);
+        perpetualMint.exposed_resolveERC1155Mints(
+            minter,
+            COLLECTION,
+            randomWords
+        );
+
+        assert(
+            baseMultiplier ==
+                _baseMultiplier(address(perpetualMint), COLLECTION)
+        );
+
+        assert(
+            currentEarnings ==
+                _lastCollectionEarnings(address(perpetualMint), COLLECTION)
+        );
+    }
+
     /// @dev tests that depositEarnings are updated correctly when minter has risk, after a win
     function test_resolveERC1155MintsWinUpdateDepositorEarningsForMinterWhenMinterHasRisk()
         public

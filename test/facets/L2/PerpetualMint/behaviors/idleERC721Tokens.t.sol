@@ -19,6 +19,8 @@ contract PerpetualMint_idleERC721Tokens is
     uint256 internal BAYC_ID;
     uint256[] tokenIds;
 
+    // declare collection context for the test cases
+    // as BORED_APE_YACHT_CLUB collection
     address internal constant COLLECTION = BORED_APE_YACHT_CLUB;
 
     // grab BAYC collection earnings storage slot

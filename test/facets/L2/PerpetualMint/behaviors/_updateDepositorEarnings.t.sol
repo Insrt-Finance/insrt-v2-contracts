@@ -13,6 +13,9 @@ contract PerpetualMint_updateDepositorEarnings is
     L2ForkTest
 {
     uint256 internal constant unsuccessfulMintAttempts = 1;
+
+    // declare collection context for the test cases
+    // as BORED_APE_YACHT_CLUB collection
     address internal constant COLLECTION = BORED_APE_YACHT_CLUB;
 
     /// @dev sets up the context for the test cases

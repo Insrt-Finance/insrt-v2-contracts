@@ -17,6 +17,10 @@ contract PerpetualMint_resolveERC1155Mints is
     uint256 internal constant COLLECTION_EARNINGS = 1 ether;
     uint256[] randomWords;
 
+    // declare collection context for the test cases
+    // as PARALLEL_ALPHA collection
+    address internal constant COLLECTION = PARALLEL_ALPHA;
+
     // grab COLLECTION collection earnings storage slot
     bytes32 internal collectionEarningsStorageSlot =
         keccak256(
@@ -30,8 +34,6 @@ contract PerpetualMint_resolveERC1155Mints is
     uint256 internal constant winValue = 90;
     uint256 internal constant tokenOneSelectValue = 90;
     uint256 internal constant depositorOneSelectValue = 90;
-
-    address COLLECTION = PARALLEL_ALPHA;
 
     // expected value of won token ID
     uint256 internal expectedTokenId;

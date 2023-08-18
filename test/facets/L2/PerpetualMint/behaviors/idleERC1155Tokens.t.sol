@@ -20,6 +20,8 @@ contract PerpetualMint_idleERC1155Tokens is
     uint256[] tokenIds;
     uint256[] amounts;
 
+    // declare collection context for the test cases
+    // as PARALLEL_ALPHA collection
     address internal constant COLLECTION = PARALLEL_ALPHA;
 
     // grab PARALLEL_ALPHA collection earnings storage slot

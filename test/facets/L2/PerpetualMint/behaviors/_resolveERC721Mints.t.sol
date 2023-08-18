@@ -201,12 +201,6 @@ contract PerpetualMint_resolveERC721Mints is
             randomWords
         );
 
-        uint256 newDepositorDeductions = _multiplierOffset(
-            address(perpetualMint),
-            oldOwner,
-            COLLECTION
-        );
-
         assert(
             expectedEarnings + oldDepositorEarnings ==
                 _depositorEarnings(address(perpetualMint), oldOwner, COLLECTION)

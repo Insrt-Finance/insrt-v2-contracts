@@ -184,7 +184,7 @@ contract PerpetualMint_resolveERC1155Mints is
 
         uint256 oldDepositorEarnings = _depositorEarnings(
             address(perpetualMint),
-            minter,
+            depositorTwo,
             COLLECTION
         );
         totalDepositorRisk = _totalDepositorRisk(
@@ -248,17 +248,17 @@ contract PerpetualMint_resolveERC1155Mints is
 
         uint256 oldDepositorEarnings = _depositorEarnings(
             address(perpetualMint),
-            minter,
+            depositorOne,
             COLLECTION
         );
         totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
-            depositorTwo,
+            depositorOne,
             COLLECTION
         );
         uint256 multiplierOffset = _multiplierOffset(
             address(perpetualMint),
-            depositorTwo,
+            depositorOne,
             COLLECTION
         );
 
@@ -276,7 +276,7 @@ contract PerpetualMint_resolveERC1155Mints is
             expectedEarnings + oldDepositorEarnings ==
                 _depositorEarnings(
                     address(perpetualMint),
-                    depositorTwo,
+                    depositorOne,
                     COLLECTION
                 )
         );

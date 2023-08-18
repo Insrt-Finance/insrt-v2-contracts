@@ -71,7 +71,7 @@ contract PerpetualMintHarness is
         _resolveERC721Mints(l, account, collection, randomWords);
     }
 
-    /// @dev exposis _selectERC1155Owner
+    /// @dev exposes _selectERC1155Owner
     function exposed_selectERC1155Owner(
         address collection,
         uint256 tokenId,

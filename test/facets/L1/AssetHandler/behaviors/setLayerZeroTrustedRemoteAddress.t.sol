@@ -4,16 +4,17 @@ pragma solidity 0.8.21;
 
 import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableInternal.sol";
 import { ILayerZeroClientBaseInternal } from "@solidstate/layerzero-client/base/ILayerZeroClientBaseInternal.sol";
-import { LayerZeroClientBaseStorage } from "@solidstate/layerzero-client/base/LayerZeroClientBaseStorage.sol";
 
 import { L1AssetHandlerTest } from "../AssetHandler.t.sol";
+import { LayerZeroClientBaseStorageRead } from "../../../../common/LayerZeroClientBaseStorageRead.t.sol";
 import { ILayerZeroClientBaseInternalEvents } from "../../../../interfaces/ILayerZeroClientBaseInternalEvents.sol";
 
 /// @title L1AssetHandler_setLayerZeroTrustedRemoteAddress
 /// @dev L1AssetHandler test contract for testing expected setLayerZeroTrustedRemoteAddress behavior.
 contract L1AssetHandler_setLayerZeroTrustedRemoteAddress is
     ILayerZeroClientBaseInternalEvents,
-    L1AssetHandlerTest
+    L1AssetHandlerTest,
+    LayerZeroClientBaseStorageRead
 {
     /// @dev Tests setLayerZeroTrustedRemoteAddress functionality.
     function test_setLayerZeroTrustedRemoteAddress() public {
@@ -22,20 +23,9 @@ contract L1AssetHandler_setLayerZeroTrustedRemoteAddress is
             TRUSTED_REMOTE_ADDRESS_TEST_ADDRESS_IN_BYTES
         );
 
-        // trusted remote address records are stored in a mapping, so we need to compute the storage slot
-        bytes32 trustedRemoteAddressInBytesStorageSlot = keccak256(
-            abi.encode(
-                DESTINATION_LAYER_ZERO_CHAIN_ID, // the LayerZero destination chain ID
-                uint256(LayerZeroClientBaseStorage.STORAGE_SLOT) + 1 // the trustedRemotes storage slot
-            )
-        );
-
-        // load the trusted remote address in bytes from storage
-        bytes memory trustedRemoteAddressInBytes = abi.encode(
-            vm.load(
-                address(l1AssetHandler),
-                trustedRemoteAddressInBytesStorageSlot
-            )
+        bytes memory trustedRemoteAddressInBytes = _trustedRemotes(
+            address(l1AssetHandler),
+            DESTINATION_LAYER_ZERO_CHAIN_ID
         );
 
         assertEq(

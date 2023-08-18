@@ -22,7 +22,7 @@ contract PerpetualMint_idleERC1155Tokens is
 
     address internal constant COLLECTION = PARALLEL_ALPHA;
 
-    // grab PARALLE_ALPHA collection earnings storage slot
+    // grab PARALLEL_ALPHA collection earnings storage slot
     bytes32 internal collectionEarningsStorageSlot =
         keccak256(
             abi.encode(

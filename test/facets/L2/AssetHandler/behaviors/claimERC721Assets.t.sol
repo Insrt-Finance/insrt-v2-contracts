@@ -149,6 +149,7 @@ contract L2AssetHandler_claimERC721Assets is
         );
 
         this.claimERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -185,6 +186,7 @@ contract L2AssetHandler_claimERC721Assets is
         );
 
         this.claimERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -213,6 +215,7 @@ contract L2AssetHandler_claimERC721Assets is
         );
 
         this.claimERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -237,6 +240,7 @@ contract L2AssetHandler_claimERC721Assets is
         boredApeYachtClubTokenIds.push(2);
 
         this.claimERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -263,6 +267,7 @@ contract L2AssetHandler_claimERC721Assets is
         );
 
         this.claimERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID + 1, // unsupported remote chain
             boredApeYachtClubTokenIds
@@ -309,6 +314,7 @@ contract L2AssetHandler_claimERC721Assets is
         vm.expectRevert(IL2AssetHandler.ERC721TokenNotEscrowed.selector);
 
         this.claimERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -326,6 +332,7 @@ contract L2AssetHandler_claimERC721Assets is
         );
 
         this.claimERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -346,6 +353,7 @@ contract L2AssetHandler_claimERC721Assets is
         );
 
         this.claimERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -368,6 +376,7 @@ contract L2AssetHandler_claimERC721Assets is
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
         this.claimERC721Assets( // message fee not sent
+            address(this),
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -390,6 +399,7 @@ contract L2AssetHandler_claimERC721Assets is
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
         this.claimERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE / 6 }( // insufficient message fee
+            address(this),
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds
@@ -410,6 +420,7 @@ contract L2AssetHandler_claimERC721Assets is
         );
 
         this.claimERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BORED_APE_YACHT_CLUB,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             boredApeYachtClubTokenIds

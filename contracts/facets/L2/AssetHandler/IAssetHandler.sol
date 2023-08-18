@@ -29,11 +29,13 @@ interface IL2AssetHandler is IAssetHandler {
     ) external payable;
 
     /// @notice Used to claim ERC721 assets.
-    /// @dev Debits specified ERC721 token claims from the user and withdraws them cross-chain.
+    /// @dev Debits specified ERC721 token claims from the msg.sender and withdraws them to a beneficiary cross-chain.
+    /// @param beneficiary The address that will receive the withdrawn assets on the destination chain.
     /// @param collection The address of the ERC721 token contract.
     /// @param layerZeroSourceChainId The destination chain ID.
     /// @param tokenIds An array of token IDs that the user wants to claim and withdraw.
     function claimERC721Assets(
+        address beneficiary,
         address collection,
         uint16 layerZeroSourceChainId,
         uint256[] calldata tokenIds

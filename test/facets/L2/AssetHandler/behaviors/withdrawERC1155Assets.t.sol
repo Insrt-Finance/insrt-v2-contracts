@@ -154,21 +154,10 @@ contract L2AssetHandler_withdrawERC1155Assets is
         // this assertion proves that the total number of active tokens in the collection was updated correctly
         assertEq(totalActiveTokens, 0);
 
-        // the total risk for the depositor in the collection is stored in a mapping
-        bytes32 totalDepositorRiskStorageSlot = keccak256(
-            abi.encode(
-                BONG_BEARS, // the active ERC1155 token collection
-                keccak256(
-                    abi.encode(
-                        address(this), // the depositor
-                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 21 // the totalDepositorRisk storage slot
-                    )
-                )
-            )
-        );
-
-        uint256 totalDepositorRisk = uint256(
-            uint256(vm.load(address(this), totalDepositorRiskStorageSlot))
+        uint256 totalDepositorRisk = _totalDepositorRisk(
+            address(this),
+            address(this),
+            BONG_BEARS
         );
 
         // this assertion proves that the total risk for the depositor in the collection was updated correctly

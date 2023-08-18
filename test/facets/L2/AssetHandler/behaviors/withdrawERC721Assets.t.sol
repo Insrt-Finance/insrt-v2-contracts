@@ -14,8 +14,6 @@ import { AssetType } from "../../../../../contracts/enums/AssetType.sol";
 import { IL2AssetHandler } from "../../../../../contracts/facets/L2/AssetHandler/IAssetHandler.sol";
 import { PerpetualMintStorage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
-import "forge-std/console.sol";
-
 /// @title L2AssetHandler_withdrawERC721Assets
 /// @dev L2AssetHandler test contract for testing expected L2 withdrawERC721Assets behavior. Tested on an Arbitrum fork.
 contract L2AssetHandler_withdrawERC721Assets is

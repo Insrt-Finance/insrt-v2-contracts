@@ -25,6 +25,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
 
     /// @inheritdoc IL2AssetHandler
     function claimERC1155Assets(
+        address beneficiary,
         address collection,
         uint16 layerZeroDestinationChainId,
         uint256[] calldata tokenIds,
@@ -56,7 +57,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         }
 
         _withdrawERC1155Assets(
-            msg.sender,
+            beneficiary,
             collection,
             layerZeroDestinationChainId,
             tokenIds,
@@ -64,7 +65,7 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
         );
 
         emit ERC1155AssetsWithdrawn(
-            msg.sender,
+            beneficiary,
             collection,
             msg.sender,
             tokenIds,

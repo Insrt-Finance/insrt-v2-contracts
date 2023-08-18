@@ -14,12 +14,14 @@ interface IL2AssetHandler is IAssetHandler {
     error ERC721TokenNotEscrowed();
 
     /// @notice Used to claim ERC1155 assets.
-    /// @dev Debits specified ERC1155 token claims from the user and withdraws them cross-chain.
+    /// @dev Debits specified ERC1155 token claims from the msg.sender and withdraws them to a beneficiary cross-chain.
+    /// @param beneficiary The address that will receive the withdrawn assets on the destination chain.
     /// @param collection The address of the ERC1155 token contract.
     /// @param layerZeroSourceChainId The destination chain ID.
     /// @param tokenIds An array of token IDs that the user wants to claim and withdraw.
     /// @param amounts An array of amounts for each respective token ID to be claimed and withdrawn.
     function claimERC1155Assets(
+        address beneficiary,
         address collection,
         uint16 layerZeroSourceChainId,
         uint256[] calldata tokenIds,

@@ -121,6 +121,7 @@ contract L2AssetHandler_claimERC1155Assets is
         );
 
         this.claimERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -160,6 +161,7 @@ contract L2AssetHandler_claimERC1155Assets is
         );
 
         this.claimERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -189,6 +191,7 @@ contract L2AssetHandler_claimERC1155Assets is
         );
 
         this.claimERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -214,6 +217,7 @@ contract L2AssetHandler_claimERC1155Assets is
         bongBearTokenAmounts[0]++;
 
         this.claimERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -241,6 +245,7 @@ contract L2AssetHandler_claimERC1155Assets is
         );
 
         this.claimERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID + 1, // unsupported remote chain
             bongBearTokenIds,
@@ -294,8 +299,8 @@ contract L2AssetHandler_claimERC1155Assets is
 
         vm.expectRevert(IL2AssetHandler.ERC1155TokenNotEscrowed.selector);
 
-        vm.prank(msg.sender);
         this.claimERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -314,6 +319,7 @@ contract L2AssetHandler_claimERC1155Assets is
         );
 
         this.claimERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -335,6 +341,7 @@ contract L2AssetHandler_claimERC1155Assets is
         );
 
         this.claimERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -358,6 +365,7 @@ contract L2AssetHandler_claimERC1155Assets is
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
         this.claimERC1155Assets( // message fee not sent
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -381,6 +389,7 @@ contract L2AssetHandler_claimERC1155Assets is
         vm.expectRevert(LAYER_ZERO_MESSAGE_FEE_REVERT);
 
         this.claimERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE / 6 }( // insufficient message fee
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -402,6 +411,7 @@ contract L2AssetHandler_claimERC1155Assets is
         );
 
         this.claimERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,
@@ -420,6 +430,7 @@ contract L2AssetHandler_claimERC1155Assets is
         bongBearTokenAmounts.push(uint256(1)); // mismatched lengths
 
         this.claimERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
             BONG_BEARS,
             DESTINATION_LAYER_ZERO_CHAIN_ID,
             bongBearTokenIds,

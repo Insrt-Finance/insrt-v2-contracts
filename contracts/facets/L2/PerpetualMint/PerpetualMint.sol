@@ -34,7 +34,9 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
     function availableEarnings(
         address collection
     ) external view returns (uint256 earnings) {
-        earnings = _availableEarnings(msg.sender, collection);
+        Storage.Layout storage l = Storage.layout();
+
+        earnings = _availableEarnings(l, msg.sender, collection);
     }
 
     /// @inheritdoc IPerpetualMint
@@ -53,7 +55,9 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
 
     /// @inheritdoc IPerpetualMint
     function claimEarnings(address collection) external {
-        _claimEarnings(msg.sender, collection);
+        Storage.Layout storage l = Storage.layout();
+
+        _claimEarnings(l, msg.sender, collection);
     }
 
     /// @inheritdoc IPerpetualMint

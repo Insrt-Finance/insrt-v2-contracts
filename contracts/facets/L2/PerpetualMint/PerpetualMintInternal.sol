@@ -44,14 +44,17 @@ abstract contract PerpetualMintInternal is
     function _allAvailableEarnings(
         address depositor
     ) internal view returns (uint256 allEarnings) {
-        EnumerableSet.AddressSet storage collections = Storage
-            .layout()
-            .activeCollections;
-        uint256 length = collections.length();
+        Storage.Layout storage l = Storage.layout();
+
+        uint256 length = l.activeCollections.length();
 
         unchecked {
             for (uint256 i; i < length; ++i) {
-                allEarnings += _availableEarnings(depositor, collections.at(i));
+                allEarnings += _availableEarnings(
+                    l,
+                    depositor,
+                    l.activeCollections.at(i)
+                );
             }
         }
     }
@@ -163,15 +166,15 @@ abstract contract PerpetualMintInternal is
     }
 
     /// @notice calculates the available earnings for a depositor for a given collection
+    /// @param l the PerpetualMint storage layout
     /// @param depositor address of depositor
     /// @param collection address of collection
     /// @return earnings amount of available earnings
     function _availableEarnings(
+        Storage.Layout storage l,
         address depositor,
         address collection
     ) internal view returns (uint256 earnings) {
-        Storage.Layout storage l = Storage.layout();
-
         earnings = l.depositorEarnings[depositor][collection];
 
         if (l.totalDepositorRisk[depositor][collection] != 0) {
@@ -199,24 +202,26 @@ abstract contract PerpetualMintInternal is
     /// @notice claims all earnings across collections of a depositor
     /// @param depositor address of depositor
     function _claimAllEarnings(address depositor) internal {
-        EnumerableSet.AddressSet storage collections = Storage
-            .layout()
-            .activeCollections;
-        uint256 length = collections.length();
+        Storage.Layout storage l = Storage.layout();
+
+        uint256 length = l.activeCollections.length();
 
         unchecked {
             for (uint256 i; i < length; ++i) {
-                _claimEarnings(depositor, collections.at(i));
+                _claimEarnings(l, depositor, l.activeCollections.at(i));
             }
         }
     }
 
     /// @notice claims all earnings of a collection for a depositor
+    /// @param l the PerpetualMint storage layout
     /// @param depositor address of acount
     /// @param collection address of collection
-    function _claimEarnings(address depositor, address collection) internal {
-        Storage.Layout storage l = Storage.layout();
-
+    function _claimEarnings(
+        Storage.Layout storage l,
+        address depositor,
+        address collection
+    ) internal {
         _updateDepositorEarnings(l, depositor, collection);
 
         uint256 earnings = l.depositorEarnings[depositor][collection];

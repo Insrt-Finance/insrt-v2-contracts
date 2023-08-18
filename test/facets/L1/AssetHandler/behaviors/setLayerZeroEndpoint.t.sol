@@ -3,30 +3,22 @@
 pragma solidity 0.8.21;
 
 import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableInternal.sol";
-import { LayerZeroClientBaseStorage } from "@solidstate/layerzero-client/base/LayerZeroClientBaseStorage.sol";
 
 import { L1AssetHandlerTest } from "../AssetHandler.t.sol";
+import { LayerZeroClientBaseStorageRead } from "../../../../common/LayerZeroClientBaseStorageRead.t.sol";
 
 /// @title L1AssetHandler_setLayerZeroEndpoint
 /// @dev L1AssetHandler test contract for testing expected setLayerZeroEndpoint behavior.
-contract L1AssetHandler_setLayerZeroEndpoint is L1AssetHandlerTest {
+contract L1AssetHandler_setLayerZeroEndpoint is
+    L1AssetHandlerTest,
+    LayerZeroClientBaseStorageRead
+{
     /// @dev Tests setLayerZeroEndpoint functionality.
     function test_setLayerZeroEndpoint() public {
         l1AssetHandler.setLayerZeroEndpoint(MAINNET_LAYER_ZERO_ENDPOINT);
 
-        bytes32 currentLayerZeroEndpointStorageSlot = LayerZeroClientBaseStorage
-            .STORAGE_SLOT; // the LayerZeroEndpoint address storage slot
-
-        // load the current LayerZeroEndpoint address from storage
-        address currentLayerZeroEndpoint = address(
-            uint160( // downcast to match address type
-                uint256( // convert bytes32 to uint256
-                    vm.load(
-                        address(l1AssetHandler),
-                        currentLayerZeroEndpointStorageSlot
-                    )
-                )
-            )
+        address currentLayerZeroEndpoint = _layerZeroEndpoint(
+            address(l1AssetHandler)
         );
 
         assertEq(currentLayerZeroEndpoint, MAINNET_LAYER_ZERO_ENDPOINT);

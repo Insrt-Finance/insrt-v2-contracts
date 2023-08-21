@@ -148,6 +148,27 @@ contract PerpetualMint_updateERC721TokenRisks is
         );
     }
 
+    /// @dev tests that the depositor token risk of an ERC721 collection is updated to the new token risk
+    /// when updateERC721TokenRisks is called, for each tokenId in tokenIds
+    function test_updateERC721TokenRisksSetsTheDepositorTokenRiskToNewRisk()
+        public
+    {
+        vm.prank(depositorOne);
+        perpetualMint.updateERC721TokenRisks(COLLECTION, tokenIds, risks);
+
+        for (uint256 i; i < tokenIds.length; ++i) {
+            assert(
+                risks[i] ==
+                    _depositorTokenRisk(
+                        address(perpetualMint),
+                        depositorOne,
+                        COLLECTION,
+                        tokenIds[i]
+                    )
+            );
+        }
+    }
+
     /// @dev tests that the token risk of an ERC721 collection is updated to the new token risk
     /// when updateERC721TokenRisks is called, for each tokenId in tokenIds
     function test_updateERC721TokenRisksSetsTheTokenRiskToNewRisk() public {

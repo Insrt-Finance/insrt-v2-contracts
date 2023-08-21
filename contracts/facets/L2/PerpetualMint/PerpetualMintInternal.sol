@@ -482,9 +482,6 @@ abstract contract PerpetualMintInternal is
             );
         }
 
-        // add the collection to the set of active collections
-        l.activeCollections.add(collection);
-
         emit ERC1155AssetsReactivated(
             depositor,
             collection,

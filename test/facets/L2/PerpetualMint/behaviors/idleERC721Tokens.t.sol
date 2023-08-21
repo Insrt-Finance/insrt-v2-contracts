@@ -248,7 +248,27 @@ contract PerpetualMint_idleERC721Tokens is
         assert(oldRisk - newRisk == oldTotalTokenRisk);
     }
 
-    /// @dev tests that upon idling ERC721 tokens the risk of each ERC721 token is deleted
+    /// @dev tests that upon idling ERC721 tokens the depositor token risk of each ERC721 token is set to zero
+    function test_idleERC721TokensSetsDepositorTokenRiskOfEachTokenToZero()
+        public
+    {
+        vm.prank(depositorOne);
+        perpetualMint.idleERC721Tokens(COLLECTION, tokenIds);
+
+        for (uint256 i; i < tokenIds.length; ++i) {
+            assert(
+                0 ==
+                    _depositorTokenRisk(
+                        address(perpetualMint),
+                        depositorOne,
+                        COLLECTION,
+                        tokenIds[i]
+                    )
+            );
+        }
+    }
+
+    /// @dev tests that upon idling ERC721 tokens the risk of each ERC721 token is set to zero
     function test_idleERC721TokensSetsTokenRiskOfEachTokenToZero() public {
         vm.prank(depositorOne);
         perpetualMint.idleERC721Tokens(COLLECTION, tokenIds);

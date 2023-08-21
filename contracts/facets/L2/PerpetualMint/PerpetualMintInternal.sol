@@ -419,6 +419,7 @@ abstract contract PerpetualMintInternal is
 
             l.totalRisk[collection] -= oldRisk;
             l.activeTokenIds[collection].remove(tokenId);
+            l.depositorTokenRisk[depositor][collection][tokenId] = 0;
             --l.totalActiveTokens[collection];
             --l.activeTokens[depositor][collection];
             ++l.inactiveTokens[depositor][collection];

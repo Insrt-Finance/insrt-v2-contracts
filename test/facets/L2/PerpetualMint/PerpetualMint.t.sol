@@ -290,4 +290,52 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
             bytes32(newEarnings)
         );
     }
+
+    /// @notice mocks a deposit by a depositor for a given collection
+    /// @param beneficiary Address of the beneficiary.
+    /// @param collection Address of the collection.
+    /// @param depositor Address of the depositor.
+    /// @param risks The risk settings for the assets being deposited.
+    /// @param tokenIds Array of token ids.
+    /// @param amounts Array of amounts, corresponding to the token ids.
+    function mock_deposit(
+        address beneficiary,
+        address collection,
+        address depositor,
+        uint256[] memory tokenIds,
+        uint256[] memory risks,
+        uint256[] memory amounts
+    ) internal {
+        bytes memory depositData;
+
+        if (_collectionType(address(this), collection) == AssetType.ERC721) {
+            depositData = abi.encode(
+                AssetType.ERC721,
+                beneficiary,
+                collection,
+                depositor,
+                risks,
+                tokenIds
+            );
+        } else {
+            depositData = abi.encode(
+                AssetType.ERC1155,
+                beneficiary,
+                collection,
+                depositor,
+                risks,
+                tokenIds,
+                amounts
+            );
+        }
+
+        /// note: prior to adding an `_updateDepositorEarnings` call in deposits,
+        /// `_updateDepositorEarnings` will be called manually in scenario testing
+        perpetualMint.mock_HandleLayerZeroMessage(
+            DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
+            TEST_PATH, // would be the expected path in production, here this is a dummy value
+            TEST_NONCE, // dummy nonce value
+            depositData
+        );
+    }
 }

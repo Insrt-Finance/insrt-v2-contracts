@@ -221,7 +221,7 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
         depositorOneParallelAlphaAmounts.push(parallelAlphaTokenAmount);
 
         // set up encoded deposit array data for depositorTwo
-        // // depositorOne deposits one tokenId, with the same amount and same risk as depositorOne
+        // depositorOne deposits one tokenId, with the same amount and same risk as depositorOne
         depositorTwoParallelAlphaRisks.push(riskThree);
         depositorTwoParallelAlphaTokenIds.push(PARALLEL_ALPHA_TOKEN_ID_ONE);
         depositorTwoParallelAlphaAmounts.push(parallelAlphaTokenAmount);
@@ -265,7 +265,7 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     /// @dev assumes 0 mint fees for simplicity
     /// @param collection address of collection
     /// @param mintAmount amount of unsuccessful mint attemps
-    function mockUnsuccessfulCollectionMints(
+    function mock_unsuccessfulMintAttempts(
         address collection,
         uint256 mintAmount
     ) internal {
@@ -308,7 +308,10 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     ) internal {
         bytes memory depositData;
 
-        if (_collectionType(address(this), collection) == AssetType.ERC721) {
+        if (
+            _collectionType(address(perpetualMint), collection) ==
+            AssetType.ERC721
+        ) {
             depositData = abi.encode(
                 AssetType.ERC721,
                 beneficiary,

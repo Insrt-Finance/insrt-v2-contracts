@@ -360,6 +360,100 @@ contract PerpetualMint_updateERC1155TokenRisks is
         }
     }
 
+    /// @dev tests that when updating the risk of ERC1155 tokens, the total risk of the collection is changed
+    /// correctly when overall risk change is positive and new risk is larger
+    function test_updateERC1155TokenRisksChangesTotalRiskByRiskChangeWhenNewRiskIsLargerThanOldRisk()
+        public
+    {
+        uint256 idsLength = tokenIds.length;
+        uint256 newTotalRisk;
+        uint256 oldTotalRisk;
+        uint256[] memory oldActiveTokenAmounts = new uint256[](idsLength);
+        uint256[] memory oldDepositorTokenRisks = new uint256[](idsLength);
+
+        oldTotalRisk = _totalRisk(address(perpetualMint), COLLECTION);
+
+        for (uint256 i; i < idsLength; ++i) {
+            oldActiveTokenAmounts[i] = _activeERC1155Tokens(
+                address(perpetualMint),
+                depositorOne,
+                COLLECTION,
+                tokenIds[i]
+            );
+
+            oldDepositorTokenRisks[i] = _depositorTokenRisk(
+                address(perpetualMint),
+                depositorOne,
+                COLLECTION,
+                tokenIds[i]
+            );
+        }
+
+        vm.prank(depositorOne);
+        perpetualMint.updateERC1155TokenRisks(COLLECTION, tokenIds, risks);
+
+        newTotalRisk = _totalRisk(address(perpetualMint), COLLECTION);
+
+        for (uint256 i; i < idsLength; ++i) {
+            uint256 expectedTokenRiskChange = oldActiveTokenAmounts[i] *
+                (risks[i] - oldDepositorTokenRisks[i]);
+
+            assert(newTotalRisk - oldTotalRisk == expectedTokenRiskChange);
+        }
+    }
+
+    /// @dev tests that when updating the risk of ERC1155 tokens, the total risk of the collection is changed
+    /// correctly when overall risk change is negative and new risk is smaller
+    function test_updateERC1155TokenRisksChangesTotalRiskByRiskChangeWhenNewRiskIsSmallerThanOldRisk()
+        public
+    {
+        uint256 idsLength = tokenIds.length;
+        uint256 newTotalRisk;
+        uint256 oldTotalRisk;
+        uint256[] memory oldActiveTokenAmounts = new uint256[](idsLength);
+        uint256[] memory oldDepositorTokenRisks = new uint256[](idsLength);
+
+        // pick a value which is smaller than current risk and overall decreases risk
+        risks[0] =
+            (_depositorTokenRisk(
+                address(perpetualMint),
+                depositorOne,
+                COLLECTION,
+                PARALLEL_ALPHA_ID
+            ) * 3) /
+            10;
+
+        oldTotalRisk = _totalRisk(address(perpetualMint), COLLECTION);
+
+        for (uint256 i; i < idsLength; ++i) {
+            oldActiveTokenAmounts[i] = _activeERC1155Tokens(
+                address(perpetualMint),
+                depositorOne,
+                COLLECTION,
+                tokenIds[i]
+            );
+
+            oldDepositorTokenRisks[i] = _depositorTokenRisk(
+                address(perpetualMint),
+                depositorOne,
+                COLLECTION,
+                tokenIds[i]
+            );
+        }
+
+        vm.prank(depositorOne);
+        perpetualMint.updateERC1155TokenRisks(COLLECTION, tokenIds, risks);
+
+        newTotalRisk = _totalRisk(address(perpetualMint), COLLECTION);
+
+        for (uint256 i; i < idsLength; ++i) {
+            uint256 expectedTokenRiskChange = (oldDepositorTokenRisks[i] -
+                risks[i]) * oldActiveTokenAmounts[i];
+
+            assert(oldTotalRisk - newTotalRisk == expectedTokenRiskChange);
+        }
+    }
+
     /// @dev tests that when updating the token risk of ERC1155 tokens the depositor token risk of
     /// that token is set to the new risk
     function test_updateERC1155TokenRisksSetsDepositorTokenRiskToNewRisk()

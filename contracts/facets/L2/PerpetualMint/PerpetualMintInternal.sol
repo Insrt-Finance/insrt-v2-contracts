@@ -1010,12 +1010,14 @@ abstract contract PerpetualMintInternal is
                 l.activeERC1155Tokens[depositor][collection][tokenId];
             l.totalDepositorRisk[depositor][collection] += riskChange;
             l.tokenRisk[collection][tokenId] += riskChange;
+            l.totalRisk[collection] += riskChange;
         } else {
             riskChange =
                 (oldRisk - risk) *
                 l.activeERC1155Tokens[depositor][collection][tokenId];
             l.totalDepositorRisk[depositor][collection] -= riskChange;
             l.tokenRisk[collection][tokenId] -= riskChange;
+            l.totalRisk[collection] -= riskChange;
         }
 
         l.depositorTokenRisk[depositor][collection][tokenId] = risk;

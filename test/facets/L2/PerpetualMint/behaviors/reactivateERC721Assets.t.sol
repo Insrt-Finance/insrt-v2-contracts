@@ -284,6 +284,26 @@ contract PerpetualMint_reactivateERC721Assets is
         assert(newRisk - oldRisk == expectedTotalTokenRiskChange);
     }
 
+    /// @dev tests that upon reactivating ERC721 tokens the depositor token risk of each ERC721 token is set correctly
+    function test_reactivateERC721AssetsSetsDepositorTokenRiskOfEachToken()
+        public
+    {
+        vm.prank(depositorOne);
+        perpetualMint.reactivateERC721Assets(COLLECTION, risks, tokenIds);
+
+        for (uint256 i; i < risks.length; ++i) {
+            assert(
+                risks[i] ==
+                    _depositorTokenRisk(
+                        address(perpetualMint),
+                        depositorOne,
+                        COLLECTION,
+                        tokenIds[i]
+                    )
+            );
+        }
+    }
+
     /// @dev tests that upon reactivating ERC721 tokens the risk of each ERC721 token is set correctly
     function test_reactivateERC721AssetsSetsTokenRiskOfEachToken() public {
         vm.prank(depositorOne);

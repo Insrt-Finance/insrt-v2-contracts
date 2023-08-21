@@ -636,6 +636,9 @@ abstract contract PerpetualMintInternal is
             // add the token to the active token list
             l.activeTokenIds[collection].add(tokenIds[i]);
 
+            // Set the risk for the depositor and the token ID in the collection
+            l.depositorTokenRisk[depositor][collection][tokenIds[i]] = risks[i];
+
             // update the depositor's total risk for the collection
             l.totalDepositorRisk[depositor][collection] += risks[i];
         }

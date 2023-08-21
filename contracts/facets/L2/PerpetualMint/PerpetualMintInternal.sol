@@ -119,6 +119,7 @@ abstract contract PerpetualMintInternal is
         ++l.inactiveTokens[newOwner][collection];
 
         l.activeTokenIds[collection].remove(tokenId);
+        l.depositorTokenRisk[originalOwner][collection][tokenId] = 0;
         l.escrowedERC721Owner[collection][tokenId] = newOwner;
         l.totalRisk[collection] -= tokenRisk;
         l.totalDepositorRisk[originalOwner][collection] -= tokenRisk;

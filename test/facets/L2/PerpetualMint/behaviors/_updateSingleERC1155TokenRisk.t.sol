@@ -62,7 +62,7 @@ contract PerpetualMint_updateSingleERC1155TokenRisk is
 
     /// @dev tests that when updating the risk of a ERC1155 tokens the total depositor risk of that collection is changed
     /// correctly when overall risk increases and new risk value is larger
-    function test_updateERC1155TokenRisksChangesTotalDepositorRiskByTotalRiskChangeWhenNewRiskIsLargerThenOldRisk()
+    function test_updateSingleERC1155TokenRiskChangesTotalDepositorRiskByTotalRiskChangeWhenNewRiskIsLargerThenOldRisk()
         public
     {
         uint256 oldDepositorTokenRisk = _depositorTokenRisk(
@@ -110,7 +110,7 @@ contract PerpetualMint_updateSingleERC1155TokenRisk is
 
     /// @dev tests that when updating the risk of a ERC1155 tokens the total depositor risk of that collection is changed
     /// correctly when overall risk change is negative and new risk value is smaller
-    function test_updateERC1155TokenRisksChangesTotalDepositorRiskByTotalRiskChangeWhenNewRiskIsSmallerThanOldRisk()
+    function test_updateSingleERC1155TokenRiskChangesTotalDepositorRiskByTotalRiskChangeWhenNewRiskIsSmallerThanOldRisk()
         public
     {
         // pick a value which is smaller than current risk and overall decreases risk
@@ -170,7 +170,7 @@ contract PerpetualMint_updateSingleERC1155TokenRisk is
 
     /// @dev tests that when updating the risk of a ERC1155 token, the token risk is changed
     /// correctly when overall risk change is positive and new risk is larger
-    function test_updateERC1155TokenRisksChangesTokenRiskByRiskChangeWhenNewRiskIsLargerThanOldRisk()
+    function test_updateSingleERC1155TokenRiskChangesTokenRiskByRiskChangeWhenNewRiskIsLargerThanOldRisk()
         public
     {
         uint256 oldTokenRisks = _tokenRisk(
@@ -215,7 +215,7 @@ contract PerpetualMint_updateSingleERC1155TokenRisk is
 
     /// @dev tests that when updating the risk of a ERC1155 tokens, the token risk is changed
     /// correctly when overall risk change is negative and new risk is smaller
-    function test_updateERC1155TokenRisksChangesTokenRiskByRiskChangeWhenNewRiskIsSmallerThanOldRisk()
+    function test_updateSingleERC1155TokenRiskChangesTokenRiskByRiskChangeWhenNewRiskIsSmallerThanOldRisk()
         public
     {
         // pick a value which is smaller than current risk and overall decreases risk
@@ -270,7 +270,7 @@ contract PerpetualMint_updateSingleERC1155TokenRisk is
 
     /// @dev tests that when updating the token risk of ERC1155 tokens the depositor token risk of
     /// that token is set to the new risk
-    function test_updateERC1155TokenRisksSetsDepositorTokenRiskToNewRisk()
+    function test_updateSingleERC1155TokenRiskSetsDepositorTokenRiskToNewRisk()
         public
     {
         vm.prank(depositorOne);
@@ -292,8 +292,10 @@ contract PerpetualMint_updateSingleERC1155TokenRisk is
         );
     }
 
-    /// @dev test that updateERC1155TokenRisks reverts if the risk to be set is larger than the BASIS
-    function test_updateERC1155TokenRisksRevertsWhen_RiskExceedsBasis() public {
+    /// @dev test that updateSingleERC1155TokenRisk reverts if the risk to be set is larger than the BASIS
+    function test_updateSingleERC1155TokenRiskRevertsWhen_RiskExceedsBasis()
+        public
+    {
         risk = FAILING_RISK;
         vm.expectRevert(IPerpetualMintInternal.BasisExceeded.selector);
         vm.prank(depositorOne);
@@ -305,8 +307,10 @@ contract PerpetualMint_updateSingleERC1155TokenRisk is
         );
     }
 
-    /// @dev test that updateERC1155TokenRisks reverts if the risk to be set is 0
-    function test_updateERC1155TokenRisksRevertsWhen_RiskIsSetToZero() public {
+    /// @dev test that updateSingleERC1155TokenRisk reverts if the risk to be set is 0
+    function test_updateSingleERC1155TokenRiskRevertsWhen_RiskIsSetToZero()
+        public
+    {
         risk = 0;
         vm.expectRevert(IPerpetualMintInternal.TokenRiskMustBeNonZero.selector);
         vm.prank(depositorOne);
@@ -318,8 +322,8 @@ contract PerpetualMint_updateSingleERC1155TokenRisk is
         );
     }
 
-    /// @dev test that updateERC1155TokenRisks reverts if the caller does not have active ERC1155 tokens in that tokenId for the COLLECTION
-    function test_updateERC1155TokenRisksRevertsWhen_DoesNotHaveActiveERC1155TokensInCollection()
+    /// @dev test that updateSingleERC1155TokenRisk reverts if the caller does not have active ERC1155 tokens in that tokenId for the COLLECTION
+    function test_updateSingleERC1155TokenRiskRevertsWhen_DoesNotHaveActiveERC1155TokensInCollection()
         public
     {
         vm.expectRevert(IPerpetualMintInternal.OwnerInactive.selector);
@@ -332,8 +336,8 @@ contract PerpetualMint_updateSingleERC1155TokenRisk is
         );
     }
 
-    /// @dev test that updateERC1155TokenRisks reverts if the caller is attempting to set the same risk as the previous risk
-    function test_updateERC1155TokenRisksRevertsWhen_NewRiskIsSameAsOldRisk()
+    /// @dev test that updateSingleERC1155TokenRisk reverts if the caller is attempting to set the same risk as the previous risk
+    function test_updateSingleERC1155TokenRiskRevertsWhen_NewRiskIsSameAsOldRisk()
         public
     {
         risk = _depositorTokenRisk(

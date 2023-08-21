@@ -108,6 +108,14 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             perpetualMintStorageLayout.escrowedERC721Owner[collection][
                 tokenIds[i]
             ] = address(0);
+
+            // Reduce the count of inactive ERC721 tokens for the sender (claimer)
+            --perpetualMintStorageLayout.inactiveTokens[msg.sender][collection];
+        }
+
+        // If there are no active tokens in the collection, remove it from the active collections
+        if (perpetualMintStorageLayout.totalActiveTokens[collection] == 0) {
+            perpetualMintStorageLayout.activeCollections.remove(collection);
         }
 
         _withdrawERC721Assets(

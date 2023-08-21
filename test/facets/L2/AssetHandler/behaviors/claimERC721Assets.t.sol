@@ -133,6 +133,22 @@ contract L2AssetHandler_claimERC721Assets is
             activeTokenIdValueAtUintSetIndexStorageSlot,
             bytes32(0)
         );
+
+        // mock the deposited token as being won by the depositor and add it to inactive tokens (refactor to use PerpetualMint facet)
+        bytes32 inactiveTokensSlot = keccak256(
+            abi.encode(
+                BORED_APE_YACHT_CLUB, // address of collection
+                keccak256(
+                    abi.encode(
+                        address(this), // address of depositor
+                        uint256(PerpetualMintStorage.STORAGE_SLOT) + 22 // inactiveTokens mapping storage slot
+                    )
+                )
+            )
+        );
+
+        // set the inactive tokens mapping to 1 for the given collection and depositor
+        vm.store(address(this), inactiveTokensSlot, bytes32(uint256(1)));
     }
 
     /// @dev Tests claimERC721Assets functionality for claiming ERC721 tokens.
@@ -164,6 +180,30 @@ contract L2AssetHandler_claimERC721Assets is
         // mappings are hash tables, so this assertion proves that the escrowed ERC721 owner
         // was updated correctly for the collection, and the given token ID.
         assertEq(escrowedERC721Owner, address(0));
+
+        uint256 totalActiveTokens = _totalActiveTokens(
+            address(this),
+            BORED_APE_YACHT_CLUB
+        );
+
+        if (totalActiveTokens == 0) {
+            address[] memory activeCollections = _activeCollections(
+                address(this)
+            );
+
+            // this assertion proves that the collection was removed from the set of active collections
+            // since there was only one active collection earlier
+            assert(activeCollections.length == 0);
+        }
+
+        uint256 inactiveTokens = _inactiveTokens(
+            address(this),
+            address(this),
+            BORED_APE_YACHT_CLUB
+        );
+
+        // this assertion proves that the inactive tokens mapping was updated correctly
+        assert(inactiveTokens == 0);
     }
 
     /// @dev Tests that claimERC721Assets functionality emits an ERC721AssetsWithdrawn event when claiming ERC721 tokens.

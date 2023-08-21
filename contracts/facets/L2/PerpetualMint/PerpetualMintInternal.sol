@@ -375,6 +375,7 @@ abstract contract PerpetualMintInternal is
 
             uint256 riskChange = amount *
                 l.depositorTokenRisk[depositor][collection][tokenId];
+            l.tokenRisk[collection][tokenId] -= riskChange;
             l.totalRisk[collection] -= riskChange;
             l.totalActiveTokens[collection] -= amount;
             l.totalDepositorRisk[depositor][collection] -= riskChange;
@@ -384,6 +385,10 @@ abstract contract PerpetualMintInternal is
             if (amount == activeTokens) {
                 l.depositorTokenRisk[depositor][collection][tokenId] = 0;
                 l.activeERC1155Owners[collection][tokenId].remove(depositor);
+            }
+
+            if (l.tokenRisk[collection][tokenId] == 0) {
+                l.activeTokenIds[collection].remove(tokenId);
             }
         }
     }

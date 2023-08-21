@@ -119,6 +119,43 @@ contract PerpetualMint_idleERC1155Tokens is
         );
     }
 
+    /// @dev tests that when idling ERC1155 tokens the token risk changes by
+    /// the amount of active tokens of the depositor multiplied by the old token risk
+    function test_idleERC1155TokensDecreasesTokenRiskByRiskChange() public {
+        uint256 oldParallelAlphaTokenRisk = _tokenRisk(
+            address(perpetualMint),
+            COLLECTION,
+            PARALLEL_ALPHA_ID
+        );
+
+        uint256 totalRiskChange;
+
+        for (uint256 i; i < tokenIds.length; ++i) {
+            totalRiskChange +=
+                _depositorTokenRisk(
+                    address(perpetualMint),
+                    depositorOne,
+                    COLLECTION,
+                    tokenIds[i]
+                ) *
+                uint256(amounts[i]);
+        }
+
+        vm.prank(depositorOne);
+        perpetualMint.idleERC1155Tokens(COLLECTION, tokenIds, amounts);
+
+        uint256 newParallelAlphaTokenRisk = _tokenRisk(
+            address(perpetualMint),
+            COLLECTION,
+            PARALLEL_ALPHA_ID
+        );
+
+        assert(
+            oldParallelAlphaTokenRisk - newParallelAlphaTokenRisk ==
+                totalRiskChange
+        );
+    }
+
     /// @dev tests that when idling ERC1155 tokens the total risk changes by
     /// the amount of active tokens of the depositor multiplied by the old token risk
     function test_idleERC1155TokensDecreasesTotalRiskByRiskChange() public {
@@ -329,6 +366,58 @@ contract PerpetualMint_idleERC1155Tokens is
 
             for (uint256 j; j < activeOwners.length; ++j) {
                 assert(activeOwners[i] != depositorOne);
+            }
+        }
+    }
+
+    /// @dev tests that when idling ERC1155 tokens the token id is removed from the
+    /// active token id mapping for each tokenId if the new token risk for the token id is zero
+    function test_idleERC1155TokensRemovesTokenIdFromActiveTokenIdsForEachTokenIdWhenTokenRiskIsZero()
+        public
+    {
+        // idle all ERC1155 tokens
+        amounts[0] = _activeERC1155Tokens(
+            address(perpetualMint),
+            depositorOne,
+            COLLECTION,
+            PARALLEL_ALPHA_TOKEN_ID_ONE
+        );
+
+        tokenIds.push(PARALLEL_ALPHA_TOKEN_ID_TWO);
+
+        amounts.push(
+            _activeERC1155Tokens(
+                address(perpetualMint),
+                depositorOne,
+                COLLECTION,
+                PARALLEL_ALPHA_TOKEN_ID_TWO
+            )
+        );
+
+        vm.prank(depositorOne);
+        perpetualMint.idleERC1155Tokens(COLLECTION, tokenIds, amounts);
+
+        amounts = [
+            _activeERC1155Tokens(
+                address(perpetualMint),
+                depositorTwo,
+                COLLECTION,
+                PARALLEL_ALPHA_TOKEN_ID_ONE
+            )
+        ];
+        tokenIds = [PARALLEL_ALPHA_TOKEN_ID_ONE];
+
+        vm.prank(depositorTwo);
+        perpetualMint.idleERC1155Tokens(COLLECTION, tokenIds, amounts);
+
+        for (uint256 i; i < tokenIds.length; ++i) {
+            uint256[] memory activeTokenIds = _activeTokenIds(
+                address(perpetualMint),
+                COLLECTION
+            );
+
+            for (uint256 j; j < activeTokenIds.length; ++j) {
+                assert(activeTokenIds[j] != tokenIds[i]);
             }
         }
     }

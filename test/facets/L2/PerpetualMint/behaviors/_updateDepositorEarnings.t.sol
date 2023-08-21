@@ -24,7 +24,7 @@ contract PerpetualMint_updateDepositorEarnings is
 
         depositBoredApeYachtClubAssetsMock();
 
-        mockUnsuccessfulCollectionMints(COLLECTION, unsuccessfulMintAttempts);
+        mock_unsuccessfulMintAttempts(COLLECTION, unsuccessfulMintAttempts);
     }
 
     /// @dev asserts that _updateBaseMultiplier is called so the baseMultiplier and lastCollectionEarnings

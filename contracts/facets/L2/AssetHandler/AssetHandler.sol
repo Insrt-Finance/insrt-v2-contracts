@@ -56,6 +56,11 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             ][tokenIds[i]] -= amounts[i];
         }
 
+        // If there are no active tokens in the collection, remove it from the active collections
+        if (perpetualMintStorageLayout.totalActiveTokens[collection] == 0) {
+            perpetualMintStorageLayout.activeCollections.remove(collection);
+        }
+
         _withdrawERC1155Assets(
             beneficiary,
             collection,

@@ -138,6 +138,21 @@ contract L2AssetHandler_claimERC1155Assets is
         // mappings are hash tables, so this assertion proves that the inactive ERC1155 token amount was
         // updated correctly for the depositor, collection, and the given token ID.
         assertEq(inactiveERC1155TokenAmount, 0);
+
+        uint256 totalActiveTokens = _totalActiveTokens(
+            address(this),
+            BONG_BEARS
+        );
+
+        if (totalActiveTokens == 0) {
+            address[] memory activeCollections = _activeCollections(
+                address(this)
+            );
+
+            // this assertion proves that the collection was removed from the set of active collections
+            // as there was only one active collection previously
+            assertEq(activeCollections.length, 0);
+        }
     }
 
     /// @dev Tests that claimERC1155Assets functionality emits an ERC1155AssetsWithdrawn event when claiming ERC1155 tokens.

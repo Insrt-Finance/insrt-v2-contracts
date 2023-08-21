@@ -183,7 +183,7 @@ contract L2AssetHandler_withdrawERC1155Assets is
             );
 
             // this assertion proves that the collection was removed from the set of active collections
-            // as there was only one active collecitno previously
+            // as there was only one active collection previously
             assertEq(activeCollections.length, 0);
         }
     }

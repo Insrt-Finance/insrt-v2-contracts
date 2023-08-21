@@ -56,4 +56,20 @@ interface IPerpetualMintHarness {
         address depositor,
         address collection
     ) external;
+
+    /// @dev exposes updateSingleERC1155TokenRisk
+    function exposed_updateSingleERC1155TokenRisk(
+        address depositor,
+        address collection,
+        uint256 tokenId,
+        uint256 risk
+    ) external;
+
+    /// @dev exposes updateSingleERC721TokenRisk
+    function exposed_updateSingleERC721TokenRisk(
+        address depositor,
+        address collection,
+        uint256 tokenId,
+        uint256 risk
+    ) external;
 }

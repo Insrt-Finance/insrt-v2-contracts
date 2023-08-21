@@ -954,30 +954,13 @@ abstract contract PerpetualMintInternal is
         _updateDepositorEarnings(l, depositor, collection);
 
         for (uint256 i; i < tokenIds.length; ++i) {
-            uint256 tokenId = tokenIds[i];
-            uint256 risk = risks[i];
-
-            _enforceBasis(risk);
-            _enforceNonZeroRisk(risk);
-
-            if (depositor != l.escrowedERC721Owner[collection][tokenIds[i]]) {
-                revert OnlyEscrowedTokenOwner();
-            }
-
-            uint256 oldRisk = l.tokenRisk[collection][tokenId];
-
-            l.tokenRisk[collection][tokenId] = risk;
-            uint256 riskChange;
-
-            if (risk > oldRisk) {
-                riskChange = risk - oldRisk;
-                l.totalRisk[collection] += riskChange;
-                l.totalDepositorRisk[depositor][collection] += riskChange;
-            } else {
-                riskChange = oldRisk - risk;
-                l.totalRisk[collection] -= riskChange;
-                l.totalDepositorRisk[depositor][collection] -= riskChange;
-            }
+            _updateSingleERC721TokenRisk(
+                l,
+                depositor,
+                collection,
+                tokenIds[i],
+                risks[i]
+            );
         }
     }
 
@@ -1021,5 +1004,41 @@ abstract contract PerpetualMintInternal is
         }
 
         l.depositorTokenRisk[depositor][collection][tokenId] = risk;
+    }
+
+    /// @notice updates the risk for a single ERC721 tokenId
+    /// @param l the PerpetualMint storage layout
+    /// @param depositor address of escrowed token owner
+    /// @param collection address of token collection
+    /// @param tokenId id of token
+    /// @param risk new risk value for token id
+    function _updateSingleERC721TokenRisk(
+        Storage.Layout storage l,
+        address depositor,
+        address collection,
+        uint256 tokenId,
+        uint256 risk
+    ) internal {
+        _enforceBasis(risk);
+        _enforceNonZeroRisk(risk);
+
+        if (depositor != l.escrowedERC721Owner[collection][tokenId]) {
+            revert OnlyEscrowedTokenOwner();
+        }
+
+        uint256 oldRisk = l.tokenRisk[collection][tokenId];
+
+        l.tokenRisk[collection][tokenId] = risk;
+        uint256 riskChange;
+
+        if (risk > oldRisk) {
+            riskChange = risk - oldRisk;
+            l.totalRisk[collection] += riskChange;
+            l.totalDepositorRisk[depositor][collection] += riskChange;
+        } else {
+            riskChange = oldRisk - risk;
+            l.totalRisk[collection] -= riskChange;
+            l.totalDepositorRisk[depositor][collection] -= riskChange;
+        }
     }
 }

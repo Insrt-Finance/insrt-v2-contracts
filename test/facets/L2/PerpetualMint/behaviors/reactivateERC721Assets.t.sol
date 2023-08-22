@@ -294,12 +294,7 @@ contract PerpetualMint_reactivateERC721Assets is
         for (uint256 i; i < risks.length; ++i) {
             assert(
                 risks[i] ==
-                    _depositorTokenRisk(
-                        address(perpetualMint),
-                        depositorOne,
-                        COLLECTION,
-                        tokenIds[i]
-                    )
+                    _tokenRisk(address(perpetualMint), COLLECTION, tokenIds[i])
             );
         }
     }

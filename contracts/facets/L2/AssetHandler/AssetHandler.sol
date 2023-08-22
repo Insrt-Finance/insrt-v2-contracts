@@ -283,22 +283,18 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
             // Decrement the count of active tokens for the sender in the collection
             --perpetualMintStorageLayout.activeTokens[msg.sender][collection];
 
-            // Calculate the risk to be deducted based on the sender's risk for the token ID in the collection
-            uint256 riskToBeDeducted = perpetualMintStorageLayout
-                .depositorTokenRisk[msg.sender][collection][tokenIds[i]];
-
-            // Reset the risk for the sender and the token ID in the collection
-            perpetualMintStorageLayout.depositorTokenRisk[msg.sender][
+            // Calculate the risk to be deducted based on the token's risk in the collection
+            uint256 riskToBeDeducted = perpetualMintStorageLayout.tokenRisk[
                 collection
-            ][tokenIds[i]] = 0;
+            ][tokenIds[i]];
+
+            // Reset the token risk for the token ID in the collection
+            perpetualMintStorageLayout.tokenRisk[collection][tokenIds[i]] = 0;
 
             // Reset the token as not escrowed by the sender
             perpetualMintStorageLayout.escrowedERC721Owner[collection][
                 tokenIds[i]
             ] = address(0);
-
-            // Reset the token risk for the token ID in the collection
-            perpetualMintStorageLayout.tokenRisk[collection][tokenIds[i]] = 0;
 
             // Decrement the total number of active tokens in the collection
             --perpetualMintStorageLayout.totalActiveTokens[collection];
@@ -456,11 +452,6 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 ++perpetualMintStorageLayout.activeTokens[beneficiary][
                     collection
                 ];
-
-                // Set the risk for the beneficiary and the token ID in the collection
-                perpetualMintStorageLayout.depositorTokenRisk[beneficiary][
-                    collection
-                ][tokenIds[i]] = risks[i];
 
                 // Mark the deposited ERC721 token as escrowed by the beneficiary in the collection
                 perpetualMintStorageLayout.escrowedERC721Owner[collection][

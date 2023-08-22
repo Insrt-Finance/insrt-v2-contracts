@@ -125,16 +125,6 @@ contract L2AssetHandler_withdrawERC721Assets is
         // this assertion proves that the count of active tokens for the depositor in the collection was decremented correctly
         assertEq(activeTokensCount, 0);
 
-        uint256 depositorTokenRisk = _depositorTokenRisk(
-            address(this),
-            address(this),
-            BORED_APE_YACHT_CLUB,
-            boredApeYachtClubTokenIds[0]
-        );
-
-        // this assertion proves that the risk for the depositor and the token ID in the collection was reset correctly
-        assertEq(depositorTokenRisk, 0);
-
         uint256 tokenRisk = _tokenRisk(
             address(this),
             BORED_APE_YACHT_CLUB,

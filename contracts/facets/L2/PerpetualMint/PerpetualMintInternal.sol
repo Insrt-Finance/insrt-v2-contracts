@@ -119,7 +119,6 @@ abstract contract PerpetualMintInternal is
         ++l.inactiveTokens[newOwner][collection];
 
         l.activeTokenIds[collection].remove(tokenId);
-        l.depositorTokenRisk[originalOwner][collection][tokenId] = 0;
         l.escrowedERC721Owner[collection][tokenId] = newOwner;
         l.totalRisk[collection] -= tokenRisk;
         l.totalDepositorRisk[originalOwner][collection] -= tokenRisk;
@@ -419,7 +418,6 @@ abstract contract PerpetualMintInternal is
 
             l.totalRisk[collection] -= oldRisk;
             l.activeTokenIds[collection].remove(tokenId);
-            l.depositorTokenRisk[depositor][collection][tokenId] = 0;
             --l.totalActiveTokens[collection];
             --l.activeTokens[depositor][collection];
             ++l.inactiveTokens[depositor][collection];
@@ -635,9 +633,6 @@ abstract contract PerpetualMintInternal is
 
             // add the token to the active token list
             l.activeTokenIds[collection].add(tokenIds[i]);
-
-            // Set the risk for the depositor and the token ID in the collection
-            l.depositorTokenRisk[depositor][collection][tokenIds[i]] = risks[i];
 
             // update the depositor's total risk for the collection
             l.totalDepositorRisk[depositor][collection] += risks[i];

@@ -159,12 +159,7 @@ contract PerpetualMint_updateERC721TokenRisks is
         for (uint256 i; i < tokenIds.length; ++i) {
             assert(
                 risks[i] ==
-                    _depositorTokenRisk(
-                        address(perpetualMint),
-                        depositorOne,
-                        COLLECTION,
-                        tokenIds[i]
-                    )
+                    _tokenRisk(address(perpetualMint), COLLECTION, tokenIds[i])
             );
         }
     }

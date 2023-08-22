@@ -257,13 +257,7 @@ contract PerpetualMint_idleERC721Tokens is
 
         for (uint256 i; i < tokenIds.length; ++i) {
             assert(
-                0 ==
-                    _depositorTokenRisk(
-                        address(perpetualMint),
-                        depositorOne,
-                        COLLECTION,
-                        tokenIds[i]
-                    )
+                0 == _tokenRisk(address(perpetualMint), COLLECTION, tokenIds[i])
             );
         }
     }

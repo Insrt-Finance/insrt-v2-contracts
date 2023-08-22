@@ -2,11 +2,13 @@
 
 pragma solidity 0.8.21;
 
+import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol";
+
 import { PerpetualMintStorage as Storage } from "./Storage.sol";
 
 /// @title IPerpetualMint
 /// @dev interface to PerpetualMint facet
-interface IPerpetualMint {
+interface IPerpetualMint is IPausable {
     /// @notice calculates the available earnings for the msg.sender across all collections
     /// @return allEarnings amount of available earnings across all collections
     function allAvailableEarnings() external view returns (uint256 allEarnings);
@@ -69,6 +71,9 @@ interface IPerpetualMint {
         uint256[] calldata tokenIds
     ) external;
 
+    /// @notice Triggers paused state, when contract is unpaused.
+    function pause() external;
+
     /// @notice Used to reactivate idled ERC1155 tokens.
     /// @dev Reactivates a set of idled ERC1155 tokens by setting their risks to the given values.
     /// @param collection The address of the collection.
@@ -107,6 +112,9 @@ interface IPerpetualMint {
     /// @notice sets the Chainlink VRF config
     /// @param config VRFConfig struct holding all related data to ChainlinkVRF setup
     function setVRFConfig(Storage.VRFConfig calldata config) external;
+
+    ///  @notice Triggers unpaused state, when contract is paused.
+    function unpause() external;
 
     /// @notice updates the risk associated with escrowed ERC1155 tokens of a depositor
     /// @param collection address of token collection

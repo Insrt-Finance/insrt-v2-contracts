@@ -92,6 +92,11 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function pause() external onlyOwner {
+        _pause();
+    }
+
+    /// @inheritdoc IPerpetualMint
     function reactivateERC1155Assets(
         address collection,
         uint256[] calldata risks,
@@ -134,6 +139,11 @@ contract PerpetualMint is
         Storage.VRFConfig calldata config
     ) external onlyOwner {
         _setVRFConfig(config);
+    }
+
+    /// @inheritdoc IPerpetualMint
+    function unpause() external onlyOwner {
+        _unpause();
     }
 
     /// @inheritdoc IPerpetualMint

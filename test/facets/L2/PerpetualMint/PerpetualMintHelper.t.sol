@@ -37,7 +37,7 @@ contract PerpetualMintHelper {
         view
         returns (ISolidStateDiamond.FacetCut[] memory)
     {
-        bytes4[] memory mintingSelectors = new bytes4[](26);
+        bytes4[] memory mintingSelectors = new bytes4[](27);
         bytes4[] memory l2AssetHandlerSelectors = new bytes4[](1);
 
         // map the function selectors to their respective interfaces
@@ -60,30 +60,30 @@ contract PerpetualMintHelper {
         mintingSelectors[16] = IPerpetualMint.pause.selector;
         mintingSelectors[17] = IPerpetualMint.unpause.selector;
 
-        mintingSelectors[17] = IPerpetualMintHarness.exposed_balanceOf.selector;
-        mintingSelectors[18] = IPerpetualMintHarness
+        mintingSelectors[18] = IPerpetualMintHarness.exposed_balanceOf.selector;
+        mintingSelectors[19] = IPerpetualMintHarness
             .exposed_resolveERC721Mints
             .selector;
-        mintingSelectors[19] = IPerpetualMintHarness
+        mintingSelectors[20] = IPerpetualMintHarness
             .exposed_resolveERC1155Mints
             .selector;
-        mintingSelectors[20] = IPerpetualMintHarness
+        mintingSelectors[21] = IPerpetualMintHarness
             .exposed_selectToken
             .selector;
-        mintingSelectors[21] = IPerpetualMintHarness
+        mintingSelectors[22] = IPerpetualMintHarness
             .exposed_selectERC1155Owner
             .selector;
-        mintingSelectors[22] = IPerpetualMintHarness
+        mintingSelectors[23] = IPerpetualMintHarness
             .exposed_normalizeValue
             .selector;
-        mintingSelectors[23] = IPerpetualMintHarness
+        mintingSelectors[24] = IPerpetualMintHarness
             .exposed_updateDepositorEarnings
             .selector;
-        mintingSelectors[24] = IPerpetualMintHarness
+        mintingSelectors[25] = IPerpetualMintHarness
             .exposed_assignEscrowedERC1155Asset
             .selector;
 
-        mintingSelectors[25] = VRFConsumerBaseV2Mock
+        mintingSelectors[26] = VRFConsumerBaseV2Mock
             .rawFulfillRandomWordsPlus
             .selector;
 

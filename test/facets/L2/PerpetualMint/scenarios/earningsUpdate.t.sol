@@ -7,12 +7,10 @@ import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { AssetType } from "../../../../../contracts/enums/AssetType.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
-import "forge-std/console.sol";
-
 /// @title PerpetualMint_EarningsScenario
 /// @dev PerpetualMint Scenario testing contract to ensure tracking of earnings works in
 /// production scenarios
-contract PerpetualMint_EarningsScenario is PerpetualMintTest, L2ForkTest {
+contract PerpetualMint_EarningsScenario is L2ForkTest, PerpetualMintTest {
     // additional depositors
     address internal constant depositorThree = address(3);
     address internal constant depositorFour = address(4);
@@ -408,7 +406,7 @@ contract PerpetualMint_EarningsScenario is PerpetualMintTest, L2ForkTest {
         );
     }
 
-    /// @notice calclulates the total earnings from unsuccessful mints
+    /// @notice calculates the total earnings from unsuccessful mints
     function _totalEarnings() internal view returns (uint256 earnings) {
         earnings = unsuccessfulMints * MINT_PRICE;
     }

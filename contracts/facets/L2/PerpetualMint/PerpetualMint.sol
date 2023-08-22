@@ -3,6 +3,7 @@
 pragma solidity ^0.8.21;
 
 import { Ownable } from "@solidstate/contracts/access/ownable/Ownable.sol";
+import { Pausable } from "@solidstate/contracts/security/pausable/Pausable.sol";
 
 import { IPerpetualMint } from "./IPerpetualMint.sol";
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
@@ -10,7 +11,12 @@ import { PerpetualMintStorage as Storage } from "./Storage.sol";
 
 /// @title PerpetualMint facet contract
 /// @dev contains all externally called functions
-contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
+contract PerpetualMint is
+    IPerpetualMint,
+    PerpetualMintInternal,
+    Ownable,
+    Pausable
+{
     constructor(address vrf) PerpetualMintInternal(vrf) {}
 
     /// @inheritdoc IPerpetualMint
@@ -26,7 +32,7 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal, Ownable {
     function attemptBatchMint(
         address collection,
         uint32 numberOfMints
-    ) external payable {
+    ) external payable whenNotPaused {
         _attemptBatchMint(msg.sender, collection, numberOfMints);
     }
 

@@ -333,7 +333,7 @@ contract PerpetualMint_idleERC1155Tokens is
         }
     }
 
-    /// @dev tests that the call reverts when the collection passed in is not an ERC721 collection
+    /// @dev tests that the call reverts when the collection passed in is not an ERC1155 collection
     function test_idleERC1155TokensRevertsWhen_CollectionIsNotERC1155() public {
         vm.expectRevert(IPerpetualMintInternal.CollectionTypeMismatch.selector);
         vm.prank(depositorOne);

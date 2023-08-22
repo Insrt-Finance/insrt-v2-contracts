@@ -5,6 +5,7 @@ pragma solidity 0.8.21;
 import "forge-std/Test.sol";
 
 import { VRFCoordinatorV2 } from "@chainlink/vrf/VRFCoordinatorV2.sol";
+import { IPausableInternal } from "@solidstate/contracts/security/pausable/IPausableInternal.sol";
 
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { IVRFCoordinatorV2Events } from "../../../../interfaces/IVRFCoordinatorV2Events.sol";
@@ -225,6 +226,16 @@ contract PerpetualMint_attemptBatchMint is
                 address(perpetualMint)
             )
         );
+
+        perpetualMint.attemptBatchMint{
+            value: MINT_PRICE * TEST_MINT_ATTEMPTS
+        }(BORED_APE_YACHT_CLUB, TEST_MINT_ATTEMPTS);
+    }
+
+    /// @dev Tests that attemptBatchMint functionality reverts when the contract is paused.
+    function test_attemptBatchMintRevertsWhen_PausedStateIsTrue() public {
+        perpetualMint.pause();
+        vm.expectRevert(IPausableInternal.Pausable__Paused.selector);
 
         perpetualMint.attemptBatchMint{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS

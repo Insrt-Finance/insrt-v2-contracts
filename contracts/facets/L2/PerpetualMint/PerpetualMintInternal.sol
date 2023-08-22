@@ -342,6 +342,8 @@ abstract contract PerpetualMintInternal is
         } else {
             _resolveERC1155Mints(l, minter, collection, randomWords);
         }
+
+        l.unfulfilledRequests[collection].remove(requestId);
     }
 
     /// @notice sets the token risk of a set of ERC1155 tokens to zero thereby making them idle - still escrowed
@@ -682,6 +684,7 @@ abstract contract PerpetualMintInternal is
 
         l.requestMinter[requestId] = minter;
         l.requestCollection[requestId] = collection;
+        l.unfulfilledRequests[collection].add(requestId);
     }
 
     /// @notice resolves the outcome of attempted mints for an ERC1155 collection

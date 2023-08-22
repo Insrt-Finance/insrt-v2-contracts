@@ -13,6 +13,13 @@ interface IPerpetualMintHarness {
         uint256 tokenId
     ) external;
 
+    /// @dev exposes _assignEscrowedERC721Asset method
+    function exposed_assignEscrowedERC721Asset(
+        address newOwner,
+        address collection,
+        uint256 tokenId
+    ) external;
+
     /// @dev exposes _balanceOf method
     function exposed_balanceOf(
         address account

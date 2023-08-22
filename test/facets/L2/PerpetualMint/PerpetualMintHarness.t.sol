@@ -35,6 +35,17 @@ contract PerpetualMintHarness is
     }
 
     /// @inheritdoc IPerpetualMintHarness
+    function exposed_assignEscrowedERC721Asset(
+        address newOwner,
+        address collection,
+        uint256 tokenId
+    ) external {
+        Storage.Layout storage l = Storage.layout();
+
+        _assignEscrowedERC721Asset(l, newOwner, collection, tokenId);
+    }
+
+    /// @inheritdoc IPerpetualMintHarness
     function exposed_balanceOf(
         address account
     ) external view returns (uint256 balance) {

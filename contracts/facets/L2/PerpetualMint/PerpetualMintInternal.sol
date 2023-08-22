@@ -356,6 +356,10 @@ abstract contract PerpetualMintInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
+        if (l.collectionType[collection] != AssetType.ERC1155) {
+            revert CollectionTypeMismatch();
+        }
+
         _updateDepositorEarnings(l, depositor, collection);
 
         for (uint256 i; i < tokenIds.length; ++i) {

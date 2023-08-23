@@ -333,6 +333,17 @@ contract PerpetualMint_idleERC1155Tokens is
         }
     }
 
+    /// @dev tests that the call reverts when the collection passed in is not an ERC1155 collection
+    function test_idleERC1155TokensRevertsWhen_CollectionIsNotERC1155() public {
+        vm.expectRevert(IPerpetualMintInternal.CollectionTypeMismatch.selector);
+        vm.prank(depositorOne);
+        perpetualMint.idleERC1155Tokens(
+            BORED_APE_YACHT_CLUB,
+            tokenIds,
+            amounts
+        );
+    }
+
     /// @dev tests that an address not belonging to escrowedERC1155TokenOwners for each token id
     /// cannot call idleERC1155Tokens
     function test_idleERC1155TokensRevertsWhen_CallerIsNotContainedInEscrowedERC1155OwnersOfEachTokenId()

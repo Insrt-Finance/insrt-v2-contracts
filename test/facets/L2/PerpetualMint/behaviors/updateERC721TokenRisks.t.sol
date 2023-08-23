@@ -2,10 +2,10 @@
 
 pragma solidity 0.8.21;
 
+import { PerpetualMintTest } from "../PerpetualMint.t.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
-import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
-import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
 /// @title PerpetualMint_updateERC721TokenRisks
 /// @dev PerpetualMint test contract for testing expected behavior of the updateERC721TokenRisks function
@@ -96,8 +96,9 @@ contract PerpetualMint_updateERC721TokenRisks is
         );
     }
 
-    /// @dev tests that upon updating ERC721 token risks, the depositor earnings are updated and the depositor
-    /// deductions set equal to the depositor earnings
+    /// @dev tests that upon updating ERC721 token risks, the depositor earnings are updated, the depositor
+    /// multiplier function is set, and the last collection earnings value is set to the most recent collection
+    /// earnings value
     function test_updateERC721TokenRisksUpdatesDepositorEarningsWhenTotalDepositorRiskIsNonZero()
         public
     {

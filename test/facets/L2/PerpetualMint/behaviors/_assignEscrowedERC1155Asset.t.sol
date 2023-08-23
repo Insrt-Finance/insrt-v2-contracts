@@ -2,10 +2,10 @@
 
 pragma solidity 0.8.21;
 
+import { PerpetualMintTest } from "../PerpetualMint.t.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
-import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
-import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
 /// @title PerpetualMint_assignEscrowedERC1155Asset
 /// @dev PerpetualMint test contract for testing expected behavior of the assignEscrowedERC1155 function
@@ -14,11 +14,25 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
     PerpetualMintTest,
     L2ForkTest
 {
+    address internal constant COLLECTION = PARALLEL_ALPHA;
+
+    uint256 internal constant COLLECTION_EARNINGS = 1 ether;
+
+    // grab COLLECTION collection earnings storage slot
+    bytes32 internal collectionEarningsStorageSlot =
+        keccak256(
+            abi.encode(
+                COLLECTION, // the ERC721 collection
+                uint256(Storage.STORAGE_SLOT) + 9 // the collectionEarnings storage slot
+            )
+        );
+
     /// @dev tokenId of ERC1155 asset to be transferred
     uint256 tokenId;
 
     /// @dev risk of token set by depositor prior to transfer
     uint256 tokenRisk;
+
     /// @dev activeERC1155Tokens storage slot
     bytes32 slot;
 
@@ -33,7 +47,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
         tokenRisk = _depositorTokenRisk(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
@@ -43,7 +57,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
                 tokenId, // id of token
                 keccak256(
                     abi.encode(
-                        PARALLEL_ALPHA, // address of collection
+                        COLLECTION, // address of collection
                         keccak256(
                             abi.encode(
                                 depositorTwo, // address of depositor
@@ -57,6 +71,174 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
 
         //overwrite storage to set activeERC1155 tokens to 1 for testing
         vm.store(address(perpetualMint), slot, bytes32(uint256(1)));
+
+        //overwrite storage
+        vm.store(
+            address(perpetualMint),
+            collectionEarningsStorageSlot,
+            bytes32(COLLECTION_EARNINGS)
+        );
+    }
+
+    /// @dev tests that baseMultiplier and lastCollectionEarnings are updated for 'newOwner' when
+    /// 'newOwner' has no risk
+    function test_assignEscrowedERC1155AssetsUpdatesDepositorEarningsForNewOwnerWhenNewOwnerrHasNoRisk()
+        public
+    {
+        uint256 currentEarnings = _collectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 lastEarnings = _lastCollectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 baseMultiplier = (currentEarnings - lastEarnings) /
+            _totalRisk(address(perpetualMint), COLLECTION);
+
+        perpetualMint.exposed_assignEscrowedERC1155Asset(
+            depositorOne,
+            minter,
+            COLLECTION,
+            tokenId
+        );
+
+        assert(
+            baseMultiplier ==
+                _baseMultiplier(address(perpetualMint), COLLECTION)
+        );
+
+        assert(
+            currentEarnings ==
+                _lastCollectionEarnings(address(perpetualMint), COLLECTION)
+        );
+    }
+
+    /// @dev tests that depositorEarnings are updated correctly when 'newOwner' has risk
+    function test_assignEscrowedERC1155AssetsUpdatesDepositorEarningsForNewOwnerWhenNewOwnerHasRisk()
+        public
+    {
+        uint256 currentEarnings = _collectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 lastEarnings = _lastCollectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 baseMultiplier = (currentEarnings - lastEarnings) /
+            _totalRisk(address(perpetualMint), COLLECTION);
+
+        uint256 oldDepositorEarnings = _depositorEarnings(
+            address(perpetualMint),
+            depositorTwo,
+            COLLECTION
+        );
+        uint256 totalDepositorRisk = _totalDepositorRisk(
+            address(perpetualMint),
+            depositorTwo,
+            COLLECTION
+        );
+        uint256 multiplierOffset = _multiplierOffset(
+            address(perpetualMint),
+            depositorTwo,
+            COLLECTION
+        );
+
+        uint256 expectedEarnings = (baseMultiplier - multiplierOffset) *
+            totalDepositorRisk;
+
+        perpetualMint.exposed_assignEscrowedERC1155Asset(
+            depositorOne,
+            depositorTwo,
+            COLLECTION,
+            tokenId
+        );
+
+        assert(
+            expectedEarnings + oldDepositorEarnings ==
+                _depositorEarnings(
+                    address(perpetualMint),
+                    depositorTwo,
+                    COLLECTION
+                )
+        );
+
+        assert(
+            baseMultiplier ==
+                _baseMultiplier(address(perpetualMint), COLLECTION)
+        );
+
+        assert(
+            currentEarnings ==
+                _lastCollectionEarnings(address(perpetualMint), COLLECTION)
+        );
+    }
+
+    /// @dev tests that depositorEarnings of 'oldOwner' are updated
+    function test_assignEscrowedERC1155AssetUpdatesDepositorEarningsOfOldOwner()
+        public
+    {
+        uint256 totalDepositorRisk = _totalDepositorRisk(
+            address(perpetualMint),
+            depositorOne,
+            COLLECTION
+        );
+
+        assert(totalDepositorRisk != 0);
+        assert(_totalRisk(address(perpetualMint), COLLECTION) != 0);
+
+        uint256 currentEarnings = _collectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 lastEarnings = _lastCollectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 baseMultiplier = (currentEarnings - lastEarnings) /
+            _totalRisk(address(perpetualMint), COLLECTION);
+
+        uint256 oldDepositorEarnings = _depositorEarnings(
+            address(perpetualMint),
+            depositorOne,
+            COLLECTION
+        );
+
+        uint256 multiplierOffset = _multiplierOffset(
+            address(perpetualMint),
+            depositorOne,
+            COLLECTION
+        );
+
+        uint256 expectedEarnings = (baseMultiplier - multiplierOffset) *
+            totalDepositorRisk;
+
+        perpetualMint.exposed_assignEscrowedERC1155Asset(
+            depositorOne,
+            minter,
+            COLLECTION,
+            tokenId
+        );
+
+        assert(
+            expectedEarnings + oldDepositorEarnings ==
+                _depositorEarnings(
+                    address(perpetualMint),
+                    depositorOne,
+                    COLLECTION
+                )
+        );
+
+        assert(
+            baseMultiplier ==
+                _baseMultiplier(address(perpetualMint), COLLECTION)
+        );
+
+        assert(
+            currentEarnings ==
+                _lastCollectionEarnings(address(perpetualMint), COLLECTION)
+        );
     }
 
     /// @dev test that activeTokens of 'from' are decremented after asset assignment
@@ -66,21 +248,21 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
         uint256 oldActiveTokens = _activeERC1155Tokens(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
         perpetualMint.exposed_assignEscrowedERC1155Asset(
             depositorOne,
             minter,
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
         uint256 newActiveTokens = _activeERC1155Tokens(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
@@ -94,21 +276,21 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
         uint256 oldInactiveTokens = _inactiveERC1155Tokens(
             address(perpetualMint),
             minter,
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
         perpetualMint.exposed_assignEscrowedERC1155Asset(
             depositorOne,
             minter,
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
         uint256 newInactiveTokens = _inactiveERC1155Tokens(
             address(perpetualMint),
             minter,
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
@@ -121,19 +303,19 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
     {
         uint256 oldActiveTokens = _totalActiveTokens(
             address(perpetualMint),
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
         perpetualMint.exposed_assignEscrowedERC1155Asset(
             depositorOne,
             minter,
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
         uint256 newActiveTokens = _totalActiveTokens(
             address(perpetualMint),
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
         assert(oldActiveTokens - newActiveTokens == 1);
@@ -143,22 +325,16 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
     function test_assignEscrowedERC1155AssetDecreasesTotalRiskByTokenRisk()
         public
     {
-        uint256 oldTotalRisk = _totalRisk(
-            address(perpetualMint),
-            PARALLEL_ALPHA
-        );
+        uint256 oldTotalRisk = _totalRisk(address(perpetualMint), COLLECTION);
 
         perpetualMint.exposed_assignEscrowedERC1155Asset(
             depositorOne,
             minter,
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
-        uint256 newTotalRisk = _totalRisk(
-            address(perpetualMint),
-            PARALLEL_ALPHA
-        );
+        uint256 newTotalRisk = _totalRisk(address(perpetualMint), COLLECTION);
 
         assert(oldTotalRisk - newTotalRisk == tokenRisk);
     }
@@ -169,20 +345,20 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
     {
         uint256 oldTokenRisk = _tokenRisk(
             address(perpetualMint),
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
         perpetualMint.exposed_assignEscrowedERC1155Asset(
             depositorOne,
             minter,
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
         uint256 newTokenRisk = _tokenRisk(
             address(perpetualMint),
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
@@ -196,20 +372,20 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
         uint256 oldDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
         perpetualMint.exposed_assignEscrowedERC1155Asset(
             depositorOne,
             minter,
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
         uint256 newDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
         assert(oldDepositorRisk - newDepositorRisk == tokenRisk);
@@ -222,13 +398,13 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
         perpetualMint.exposed_assignEscrowedERC1155Asset(
             depositorTwo,
             minter,
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
         address[] memory owners = _activeERC1155Owners(
             address(perpetualMint),
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
@@ -244,14 +420,14 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
         perpetualMint.exposed_assignEscrowedERC1155Asset(
             depositorTwo,
             minter,
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
         uint256 risk = _depositorTokenRisk(
             address(perpetualMint),
             depositorTwo,
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
@@ -267,7 +443,7 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
                 tokenId, // id of token
                 keccak256(
                     abi.encode(
-                        PARALLEL_ALPHA, // address of collection
+                        COLLECTION, // address of collection
                         uint256(Storage.STORAGE_SLOT) + 16 // tokenRisk mapping storage slot
                     )
                 )
@@ -284,13 +460,13 @@ contract PerpetualMint_assignEscrowedERC1155Asset is
         perpetualMint.exposed_assignEscrowedERC1155Asset(
             depositorTwo,
             minter,
-            PARALLEL_ALPHA,
+            COLLECTION,
             tokenId
         );
 
         uint256[] memory tokenIds = _activeTokenIds(
             address(perpetualMint),
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
         for (uint i; i < tokenIds.length; ++i) {

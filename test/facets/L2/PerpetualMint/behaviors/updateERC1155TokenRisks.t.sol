@@ -2,10 +2,10 @@
 
 pragma solidity 0.8.21;
 
+import { PerpetualMintTest } from "../PerpetualMint.t.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
-import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
-import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
 /// @title PerpetualMint_updateERC1155TokenRisks
 /// @dev PerpetualMint test contract for testing expected behavior of the updateERC1155TokenRisks function
@@ -61,8 +61,9 @@ contract PerpetualMint_updateERC1155TokenRisks is
         );
     }
 
-    /// @dev tests that upon updating ERC1155 token risks, the depositor earnings are updated and the depositor
-    /// deductions set equal to the depositor earnings
+    /// @dev tests that upon updating ERC1155 token risks, the depositor earnings are updated, the last
+    /// collection earnings are set to the current collection earnings, and the multiplier offset for the depositor
+    /// is updated
     function test_updateERC1155TokenRisksUpdatesDepositorEarningsWhenTotalDepositorRiskIsNonZero()
         public
     {

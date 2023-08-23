@@ -13,6 +13,13 @@ interface IPerpetualMintHarness {
         uint256 tokenId
     ) external;
 
+    /// @dev exposes _assignEscrowedERC721Asset method
+    function exposed_assignEscrowedERC721Asset(
+        address newOwner,
+        address collection,
+        uint256 tokenId
+    ) external;
+
     /// @dev exposes _balanceOf method
     function exposed_balanceOf(
         address account
@@ -55,5 +62,21 @@ interface IPerpetualMintHarness {
     function exposed_updateDepositorEarnings(
         address depositor,
         address collection
+    ) external;
+
+    /// @dev exposes _updateSingleERC1155TokenRisk
+    function exposed_updateSingleERC1155TokenRisk(
+        address depositor,
+        address collection,
+        uint256 tokenId,
+        uint256 risk
+    ) external;
+
+    /// @dev exposes _updateSingleERC721TokenRisk
+    function exposed_updateSingleERC721TokenRisk(
+        address depositor,
+        address collection,
+        uint256 tokenId,
+        uint256 risk
     ) external;
 }

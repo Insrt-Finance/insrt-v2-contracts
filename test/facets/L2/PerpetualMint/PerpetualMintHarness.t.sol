@@ -16,7 +16,7 @@ contract PerpetualMintHarness is
 {
     constructor(address vrf) PerpetualMint(vrf) {}
 
-    /// @dev exposes _assignEscrowedERC1155Asset method
+    /// @inheritdoc IPerpetualMintHarness
     function exposed_assignEscrowedERC1155Asset(
         address originalOwner,
         address newOwner,
@@ -34,14 +34,25 @@ contract PerpetualMintHarness is
         );
     }
 
-    /// @dev IPerpetualMintHarness
+    /// @inheritdoc IPerpetualMintHarness
+    function exposed_assignEscrowedERC721Asset(
+        address newOwner,
+        address collection,
+        uint256 tokenId
+    ) external {
+        Storage.Layout storage l = Storage.layout();
+
+        _assignEscrowedERC721Asset(l, newOwner, collection, tokenId);
+    }
+
+    /// @inheritdoc IPerpetualMintHarness
     function exposed_balanceOf(
         address account
     ) external view returns (uint256 balance) {
         balance = _balanceOf(account);
     }
 
-    /// @dev exposes _normalizeValue method
+    /// @inheritdoc IPerpetualMintHarness
     function exposed_normalizeValue(
         uint256 value,
         uint256 basis
@@ -49,7 +60,7 @@ contract PerpetualMintHarness is
         normalizedValue = _normalizeValue(value, basis);
     }
 
-    /// @dev exposes _resolve1155Mints method
+    /// @inheritdoc IPerpetualMintHarness
     function exposed_resolveERC1155Mints(
         address account,
         address collection,
@@ -60,7 +71,7 @@ contract PerpetualMintHarness is
         _resolveERC1155Mints(l, account, collection, randomWords);
     }
 
-    /// @dev exposes _resolveERC721Mints method
+    /// @inheritdoc IPerpetualMintHarness
     function exposed_resolveERC721Mints(
         address account,
         address collection,
@@ -71,7 +82,7 @@ contract PerpetualMintHarness is
         _resolveERC721Mints(l, account, collection, randomWords);
     }
 
-    /// @dev exposes _selectERC1155Owner
+    /// @inheritdoc IPerpetualMintHarness
     function exposed_selectERC1155Owner(
         address collection,
         uint256 tokenId,
@@ -82,7 +93,7 @@ contract PerpetualMintHarness is
         owner = _selectERC1155Owner(l, collection, tokenId, randomValue);
     }
 
-    /// @dev exposes _selectToken method
+    /// @inheritdoc IPerpetualMintHarness
     function exposed_selectToken(
         address collection,
         uint256 randomValue
@@ -92,7 +103,7 @@ contract PerpetualMintHarness is
         tokenId = _selectToken(l, collection, randomValue);
     }
 
-    /// @dev exposes _updateDepositorEarnings method
+    /// @inheritdoc IPerpetualMintHarness
     function exposed_updateDepositorEarnings(
         address depositor,
         address collection
@@ -100,5 +111,29 @@ contract PerpetualMintHarness is
         Storage.Layout storage l = Storage.layout();
 
         _updateDepositorEarnings(l, depositor, collection);
+    }
+
+    /// @inheritdoc IPerpetualMintHarness
+    function exposed_updateSingleERC1155TokenRisk(
+        address depositor,
+        address collection,
+        uint256 tokenId,
+        uint256 risk
+    ) external {
+        Storage.Layout storage l = Storage.layout();
+
+        _updateSingleERC1155TokenRisk(l, depositor, collection, tokenId, risk);
+    }
+
+    /// @inheritdoc IPerpetualMintHarness
+    function exposed_updateSingleERC721TokenRisk(
+        address depositor,
+        address collection,
+        uint256 tokenId,
+        uint256 risk
+    ) external {
+        Storage.Layout storage l = Storage.layout();
+
+        _updateSingleERC721TokenRisk(l, depositor, collection, tokenId, risk);
     }
 }

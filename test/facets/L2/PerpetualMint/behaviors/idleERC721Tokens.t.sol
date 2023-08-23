@@ -260,6 +260,13 @@ contract PerpetualMint_idleERC721Tokens is
         }
     }
 
+    /// @dev tests that the call reverts when the collection passed in is not an ERC721 collection
+    function test_idleERC721TokensRevertsWhen_CollectionIsNotERC721() public {
+        vm.expectRevert(IPerpetualMintInternal.CollectionTypeMismatch.selector);
+        vm.prank(depositorOne);
+        perpetualMint.idleERC721Tokens(PARALLEL_ALPHA, tokenIds);
+    }
+
     /// @dev tests that a caller who is not the escrowedERC721Owner for each tokenId cannot call idleERC721Tokens
     function test_idleERC721TokensRevertsWhen_CallerIsNotTheEscrowedERC721OwnerOfEachTokenId()
         public

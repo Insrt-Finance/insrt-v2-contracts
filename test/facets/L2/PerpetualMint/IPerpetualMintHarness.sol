@@ -64,7 +64,7 @@ interface IPerpetualMintHarness {
         address collection
     ) external;
 
-    /// @dev exposes updateSingleERC1155TokenRisk
+    /// @dev exposes _updateSingleERC1155TokenRisk
     function exposed_updateSingleERC1155TokenRisk(
         address depositor,
         address collection,
@@ -72,7 +72,7 @@ interface IPerpetualMintHarness {
         uint256 risk
     ) external;
 
-    /// @dev exposes updateSingleERC721TokenRisk
+    /// @dev exposes _updateSingleERC721TokenRisk
     function exposed_updateSingleERC721TokenRisk(
         address depositor,
         address collection,

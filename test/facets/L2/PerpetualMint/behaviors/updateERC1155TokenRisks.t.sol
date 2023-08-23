@@ -62,7 +62,7 @@ contract PerpetualMint_updateERC1155TokenRisks is
     }
 
     /// @dev tests that upon updating ERC1155 token risks, the depositor earnings are updated, the last
-    /// colection earnings are set to the current collection earnings, and the multiplier offset for the depositor
+    /// collection earnings are set to the current collection earnings, and the multiplier offset for the depositor
     /// is updated
     function test_updateERC1155TokenRisksUpdatesDepositorEarningsWhenTotalDepositorRiskIsNonZero()
         public

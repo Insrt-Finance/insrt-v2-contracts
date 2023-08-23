@@ -2,10 +2,11 @@
 
 pragma solidity 0.8.21;
 
+import { PerpetualMintTest } from "../PerpetualMint.t.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
+import { Guards } from "../../../../../contracts/facets/L2/common/Guards.sol";
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
-import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
-import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
 /// @title PerpetualMint_reactivateERC1155Assets
 /// @dev PerpetualMint test contract for testing expected behavior of the reactivateERC1155Assets function
@@ -18,18 +19,19 @@ contract PerpetualMint_reactivateERC1155Assets is
     uint256 internal constant FAILING_RISK = 10000000000000;
     uint256 internal constant NEW_RISK = 10000;
     address internal constant NON_OWNER = address(4);
+    address internal constant COLLECTION = PARALLEL_ALPHA;
     uint256 internal PARALLEL_ALPHA_ID;
 
     uint256[] tokenIds;
     uint256[] amounts;
     uint256[] risks;
 
-    // grab PARALLEL_ALPHA collection earnings storage slot
+    // grab COLLECTION collection earnings storage slot
     bytes32 internal collectionEarningsStorageSlot =
         keccak256(
             abi.encode(
-                PARALLEL_ALPHA, // the ERC1155 collection
-                uint256(Storage.STORAGE_SLOT) + 7 // the risk storage slot
+                COLLECTION, // the ERC1155 collection
+                uint256(Storage.STORAGE_SLOT) + 9 // the risk storage slot
             )
         );
 
@@ -52,7 +54,7 @@ contract PerpetualMint_reactivateERC1155Assets is
             _activeERC1155Tokens(
                 address(perpetualMint),
                 depositorOne,
-                PARALLEL_ALPHA,
+                COLLECTION,
                 PARALLEL_ALPHA_TOKEN_ID_ONE
             )
         );
@@ -60,7 +62,7 @@ contract PerpetualMint_reactivateERC1155Assets is
             _activeERC1155Tokens(
                 address(perpetualMint),
                 depositorOne,
-                PARALLEL_ALPHA,
+                COLLECTION,
                 PARALLEL_ALPHA_TOKEN_ID_TWO
             )
         );
@@ -68,57 +70,68 @@ contract PerpetualMint_reactivateERC1155Assets is
         risks.push(NEW_RISK);
         risks.push(NEW_RISK);
 
-        uint256 totalRisk = _totalRisk(address(perpetualMint), PARALLEL_ALPHA);
+        uint256 totalRisk = _totalRisk(address(perpetualMint), COLLECTION);
 
         uint256 totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA
-        );
-
-        uint256 collectionEarnings = _collectionEarnings(
-            address(perpetualMint),
-            PARALLEL_ALPHA
-        );
-
-        uint256 oldDepositorDeductions = _multiplierOffset(
-            address(perpetualMint),
-            depositorOne,
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
         assert(totalDepositorRisk != 0);
         assert(totalRisk != 0);
 
-        vm.prank(depositorOne);
-        perpetualMint.idleERC1155Tokens(PARALLEL_ALPHA, tokenIds, amounts);
+        uint256 currentEarnings = _collectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 lastEarnings = _lastCollectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+        uint256 baseMultiplier = (currentEarnings - lastEarnings) /
+            _totalRisk(address(perpetualMint), COLLECTION);
 
-        uint256 newDepositorDeductions = _multiplierOffset(
+        uint256 oldDepositorEarnings = _depositorEarnings(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA
+            COLLECTION
         );
+        uint256 multiplierOffset = _multiplierOffset(
+            address(perpetualMint),
+            depositorOne,
+            COLLECTION
+        );
+
+        uint256 expectedEarnings = (baseMultiplier - multiplierOffset) *
+            totalDepositorRisk;
+
+        vm.prank(depositorOne);
+        perpetualMint.idleERC1155Tokens(COLLECTION, tokenIds, amounts);
 
         uint256 newTotalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
-        uint256 expectedEarnings = (collectionEarnings * totalDepositorRisk) /
-            totalRisk -
-            oldDepositorDeductions;
-
         assert(
-            expectedEarnings ==
+            expectedEarnings + oldDepositorEarnings ==
                 _depositorEarnings(
                     address(perpetualMint),
                     depositorOne,
-                    PARALLEL_ALPHA
+                    COLLECTION
                 )
         );
+        assert(
+            baseMultiplier ==
+                _baseMultiplier(address(perpetualMint), COLLECTION)
+        );
 
-        assert(newDepositorDeductions == expectedEarnings);
+        assert(
+            currentEarnings ==
+                _lastCollectionEarnings(address(perpetualMint), COLLECTION)
+        );
         assert(newTotalDepositorRisk == 0);
     }
 
@@ -127,53 +140,61 @@ contract PerpetualMint_reactivateERC1155Assets is
     function test_reactivateERC1155AssetsUpdatesDepositorEarningsWhenTotalDepositorRiskIsZero()
         public
     {
-        uint256 totalRisk = _totalRisk(address(perpetualMint), PARALLEL_ALPHA);
+        uint256 currentEarnings = _collectionEarnings(
+            address(perpetualMint),
+            COLLECTION
+        );
+
+        uint256 baseMultiplier = _baseMultiplier(
+            address(perpetualMint),
+            COLLECTION
+        );
+
+        uint256 oldDepositorEarnings = _depositorEarnings(
+            address(perpetualMint),
+            depositorOne,
+            COLLECTION
+        );
+        uint256 multiplierOffset = _multiplierOffset(
+            address(perpetualMint),
+            depositorOne,
+            COLLECTION
+        );
 
         uint256 totalDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
-        uint256 collectionEarnings = _collectionEarnings(
-            address(perpetualMint),
-            PARALLEL_ALPHA
-        );
-
-        uint256 oldDepositorDeductions = _multiplierOffset(
-            address(perpetualMint),
-            depositorOne,
-            PARALLEL_ALPHA
-        );
+        uint256 expectedEarnings = (baseMultiplier - multiplierOffset) *
+            totalDepositorRisk;
 
         vm.prank(depositorOne);
         perpetualMint.reactivateERC1155Assets(
-            PARALLEL_ALPHA,
+            COLLECTION,
             risks,
             tokenIds,
             amounts
         );
 
-        uint256 newDepositorDeductions = _multiplierOffset(
-            address(perpetualMint),
-            depositorOne,
-            PARALLEL_ALPHA
-        );
-
-        uint256 expectedEarnings = (collectionEarnings * totalDepositorRisk) /
-            totalRisk -
-            oldDepositorDeductions;
-
         assert(
-            expectedEarnings ==
+            expectedEarnings + oldDepositorEarnings ==
                 _depositorEarnings(
                     address(perpetualMint),
                     depositorOne,
-                    PARALLEL_ALPHA
+                    COLLECTION
                 )
         );
+        assert(
+            baseMultiplier ==
+                _baseMultiplier(address(perpetualMint), COLLECTION)
+        );
 
-        assert(newDepositorDeductions == expectedEarnings);
+        assert(
+            currentEarnings ==
+                _lastCollectionEarnings(address(perpetualMint), COLLECTION)
+        );
     }
 
     /// @dev tests that when reactivating ERC1155 tokens the total risk changes by
@@ -181,10 +202,7 @@ contract PerpetualMint_reactivateERC1155Assets is
     function test_reactivateERC1155AssetsIncreasesTotalRiskByRiskChange()
         public
     {
-        uint256 oldTotalRisk = _totalRisk(
-            address(perpetualMint),
-            PARALLEL_ALPHA
-        );
+        uint256 oldTotalRisk = _totalRisk(address(perpetualMint), COLLECTION);
 
         uint256 totalRiskChange;
 
@@ -194,16 +212,13 @@ contract PerpetualMint_reactivateERC1155Assets is
 
         vm.prank(depositorOne);
         perpetualMint.reactivateERC1155Assets(
-            PARALLEL_ALPHA,
+            COLLECTION,
             risks,
             tokenIds,
             amounts
         );
 
-        uint256 newTotalRisk = _totalRisk(
-            address(perpetualMint),
-            PARALLEL_ALPHA
-        );
+        uint256 newTotalRisk = _totalRisk(address(perpetualMint), COLLECTION);
 
         assert(newTotalRisk - oldTotalRisk == totalRiskChange);
     }
@@ -215,7 +230,7 @@ contract PerpetualMint_reactivateERC1155Assets is
     {
         uint256 oldTotalActiveTokens = _totalActiveTokens(
             address(perpetualMint),
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
         uint256 reactivatedTokenSum;
@@ -226,7 +241,7 @@ contract PerpetualMint_reactivateERC1155Assets is
 
         vm.prank(depositorOne);
         perpetualMint.reactivateERC1155Assets(
-            PARALLEL_ALPHA,
+            COLLECTION,
             risks,
             tokenIds,
             amounts
@@ -234,7 +249,7 @@ contract PerpetualMint_reactivateERC1155Assets is
 
         uint256 newTotalActiveTokens = _totalActiveTokens(
             address(perpetualMint),
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
         assert(
@@ -256,12 +271,12 @@ contract PerpetualMint_reactivateERC1155Assets is
         uint256 oldDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
         vm.prank(depositorOne);
         perpetualMint.reactivateERC1155Assets(
-            PARALLEL_ALPHA,
+            COLLECTION,
             risks,
             tokenIds,
             amounts
@@ -270,7 +285,7 @@ contract PerpetualMint_reactivateERC1155Assets is
         uint256 newDepositorRisk = _totalDepositorRisk(
             address(perpetualMint),
             depositorOne,
-            PARALLEL_ALPHA
+            COLLECTION
         );
 
         assert(newDepositorRisk - oldDepositorRisk == expectedRiskChange);
@@ -287,7 +302,7 @@ contract PerpetualMint_reactivateERC1155Assets is
                     _activeERC1155Tokens(
                         address(perpetualMint),
                         depositorOne,
-                        PARALLEL_ALPHA,
+                        COLLECTION,
                         tokenIds[i]
                     )
             );
@@ -295,7 +310,7 @@ contract PerpetualMint_reactivateERC1155Assets is
 
         vm.prank(depositorOne);
         perpetualMint.reactivateERC1155Assets(
-            PARALLEL_ALPHA,
+            COLLECTION,
             risks,
             tokenIds,
             amounts
@@ -307,7 +322,7 @@ contract PerpetualMint_reactivateERC1155Assets is
                     _depositorTokenRisk(
                         address(perpetualMint),
                         depositorOne,
-                        PARALLEL_ALPHA,
+                        COLLECTION,
                         tokenIds[i]
                     )
             );
@@ -325,14 +340,14 @@ contract PerpetualMint_reactivateERC1155Assets is
             oldActiveTokens[i] = _inactiveERC1155Tokens(
                 address(perpetualMint),
                 depositorOne,
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
         }
 
         vm.prank(depositorOne);
         perpetualMint.reactivateERC1155Assets(
-            PARALLEL_ALPHA,
+            COLLECTION,
             risks,
             tokenIds,
             amounts
@@ -344,7 +359,7 @@ contract PerpetualMint_reactivateERC1155Assets is
                     _inactiveERC1155Tokens(
                         address(perpetualMint),
                         depositorOne,
-                        PARALLEL_ALPHA,
+                        COLLECTION,
                         tokenIds[i]
                     ) ==
                     amounts[i]
@@ -363,14 +378,14 @@ contract PerpetualMint_reactivateERC1155Assets is
             oldActiveTokens[i] = _activeERC1155Tokens(
                 address(perpetualMint),
                 depositorOne,
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
         }
 
         vm.prank(depositorOne);
         perpetualMint.reactivateERC1155Assets(
-            PARALLEL_ALPHA,
+            COLLECTION,
             risks,
             tokenIds,
             amounts
@@ -382,7 +397,7 @@ contract PerpetualMint_reactivateERC1155Assets is
                     _activeERC1155Tokens(
                         address(perpetualMint),
                         depositorOne,
-                        PARALLEL_ALPHA,
+                        COLLECTION,
                         tokenIds[i]
                     ) -
                         oldActiveTokens[i]
@@ -401,14 +416,14 @@ contract PerpetualMint_reactivateERC1155Assets is
                     _activeERC1155Tokens(
                         address(perpetualMint),
                         depositorOne,
-                        PARALLEL_ALPHA,
+                        COLLECTION,
                         tokenIds[i]
                     )
             );
 
             address[] memory activeOwners = _activeERC1155Owners(
                 address(perpetualMint),
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
 
@@ -419,7 +434,7 @@ contract PerpetualMint_reactivateERC1155Assets is
 
         vm.prank(depositorOne);
         perpetualMint.reactivateERC1155Assets(
-            PARALLEL_ALPHA,
+            COLLECTION,
             risks,
             tokenIds,
             amounts
@@ -428,7 +443,7 @@ contract PerpetualMint_reactivateERC1155Assets is
         for (uint256 i; i < tokenIds.length; ++i) {
             address[] memory activeOwners = _activeERC1155Owners(
                 address(perpetualMint),
-                PARALLEL_ALPHA,
+                COLLECTION,
                 tokenIds[i]
             );
 
@@ -453,7 +468,7 @@ contract PerpetualMint_reactivateERC1155Assets is
 
         vm.prank(NON_OWNER);
         perpetualMint.reactivateERC1155Assets(
-            PARALLEL_ALPHA,
+            COLLECTION,
             risks,
             tokenIds,
             amounts
@@ -470,7 +485,7 @@ contract PerpetualMint_reactivateERC1155Assets is
 
         vm.prank(NON_OWNER);
         perpetualMint.reactivateERC1155Assets(
-            PARALLEL_ALPHA,
+            COLLECTION,
             risks,
             tokenIds,
             amounts
@@ -500,7 +515,7 @@ contract PerpetualMint_reactivateERC1155Assets is
 
         vm.prank(depositorOne);
         perpetualMint.reactivateERC1155Assets(
-            PARALLEL_ALPHA,
+            COLLECTION,
             risks,
             tokenIds,
             amounts
@@ -515,7 +530,7 @@ contract PerpetualMint_reactivateERC1155Assets is
 
         vm.prank(depositorOne);
         perpetualMint.reactivateERC1155Assets(
-            PARALLEL_ALPHA,
+            COLLECTION,
             risks,
             tokenIds,
             amounts
@@ -532,7 +547,23 @@ contract PerpetualMint_reactivateERC1155Assets is
 
         vm.prank(depositorOne);
         perpetualMint.reactivateERC1155Assets(
-            PARALLEL_ALPHA,
+            COLLECTION,
+            risks,
+            tokenIds,
+            amounts
+        );
+    }
+
+    /// @dev test that reactivateERC1155Assets reverts if maxActiveTokens amount is exceeded
+    function test_reactivateERC1155AssetsRevertsWhen_maxActiveTokensIsExceeded()
+        public
+    {
+        perpetualMint.setMaxActiveTokens(0);
+        vm.expectRevert(Guards.MaxActiveTokensExceeded.selector);
+
+        vm.prank(depositorOne);
+        perpetualMint.reactivateERC1155Assets(
+            COLLECTION,
             risks,
             tokenIds,
             amounts

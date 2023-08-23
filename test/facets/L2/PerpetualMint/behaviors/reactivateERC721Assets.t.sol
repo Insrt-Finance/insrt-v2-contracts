@@ -4,6 +4,7 @@ pragma solidity 0.8.21;
 
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
+import { Guards } from "../../../../../contracts/facets/L2/common/Guards.sol";
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
@@ -373,6 +374,17 @@ contract PerpetualMint_reactivateERC721Assets is
 
         vm.expectRevert(IPerpetualMintInternal.TokenAlreadyActive.selector);
 
+        perpetualMint.reactivateERC721Assets(COLLECTION, risks, tokenIds);
+    }
+
+    /// @dev test that reactivateERC721Assets reverts if maxActiveTokens amount is exceeded
+    function test_reactivateERC721AssetsRevertsWhen_maxActiveTokensIsExceeded()
+        public
+    {
+        perpetualMint.setMaxActiveTokens(0);
+        vm.expectRevert(Guards.MaxActiveTokensExceeded.selector);
+
+        vm.prank(depositorOne);
         perpetualMint.reactivateERC721Assets(COLLECTION, risks, tokenIds);
     }
 }

@@ -571,6 +571,9 @@ abstract contract PerpetualMintInternal is
         // add the token ID to the set of active token IDs in the collection
         l.activeTokenIds[collection].add(tokenId);
 
+        // enforce the maxActiveTokens limit on the collection
+        Guards.enforceMaxActiveTokens(l.activeTokenIds[collection].length());
+
         // set the new risk for the depositor and the token ID in the collection
         // currently for ERC1155 tokens, the risk is always the same for all token IDs in the collection
         l.depositorTokenRisk[depositor][collection][tokenId] = risk;
@@ -634,6 +637,11 @@ abstract contract PerpetualMintInternal is
 
             // add the token to the active token list
             l.activeTokenIds[collection].add(tokenIds[i]);
+
+            // enforce the maxActiveTokens limit on the collection
+            Guards.enforceMaxActiveTokens(
+                l.activeTokenIds[collection].length()
+            );
 
             // update the depositor's total risk for the collection
             l.totalDepositorRisk[depositor][collection] += risks[i];

@@ -37,7 +37,7 @@ contract PerpetualMintHelper {
         view
         returns (ISolidStateDiamond.FacetCut[] memory)
     {
-        bytes4[] memory mintingSelectors = new bytes4[](30);
+        bytes4[] memory mintingSelectors = new bytes4[](31);
         bytes4[] memory l2AssetHandlerSelectors = new bytes4[](1);
 
         // map the function selectors to their respective interfaces
@@ -59,40 +59,41 @@ contract PerpetualMintHelper {
         mintingSelectors[15] = IPerpetualMint.reactivateERC721Assets.selector;
         mintingSelectors[16] = IPerpetualMint.pause.selector;
         mintingSelectors[17] = IPerpetualMint.unpause.selector;
+        mintingSelectors[18] = IPerpetualMint.setMaxActiveTokens.selector;
 
-        mintingSelectors[18] = IPerpetualMintHarness.exposed_balanceOf.selector;
-        mintingSelectors[19] = IPerpetualMintHarness
+        mintingSelectors[19] = IPerpetualMintHarness.exposed_balanceOf.selector;
+        mintingSelectors[20] = IPerpetualMintHarness
             .exposed_resolveERC721Mints
             .selector;
-        mintingSelectors[20] = IPerpetualMintHarness
+        mintingSelectors[21] = IPerpetualMintHarness
             .exposed_resolveERC1155Mints
             .selector;
-        mintingSelectors[21] = IPerpetualMintHarness
+        mintingSelectors[22] = IPerpetualMintHarness
             .exposed_selectToken
             .selector;
-        mintingSelectors[22] = IPerpetualMintHarness
+        mintingSelectors[23] = IPerpetualMintHarness
             .exposed_selectERC1155Owner
             .selector;
-        mintingSelectors[23] = IPerpetualMintHarness
+        mintingSelectors[24] = IPerpetualMintHarness
             .exposed_normalizeValue
             .selector;
-        mintingSelectors[24] = IPerpetualMintHarness
+        mintingSelectors[25] = IPerpetualMintHarness
             .exposed_updateDepositorEarnings
             .selector;
-        mintingSelectors[25] = IPerpetualMintHarness
+        mintingSelectors[26] = IPerpetualMintHarness
             .exposed_assignEscrowedERC1155Asset
             .selector;
-        mintingSelectors[26] = IPerpetualMintHarness
+        mintingSelectors[27] = IPerpetualMintHarness
             .exposed_updateSingleERC1155TokenRisk
             .selector;
-        mintingSelectors[27] = IPerpetualMintHarness
+        mintingSelectors[28] = IPerpetualMintHarness
             .exposed_updateSingleERC721TokenRisk
             .selector;
-        mintingSelectors[28] = IPerpetualMintHarness
+        mintingSelectors[29] = IPerpetualMintHarness
             .exposed_assignEscrowedERC721Asset
             .selector;
 
-        mintingSelectors[29] = VRFConsumerBaseV2Mock
+        mintingSelectors[30] = VRFConsumerBaseV2Mock
             .rawFulfillRandomWordsPlus
             .selector;
 

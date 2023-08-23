@@ -6,6 +6,7 @@ import { L2AssetHandlerTest } from "../AssetHandler.t.sol";
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { L2AssetHandlerMock } from "../../../../mocks/L2AssetHandlerMock.t.sol";
 import { AssetType } from "../../../../../contracts/enums/AssetType.sol";
+import { Guards } from "../../../../../contracts/facets/L2/common/Guards.sol";
 import { PerpetualMintStorage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
 /// @title L2AssetHandler_handleLayerZeroMessage
@@ -280,6 +281,48 @@ contract L2AssetHandler_handleLayerZeroMessage is
 
         vm.expectRevert();
 
+        this.mock_HandleLayerZeroMessage(
+            DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
+            TEST_PATH, // would be the expected path in production, here this is a dummy value
+            TEST_NONCE, // dummy nonce value
+            encodedData
+        );
+    }
+
+    function test_handleLayerZeroMessageRevertsWhen_TokenAmountsExceedMaxActiveTokens()
+        public
+    {
+        // set maxActiveTokens value to something which will cause a revert
+        vm.store(address(this), bytes32(LAYOUT_SLOT), bytes32(0));
+
+        bytes memory encodedData = abi.encode(
+            AssetType.ERC1155,
+            msg.sender,
+            BONG_BEARS,
+            msg.sender,
+            testRisks,
+            bongBearTokenIds,
+            bongBearTokenAmounts
+        );
+
+        vm.expectRevert(Guards.MaxActiveTokensExceeded.selector);
+        this.mock_HandleLayerZeroMessage(
+            DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
+            TEST_PATH, // would be the expected path in production, here this is a dummy value
+            TEST_NONCE, // dummy nonce value
+            encodedData
+        );
+
+        encodedData = abi.encode(
+            AssetType.ERC721,
+            msg.sender,
+            BORED_APE_YACHT_CLUB,
+            msg.sender,
+            testRisks,
+            boredApeYachtClubTokenIds
+        );
+
+        vm.expectRevert(Guards.MaxActiveTokensExceeded.selector);
         this.mock_HandleLayerZeroMessage(
             DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
             TEST_PATH, // would be the expected path in production, here this is a dummy value

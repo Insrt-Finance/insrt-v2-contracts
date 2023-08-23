@@ -10,6 +10,7 @@ import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 
 import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "./Storage.sol";
+import { Guards } from "../common/Guards.sol";
 import { AssetType } from "../../../enums/AssetType.sol";
 
 /// @title PerpetualMintInternal facet contract
@@ -831,6 +832,12 @@ abstract contract PerpetualMintInternal is
         Storage.layout().collectionMintPrice[collection] = price;
 
         emit MintPriceSet(collection, price);
+    }
+
+    /// @dev sets a new value for maxActiveTokens
+    /// @param maxActiveTokens new maxActiveTokens value
+    function _setMaxActiveTokens(uint256 maxActiveTokens) internal {
+        Guards.setMaxActiveTokens(maxActiveTokens);
     }
 
     /// @notice sets the mint fee in basis points

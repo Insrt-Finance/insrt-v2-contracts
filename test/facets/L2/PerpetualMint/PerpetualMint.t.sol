@@ -152,6 +152,11 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead, GuardsRead {
             _collectionType(address(perpetualMint), BORED_APE_YACHT_CLUB) ==
                 AssetType.ERC721
         );
+
+        // set maxActiveTokens to a very large value so it doesn't block tests
+        perpetualMint.setMaxActiveTokens(BASIS);
+
+        assert(BASIS == _maxActiveTokens(address(perpetualMint)));
     }
 
     /// @dev initialzies PerpetualMint and L2AssetHandlerMock as facets by executing a diamond cut on L2CoreDiamond.

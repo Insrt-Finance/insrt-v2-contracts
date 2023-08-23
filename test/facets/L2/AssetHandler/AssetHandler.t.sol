@@ -5,6 +5,7 @@ pragma solidity 0.8.21;
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
 import { L2AssetHandlerHelper } from "./AssetHandlerHelper.t.sol";
+import { GuardsRead } from "../common/GuardsRead.t.sol";
 import { StorageRead } from "../common/StorageRead.t.sol";
 import { L2CoreTest } from "../../../diamonds/L2/Core.t.sol";
 import { IL2AssetHandler } from "../../../../contracts/facets/L2/AssetHandler/IAssetHandler.sol";
@@ -15,7 +16,8 @@ import { IAssetHandlerEvents } from "../../../../contracts/interfaces/IAssetHand
 abstract contract L2AssetHandlerTest is
     IAssetHandlerEvents,
     L2CoreTest,
-    StorageRead
+    StorageRead,
+    GuardsRead
 {
     IL2AssetHandler public l2AssetHandler;
 
@@ -53,6 +55,9 @@ abstract contract L2AssetHandlerTest is
     /// @dev LayerZero message fee.
     uint256 internal LAYER_ZERO_MESSAGE_FEE;
 
+    /// @dev maxActiveTokens value to set
+    uint256 internal constant MAX_ACTIVE_TOKENS = 1000000000;
+
     /// @dev Required to receive refund Ether from LayerZero _lzSend relay calls.
     receive() external payable {}
 
@@ -72,6 +77,13 @@ abstract contract L2AssetHandlerTest is
         testRisks[0] = 1;
 
         l2AssetHandler = IL2AssetHandler(address(l2CoreDiamond));
+
+        // set maxActiveTokens value to something which will not block tests
+        vm.store(
+            address(this),
+            bytes32(LAYOUT_SLOT),
+            bytes32(MAX_ACTIVE_TOKENS)
+        );
     }
 
     /// @dev Initializes L2AssetHandler as a facet by executing a diamond cut on the L2CoreDiamond.

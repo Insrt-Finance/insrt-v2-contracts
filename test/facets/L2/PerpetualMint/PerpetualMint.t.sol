@@ -10,7 +10,6 @@ import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidSt
 
 import { PerpetualMintHelper } from "./PerpetualMintHelper.t.sol";
 import { IPerpetualMintTest } from "./IPerpetualMintTest.sol";
-import { GuardsRead } from "../common/GuardsRead.t.sol";
 import { StorageRead } from "../common/StorageRead.t.sol";
 import { L2CoreTest } from "../../../diamonds/L2/Core.t.sol";
 import { AssetType } from "../../../../contracts/enums/AssetType.sol";
@@ -19,7 +18,7 @@ import { PerpetualMintStorage as Storage } from "../../../../contracts/facets/L2
 /// @title PerpetualMintTest
 /// @dev PerpetualMintTest helper contract. Configures PerpetualMint and L2AssetHandlerMock as facets of L2Core test.
 /// @dev Should functoin identically across all forks given appropriate Chainlink VRF details are set.
-abstract contract PerpetualMintTest is L2CoreTest, StorageRead, GuardsRead {
+abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
     using stdStorage for StdStorage;
 
     IPerpetualMintTest public perpetualMint;

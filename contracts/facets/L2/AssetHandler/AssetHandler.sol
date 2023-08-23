@@ -8,6 +8,7 @@ import { SolidStateLayerZeroClient } from "@solidstate/layerzero-client/SolidSta
 import { IL2AssetHandler } from "./IAssetHandler.sol";
 import { GuardsInternal } from "../common/GuardsInternal.sol";
 import { PerpetualMintStorage } from "../PerpetualMint/Storage.sol";
+import { Guards } from "../common/Guards.sol";
 import { AssetType } from "../../../enums/AssetType.sol";
 import { IAssetHandler } from "../../../interfaces/IAssetHandler.sol";
 import { PayloadEncoder } from "../../../libraries/PayloadEncoder.sol";
@@ -21,6 +22,7 @@ contract L2AssetHandler is
 {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.UintSet;
+    using Guards for Guards.Layout;
 
     /// @notice Deploys a new instance of the L2AssetHandler contract.
     constructor() {

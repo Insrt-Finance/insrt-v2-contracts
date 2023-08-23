@@ -6,16 +6,11 @@ import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableI
 import { PausableStorage } from "@solidstate/contracts/security/pausable/PausableStorage.sol";
 
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
-import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
 
 /// @dev PerpetualMint_pause
 /// @dev PerpetualMint test contract for testing expected behavior of the pause function
-contract PerpetualMint_pause is
-    IPerpetualMintInternal,
-    PerpetualMintTest,
-    L2ForkTest
-{
+contract PerpetualMint_pause is IPerpetualMintInternal, PerpetualMintTest {
     address internal NON_OWNER = address(100);
 
     function setUp() public override {

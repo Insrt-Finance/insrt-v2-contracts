@@ -7,6 +7,7 @@ import { SolidStateLayerZeroClient } from "@solidstate/layerzero-client/SolidSta
 
 import { IL2AssetHandler } from "./IAssetHandler.sol";
 import { PerpetualMintStorage } from "../PerpetualMint/Storage.sol";
+import { Guards } from "../common/Guards.sol";
 import { AssetType } from "../../../enums/AssetType.sol";
 import { IAssetHandler } from "../../../interfaces/IAssetHandler.sol";
 import { PayloadEncoder } from "../../../libraries/PayloadEncoder.sol";
@@ -16,6 +17,7 @@ import { PayloadEncoder } from "../../../libraries/PayloadEncoder.sol";
 contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.UintSet;
+    using Guards for Guards.Layout;
 
     /// @notice Deploys a new instance of the L2AssetHandler contract.
     constructor() {
@@ -384,6 +386,13 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                     tokenIds[i]
                 );
 
+                // enforce the maxActiveTokens limit on the collection
+                Guards.enforceMaxActiveTokens(
+                    perpetualMintStorageLayout
+                        .activeTokenIds[collection]
+                        .length()
+                );
+
                 // Set the risk for the beneficiary and the token ID in the collection
                 // Currently for ERC1155 tokens, the risk is always the same for all token IDs in the collection
                 perpetualMintStorageLayout.depositorTokenRisk[beneficiary][
@@ -446,6 +455,13 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 // Add the token ID to the set of active token IDs in the collection
                 perpetualMintStorageLayout.activeTokenIds[collection].add(
                     tokenIds[i]
+                );
+
+                // enforce the maxActiveTokens limit on the collection
+                Guards.enforceMaxActiveTokens(
+                    perpetualMintStorageLayout
+                        .activeTokenIds[collection]
+                        .length()
                 );
 
                 // Increment the count of active tokens for the beneficiary in the collection

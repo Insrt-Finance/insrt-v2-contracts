@@ -127,6 +127,13 @@ contract PerpetualMint_attemptBatchMint is
         );
 
         assert(mintAttemptCollection == BORED_APE_YACHT_CLUB);
+
+        uint256[] memory requestIds = _unfulfilledRequests(
+            address(perpetualMint),
+            BORED_APE_YACHT_CLUB
+        );
+
+        assert(requestIds[0] == mintRequestId);
     }
 
     /// @dev Tests that attemptBatchMint functionality emits a RandomWordsRequested event when successfully attempting to mint.

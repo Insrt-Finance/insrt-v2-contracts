@@ -108,7 +108,8 @@ contract PerpetualMint_fulfillRandomWords is
     }
 
     /// @dev Tests fulfillRandomWords functionality.
-    function test_fulfillRandomWords(uint256 randomness) public {
+    function test_fulfillRandomWords() public {
+        uint256 randomness = 101230;
         // store current block number to use as the mint block number
         uint256 mintBlockNumber = block.number;
 
@@ -161,6 +162,48 @@ contract PerpetualMint_fulfillRandomWords is
             bytes32(uint256(uint160(BORED_APE_YACHT_CLUB)))
         );
 
+        // calculate unfulfilledRequests enumerable set slot
+        bytes32 unfulfilledRequestsSlot = keccak256(
+            abi.encode(
+                BORED_APE_YACHT_CLUB, // address of collection
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 28 // requestIds mapping storage slot
+            )
+        );
+
+        // store EnumerableSet.UintSet._inner._values length
+        vm.store(
+            address(perpetualMint),
+            unfulfilledRequestsSlot,
+            bytes32(uint256(10))
+        );
+
+        // calculate the PerpetualMint unfulfilled request id slot
+        bytes32 unfulfilledRequestIdValueSlot = keccak256(
+            abi.encodePacked(unfulfilledRequestsSlot)
+        );
+
+        // store the mockMintRequestId in the unfulfilledRequests enumerable set
+        vm.store(
+            address(perpetualMint),
+            unfulfilledRequestIdValueSlot,
+            bytes32(mockMintRequestId)
+        );
+
+        // calcaulte the PerpetualMint unfulfilled request id index slot
+        bytes32 unfulfilledRequestIdIndexSlot = keccak256(
+            abi.encode(
+                bytes32(mockMintRequestId),
+                uint256(unfulfilledRequestsSlot) + 1
+            )
+        );
+
+        // store 1 as the index of mockMintRequestId
+        vm.store(
+            address(perpetualMint),
+            unfulfilledRequestIdIndexSlot,
+            bytes32(uint256(1))
+        );
+
         // calculate and store the mint fulfillment block number using vrf config min confirmations
         uint256 mintFulfillmentBlockNumber = mintBlockNumber +
             vrfConfig.minConfirmations;
@@ -178,12 +221,29 @@ contract PerpetualMint_fulfillRandomWords is
             randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
         }
 
+        uint256[] memory oldUnfulfilledRequests = _unfulfilledRequests(
+            address(perpetualMint),
+            BORED_APE_YACHT_CLUB
+        );
+
+        assert(oldUnfulfilledRequests[0] == mockMintRequestId);
+
         // mock the VRF Coordinator fulfill random words call
         vrfCoordinatorV2Mock.fulfillRandomWordsWithOverridePlus(
             mockMintRequestId,
             address(perpetualMint),
             randomWords
         );
+
+        uint256[] memory requestIds = _unfulfilledRequests(
+            address(perpetualMint),
+            BORED_APE_YACHT_CLUB
+        );
+
+        // assert mockMintRequestId has been removed
+        for (uint256 i; i < requestIds.length; ++i) {
+            assert(requestIds[i] != mockMintRequestId);
+        }
     }
 
     /// @dev Tests that fulfillRandomWords correctly uses request minter and request collection data to resolve ERC1155 mints.

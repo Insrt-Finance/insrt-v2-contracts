@@ -3,13 +3,17 @@
 pragma solidity 0.8.21;
 
 import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableInternal.sol";
-import { Guards } from "../../../../../contracts/facets/L2/common/Guards.sol";
+import { IGuardsInternal } from "../../../../../contracts/facets/L2/common/IGuardsInternal.sol";
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
 /// @title PerpetualMint_setMaxActiveTokens
 /// @dev PerpetualMint test contract for testing expected behavior of the setMaxActiveTokens function
-contract PerpetualMint_setMaxActiveTokens is PerpetualMintTest, L2ForkTest {
+contract PerpetualMint_setMaxActiveTokens is
+    PerpetualMintTest,
+    L2ForkTest,
+    IGuardsInternal
+{
     address nonOwner = address(100);
     uint256 maxActiveTokens = 5;
 
@@ -23,7 +27,7 @@ contract PerpetualMint_setMaxActiveTokens is PerpetualMintTest, L2ForkTest {
     /// @dev tests that setMaxActiveTokens emits MaxActiveTokensSet event
     function test_setMaxActiveTokensEmitsMaxActiveTokensSetEvent() public {
         vm.expectEmit();
-        emit Guards.MaxActiveTokensSet(maxActiveTokens);
+        emit MaxActiveTokensSet(maxActiveTokens);
 
         perpetualMint.setMaxActiveTokens(maxActiveTokens);
     }

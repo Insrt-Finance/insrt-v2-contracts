@@ -2,10 +2,11 @@
 
 pragma solidity 0.8.21;
 
+import { PerpetualMintTest } from "../PerpetualMint.t.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
+import { IGuardsInternal } from "../../../../../contracts/facets/L2/common/IGuardsInternal.sol";
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
-import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
-import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 
 /// @title PerpetualMint_idle1155Tokens
 /// @dev PerpetualMint test contract for testing expected behavior of the idleERC721Tokens function
@@ -440,6 +441,60 @@ contract PerpetualMint_idleERC1155Tokens is
     {
         vm.expectRevert(IPerpetualMintInternal.OnlyEscrowedTokenOwner.selector);
         vm.prank(NON_OWNER);
+        perpetualMint.idleERC1155Tokens(COLLECTION, tokenIds, amounts);
+    }
+
+    /// @dev tests that if there are unfulfilled mint requests idling ERC1155 tokens reverts
+    function test_idleERC1155TokensRevertsWhen_ThereIsAtLeastOneUnfulfilledRequeset()
+        public
+    {
+        uint256 mockMintRequestId = 5;
+
+        // calculate unfulfilledRequests enumerable set slot
+        bytes32 unfulfilledRequestsSlot = keccak256(
+            abi.encode(
+                COLLECTION, // address of collection
+                uint256(Storage.STORAGE_SLOT) + 28 // requestIds mapping storage slot
+            )
+        );
+
+        // store EnumerableSet.UintSet._inner._values length
+        vm.store(
+            address(perpetualMint),
+            unfulfilledRequestsSlot,
+            bytes32(uint256(1))
+        );
+
+        // calculate the PerpetualMint unfulfilled request id slot
+        bytes32 unfulfilledRequestIdValueSlot = keccak256(
+            abi.encodePacked(unfulfilledRequestsSlot)
+        );
+
+        // store the mockMintRequestId in the unfulfilledRequests enumerable set
+        vm.store(
+            address(perpetualMint),
+            unfulfilledRequestIdValueSlot,
+            bytes32(mockMintRequestId)
+        );
+
+        // calcaulte the PerpetualMint unfulfilled request id index slot
+        bytes32 unfulfilledRequestIdIndexSlot = keccak256(
+            abi.encode(
+                bytes32(mockMintRequestId),
+                uint256(unfulfilledRequestsSlot) + 1
+            )
+        );
+
+        // store 1 as the index of mockMintRequestId
+        vm.store(
+            address(perpetualMint),
+            unfulfilledRequestIdIndexSlot,
+            bytes32(uint256(1))
+        );
+
+        vm.expectRevert(IGuardsInternal.UnfulfilledRequests.selector);
+
+        vm.prank(depositorOne);
         perpetualMint.idleERC1155Tokens(COLLECTION, tokenIds, amounts);
     }
 }

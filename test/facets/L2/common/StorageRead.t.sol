@@ -594,4 +594,34 @@ abstract contract StorageRead is Test {
 
         maxActiveTokens = uint256(vm.load(target, slot));
     }
+
+    /// @dev read unfulfilledRequests values from unfulfilledRequests EnumerableSet.UintSet
+    /// @param target address of contract to read storage from
+    /// @param collection address of collection
+    /// @return requestIds array of requestIds values from EnumerableSet.UintSet._inner._values
+    function _unfulfilledRequests(
+        address target,
+        address collection
+    ) internal view returns (uint256[] memory requestIds) {
+        bytes32 enumerableSetSlot = keccak256(
+            abi.encode(
+                collection, // address of collection
+                uint256(Storage.STORAGE_SLOT) + 28 // requestIds mapping storage slot
+            )
+        );
+
+        uint256 length = uint256(vm.load(target, enumerableSetSlot)); // read length of array
+
+        bytes32 valueSlot = keccak256(abi.encodePacked(enumerableSetSlot)); // grab storage slot of enumerableSet._inner._values
+
+        uint256[] memory tempRequestIds = new uint256[](length);
+
+        for (uint256 i; i < length; ++i) {
+            tempRequestIds[i] = uint256(
+                vm.load(target, bytes32(uint256(valueSlot) + i))
+            );
+        }
+
+        requestIds = tempRequestIds;
+    }
 }

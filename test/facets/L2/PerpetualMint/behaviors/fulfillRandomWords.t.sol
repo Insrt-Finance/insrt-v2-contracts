@@ -108,8 +108,7 @@ contract PerpetualMint_fulfillRandomWords is
     }
 
     /// @dev Tests fulfillRandomWords functionality.
-    function test_fulfillRandomWords() public {
-        uint256 randomness = 101230;
+    function test_fulfillRandomWords(uint256 randomness) public {
         // store current block number to use as the mint block number
         uint256 mintBlockNumber = block.number;
 
@@ -174,11 +173,7 @@ contract PerpetualMint_fulfillRandomWords is
         vm.store(
             address(perpetualMint),
             unfulfilledRequestsSlot,
-<<<<<<< HEAD
             bytes32(uint256(1))
-=======
-            bytes32(uint256(10))
->>>>>>> fd8e6b8 (build: add unfulfilledRequest check in fulfillRandomWords test)
         );
 
         // calculate the PerpetualMint unfulfilled request id slot

@@ -10,7 +10,7 @@ import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 
 import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "./Storage.sol";
-import { Guards } from "../common/Guards.sol";
+import { GuardsInternal } from "../common/GuardsInternal.sol";
 import { AssetType } from "../../../enums/AssetType.sol";
 
 /// @title PerpetualMintInternal facet contract
@@ -18,6 +18,7 @@ import { AssetType } from "../../../enums/AssetType.sol";
 abstract contract PerpetualMintInternal is
     VRFConsumerBaseV2,
     ERC721BaseInternal,
+    GuardsInternal,
     IPerpetualMintInternal
 {
     using AddressUtils for address payable;
@@ -572,7 +573,7 @@ abstract contract PerpetualMintInternal is
         l.activeTokenIds[collection].add(tokenId);
 
         // enforce the maxActiveTokens limit on the collection
-        Guards.enforceMaxActiveTokens(l.activeTokenIds[collection].length());
+        _enforceMaxActiveTokens(l, l.activeTokenIds[collection].length());
 
         // set the new risk for the depositor and the token ID in the collection
         // currently for ERC1155 tokens, the risk is always the same for all token IDs in the collection
@@ -639,9 +640,7 @@ abstract contract PerpetualMintInternal is
             l.activeTokenIds[collection].add(tokenIds[i]);
 
             // enforce the maxActiveTokens limit on the collection
-            Guards.enforceMaxActiveTokens(
-                l.activeTokenIds[collection].length()
-            );
+            _enforceMaxActiveTokens(l, l.activeTokenIds[collection].length());
 
             // update the depositor's total risk for the collection
             l.totalDepositorRisk[depositor][collection] += risks[i];
@@ -845,7 +844,7 @@ abstract contract PerpetualMintInternal is
     /// @dev sets a new value for maxActiveTokens
     /// @param maxActiveTokens new maxActiveTokens value
     function _setMaxActiveTokens(uint256 maxActiveTokens) internal {
-        Guards.setMaxActiveTokens(maxActiveTokens);
+        _setMaxActiveTokens(maxActiveTokens);
     }
 
     /// @notice sets the mint fee in basis points

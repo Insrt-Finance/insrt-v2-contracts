@@ -86,6 +86,8 @@ library PerpetualMintStorage {
         mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint256 amount))) activeERC1155Tokens;
         /// @dev number of tokens of particular tokenId for an ERC1155 collection of a user which are not able to be minted
         mapping(address depositor => mapping(address collection => mapping(uint256 tokenId => uint256 amount))) inactiveERC1155Tokens;
+        /// @dev maximum amount of active tokens allowed per collection
+        uint256 maxActiveTokens;
     }
 
     bytes32 internal constant STORAGE_SLOT =

@@ -6,18 +6,21 @@ import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { SolidStateLayerZeroClient } from "@solidstate/layerzero-client/SolidStateLayerZeroClient.sol";
 
 import { IL2AssetHandler } from "./IAssetHandler.sol";
+import { GuardsInternal } from "../common/GuardsInternal.sol";
 import { PerpetualMintStorage } from "../PerpetualMint/Storage.sol";
-import { Guards } from "../common/Guards.sol";
 import { AssetType } from "../../../enums/AssetType.sol";
 import { IAssetHandler } from "../../../interfaces/IAssetHandler.sol";
 import { PayloadEncoder } from "../../../libraries/PayloadEncoder.sol";
 
 /// @title L2AssetHandler
 /// @dev Handles NFT assets on L2 and allows them to be deposited & withdrawn cross-chain via LayerZero.
-contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
+contract L2AssetHandler is
+    IL2AssetHandler,
+    GuardsInternal,
+    SolidStateLayerZeroClient
+{
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.UintSet;
-    using Guards for Guards.Layout;
 
     /// @notice Deploys a new instance of the L2AssetHandler contract.
     constructor() {
@@ -387,7 +390,8 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 );
 
                 // enforce the maxActiveTokens limit on the collection
-                Guards.enforceMaxActiveTokens(
+                _enforceMaxActiveTokens(
+                    perpetualMintStorageLayout,
                     perpetualMintStorageLayout
                         .activeTokenIds[collection]
                         .length()
@@ -458,7 +462,8 @@ contract L2AssetHandler is IL2AssetHandler, SolidStateLayerZeroClient {
                 );
 
                 // enforce the maxActiveTokens limit on the collection
-                Guards.enforceMaxActiveTokens(
+                _enforceMaxActiveTokens(
+                    perpetualMintStorageLayout,
                     perpetualMintStorageLayout
                         .activeTokenIds[collection]
                         .length()

@@ -844,7 +844,7 @@ abstract contract PerpetualMintInternal is
     /// @dev sets a new value for maxActiveTokens
     /// @param maxActiveTokens new maxActiveTokens value
     function _setMaxActiveTokens(uint256 maxActiveTokens) internal {
-        _setMaxActiveTokens(maxActiveTokens);
+        _setMaxActiveTokens(Storage.layout(), maxActiveTokens);
     }
 
     /// @notice sets the mint fee in basis points

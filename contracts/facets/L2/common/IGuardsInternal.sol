@@ -2,6 +2,8 @@
 
 pragma solidity ^0.8.21;
 
+/// @title IGuardsInternal
+/// @dev interface holding all events and errors related to guards
 interface IGuardsInternal {
     /// @dev emitted when a new value for maxActiveTokens is set
     /// @param maxActiveTokens new maxActiveTokens value

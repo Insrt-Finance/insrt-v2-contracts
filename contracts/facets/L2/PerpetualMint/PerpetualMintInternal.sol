@@ -364,6 +364,8 @@ abstract contract PerpetualMintInternal is
             revert CollectionTypeMismatch();
         }
 
+        _enforceNoUnfulfilledMints(l, collection);
+
         _updateDepositorEarnings(l, depositor, collection);
 
         for (uint256 i; i < tokenIds.length; ++i) {
@@ -411,6 +413,8 @@ abstract contract PerpetualMintInternal is
         if (l.collectionType[collection] != AssetType.ERC721) {
             revert CollectionTypeMismatch();
         }
+
+        _enforceNoUnfulfilledMints(l, collection);
 
         _updateDepositorEarnings(l, depositor, collection);
 
@@ -940,6 +944,8 @@ abstract contract PerpetualMintInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
+        _enforceNoUnfulfilledMints(l, collection);
+
         if (tokenIds.length != risks.length) {
             revert ArrayLengthMismatch();
         }
@@ -973,6 +979,8 @@ abstract contract PerpetualMintInternal is
         uint256[] calldata risks
     ) internal {
         Storage.Layout storage l = Storage.layout();
+
+        _enforceNoUnfulfilledMints(l, collection);
 
         if (tokenIds.length != risks.length) {
             revert ArrayLengthMismatch();

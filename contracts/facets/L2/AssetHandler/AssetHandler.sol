@@ -169,6 +169,8 @@ contract L2AssetHandler is
         PerpetualMintStorage.Layout
             storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
 
+        _enforceNoUnfulfilledMints(perpetualMintStorageLayout, collection);
+
         // Iterate over each token ID
         for (uint256 i = 0; i < tokenIds.length; ++i) {
             // Reduce the count of active ERC1155 tokens for the sender (executor)
@@ -262,6 +264,8 @@ contract L2AssetHandler is
     ) external payable {
         PerpetualMintStorage.Layout
             storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
+
+        _enforceNoUnfulfilledMints(perpetualMintStorageLayout, collection);
 
         // Iterate over each token ID
         for (uint256 i = 0; i < tokenIds.length; ++i) {

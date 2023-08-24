@@ -9,6 +9,6 @@ interface IGuardsInternal {
     /// @param maxActiveTokens new maxActiveTokens value
     event MaxActiveTokensSet(uint256 maxActiveTokens);
 
-    /// @dev thrown when attempting to increase activeTokens of a collectino past the maxActiveTokens amount
+    /// @dev thrown when attempting to increase activeTokens of a collection past the maxActiveTokens amount
     error MaxActiveTokensExceeded();
 }

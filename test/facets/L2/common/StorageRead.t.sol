@@ -583,4 +583,15 @@ abstract contract StorageRead is Test {
 
         amount = uint256(vm.load(target, slot));
     }
+
+    /// @dev read maxActiveTokens value directly from storage
+    /// @param target address of contract to read storage from
+    /// @return maxActiveTokens maxActiveTokens value
+    function _maxActiveTokens(
+        address target
+    ) internal view returns (uint256 maxActiveTokens) {
+        bytes32 slot = bytes32(uint256(Storage.STORAGE_SLOT) + 27);
+
+        maxActiveTokens = uint256(vm.load(target, slot));
+    }
 }

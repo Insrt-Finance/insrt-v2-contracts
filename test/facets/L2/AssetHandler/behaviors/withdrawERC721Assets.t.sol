@@ -12,6 +12,7 @@ import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { L2AssetHandlerMock } from "../../../../mocks/L2AssetHandlerMock.t.sol";
 import { AssetType } from "../../../../../contracts/enums/AssetType.sol";
 import { IL2AssetHandler } from "../../../../../contracts/facets/L2/AssetHandler/IAssetHandler.sol";
+import { IGuardsInternal } from "../../../../../contracts/facets/L2/common/IGuardsInternal.sol";
 import { PerpetualMintStorage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
 /// @title L2AssetHandler_withdrawERC721Assets
@@ -419,6 +420,60 @@ contract L2AssetHandler_withdrawERC721Assets is
                 .LayerZeroClientBase__InvalidTrustedRemote
                 .selector
         );
+
+        this.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
+            address(this),
+            BORED_APE_YACHT_CLUB,
+            DESTINATION_LAYER_ZERO_CHAIN_ID,
+            boredApeYachtClubTokenIds
+        );
+    }
+
+    /// @dev tests that if there are unfulfilled mint requests withdrawing ERC721 assets reverts
+    function test_withdrawERC721AssetsRevertsWhen_ThereIsAtLeastOneUnfulfilledRequeset()
+        public
+    {
+        uint256 mockMintRequestId = 5;
+
+        // calculate unfulfilledRequests enumerable set slot
+        bytes32 unfulfilledRequestsSlot = keccak256(
+            abi.encode(
+                BORED_APE_YACHT_CLUB, // address of collection
+                uint256(PerpetualMintStorage.STORAGE_SLOT) + 28 // requestIds mapping storage slot
+            )
+        );
+
+        // store EnumerableSet.UintSet._inner._values length
+        vm.store(address(this), unfulfilledRequestsSlot, bytes32(uint256(1)));
+
+        // calculate the PerpetualMint unfulfilled request id slot
+        bytes32 unfulfilledRequestIdValueSlot = keccak256(
+            abi.encodePacked(unfulfilledRequestsSlot)
+        );
+
+        // store the mockMintRequestId in the unfulfilledRequests enumerable set
+        vm.store(
+            address(this),
+            unfulfilledRequestIdValueSlot,
+            bytes32(mockMintRequestId)
+        );
+
+        // calcaulte the PerpetualMint unfulfilled request id index slot
+        bytes32 unfulfilledRequestIdIndexSlot = keccak256(
+            abi.encode(
+                bytes32(mockMintRequestId),
+                uint256(unfulfilledRequestsSlot) + 1
+            )
+        );
+
+        // store 1 as the index of mockMintRequestId
+        vm.store(
+            address(this),
+            unfulfilledRequestIdIndexSlot,
+            bytes32(uint256(1))
+        );
+
+        vm.expectRevert(IGuardsInternal.UnfulfilledRequests.selector);
 
         this.withdrawERC721Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             address(this),

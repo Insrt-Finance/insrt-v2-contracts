@@ -5,19 +5,18 @@ pragma solidity 0.8.21;
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
 import { L2AssetHandlerHelper } from "./AssetHandlerHelper.t.sol";
-import { GuardsRead } from "../common/GuardsRead.t.sol";
 import { StorageRead } from "../common/StorageRead.t.sol";
 import { L2CoreTest } from "../../../diamonds/L2/Core.t.sol";
 import { IL2AssetHandler } from "../../../../contracts/facets/L2/AssetHandler/IAssetHandler.sol";
 import { IAssetHandlerEvents } from "../../../../contracts/interfaces/IAssetHandlerEvents.sol";
+import { PerpetualMintStorage } from "../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
 /// @title L2AssetHandlerTest
 /// @dev L2AssetHandler test helper contract. Configures L2AssetHandler as a facet of the L2Core diamond.
 abstract contract L2AssetHandlerTest is
     IAssetHandlerEvents,
     L2CoreTest,
-    StorageRead,
-    GuardsRead
+    StorageRead
 {
     IL2AssetHandler public l2AssetHandler;
 
@@ -81,7 +80,7 @@ abstract contract L2AssetHandlerTest is
         // set maxActiveTokens value to something which will not block tests
         vm.store(
             address(this),
-            bytes32(LAYOUT_SLOT),
+            bytes32(uint256(PerpetualMintStorage.STORAGE_SLOT) + 27),
             bytes32(MAX_ACTIVE_TOKENS)
         );
     }

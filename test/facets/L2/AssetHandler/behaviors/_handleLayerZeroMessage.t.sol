@@ -6,7 +6,7 @@ import { L2AssetHandlerTest } from "../AssetHandler.t.sol";
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { L2AssetHandlerMock } from "../../../../mocks/L2AssetHandlerMock.t.sol";
 import { AssetType } from "../../../../../contracts/enums/AssetType.sol";
-import { Guards } from "../../../../../contracts/facets/L2/common/Guards.sol";
+import { IGuardsInternal } from "../../../../../contracts/facets/L2/common/IGuardsInternal.sol";
 import { PerpetualMintStorage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
 /// @title L2AssetHandler_handleLayerZeroMessage
@@ -293,7 +293,11 @@ contract L2AssetHandler_handleLayerZeroMessage is
         public
     {
         // set maxActiveTokens value to something which will cause a revert
-        vm.store(address(this), bytes32(LAYOUT_SLOT), bytes32(0));
+        vm.store(
+            address(this),
+            bytes32(uint256(PerpetualMintStorage.STORAGE_SLOT) + 27),
+            bytes32(0)
+        );
 
         bytes memory encodedData = abi.encode(
             AssetType.ERC1155,
@@ -305,7 +309,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             bongBearTokenAmounts
         );
 
-        vm.expectRevert(Guards.MaxActiveTokensExceeded.selector);
+        vm.expectRevert(IGuardsInternal.MaxActiveTokensExceeded.selector);
         this.mock_HandleLayerZeroMessage(
             DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
             TEST_PATH, // would be the expected path in production, here this is a dummy value
@@ -322,7 +326,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             boredApeYachtClubTokenIds
         );
 
-        vm.expectRevert(Guards.MaxActiveTokensExceeded.selector);
+        vm.expectRevert(IGuardsInternal.MaxActiveTokensExceeded.selector);
         this.mock_HandleLayerZeroMessage(
             DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
             TEST_PATH, // would be the expected path in production, here this is a dummy value

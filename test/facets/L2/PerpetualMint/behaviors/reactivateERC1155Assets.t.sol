@@ -4,7 +4,7 @@ pragma solidity 0.8.21;
 
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
-import { Guards } from "../../../../../contracts/facets/L2/common/Guards.sol";
+import { IGuardsInternal } from "../../../../../contracts/facets/L2/common/IGuardsInternal.sol";
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage } from "../../../../../contracts/facets/L2/PerpetualMint/Storage.sol";
 
@@ -559,7 +559,7 @@ contract PerpetualMint_reactivateERC1155Assets is
         public
     {
         perpetualMint.setMaxActiveTokens(0);
-        vm.expectRevert(Guards.MaxActiveTokensExceeded.selector);
+        vm.expectRevert(IGuardsInternal.MaxActiveTokensExceeded.selector);
 
         vm.prank(depositorOne);
         perpetualMint.reactivateERC1155Assets(

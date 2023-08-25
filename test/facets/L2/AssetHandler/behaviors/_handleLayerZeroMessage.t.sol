@@ -309,7 +309,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             bongBearTokenAmounts
         );
 
-        vm.expectRevert(IGuardsInternal.MaxActiveTokensExceeded.selector);
+        vm.expectRevert(IGuardsInternal.MaxActiveTokensLimitExceeded.selector);
         this.mock_HandleLayerZeroMessage(
             DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
             TEST_PATH, // would be the expected path in production, here this is a dummy value
@@ -326,7 +326,7 @@ contract L2AssetHandler_handleLayerZeroMessage is
             boredApeYachtClubTokenIds
         );
 
-        vm.expectRevert(IGuardsInternal.MaxActiveTokensExceeded.selector);
+        vm.expectRevert(IGuardsInternal.MaxActiveTokensLimitExceeded.selector);
         this.mock_HandleLayerZeroMessage(
             DESTINATION_LAYER_ZERO_CHAIN_ID, // would be the expected source chain ID in production, here this is a dummy value
             TEST_PATH, // would be the expected path in production, here this is a dummy value

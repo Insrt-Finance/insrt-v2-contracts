@@ -381,8 +381,8 @@ contract PerpetualMint_reactivateERC721Assets is
     function test_reactivateERC721AssetsRevertsWhen_maxActiveTokensIsExceeded()
         public
     {
-        perpetualMint.setMaxActiveTokens(0);
-        vm.expectRevert(IGuardsInternal.MaxActiveTokensExceeded.selector);
+        perpetualMint.setMaxActiveTokensLimit(0);
+        vm.expectRevert(IGuardsInternal.MaxActiveTokensLimitExceeded.selector);
 
         vm.prank(depositorOne);
         perpetualMint.reactivateERC721Assets(COLLECTION, risks, tokenIds);

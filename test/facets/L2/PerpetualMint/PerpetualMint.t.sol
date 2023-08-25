@@ -153,7 +153,7 @@ abstract contract PerpetualMintTest is L2CoreTest, StorageRead {
         );
 
         // set maxActiveTokens to a very large value so it doesn't block tests
-        perpetualMint.setMaxActiveTokens(BASIS);
+        perpetualMint.setMaxActiveTokensLimit(BASIS);
 
         assert(BASIS == _maxActiveTokens(address(perpetualMint)));
     }

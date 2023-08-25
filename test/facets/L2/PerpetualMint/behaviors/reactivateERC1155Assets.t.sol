@@ -558,8 +558,8 @@ contract PerpetualMint_reactivateERC1155Assets is
     function test_reactivateERC1155AssetsRevertsWhen_maxActiveTokensIsExceeded()
         public
     {
-        perpetualMint.setMaxActiveTokens(0);
-        vm.expectRevert(IGuardsInternal.MaxActiveTokensExceeded.selector);
+        perpetualMint.setMaxActiveTokensLimit(0);
+        vm.expectRevert(IGuardsInternal.MaxActiveTokensLimitExceeded.selector);
 
         vm.prank(depositorOne);
         perpetualMint.reactivateERC1155Assets(

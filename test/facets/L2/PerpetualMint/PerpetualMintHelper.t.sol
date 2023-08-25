@@ -59,7 +59,7 @@ contract PerpetualMintHelper {
         mintingSelectors[15] = IPerpetualMint.reactivateERC721Assets.selector;
         mintingSelectors[16] = IPerpetualMint.pause.selector;
         mintingSelectors[17] = IPerpetualMint.unpause.selector;
-        mintingSelectors[18] = IPerpetualMint.setMaxActiveTokens.selector;
+        mintingSelectors[18] = IPerpetualMint.setMaxActiveTokensLimit.selector;
 
         mintingSelectors[19] = IPerpetualMintHarness.exposed_balanceOf.selector;
         mintingSelectors[20] = IPerpetualMintHarness

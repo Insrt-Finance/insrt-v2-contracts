@@ -15,19 +15,8 @@ abstract contract GuardsInternal is IGuardsInternal {
         Storage.Layout storage l,
         uint256 tokens
     ) internal view {
-        if (tokens > l.maxActiveTokens) {
+        if (tokens > l.maxActiveTokensLimit) {
             revert MaxActiveTokensLimitExceeded();
         }
-    }
-
-    /// @dev sets a new value for maxActiveTokens
-    /// @param l the PerpetualMint storage layout
-    /// @param limit new maxActiveTokens value
-    function _setMaxActiveTokensLimit(
-        Storage.Layout storage l,
-        uint256 limit
-    ) internal {
-        l.maxActiveTokensLimit = limit;
-        emit MaxActiveTokensLimitSet(limit);
     }
 }

@@ -573,7 +573,7 @@ abstract contract PerpetualMintInternal is
         l.activeTokenIds[collection].add(tokenId);
 
         // enforce the maxActiveTokens limit on the collection
-        _enforceMaxActiveTokens(l, l.activeTokenIds[collection].length());
+        _enforceMaxActiveTokensLimit(l, l.activeTokenIds[collection].length());
 
         // set the new risk for the depositor and the token ID in the collection
         // currently for ERC1155 tokens, the risk is always the same for all token IDs in the collection
@@ -640,7 +640,10 @@ abstract contract PerpetualMintInternal is
             l.activeTokenIds[collection].add(tokenIds[i]);
 
             // enforce the maxActiveTokens limit on the collection
-            _enforceMaxActiveTokens(l, l.activeTokenIds[collection].length());
+            _enforceMaxActiveTokensLimit(
+                l,
+                l.activeTokenIds[collection].length()
+            );
 
             // update the depositor's total risk for the collection
             l.totalDepositorRisk[depositor][collection] += risks[i];
@@ -842,9 +845,10 @@ abstract contract PerpetualMintInternal is
     }
 
     /// @dev sets a new value for maxActiveTokens
-    /// @param maxActiveTokens new maxActiveTokens value
-    function _setMaxActiveTokens(uint256 maxActiveTokens) internal {
-        _setMaxActiveTokens(Storage.layout(), maxActiveTokens);
+    /// @param limit new maxActiveTokens value
+    function _setMaxActiveTokensLimit(uint256 limit) internal {
+        Storage.layout().maxActiveTokensLimit = limit;
+        emit MaxActiveTokensLimitSet(limit);
     }
 
     /// @notice sets the mint fee in basis points

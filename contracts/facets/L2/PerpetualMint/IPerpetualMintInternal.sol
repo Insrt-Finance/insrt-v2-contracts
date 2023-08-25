@@ -88,6 +88,10 @@ interface IPerpetualMintInternal {
     /// @param result success status of mint attempt
     event ERC721MintResolved(address indexed collection, bool result);
 
+    /// @dev emitted when a new value for maxActiveTokensLimit is set
+    /// @param limit new maxActiveTokensLimit value
+    event MaxActiveTokensLimitSet(uint256 limit);
+
     /// @notice emitted when the mint price of a collection is set
     /// @param collection address of collection
     /// @param price mint price of collection

@@ -169,7 +169,7 @@ contract L2AssetHandler is
         PerpetualMintStorage.Layout
             storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
 
-        _enforceNoUnfulfilledMints(perpetualMintStorageLayout, collection);
+        _enforceNoPendingMints(perpetualMintStorageLayout, collection);
 
         // Iterate over each token ID
         for (uint256 i = 0; i < tokenIds.length; ++i) {
@@ -265,7 +265,7 @@ contract L2AssetHandler is
         PerpetualMintStorage.Layout
             storage perpetualMintStorageLayout = PerpetualMintStorage.layout();
 
-        _enforceNoUnfulfilledMints(perpetualMintStorageLayout, collection);
+        _enforceNoPendingMints(perpetualMintStorageLayout, collection);
 
         // Iterate over each token ID
         for (uint256 i = 0; i < tokenIds.length; ++i) {

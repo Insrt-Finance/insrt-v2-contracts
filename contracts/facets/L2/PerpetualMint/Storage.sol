@@ -90,7 +90,7 @@ library PerpetualMintStorage {
         uint256 maxActiveTokensLimit;
         /// @dev keeps track of the mint requests which have not yet been fulfilled, serving as the base
         /// for the withdrawal "state-machine" check
-        mapping(address collection => EnumerableSet.UintSet requestIds) unfulfilledRequests;
+        mapping(address collection => EnumerableSet.UintSet requestIds) pendingRequests;
     }
 
     bytes32 internal constant STORAGE_SLOT =

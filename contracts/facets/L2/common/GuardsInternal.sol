@@ -22,4 +22,16 @@ abstract contract GuardsInternal is IGuardsInternal {
             revert MaxActiveTokensLimitExceeded();
         }
     }
+
+    /// @dev enforces that there are no pending mint requests for a collection
+    /// @param l the PerpetualMint storage layout
+    /// @param collection address of collection
+    function _enforceNoPendingMints(
+        Storage.Layout storage l,
+        address collection
+    ) internal view {
+        if (l.pendingRequests[collection].length() != 0) {
+            revert PendingRequests();
+        }
+    }
 }

@@ -489,14 +489,14 @@ contract L2AssetHandler_withdrawERC1155Assets is
         );
     }
 
-    /// @dev tests that if there are unfulfilled mint requests withdrawing ERC721 assets reverts
-    function test_withdrawERC721AssetsRevertsWhen_ThereIsAtLeastOneUnfulfilledRequeset()
+    /// @dev tests that if there are pending mint requests withdrawing ERC721 assets reverts
+    function test_withdrawERC721AssetsRevertsWhen_ThereIsAtLeastOnePendingRequest()
         public
     {
         uint256 mockMintRequestId = 5;
 
-        // calculate unfulfilledRequests enumerable set slot
-        bytes32 unfulfilledRequestsSlot = keccak256(
+        // calculate pendingRequests enumerable set slot
+        bytes32 pendingRequestsSlot = keccak256(
             abi.encode(
                 BONG_BEARS, // address of collection
                 uint256(PerpetualMintStorage.STORAGE_SLOT) + 28 // requestIds mapping storage slot
@@ -504,36 +504,32 @@ contract L2AssetHandler_withdrawERC1155Assets is
         );
 
         // store EnumerableSet.UintSet._inner._values length
-        vm.store(address(this), unfulfilledRequestsSlot, bytes32(uint256(1)));
+        vm.store(address(this), pendingRequestsSlot, bytes32(uint256(1)));
 
-        // calculate the PerpetualMint unfulfilled request id slot
-        bytes32 unfulfilledRequestIdValueSlot = keccak256(
-            abi.encodePacked(unfulfilledRequestsSlot)
+        // calculate the PerpetualMint pending request id slot
+        bytes32 pendingRequestIdValueSlot = keccak256(
+            abi.encodePacked(pendingRequestsSlot)
         );
 
-        // store the mockMintRequestId in the unfulfilledRequests enumerable set
+        // store the mockMintRequestId in the pendingRequests enumerable set
         vm.store(
             address(this),
-            unfulfilledRequestIdValueSlot,
+            pendingRequestIdValueSlot,
             bytes32(mockMintRequestId)
         );
 
-        // calcaulte the PerpetualMint unfulfilled request id index slot
-        bytes32 unfulfilledRequestIdIndexSlot = keccak256(
+        // calcaulte the PerpetualMint pending request id index slot
+        bytes32 pendingRequestIdIndexSlot = keccak256(
             abi.encode(
                 bytes32(mockMintRequestId),
-                uint256(unfulfilledRequestsSlot) + 1
+                uint256(pendingRequestsSlot) + 1
             )
         );
 
         // store 1 as the index of mockMintRequestId
-        vm.store(
-            address(this),
-            unfulfilledRequestIdIndexSlot,
-            bytes32(uint256(1))
-        );
+        vm.store(address(this), pendingRequestIdIndexSlot, bytes32(uint256(1)));
 
-        vm.expectRevert(IGuardsInternal.UnfulfilledRequests.selector);
+        vm.expectRevert(IGuardsInternal.PendingRequests.selector);
 
         this.withdrawERC1155Assets{ value: LAYER_ZERO_MESSAGE_FEE }(
             address(this),

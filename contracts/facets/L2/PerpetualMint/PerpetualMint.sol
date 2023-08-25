@@ -131,7 +131,7 @@ contract PerpetualMint is
 
     /// @inheritdoc IPerpetualMint
     function setMaxActiveTokensLimit(uint256 limit) external onlyOwner {
-        _setMaxActiveTokens(limit);
+        _setMaxActiveTokensLimit(limit);
     }
 
     /// @inheritdoc IPerpetualMint

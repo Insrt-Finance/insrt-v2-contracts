@@ -390,7 +390,7 @@ contract L2AssetHandler is
                 );
 
                 // enforce the maxActiveTokens limit on the collection
-                _enforceMaxActiveTokens(
+                _enforceMaxActiveTokensLimit(
                     perpetualMintStorageLayout,
                     perpetualMintStorageLayout
                         .activeTokenIds[collection]
@@ -462,7 +462,7 @@ contract L2AssetHandler is
                 );
 
                 // enforce the maxActiveTokens limit on the collection
-                _enforceMaxActiveTokens(
+                _enforceMaxActiveTokensLimit(
                     perpetualMintStorageLayout,
                     perpetualMintStorageLayout
                         .activeTokenIds[collection]

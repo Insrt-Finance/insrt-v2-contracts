@@ -106,7 +106,7 @@ interface IPerpetualMint is IPausable {
     function setCollectionMintPrice(address collection, uint256 price) external;
 
     /// @dev sets a new value for maxActiveTokensLimit
-    /// @param limit  new maxActiveTokensLimit value
+    /// @param limit new maxActiveTokensLimit value
     function setMaxActiveTokensLimit(uint256 limit) external;
 
     /// @notice sets the mint fee in basis points

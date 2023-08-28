@@ -3,9 +3,9 @@
 pragma solidity 0.8.21;
 
 import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableInternal.sol";
-import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
-import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
+import { L2ForkTest } from "../../../../L2ForkTest.t.sol";
+import { IPerpetualMintInternal } from "../../../../../contracts/facets/L2/PerpetualMint/IPerpetualMintInternal.sol";
 
 /// @title PerpetualMint_setMaxActiveTokensLimit
 /// @dev PerpetualMint test contract for testing expected behavior of the setMaxActiveTokensLimit function

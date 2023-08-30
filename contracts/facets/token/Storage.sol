@@ -11,9 +11,9 @@ library TokenStorage {
         /// @dev ratio of reservedSupply to totalSupply
         uint256 globalRatio;
         /// @dev number of tokens held for distribution to token holders
-        uint256 reservedSupply;
+        uint256 distributionSupply;
         /// @dev fraction of tokens to be reserved for distribution to token holders
-        uint32 reservationFraction;
+        uint32 distributionFraction;
         /// @dev last ratio a minter had when one of their actions led to a change in the
         /// reservedSupply
         mapping(address minter => uint256 ratio) lastRatio;

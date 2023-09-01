@@ -95,10 +95,20 @@ abstract contract PerpetualMintInternal is
             revert IncorrectETHReceived();
         }
 
+        // calculate the consolation fee
+        uint256 consolationFee = (msgValue * l.consolationFeeBP) / BASIS;
+
+        // calculate the protocol mint fee
         uint256 mintFee = (msgValue * l.mintFeeBP) / BASIS;
 
+        // update the accrued consolation fees
+        l.consolationFees += consolationFee;
+
+        // update the accrued depositor mint earnings
+        l.mintEarnings += msgValue - consolationFee - mintFee;
+
+        // update the accrued protocol fees
         l.protocolFees += mintFee;
-        l.mintEarnings += msgValue - mintFee;
 
         // if the number of words requested is greater than the max allowed by the VRF coordinator,
         // the request for random words will fail (max random words is currently 500 per request).

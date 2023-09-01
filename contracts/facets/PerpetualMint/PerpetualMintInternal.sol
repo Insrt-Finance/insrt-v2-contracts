@@ -261,6 +261,7 @@ abstract contract PerpetualMintInternal is
 
         _resolveMints(
             collectionData,
+            l.tiers,
             minter,
             collection,
             randomWords,
@@ -325,24 +326,47 @@ abstract contract PerpetualMintInternal is
 
     /// @notice resolves the outcomes of attempted mints for a given collection
     /// @param collectionData the CollectionData struct for a given collection
+    /// @param tiersData the TiersData struct for mint consolations
     /// @param minter address of minter
     /// @param collection address of collection for mint attempts
     /// @param randomWords array of random values relating to number of attempts
     /// @param paidInEth boolean indicating whether the mint attempt was paid in ETH or $MINT
     function _resolveMints(
         CollectionData storage collectionData,
+        TiersData memory tiersData,
         address minter,
         address collection,
         uint256[] memory randomWords,
         bool paidInEth
     ) internal {
+        uint32 basis = BASIS;
+
         for (uint256 i = 0; i < randomWords.length; ++i) {
             bool result = _collectionRisk(collectionData) >
-                _normalizeValue(randomWords[i], BASIS);
+                _normalizeValue(randomWords[i], basis);
 
             if (!result) {
-                // TODO: integrate $MINT token
-                if (paidInEth) {} else {}
+                uint256 tierMintAmount;
+
+                // iterate through tiers to find the tier that the random value falls into
+                for (uint256 j = 0; j < tiersData.tierRisks.length; ++j) {
+                    bool tierFound = tiersData.tierRisks[j] >
+                        _normalizeValue(randomWords[i], basis);
+
+                    if (tierFound) {
+                        tierMintAmount = tiersData.tierMintAmounts[j];
+                        break;
+                    }
+                }
+
+                if (paidInEth) {
+                    // TODO: integrate $MINT token
+                    // MintToken.mint(minter, tierMintAmount);
+                } else {
+                    // TODO: integrate $MINT token
+                    // apply $MINT discount since paid in $MINT
+                    // MintToken.mint(minter, tierMintAmount);
+                }
             } else {
                 _safeMint(
                     minter,

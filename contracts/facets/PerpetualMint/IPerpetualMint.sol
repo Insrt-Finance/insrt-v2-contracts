@@ -56,6 +56,13 @@ interface IPerpetualMint is IPausable {
         address collection
     ) external view returns (uint32 risk);
 
+    /// @notice Returns the consolation fee in basis points
+    /// @return consolationFeeBasisPoints consolation fee in basis points
+    function consolationFeeBP()
+        external
+        view
+        returns (uint32 consolationFeeBasisPoints);
+
     /// @notice Returns the default mint price for a collection
     /// @return mintPrice default collection mint price
     function defaultCollectionMintPrice()
@@ -91,6 +98,10 @@ interface IPerpetualMint is IPausable {
     /// @param collection address of collection
     /// @param risk new risk value for collection
     function setCollectionRisk(address collection, uint32 risk) external;
+
+    /// @notice sets the consolation fee in basis points
+    /// @param consolationFeeBP consolation fee in basis points
+    function setConsolationFeeBP(uint32 consolationFeeBP) external;
 
     /// @notice sets the ratio of ETH (native token) to $MINT for mint attempts using $MINT as payment
     /// @param ratio ratio of ETH to $MINT

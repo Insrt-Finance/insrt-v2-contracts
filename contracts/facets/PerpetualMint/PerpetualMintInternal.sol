@@ -190,6 +190,16 @@ abstract contract PerpetualMintInternal is
         risk = risk == 0 ? DEFAULT_COLLECTION_RISK : risk;
     }
 
+    /// @notice Returns the current consolation fee in basis points
+    /// @return consolationFeeBasisPoints consolation fee in basis points
+    function _consolationFeeBP()
+        internal
+        view
+        returns (uint32 consolationFeeBasisPoints)
+    {
+        consolationFeeBasisPoints = Storage.layout().consolationFeeBP;
+    }
+
     /// @notice Returns the default mint price for a collection
     /// @return mintPrice default collection mint price
     function _defaultCollectionMintPrice()
@@ -383,6 +393,12 @@ abstract contract PerpetualMintInternal is
         collectionData.risk = risk;
 
         emit CollectionRiskSet(collection, risk);
+    }
+
+    /// @notice sets the consolation fee in basis points
+    /// @param consolationFeeBP consolation fee in basis points
+    function _setConsolationFeeBP(uint32 consolationFeeBP) internal {
+        Storage.layout().consolationFeeBP = consolationFeeBP;
     }
 
     /// @notice sets the ratio of ETH (native token) to $MINT for mint attempts using $MINT as payment

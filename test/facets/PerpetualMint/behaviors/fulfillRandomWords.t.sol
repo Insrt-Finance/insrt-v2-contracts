@@ -59,9 +59,6 @@ contract PerpetualMint_fulfillRandomWords is
             uint96(tx.gasprice / uint256(weiPerUnitLink))
         );
 
-        // sets the mint fee
-        perpetualMint.setMintFeeBP(TEST_MINT_FEE_BP);
-
         // create a mock VRF subscription
         mockVRFSubscriptionId = vrfCoordinatorV2Mock.createSubscription();
 

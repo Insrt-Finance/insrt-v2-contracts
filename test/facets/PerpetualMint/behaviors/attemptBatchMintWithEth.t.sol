@@ -29,13 +29,15 @@ contract PerpetualMint_attemptBatchMintWithEth is
         super.setUp();
 
         _activateVRFConsumer();
-
-        // sets the mint fee
-        perpetualMint.setMintFeeBP(TEST_MINT_FEE_BP);
     }
 
     /// @dev Tests attemptBatchMintWithEth functionality.
     function test_attemptBatchMintWithEth() external {
+        uint256 preMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        assert(preMintAccruedConsolationFees == 0);
+
         uint256 preMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
 
@@ -53,6 +55,16 @@ contract PerpetualMint_attemptBatchMintWithEth is
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
         }(COLLECTION, TEST_MINT_ATTEMPTS);
 
+        uint256 postMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        assert(
+            postMintAccruedConsolationFees ==
+                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
+                    perpetualMint.consolationFeeBP()) /
+                    perpetualMint.exposed_basis())
+        );
+
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
@@ -67,12 +79,16 @@ contract PerpetualMint_attemptBatchMintWithEth is
 
         assert(
             postMintAccruedMintEarnings ==
-                (MINT_PRICE * TEST_MINT_ATTEMPTS) - postMintAccruedProtocolFees
+                (MINT_PRICE * TEST_MINT_ATTEMPTS) -
+                    postMintAccruedConsolationFees -
+                    postMintAccruedProtocolFees
         );
 
         assert(
             address(perpetualMint).balance ==
-                postMintAccruedMintEarnings + postMintAccruedProtocolFees
+                postMintAccruedConsolationFees +
+                    postMintAccruedMintEarnings +
+                    postMintAccruedProtocolFees
         );
     }
 

@@ -142,6 +142,11 @@ contract PerpetualMintHarness is
     }
 
     /// @inheritdoc IPerpetualMintHarness
+    function setConsolationFees(uint256 amount) external {
+        Storage.layout().consolationFees = amount;
+    }
+
+    /// @inheritdoc IPerpetualMintHarness
     function setMintEarnings(uint256 amount) external {
         Storage.layout().mintEarnings = amount;
     }

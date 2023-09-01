@@ -49,7 +49,7 @@ contract PerpetualMint_setVRFConfig is
     }
 
     /// @dev tests for the revert case when the caller is not the owner
-    function test_setVRFConfigRevertsWhen_CallerIsNotOwner() public {
+    function test_setVRFConfigRevertsWhen_CallerIsNotOwner() external {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
         vm.prank(NON_OWNER);
 

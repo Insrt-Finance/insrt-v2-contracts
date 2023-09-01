@@ -28,6 +28,14 @@ struct RequestData {
     bool paidInEth;
 }
 
+/// @dev Represents data specific to $MINT consolation tiers
+struct TiersData {
+    /// @dev assumed ordered array of risks for each tier
+    uint32[] tierRisks;
+    /// @dev assumed ordered array of $MINT consolation amounts for each tier
+    uint256[] tierMintAmounts;
+}
+
 /// @dev Encapsulates variables related to Chainlink VRF
 /// @dev see: https://docs.chain.link/vrf/v2/subscription#set-up-your-contract-and-request
 struct VRFConfig {

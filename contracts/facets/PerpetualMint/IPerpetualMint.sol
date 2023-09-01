@@ -4,7 +4,7 @@ pragma solidity 0.8.21;
 
 import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol";
 
-import { PerpetualMintStorage as Storage, VRFConfig } from "./Storage.sol";
+import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title IPerpetualMint
 /// @dev Interface of the PerpetualMint facet
@@ -100,9 +100,16 @@ interface IPerpetualMint is IPausable {
     /// @param mintFeeBP mint fee in basis points
     function setMintFeeBP(uint32 mintFeeBP) external;
 
+    /// @notice sets the $MINT consolation tiers
+    /// @param tiersData TiersData struct holding all related data to $MINT consolation tiers
+    function setTiers(TiersData calldata tiersData) external;
+
     /// @notice sets the Chainlink VRF config
     /// @param config VRFConfig struct holding all related data to ChainlinkVRF setup
     function setVRFConfig(VRFConfig calldata config) external;
+
+    /// @notice Returns the current $MINT consolation tiers
+    function tiers() external view returns (TiersData memory tiersData);
 
     ///  @notice Triggers unpaused state, when contract is paused.
     function unpause() external;

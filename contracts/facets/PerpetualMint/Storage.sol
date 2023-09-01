@@ -8,6 +8,8 @@ import "./types/DataTypes.sol";
 /// @dev defines storage layout for the PerpetualMint facet
 library PerpetualMintStorage {
     struct Layout {
+        /// @dev $MINT consolation tiers data
+        TiersData tiers;
         /// @dev all variables related to Chainlink VRF configuration
         VRFConfig vrfConfig;
         /// @dev mint fee in basis points

@@ -7,7 +7,7 @@ import { Pausable } from "@solidstate/contracts/security/pausable/Pausable.sol";
 
 import { IPerpetualMint } from "./IPerpetualMint.sol";
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
-import { PerpetualMintStorage as Storage, VRFConfig } from "./Storage.sol";
+import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title PerpetualMint facet contract
 /// @dev contains all externally called functions
@@ -136,8 +136,18 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function setTiers(TiersData calldata tiersData) external onlyOwner {
+        _setTiers(tiersData);
+    }
+
+    /// @inheritdoc IPerpetualMint
     function setVRFConfig(VRFConfig calldata config) external onlyOwner {
         _setVRFConfig(config);
+    }
+
+    /// @inheritdoc IPerpetualMint
+    function tiers() external view returns (TiersData memory tiersData) {
+        tiersData = _tiers();
     }
 
     /// @inheritdoc IPerpetualMint

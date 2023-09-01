@@ -40,6 +40,16 @@ abstract contract PerpetualMintInternal is
         VRF = vrfCoordinator;
     }
 
+    /// @notice returns the current accrued consolation fees
+    /// @return accruedFees the current amount of accrued consolation fees
+    function _accruedConsolationFees()
+        internal
+        view
+        returns (uint256 accruedFees)
+    {
+        accruedFees = Storage.layout().consolationFees;
+    }
+
     /// @notice returns the current accrued mint earnings across all collections
     /// @return accruedMintEarnings the current amount of accrued mint earnings across all collections
     function _accruedMintEarnings()

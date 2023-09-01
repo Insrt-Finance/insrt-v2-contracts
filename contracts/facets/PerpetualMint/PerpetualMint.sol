@@ -20,6 +20,15 @@ contract PerpetualMint is
     constructor(address vrf) PerpetualMintInternal(vrf) {}
 
     /// @inheritdoc IPerpetualMint
+    function accruedConsolationFees()
+        external
+        view
+        returns (uint256 accruedFees)
+    {
+        accruedFees = _accruedConsolationFees();
+    }
+
+    /// @inheritdoc IPerpetualMint
     function accruedMintEarnings()
         external
         view

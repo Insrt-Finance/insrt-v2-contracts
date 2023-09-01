@@ -9,6 +9,13 @@ import { PerpetualMintStorage as Storage, VRFConfig } from "./Storage.sol";
 /// @title IPerpetualMint
 /// @dev Interface of the PerpetualMint facet
 interface IPerpetualMint is IPausable {
+    /// @notice Returns the current accrued consolation fees
+    /// @return accruedFees the current amount of accrued consolation fees
+    function accruedConsolationFees()
+        external
+        view
+        returns (uint256 accruedFees);
+
     /// @notice returns the current accrued mint earnings across all collections
     /// @return accruedEarnings the current amount of accrued mint earnings across all collections
     function accruedMintEarnings()

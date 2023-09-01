@@ -33,7 +33,7 @@ contract PerpetualMint_setMintFeeBP is ArbForkTest, PerpetualMintTest {
     }
 
     /// @dev tests for the revert case when the caller is not the owner
-    function test_setMintFeeBPRevertWhen_CallerIsNotOwner() external {
+    function test_setMintFeeBPRevertsWhen_CallerIsNotOwner() external {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
         vm.prank(NON_OWNER);

@@ -17,6 +17,8 @@ abstract contract PerpetualMintTest is CoreTest {
 
     PerpetualMintHelper public perpetualMintHelper;
 
+    uint32 internal constant TEST_CONSOLATION_FEE_BP = 5000000; // 0.5% fee
+
     uint32 internal constant TEST_MINT_FEE_BP = 5000000; // 0.5% fee
 
     uint64 internal constant TEST_VRF_SUBSCRIPTION_ID = 5;

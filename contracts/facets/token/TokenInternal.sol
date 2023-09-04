@@ -10,10 +10,18 @@ import { TokenStorage as Storage } from "./Storage.sol";
 
 /// @title $MINT Token contract
 /// @dev The internal functionality of $MINT token.
-contract TokenInternal is ERC20BaseInternal, ITokenInternal {
+abstract contract TokenInternal is ERC20BaseInternal, ITokenInternal {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     uint32 internal constant BASIS = 1000000000;
+
+    /// @notice modifier to only allow addresses contained in mintingContracts
+    /// to call modified function
+    modifier onlyMintingContract() {
+        if (!Storage.layout().mintingContracts.contains(msg.sender))
+            revert NotMintingContract();
+        _;
+    }
 
     /// @notice accrues the tokens available for claiming for an account
     /// @param l TokenStorage Layout struct
@@ -41,7 +49,7 @@ contract TokenInternal is ERC20BaseInternal, ITokenInternal {
         address from,
         address to,
         uint256 amount
-    ) internal override {
+    ) internal virtual override {
         super._beforeTokenTransfer(from, to, amount);
 
         if ((from != address(0) && from != address(this)) || to != address(0)) {

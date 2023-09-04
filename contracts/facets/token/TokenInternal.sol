@@ -2,6 +2,7 @@
 
 pragma solidity 0.8.21;
 
+import { OwnableInternal } from "@solidstate/contracts/access/ownable/OwnableInternal.sol";
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { ERC20BaseInternal } from "@solidstate/contracts/token/ERC20/base/ERC20BaseInternal.sol";
 
@@ -10,7 +11,11 @@ import { TokenStorage as Storage } from "./Storage.sol";
 
 /// @title $MINT Token contract
 /// @dev The internal functionality of $MINT token.
-abstract contract TokenInternal is ERC20BaseInternal, ITokenInternal {
+abstract contract TokenInternal is
+    ERC20BaseInternal,
+    OwnableInternal,
+    ITokenInternal
+{
     using EnumerableSet for EnumerableSet.AddressSet;
 
     uint32 internal constant BASIS = 1000000000;
@@ -39,6 +44,21 @@ abstract contract TokenInternal is ERC20BaseInternal, ITokenInternal {
 
         // update claimable tokens
         l.claimableTokens[account] += claimableTokens;
+    }
+
+    /// @notice adds an account to the mintingContracts enumerable set
+    /// @param account address of account
+    function _addMintingContract(address account) internal {
+        uint32 size;
+        assembly {
+            size := extcodesize(account)
+        }
+
+        if (size != 0) {
+            Storage.layout().mintingContracts.add(account);
+        }
+
+        emit MintingContractAdded(account);
     }
 
     /// @notice overrides _beforeTokenTransfer hook to enforce non-transferability
@@ -107,6 +127,13 @@ abstract contract TokenInternal is ERC20BaseInternal, ITokenInternal {
         _mint(account, amount);
     }
 
+    /// @notice removes an account from the mintingContracts enumerable set
+    /// @param account address of account
+    function _removeMintingContract(address account) internal {
+        Storage.layout().mintingContracts.remove(account);
+        emit MintingContractRemoved(account);
+    }
+
     /// @notice sets a new value for distributionFractionBP
     /// @param distributionFractionBP new distributionFractionBP value
     function _setDistributionFractionBP(
@@ -114,27 +141,5 @@ abstract contract TokenInternal is ERC20BaseInternal, ITokenInternal {
     ) internal {
         Storage.layout().distributionFractionBP = distributionFractionBP;
         emit DistributionFractionSet(distributionFractionBP);
-    }
-
-    /// @notice adds an account to the mintingContracts enumerable set
-    /// @param account address of account
-    function _addMintingContract(address account) internal {
-        uint32 size;
-        assembly {
-            size := extcodesize(account)
-        }
-
-        if (size != 0) {
-            Storage.layout().mintingContracts.add(account);
-        }
-
-        emit MintingContractAdded(account);
-    }
-
-    /// @notice removes an account from the mintingContracts enumerable set
-    /// @param account address of account
-    function _removeMintingContract(address account) internal {
-        Storage.layout().mintingContracts.remove(account);
-        emit MintingContractRemoved(account);
     }
 }

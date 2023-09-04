@@ -8,7 +8,7 @@ import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 /// @dev defines storage layout for the Token facet
 library TokenStorage {
     struct Layout {
-        /// @dev ratio of reservedSupply to totalSupply
+        /// @dev ratio of distributionSupply to totalSupply
         uint256 globalRatio;
         /// @dev number of tokens held for distribution to token holders
         uint256 distributionSupply;
@@ -17,7 +17,7 @@ library TokenStorage {
         /// @dev last ratio a minter had when one of their actions led to a change in the
         /// reservedSupply
         mapping(address minter => uint256 ratio) lastRatio;
-        /// @dev amount of tokens claimable as a result of distributio to token holders
+        /// @dev amount of tokens claimable as a result of distribution to token holders
         mapping(address minter => uint256 ratio) claimableTokens;
         /// @dev set of contracts which are allowed to call the mint function
         EnumerableSet.AddressSet mintingContracts;

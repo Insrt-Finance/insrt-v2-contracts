@@ -5,11 +5,12 @@ pragma solidity 0.8.21;
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { ERC20BaseInternal } from "@solidstate/contracts/token/ERC20/base/ERC20BaseInternal.sol";
 
+import { ITokenInternal } from "./ITokenInternal.sol";
 import { TokenStorage as Storage } from "./Storage.sol";
 
 /// @title $MINT Token contract
 /// @dev The internal functionality of $MINT token.
-contract TokenInternal is ERC20BaseInternal {
+contract TokenInternal is ERC20BaseInternal, ITokenInternal {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     uint32 internal constant BASIS = 1000000000;
@@ -79,5 +80,21 @@ contract TokenInternal is ERC20BaseInternal {
         // mint tokens to contract and account
         _mint(address(this), distributionAmount);
         _mint(account, amount);
+    }
+
+    /// @notice overrides _beforeTokenTransfer hook to enforce non-transferability
+    /// @param from sender of tokens
+    /// @param to receiver of tokens
+    /// @param amount quantity of tokens transferred
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal override {
+        super._beforeTokenTransfer(from, to, amount);
+
+        if ((from != address(0) && from != address(this)) || to != address(0)) {
+            revert NonTransferable();
+        }
     }
 }

@@ -14,6 +14,41 @@ contract TokenInternal is ERC20BaseInternal {
 
     uint32 internal constant BASIS = 1000000000;
 
+    /// @notice accrues the tokens available for claiming for an account
+    /// @param l TokenStorage Layout struct
+    /// @param account address of account
+    function _accrueTokens(Storage.Layout storage l, address account) internal {
+        // calculate claimable tokens
+        uint256 claimableTokens = (l.globalRatio - l.lastRatio[account]) *
+            _balanceOf(account);
+
+        // decrease distribution supply
+        l.distributionSupply -= claimableTokens;
+
+        // update account's last ratio
+        l.lastRatio[account] = l.globalRatio;
+
+        // update claimable tokens
+        l.claimableTokens[account] += claimableTokens;
+    }
+
+    /// @notice burns an amount of tokens of an account
+    /// @param amount amount of tokens to burn
+    /// @param account account to burn from
+    function _burn(uint256 amount, address account) internal {
+        _accrueTokens(Storage.layout(), account);
+        _burn(account, amount);
+    }
+
+    /// @notice claims all claimable tokens for an account
+    /// @param account address of account
+    function _claim(address account) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        _accrueTokens(l, account);
+        _transfer(address(this), account, l.claimableTokens[account]);
+    }
+
     /// @notice disburses (mints) an amount of tokens to an account
     /// @param account address of account receive the tokens
     /// @param amount amount of tokens to disburse
@@ -44,31 +79,5 @@ contract TokenInternal is ERC20BaseInternal {
         // mint tokens to contract and account
         _mint(address(this), distributionAmount);
         _mint(account, amount);
-    }
-
-    /// @notice claims all claimable tokens for an account
-    /// @param account address of account
-    function _claim(address account) internal {
-        Storage.Layout storage l = Storage.layout();
-
-        // calculate claimable tokens
-        uint256 claimableTokens = (l.globalRatio - l.lastRatio[account]) *
-            _balanceOf(account);
-
-        // decrease distribution supply
-        l.distributionSupply -= claimableTokens;
-
-        // update account's last ratio
-        l.lastRatio[account] = l.globalRatio;
-
-        _transfer(address(this), account, claimableTokens);
-    }
-
-    /// @notice burns an amount of tokens of an account
-    /// @param amount amount of tokens to burn
-    /// @param account account to burn from
-    function _burn(uint256 amount, address account) internal {
-        _claim(account);
-        _burn(account, amount);
     }
 }

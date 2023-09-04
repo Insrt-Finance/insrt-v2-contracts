@@ -115,4 +115,26 @@ abstract contract TokenInternal is ERC20BaseInternal, ITokenInternal {
         Storage.layout().distributionFractionBP = distributionFractionBP;
         emit DistributionFractionSet(distributionFractionBP);
     }
+
+    /// @notice adds an account to the mintingContracts enumerable set
+    /// @param account address of account
+    function _addMintingContract(address account) internal {
+        uint32 size;
+        assembly {
+            size := extcodesize(account)
+        }
+
+        if (size != 0) {
+            Storage.layout().mintingContracts.add(account);
+        }
+
+        emit MintingContractAdded(account);
+    }
+
+    /// @notice removes an account from the mintingContracts enumerable set
+    /// @param account address of account
+    function _removeMintingContract(address account) internal {
+        Storage.layout().mintingContracts.remove(account);
+        emit MintingContractRemoved(account);
+    }
 }

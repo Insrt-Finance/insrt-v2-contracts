@@ -8,4 +8,8 @@ interface ITokenInternal {
     /// @dev thrown when attempting to transfer tokens and the from address is neither
     /// the zero-address, nor the contract address, or the to address is not the zero address
     error NonTransferable();
+
+    /// @dev emitted when a new distributionFractionBP value is set
+    /// @param distributionFractionBP the new distributionFractionBP value
+    event DistributionFractionSet(uint32 distributionFractionBP);
 }

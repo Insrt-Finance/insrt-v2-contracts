@@ -33,6 +33,22 @@ contract TokenInternal is ERC20BaseInternal, ITokenInternal {
         l.claimableTokens[account] += claimableTokens;
     }
 
+    /// @notice overrides _beforeTokenTransfer hook to enforce non-transferability
+    /// @param from sender of tokens
+    /// @param to receiver of tokens
+    /// @param amount quantity of tokens transferred
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal override {
+        super._beforeTokenTransfer(from, to, amount);
+
+        if ((from != address(0) && from != address(this)) || to != address(0)) {
+            revert NonTransferable();
+        }
+    }
+
     /// @notice burns an amount of tokens of an account
     /// @param amount amount of tokens to burn
     /// @param account account to burn from
@@ -57,7 +73,8 @@ contract TokenInternal is ERC20BaseInternal, ITokenInternal {
         Storage.Layout storage l = Storage.layout();
 
         // calculate amount for distribution
-        uint256 distributionAmount = (amount * l.distributionFraction) / BASIS;
+        uint256 distributionAmount = (amount * l.distributionFractionBP) /
+            BASIS;
 
         // decrease amount to mint to account
         amount -= distributionAmount;
@@ -82,19 +99,12 @@ contract TokenInternal is ERC20BaseInternal, ITokenInternal {
         _mint(account, amount);
     }
 
-    /// @notice overrides _beforeTokenTransfer hook to enforce non-transferability
-    /// @param from sender of tokens
-    /// @param to receiver of tokens
-    /// @param amount quantity of tokens transferred
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 amount
-    ) internal override {
-        super._beforeTokenTransfer(from, to, amount);
-
-        if ((from != address(0) && from != address(this)) || to != address(0)) {
-            revert NonTransferable();
-        }
+    /// @notice sets a new value for distributionFractionBP
+    /// @param distributionFractionBP new distributionFractionBP value
+    function _setDistributionFractionBP(
+        uint32 distributionFractionBP
+    ) internal {
+        Storage.layout().distributionFractionBP = distributionFractionBP;
+        emit DistributionFractionSet(distributionFractionBP);
     }
 }

@@ -33,14 +33,14 @@ abstract contract TokenInternal is
     /// @param account address of account
     function _accrueTokens(Storage.Layout storage l, address account) internal {
         // calculate claimable tokens
-        uint256 claimableTokens = (l.globalRatio - l.lastRatio[account]) *
+        uint256 claimableTokens = (l.globalRatio - l.accountOffset[account]) *
             _balanceOf(account);
 
         // decrease distribution supply
         l.distributionSupply -= claimableTokens;
 
         // update account's last ratio
-        l.lastRatio[account] = l.globalRatio;
+        l.accountOffset[account] = l.globalRatio;
 
         // update claimable tokens
         l.claimableTokens[account] += claimableTokens;
@@ -113,8 +113,8 @@ abstract contract TokenInternal is
         if (supplyDelta > 0) {
             l.globalRatio += distributionAmount / supplyDelta;
 
-            // update lastRatio of account
-            l.lastRatio[account] = l.globalRatio;
+            // update accountOffset of account
+            l.accountOffset[account] = l.globalRatio;
         } else {
             l.globalRatio += distributionAmount / amount;
         }

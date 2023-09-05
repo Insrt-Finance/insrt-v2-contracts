@@ -11,6 +11,7 @@ contract TokenProxy is SolidStateDiamond {
     constructor(string memory name, string memory symbol) {
         ERC20MetadataStorage.Layout
             storage metadataLayout = ERC20MetadataStorage.layout();
+
         metadataLayout.name = name;
         metadataLayout.symbol = symbol;
         metadataLayout.decimals = 18;

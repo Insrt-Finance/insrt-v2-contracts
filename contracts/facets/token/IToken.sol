@@ -10,9 +10,9 @@ interface IToken {
     function addMintingContract(address account) external;
 
     /// @notice burns an amount of tokens of an account
-    /// @param amount amount of tokens to burn
     /// @param account account to burn from
-    function burn(uint256 amount, address account) external;
+    /// @param amount amount of tokens to burn
+    function burn(address account, uint256 amount) external;
 
     /// @notice claims all claimable tokens for the msg.sender
     function claim() external;
@@ -20,7 +20,7 @@ interface IToken {
     /// @notice disburses (mints) an amount of tokens to an account
     /// @param account address of account receive the tokens
     /// @param amount amount of tokens to disburse
-    function disburse(address account, uint256 amount) external;
+    function mint(address account, uint256 amount) external;
 
     /// @notice removes an account from the mintingContracts enumerable set
     /// @param account address of account

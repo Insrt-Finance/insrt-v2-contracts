@@ -30,8 +30,8 @@ contract Token is TokenInternal, SolidStateERC20, IToken {
 
     /// @inheritdoc IToken
     function burn(
-        uint256 amount,
-        address account
+        address account,
+        uint256 amount
     ) external onlyMintingContract {
         _burn(amount, account);
     }
@@ -42,11 +42,11 @@ contract Token is TokenInternal, SolidStateERC20, IToken {
     }
 
     /// @inheritdoc IToken
-    function disburse(
+    function mint(
         address account,
         uint256 amount
     ) external onlyMintingContract {
-        _disburse(account, amount);
+        _mint(amount, account);
     }
 
     /// @inheritdoc IToken

@@ -78,6 +78,7 @@ abstract contract TokenInternal is
     }
 
     /// @notice burns an amount of tokens of an account
+    /// @dev parameter ordering is reversed to remove clash with ERC20BaseInternal burn(address,uint256)
     /// @param amount amount of tokens to burn
     /// @param account account to burn from
     function _burn(uint256 amount, address account) internal {
@@ -94,10 +95,11 @@ abstract contract TokenInternal is
         _transfer(address(this), account, l.claimableTokens[account]);
     }
 
-    /// @notice disburses (mints) an amount of tokens to an account
-    /// @param account address of account receive the tokens
+    /// @notice mint an amount of tokens to an account
+    /// @dev parameter ordering is reversed to remove clash with ERC20BaseInternal mint(address,uint256)
     /// @param amount amount of tokens to disburse
-    function _disburse(address account, uint256 amount) internal {
+    /// @param account address of account receive the tokens
+    function _mint(uint256 amount, address account) internal {
         Storage.Layout storage l = Storage.layout();
 
         // calculate amount for distribution

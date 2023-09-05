@@ -2,9 +2,11 @@
 
 pragma solidity ^0.8.21;
 
+import { IERC20 } from "@solidstate/contracts/interfaces/IERC20.sol";
+
 /// @title ITokenMint interface
 /// @dev contains all external functions for Token facet
-interface IToken {
+interface IToken is IERC20 {
     /// @notice adds an account to the mintingContracts enumerable set
     /// @param account address of account
     function addMintingContract(address account) external;

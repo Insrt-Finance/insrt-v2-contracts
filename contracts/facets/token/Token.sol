@@ -42,11 +42,36 @@ contract Token is TokenInternal, SolidStateERC20, IToken {
     }
 
     /// @inheritdoc IToken
+    function claimableTokens(
+        address account
+    ) external view returns (uint256 amount) {
+        amount = _claimableTokens(account);
+    }
+
+    /// @inheritdoc IToken
+    function distributionFractionBP()
+        external
+        view
+        returns (uint32 fractionBP)
+    {
+        fractionBP = _distributionFractionBP();
+    }
+
+    /// @inheritdoc IToken
     function mint(
         address account,
         uint256 amount
     ) external onlyMintingContract {
         _mint(amount, account);
+    }
+
+    /// @inheritdoc IToken
+    function mintingContracts()
+        external
+        view
+        returns (address[] memory contracts)
+    {
+        contracts = _mintingContracts();
     }
 
     /// @inheritdoc IToken

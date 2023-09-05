@@ -19,10 +19,28 @@ interface IToken is IERC20 {
     /// @notice claims all claimable tokens for the msg.sender
     function claim() external;
 
+    /// @notice returns all claimable tokens of a given account
+    /// @param account address of account
+    /// @return amount amount of claimable tokens
+    function claimableTokens(
+        address account
+    ) external view returns (uint256 amount);
+
+    /// @notice returns the distributionFractionBP value
+    /// @return fractionBP value of distributionFractionBP
+    function distributionFractionBP() external view returns (uint32 fractionBP);
+
     /// @notice disburses (mints) an amount of tokens to an account
     /// @param account address of account receive the tokens
     /// @param amount amount of tokens to disburse
     function mint(address account, uint256 amount) external;
+
+    /// @notice returns all addresses of contracts which are allowed to call mint/burn
+    /// @return contracts array of addresses of contracts which are allowed to call mint/burn
+    function mintingContracts()
+        external
+        view
+        returns (address[] memory contracts);
 
     /// @notice removes an account from the mintingContracts enumerable set
     /// @param account address of account

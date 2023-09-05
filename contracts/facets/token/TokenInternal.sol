@@ -95,6 +95,30 @@ abstract contract TokenInternal is
         _transfer(address(this), account, l.claimableTokens[account]);
     }
 
+    /// @notice returns all claimable tokens of a given account
+    /// @param account address of account
+    /// @return amount amount of claimable tokens
+    function _claimableTokens(
+        address account
+    ) internal view returns (uint256 amount) {
+        Storage.Layout storage l = Storage.layout();
+
+        amount =
+            (l.globalRatio - l.accountOffset[account]) *
+            _balanceOf(account) +
+            l.claimableTokens[account];
+    }
+
+    /// @notice returns the distributionFractionBP value
+    /// @return fractionBP value of distributionFractionBP
+    function _distributionFractionBP()
+        internal
+        view
+        returns (uint32 fractionBP)
+    {
+        fractionBP = Storage.layout().distributionFractionBP;
+    }
+
     /// @notice mint an amount of tokens to an account
     /// @dev parameter ordering is reversed to remove clash with ERC20BaseInternal mint(address,uint256)
     /// @param amount amount of tokens to disburse
@@ -136,6 +160,16 @@ abstract contract TokenInternal is
         // mint tokens to contract and account
         _mint(address(this), distributionAmount);
         _mint(account, amount);
+    }
+
+    /// @notice returns all addresses of contracts which are allowed to call mint/burn
+    /// @return contracts array of addresses of contracts which are allowed to call mint/burn
+    function _mintingContracts()
+        internal
+        view
+        returns (address[] memory contracts)
+    {
+        contracts = Storage.layout().mintingContracts.toArray();
     }
 
     /// @notice removes an account from the mintingContracts enumerable set

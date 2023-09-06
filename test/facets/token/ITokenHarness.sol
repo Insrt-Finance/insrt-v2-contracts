@@ -12,4 +12,19 @@ interface ITokenHarness {
     /// @notice adds a non-contract minting "contract" for ease of testing
     /// @param account address of account
     function mock_addMintingContract(address account) external;
+
+    /// @notice returns account offset  for an account
+    /// @param account address of account
+    /// @return offset account offset
+    function accountOffset(
+        address account
+    ) external view returns (uint256 offset);
+
+    /// @notice returns distribution supply
+    /// @return supply distribution supply
+    function distributionSupply() external view returns (uint256 supply);
+
+    /// @notice returns global ratio
+    /// @return ratio global ratio
+    function globalRatio() external view returns (uint256 ratio);
 }

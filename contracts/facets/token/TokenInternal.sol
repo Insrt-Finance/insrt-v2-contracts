@@ -99,6 +99,7 @@ abstract contract TokenInternal is
 
         _accrueTokens(l, account);
         _transfer(address(this), account, l.accruedTokens[account]);
+        l.accruedTokens[account] = 0;
     }
 
     /// @notice returns all claimable tokens of a given account

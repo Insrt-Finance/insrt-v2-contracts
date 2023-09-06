@@ -18,6 +18,9 @@ abstract contract TokenInternal is
 {
     using EnumerableSet for EnumerableSet.AddressSet;
 
+    // used for floating point calculations
+    uint256 internal constant SCALE = 10 ** 36;
+    // used for fee calculations - not sufficient for floating point calculations
     uint32 internal constant BASIS = 1000000000;
 
     /// @notice modifier to only allow addresses contained in mintingContracts
@@ -33,8 +36,9 @@ abstract contract TokenInternal is
     /// @param account address of account
     function _accrueTokens(Storage.Layout storage l, address account) internal {
         // calculate claimable tokens
-        uint256 claimableTokens = (l.globalRatio - l.accountOffset[account]) *
-            _balanceOf(account);
+        uint256 claimableTokens = _scaleDown(
+            (l.globalRatio - l.accountOffset[account]) * _balanceOf(account)
+        );
 
         // decrease distribution supply
         l.distributionSupply -= claimableTokens;
@@ -72,8 +76,10 @@ abstract contract TokenInternal is
     ) internal virtual override {
         super._beforeTokenTransfer(from, to, amount);
 
-        if ((from != address(0) && from != address(this)) || to != address(0)) {
-            revert NonTransferable();
+        if (from != address(0) && from != address(this)) {
+            if (to != address(0)) {
+                revert NonTransferable();
+            }
         }
     }
 
@@ -104,8 +110,9 @@ abstract contract TokenInternal is
         Storage.Layout storage l = Storage.layout();
 
         amount =
-            (l.globalRatio - l.accountOffset[account]) *
-            _balanceOf(account) +
+            _scaleDown(
+                (l.globalRatio - l.accountOffset[account]) * _balanceOf(account)
+            ) +
             l.claimableTokens[account];
     }
 
@@ -145,13 +152,13 @@ abstract contract TokenInternal is
         // the account offset for said account should not be updated
         if (supplyDelta > 0 && supplyDelta != _balanceOf(account)) {
             // update global ratio
-            l.globalRatio += distributionAmount / supplyDelta;
+            l.globalRatio += _scaleUp(distributionAmount) / supplyDelta;
 
             // update accountOffset of account
             l.accountOffset[account] = l.globalRatio;
         } else {
             // update global ratio
-            l.globalRatio += distributionAmount / amount;
+            l.globalRatio += _scaleUp(distributionAmount) / amount;
         }
 
         // increase distribution supply
@@ -177,6 +184,24 @@ abstract contract TokenInternal is
     function _removeMintingContract(address account) internal {
         Storage.layout().mintingContracts.remove(account);
         emit MintingContractRemoved(account);
+    }
+
+    /// @notice multiplies a value by the scale, to enable floating point calculations
+    /// @param value value to be scaled up
+    /// @return scaledValue product of value and scale
+    function _scaleUp(
+        uint256 value
+    ) internal pure returns (uint256 scaledValue) {
+        scaledValue = value * SCALE;
+    }
+
+    /// @notice divides a value by the scale, to rectify a previous scaleUp operation
+    /// @param value value to be scaled down
+    /// @return scaledValue value divided by scale
+    function _scaleDown(
+        uint256 value
+    ) internal pure returns (uint256 scaledValue) {
+        scaledValue = value / SCALE;
     }
 
     /// @notice sets a new value for distributionFractionBP

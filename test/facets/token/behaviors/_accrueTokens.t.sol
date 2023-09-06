@@ -63,6 +63,6 @@ contract Token_accrueTokens is ArbForkTest, TokenTest {
         token.exposed_accrueTokens(MINTER);
 
         uint256 newAccruedTokens = token.accruedTokens(MINTER);
-        assert(newAccruedTokens - oldAccruedTokens <= DISTRIBUTION_AMOUNT - 1);
+        assert(newAccruedTokens - oldAccruedTokens >= DISTRIBUTION_AMOUNT - 1);
     }
 }

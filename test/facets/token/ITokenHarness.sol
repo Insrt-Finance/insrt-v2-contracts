@@ -30,6 +30,13 @@ interface ITokenHarness {
         address account
     ) external view returns (uint256 offset);
 
+    /// @notice returns accrued tokens of account
+    /// @param account address of account
+    /// @return amount amount of accrued tokens
+    function accruedTokens(
+        address account
+    ) external view returns (uint256 amount);
+
     /// @notice returns distribution supply
     /// @return supply distribution supply
     function distributionSupply() external view returns (uint256 supply);

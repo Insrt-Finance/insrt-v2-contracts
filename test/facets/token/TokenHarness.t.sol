@@ -40,6 +40,13 @@ contract TokenHarness is Token, ITokenHarness {
     }
 
     /// @inheritdoc ITokenHarness
+    function accruedTokens(
+        address account
+    ) external view returns (uint256 amount) {
+        amount = Storage.layout().accruedTokens[account];
+    }
+
+    /// @inheritdoc ITokenHarness
     function distributionSupply() external view returns (uint256 supply) {
         supply = Storage.layout().distributionSupply;
     }

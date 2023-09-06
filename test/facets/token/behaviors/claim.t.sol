@@ -5,13 +5,11 @@ pragma solidity 0.8.21;
 import { TokenTest } from "../Token.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 
-/// @title Token_burn
-/// @dev Token test contract for testing expected burn behavior. Tested on an Arbitrum fork.
-contract Token_burn is ArbForkTest, TokenTest {
+/// @title Token_claim
+/// @dev Token test contract for testing expected claim behavior. Tested on an Arbitrum fork.
+contract Token_clim is ArbForkTest, TokenTest {
     uint256 internal constant DISTRIBUTION_AMOUNT =
         (MINT_AMOUNT * DISTRIBUTION_FRACTION_BP) / BASIS;
-
-    uint256 internal constant BURN_AMOUNT = 0.1 ether;
 
     /// @dev sets up the testing environment
     function setUp() public override {
@@ -34,16 +32,17 @@ contract Token_burn is ArbForkTest, TokenTest {
         );
     }
 
-    /// @dev ensures that burn accrues tokens of account that is having its tokens burnt
-    function test_burnAccruesTokensForAccount() public {
+    /// @dev ensures that claim accrues tokens of account that is claiming
+    function test_claimAccruesTokensForAccountAndThenSetsAccruedTokensToZero()
+        public
+    {
         uint256 claimableTokens = DISTRIBUTION_AMOUNT;
 
         uint256 oldDistributionSupply = token.distributionSupply();
         uint256 globalRatio = token.globalRatio();
-        uint256 oldAccruedTokens = token.accruedTokens(MINTER);
 
         vm.prank(MINTER);
-        token.burn(MINTER, BURN_AMOUNT);
+        token.claim();
 
         uint256 newDistributionSupply = token.distributionSupply();
         uint256 newAccruedTokens = token.accruedTokens(MINTER);
@@ -53,21 +52,19 @@ contract Token_burn is ArbForkTest, TokenTest {
         );
         assert(globalRatio == token.accountOffset(MINTER));
 
-        assert(newAccruedTokens - oldAccruedTokens >= DISTRIBUTION_AMOUNT - 1);
+        assert(newAccruedTokens == 0);
     }
 
-    /// @dev ensures that burn reduces the total supply and balance of account of the token
-    function test_burnReducesSupplyAndBalanceOfAccountOfToken() public {
-        uint256 oldSupply = token.totalSupply();
+    /// @dev ensures that claim transfers all claimable tokens to account
+    function test_claimAccruesTransfersClaimableTokensToAccount() public {
+        uint256 claimableTokens = token.claimableTokens(MINTER);
+
         uint256 oldBalance = token.balanceOf(MINTER);
-
         vm.prank(MINTER);
-        token.burn(MINTER, BURN_AMOUNT);
+        token.claim();
 
-        uint256 newSupply = token.totalSupply();
         uint256 newBalance = token.balanceOf(MINTER);
 
-        assert(oldSupply - newSupply == BURN_AMOUNT);
-        assert(oldBalance - newBalance == BURN_AMOUNT);
+        assert(newBalance - oldBalance == claimableTokens);
     }
 }

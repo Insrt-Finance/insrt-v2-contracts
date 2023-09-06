@@ -36,18 +36,18 @@ abstract contract TokenInternal is
     /// @param account address of account
     function _accrueTokens(Storage.Layout storage l, address account) internal {
         // calculate claimable tokens
-        uint256 claimableTokens = _scaleDown(
+        uint256 accruedTokens = _scaleDown(
             (l.globalRatio - l.accountOffset[account]) * _balanceOf(account)
         );
 
         // decrease distribution supply
-        l.distributionSupply -= claimableTokens;
+        l.distributionSupply -= accruedTokens;
 
         // update account's last ratio
         l.accountOffset[account] = l.globalRatio;
 
         // update claimable tokens
-        l.claimableTokens[account] += claimableTokens;
+        l.accruedTokens[account] += accruedTokens;
     }
 
     /// @notice adds an account to the mintingContracts enumerable set
@@ -98,7 +98,7 @@ abstract contract TokenInternal is
         Storage.Layout storage l = Storage.layout();
 
         _accrueTokens(l, account);
-        _transfer(address(this), account, l.claimableTokens[account]);
+        _transfer(address(this), account, l.accruedTokens[account]);
     }
 
     /// @notice returns all claimable tokens of a given account
@@ -113,7 +113,7 @@ abstract contract TokenInternal is
             _scaleDown(
                 (l.globalRatio - l.accountOffset[account]) * _balanceOf(account)
             ) +
-            l.claimableTokens[account];
+            l.accruedTokens[account];
     }
 
     /// @notice returns the distributionFractionBP value

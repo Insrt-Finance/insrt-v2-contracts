@@ -17,8 +17,8 @@ library TokenStorage {
         /// @dev last ratio a account had when one of their actions led to a change in the
         /// reservedSupply
         mapping(address account => uint256 ratio) accountOffset;
-        /// @dev amount of tokens claimable as a result of distribution to token holders
-        mapping(address account => uint256 amount) claimableTokens;
+        /// @dev amount of tokens accrued as a result of distribution to token holders
+        mapping(address account => uint256 amount) accruedTokens;
         /// @dev set of contracts which are allowed to call the mint function
         EnumerableSet.AddressSet mintingContracts;
     }

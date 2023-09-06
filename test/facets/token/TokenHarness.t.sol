@@ -19,6 +19,15 @@ contract TokenHarness is Token, ITokenHarness {
     }
 
     /// @inheritdoc ITokenHarness
+    function exposed_beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) external {
+        _beforeTokenTransfer(from, to, amount);
+    }
+
+    /// @inheritdoc ITokenHarness
     function mock_addMintingContract(address account) external {
         Storage.layout().mintingContracts.add(account);
     }

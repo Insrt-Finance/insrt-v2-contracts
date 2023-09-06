@@ -16,6 +16,11 @@ abstract contract TokenTest is TokenProxyTest {
 
     TokenHelper public tokenHelper;
 
+    uint256 internal constant SCALE = 10 ** 36;
+    uint32 internal constant BASIS = 1000000000;
+
+    uint256 internal constant MINT_AMOUNT = 100 ether;
+
     address internal constant MINTER = address(1);
     address internal constant NON_OWNER = address(100);
 

@@ -9,6 +9,16 @@ interface ITokenHarness {
     /// @param account address of account
     function exposed_accrueTokens(address account) external;
 
+    /// @notice exposes _beforeTokenTransfer
+    /// @param from sender of tokens
+    /// @param to receiver of tokens
+    /// @param amount quantity of tokens transferred
+    function exposed_beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) external;
+
     /// @notice adds a non-contract minting "contract" for ease of testing
     /// @param account address of account
     function mock_addMintingContract(address account) external;

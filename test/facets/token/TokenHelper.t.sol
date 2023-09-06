@@ -63,19 +63,22 @@ contract TokenHelper {
                 selectors: tokenFunctionSelectors
             });
 
-        bytes4[] memory tokenHarnessFunctionSelectors = new bytes4[](5);
+        bytes4[] memory tokenHarnessFunctionSelectors = new bytes4[](6);
 
         tokenHarnessFunctionSelectors[0] = ITokenHarness
             .exposed_accrueTokens
             .selector;
         tokenHarnessFunctionSelectors[1] = ITokenHarness
+            .exposed_beforeTokenTransfer
+            .selector;
+        tokenHarnessFunctionSelectors[2] = ITokenHarness
             .mock_addMintingContract
             .selector;
-        tokenHarnessFunctionSelectors[2] = ITokenHarness.accountOffset.selector;
-        tokenHarnessFunctionSelectors[3] = ITokenHarness
+        tokenHarnessFunctionSelectors[3] = ITokenHarness.accountOffset.selector;
+        tokenHarnessFunctionSelectors[5] = ITokenHarness
             .distributionSupply
             .selector;
-        tokenHarnessFunctionSelectors[4] = ITokenHarness.globalRatio.selector;
+        tokenHarnessFunctionSelectors[5] = ITokenHarness.globalRatio.selector;
 
         ISolidStateDiamond.FacetCut
             memory tokenHarnessFacetCut = IDiamondWritableInternal.FacetCut({

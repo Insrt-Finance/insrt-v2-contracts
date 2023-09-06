@@ -5,8 +5,6 @@ pragma solidity 0.8.21;
 import { TokenTest } from "../Token.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 
-import "forge-std/console.sol";
-
 /// @title Token_accrueTokens
 /// @dev Token test contract for testing expected accrueToken behavior. Tested on an Arbitrum fork.
 contract Token_accrueTokens is ArbForkTest, TokenTest {

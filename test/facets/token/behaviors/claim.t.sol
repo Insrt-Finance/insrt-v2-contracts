@@ -7,7 +7,7 @@ import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 
 /// @title Token_claim
 /// @dev Token test contract for testing expected claim behavior. Tested on an Arbitrum fork.
-contract Token_clim is ArbForkTest, TokenTest {
+contract Token_claim is ArbForkTest, TokenTest {
     uint256 internal constant DISTRIBUTION_AMOUNT =
         (MINT_AMOUNT * DISTRIBUTION_FRACTION_BP) / BASIS;
 

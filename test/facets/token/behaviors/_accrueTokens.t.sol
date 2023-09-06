@@ -43,7 +43,7 @@ contract Token_accrueTokens is ArbForkTest, TokenTest {
         uint256 newDistributionSupply = token.distributionSupply();
 
         assert(
-            oldDistributionSupply - newDistributionSupply <= claimableTokens - 1
+            oldDistributionSupply - newDistributionSupply >= claimableTokens - 1
         );
     }
 
@@ -56,15 +56,13 @@ contract Token_accrueTokens is ArbForkTest, TokenTest {
         assert(globalRatio == token.accountOffset(MINTER));
     }
 
-    /// @dev ensures that accrueTokens increases the claimable tokens of the account accruing tokens
-    function test_accrueTokensIncreasesClaimableTokens() public {
-        uint256 oldClaimableTokens = token.claimableTokens(MINTER);
+    /// @dev ensures that accrueTokens increases the accrued tokens of the account accruing tokens
+    function test_accrueTokensIncreasesAccruedTokens() public {
+        uint256 oldAccruedTokens = token.accruedTokens(MINTER);
 
         token.exposed_accrueTokens(MINTER);
 
-        uint256 newClaimableTokens = token.claimableTokens(MINTER);
-        assert(
-            newClaimableTokens - oldClaimableTokens <= DISTRIBUTION_AMOUNT - 1
-        );
+        uint256 newAccruedTokens = token.accruedTokens(MINTER);
+        assert(newAccruedTokens - oldAccruedTokens <= DISTRIBUTION_AMOUNT - 1);
     }
 }

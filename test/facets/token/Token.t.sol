@@ -16,6 +16,9 @@ abstract contract TokenTest is TokenProxyTest {
 
     TokenHelper public tokenHelper;
 
+    address internal constant MINTER = address(1);
+    address internal constant NON_OWNER = address(100);
+
     uint32 internal constant DISTRIBUTION_FRACTION_BP = 100000000; // 10% split
 
     /// @dev sets up Token for testing
@@ -30,6 +33,11 @@ abstract contract TokenTest is TokenProxyTest {
         token.setDistributionFractionBP(DISTRIBUTION_FRACTION_BP);
 
         assert(DISTRIBUTION_FRACTION_BP == token.distributionFractionBP());
+
+        // add minter to minting contracts for testing
+        token.mock_addMintingContract(MINTER);
+
+        assert(MINTER == token.mintingContracts()[0]);
     }
 
     /// @dev initializes token as a facet by executing a diamond cut on tokenProxy

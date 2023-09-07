@@ -88,7 +88,19 @@ abstract contract TokenInternal is
     /// @param amount amount of tokens to burn
     /// @param account account to burn from
     function _burn(uint256 amount, address account) internal {
-        _accrueTokens(Storage.layout(), account);
+        Storage.Layout storage l = Storage.layout();
+
+        // calculate claimable tokens
+        uint256 accruedTokens = _scaleDown(
+            (l.globalRatio - l.accountOffset[account]) * _balanceOf(account)
+        );
+
+        // update account's last ratio
+        l.accountOffset[account] = l.globalRatio;
+
+        // update claimable tokens
+        l.accruedTokens[account] += accruedTokens;
+
         _burn(account, amount);
     }
 

@@ -146,7 +146,8 @@ abstract contract TokenInternal is
         amount -= distributionAmount;
 
         uint256 accountBalance = _balanceOf(account);
-        uint256 supplyDelta = _totalSupply() -
+        uint256 totalSupply = _totalSupply();
+        uint256 supplyDelta = totalSupply -
             accountBalance -
             l.distributionSupply;
         uint256 accruedTokens;
@@ -171,8 +172,22 @@ abstract contract TokenInternal is
             // update claimable tokens
             l.accruedTokens[account] += accruedTokens;
         } else {
-            // update global ratio
-            l.globalRatio += _scaleUp(distributionAmount) / amount;
+            // set global ratio
+            uint256 distributionRatio = _scaleUp(distributionAmount) / amount;
+
+            if (l.globalRatio % distributionRatio == 0) {
+                l.globalRatio += distributionRatio;
+                l.accountOffset[account] = l.globalRatio - distributionRatio;
+            } else {
+                uint256 previousAccruals = _scaleDown(
+                    (l.globalRatio - l.accountOffset[account]) * accountBalance
+                );
+                l.accruedTokens[account] +=
+                    distributionAmount +
+                    previousAccruals;
+                l.globalRatio += distributionRatio;
+                l.accountOffset[account] = l.globalRatio;
+            }
         }
 
         l.distributionSupply += distributionAmount;

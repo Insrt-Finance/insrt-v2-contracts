@@ -40,9 +40,6 @@ abstract contract TokenInternal is
             (l.globalRatio - l.accountOffset[account]) * _balanceOf(account)
         );
 
-        // decrease distribution supply
-        l.distributionSupply -= accruedTokens;
-
         // update account's last ratio
         l.accountOffset[account] = l.globalRatio;
 
@@ -90,17 +87,7 @@ abstract contract TokenInternal is
     function _burn(uint256 amount, address account) internal {
         Storage.Layout storage l = Storage.layout();
 
-        // calculate claimable tokens
-        uint256 accruedTokens = _scaleDown(
-            (l.globalRatio - l.accountOffset[account]) * _balanceOf(account)
-        );
-
-        // update account's last ratio
-        l.accountOffset[account] = l.globalRatio;
-
-        // update claimable tokens
-        l.accruedTokens[account] += accruedTokens;
-
+        _accrueTokens(l, account);
         _burn(account, amount);
     }
 
@@ -108,10 +95,15 @@ abstract contract TokenInternal is
     /// @param account address of account
     function _claim(address account) internal {
         Storage.Layout storage l = Storage.layout();
-
         _accrueTokens(l, account);
-        _transfer(address(this), account, l.accruedTokens[account]);
+        uint256 accruedTokens = l.accruedTokens[account];
+
+        // decrease distribution supply by claimed tokens
+        l.distributionSupply -= accruedTokens;
+        // set accruedTokens of account to 0
         l.accruedTokens[account] = 0;
+
+        _transfer(address(this), account, accruedTokens);
     }
 
     /// @notice returns all claimable tokens of a given account

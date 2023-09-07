@@ -141,29 +141,42 @@ abstract contract TokenInternal is
         // decrease amount to mint to account
         amount -= distributionAmount;
 
-        uint256 supplyDelta = _totalSupply() - l.distributionSupply;
+        uint256 accountBalance = _balanceOf(account);
+        uint256 supplyDelta = _totalSupply() -
+            accountBalance -
+            l.distributionSupply;
+        uint256 accruedTokens;
 
         // if the supplyDelta is zero, it means there are no tokens in circulation
         // so the receiving account is the first/only receiver therefore is owed the full
         // distribution amount.
-        // if the the supplyDelta is equal to the balance of an account, it means this account
-        // is the only which has received or is receiving tokens so the distribution amount
-        // should again belong to this sole account.
         // to ensure the full distribution amount is given to an account in this instance,
         // the account offset for said account should not be updated
-        if (supplyDelta > 0 && supplyDelta != _balanceOf(account)) {
+        if (supplyDelta > 0) {
+            // tokens are accrued for account prior to global ratio or offset being updated
+            accruedTokens = _scaleDown(
+                (l.globalRatio - l.accountOffset[account]) * accountBalance
+            );
+
             // update global ratio
             l.globalRatio += _scaleUp(distributionAmount) / supplyDelta;
 
             // update accountOffset of account
             l.accountOffset[account] = l.globalRatio;
+
+            // update claimable tokens
+            l.accruedTokens[account] += accruedTokens;
         } else {
             // update global ratio
             l.globalRatio += _scaleUp(distributionAmount) / amount;
         }
 
-        // increase distribution supply
-        l.distributionSupply += distributionAmount;
+        // update distribution supply
+        if (distributionAmount > accruedTokens) {
+            l.distributionSupply += distributionAmount - accruedTokens;
+        } else {
+            l.distributionSupply -= accruedTokens - distributionAmount;
+        }
 
         // mint tokens to contract and account
         _mint(address(this), distributionAmount);

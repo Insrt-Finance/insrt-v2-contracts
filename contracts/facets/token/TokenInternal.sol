@@ -183,12 +183,7 @@ abstract contract TokenInternal is
             l.globalRatio += _scaleUp(distributionAmount) / amount;
         }
 
-        // update distribution supply
-        if (distributionAmount > accruedTokens) {
-            l.distributionSupply += distributionAmount - accruedTokens;
-        } else {
-            l.distributionSupply -= accruedTokens - distributionAmount;
-        }
+        l.distributionSupply += distributionAmount;
 
         // mint tokens to contract and account
         _mint(address(this), distributionAmount);

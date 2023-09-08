@@ -172,20 +172,28 @@ abstract contract TokenInternal is
             // update claimable tokens
             l.accruedTokens[account] += accruedTokens;
         } else {
-            // set global ratio
+            // calculation ratio of distributionAmount to remaining amount
             uint256 distributionRatio = _scaleUp(distributionAmount) / amount;
 
+            // check whether the sole holder is the first minter because if so
+            // the globalRatio will be a multiple of distributionRatio
             if (l.globalRatio % distributionRatio == 0) {
+                // update globalRatio
                 l.globalRatio += distributionRatio;
+                // update accountOffset
                 l.accountOffset[account] = l.globalRatio - distributionRatio;
             } else {
+                // sole holder due to all other minters burning tokens
+                // calculate and accrue previous token accrual
                 uint256 previousAccruals = _scaleDown(
                     (l.globalRatio - l.accountOffset[account]) * accountBalance
                 );
                 l.accruedTokens[account] +=
                     distributionAmount +
                     previousAccruals;
+                // update globalRatio
                 l.globalRatio += distributionRatio;
+                // update accountOffset
                 l.accountOffset[account] = l.globalRatio;
             }
         }

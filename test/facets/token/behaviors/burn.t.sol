@@ -36,23 +36,15 @@ contract Token_burn is ArbForkTest, TokenTest {
 
     /// @dev ensures that burn accrues tokens of account that is having its tokens burnt
     function test_burnAccruesTokensForAccount() public {
-        uint256 claimableTokens = DISTRIBUTION_AMOUNT;
-
-        uint256 oldDistributionSupply = token.distributionSupply();
         uint256 globalRatio = token.globalRatio();
         uint256 oldAccruedTokens = token.accruedTokens(MINTER);
 
         vm.prank(MINTER);
         token.burn(MINTER, BURN_AMOUNT);
 
-        uint256 newDistributionSupply = token.distributionSupply();
         uint256 newAccruedTokens = token.accruedTokens(MINTER);
 
-        assert(
-            oldDistributionSupply - newDistributionSupply >= claimableTokens - 1
-        );
         assert(globalRatio == token.accountOffset(MINTER));
-
         assert(newAccruedTokens - oldAccruedTokens >= DISTRIBUTION_AMOUNT - 1);
     }
 

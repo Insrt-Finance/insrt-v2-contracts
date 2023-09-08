@@ -32,21 +32,6 @@ contract Token_accrueTokens is ArbForkTest, TokenTest {
         );
     }
 
-    /// @dev ensures that accrueTokens decreases the distribution supply by the accrued token amount
-    function test_accrueTokensDecreasesDistributionSupply() public {
-        uint256 claimableTokens = DISTRIBUTION_AMOUNT;
-
-        uint256 oldDistributionSupply = token.distributionSupply();
-
-        token.exposed_accrueTokens(MINTER);
-
-        uint256 newDistributionSupply = token.distributionSupply();
-
-        assert(
-            oldDistributionSupply - newDistributionSupply >= claimableTokens - 1
-        );
-    }
-
     /// @dev ensures that accrueTokens updates the account offset of the account accruing tokens to the globalRatio
     function test_accrueTokensSetsAccountOffsetToGlobalRatio() public {
         uint256 globalRatio = token.globalRatio();

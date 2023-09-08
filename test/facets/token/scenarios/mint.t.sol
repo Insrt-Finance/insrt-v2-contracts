@@ -5,6 +5,7 @@ pragma solidity 0.8.21;
 import { TokenTest } from "../Token.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 
+/// TODO: add scenario where distributionFractionBP changes
 /// @title Token_mint
 /// @dev Token test contract for testing expected mint behavior. Tested on an Arbitrum fork.
 contract Token_mint is ArbForkTest, TokenTest {

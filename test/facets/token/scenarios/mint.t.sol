@@ -19,6 +19,18 @@ contract Token_mint is ArbForkTest, TokenTest {
         super.setUp();
     }
 
+    /// @dev ensures that throughout a series of actions the $MINT tokens are distributed correctly
+    /// amongst the participants of the system
+    /// the sequence of actions is:
+    /// - MINTER mints
+    /// - RECEIVER_ONE mints
+    /// - RECEIVER_TWO mints
+    /// - MINTER claims
+    /// - RECEIVER_ONE mints
+    /// - MINTER burns
+    /// - RECEIVER_TWO mints
+    /// each of the actions listed above affect token accruals and future distributions so
+    /// after each action, the division of the distributed tokens is checked
     function test_accountingOfAccruedTokensWithMultipleReceiversAcrossMultipleActions()
         public
     {
@@ -224,6 +236,23 @@ contract Token_mint is ArbForkTest, TokenTest {
         );
     }
 
+    /// @dev ensures that when a single user is the holder of all the tokens, they are entitled to the entire
+    /// distribution of tokens
+    /// this situation can occur either when a minter is minting for the first time or when all other token
+    /// holders have burnt their tokens and a single user is left
+    /// the sequence of actions is:
+    /// - MINTER mints
+    /// - MINTER mints
+    /// - RECEIVER_ONE mints
+    /// - RECEIVER_ONE claims
+    /// - RECEIVER_ONE burns
+    /// - MINTER mints
+    /// - RECEIVER_ONE mints
+    /// - RECEIVER_ONE claims
+    /// - RECEIVER_ONE burns
+    /// - MINTER mints
+    /// each of the actions listed above affect token accruals and future distributions so
+    /// after each action, the division of the distributed tokens is checked
     function test_trackingOfClaimableTokensWithSingleUser() public {
         // mint for MINTER
         vm.prank(MINTER);

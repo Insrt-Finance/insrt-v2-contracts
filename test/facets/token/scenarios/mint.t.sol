@@ -287,15 +287,30 @@ contract Token_mint is ArbForkTest, TokenTest {
         );
 
         // mint for RECEIVER_ONE
-        vm.prank(MINTER);
         token.mint(RECEIVER_ONE, MINT_AMOUNT);
 
         // claim for RECEIVER_ONE
-        vm.prank(RECEIVER_ONE);
+        vm.startPrank(RECEIVER_ONE);
         token.claim();
 
         // burn all RECEIVER_ONE tokens
         vm.startPrank(MINTER);
         token.burn(RECEIVER_ONE, token.balanceOf(RECEIVER_ONE));
+
+        // mint for MINTER
+        token.mint(MINTER, MINT_AMOUNT);
+
+        // MINTER has done 4 mints which should solely belong to them, and is also entitled
+        // to 2 * DISTRIBUTION_AMOUNT from the RECEIVER_ONE mint
+        // ± 3 error range due to rounding
+        assert(
+            4 * MINT_AMOUNT + 2 * DISTRIBUTION_AMOUNT + 3 >=
+                token.balanceOf(MINTER) + token.claimableTokens(MINTER)
+        );
+
+        assert(
+            4 * MINT_AMOUNT + DISTRIBUTION_AMOUNT - 3 <=
+                token.balanceOf(MINTER) + token.claimableTokens(MINTER)
+        );
     }
 }

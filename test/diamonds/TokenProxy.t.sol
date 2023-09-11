@@ -12,7 +12,7 @@ import { TokenProxy } from "../../contracts/diamonds/token/TokenProxy.sol";
 abstract contract TokenProxyTest is Test {
     TokenProxy public tokenProxy;
 
-    receive() external payable {}
+    receive() external payable virtual {}
 
     /// @notice Setup function to initialize contract state before tests.
     /// @dev Creates a new instance of TokenProxy (diamond contract) and assigns it to tokenProxy.

@@ -12,7 +12,7 @@ import { Core } from "../../contracts/diamonds/Core/Core.sol";
 abstract contract CoreTest is Test {
     Core public coreDiamond;
 
-    receive() external payable {}
+    receive() external payable virtual {}
 
     /// @notice Setup function to initialize contract state before tests.
     /// @dev Creates a new instance of Core (diamond contract) and assigns it to CoreDiamond.

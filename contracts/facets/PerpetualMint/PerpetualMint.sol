@@ -128,6 +128,11 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function redeem(uint256 amount) external {
+        _redeem(msg.sender, amount);
+    }
+
+    /// @inheritdoc IPerpetualMint
     function setCollectionMintPrice(
         address collection,
         uint256 price

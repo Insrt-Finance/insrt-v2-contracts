@@ -345,24 +345,28 @@ abstract contract PerpetualMintInternal is
         normalizedValue = value % basis;
     }
 
-    /// @notice swaps an amoutn of $MINT tokens for ETH (native token) for an account
+    /// @notice redeems an amount of $MINT tokens for ETH (native token) for an account
     /// @dev only one-sided ($MINT => ETH (native token)) supported
-    /// @param l the PerpetualMint storage layout
     /// @param account address of account
     /// @param amount amount of $MINT
-    function _swap(
-        Storage.Layout storage l,
+    function _redeem(
         address account,
         uint256 amount
     ) internal returns (uint256 ethAmount) {
+        Storage.Layout storage l = Storage.layout();
+
         // burn amount of $MINT to be swapped
         IToken(MINT_TOKEN).burn(account, amount);
 
         // calculate amount of ETH given for $MINT amount
-        ethAmount = amount / _ethToMintRatio(l);
+        ethAmount =
+            (amount * (BASIS - l.redemptionFeeBP)) /
+            (BASIS * _ethToMintRatio(l));
 
         // decrease mintEarnings
         l.mintEarnings -= ethAmount;
+
+        payable(account).sendValue(ethAmount);
     }
 
     /// @notice requests random values from Chainlink VRF

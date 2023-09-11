@@ -96,6 +96,10 @@ interface IPerpetualMint is IPausable {
     /// @notice Triggers paused state, when contract is unpaused.
     function pause() external;
 
+    /// @notice redeems an amount of $MINT tokens for ETH (native token) for the msg.sender
+    /// @param amount amount of $MINT
+    function redeem(uint256 amount) external;
+
     /// @notice set the mint price for a given collection
     /// @param collection address of collection
     /// @param price mint price of the collection

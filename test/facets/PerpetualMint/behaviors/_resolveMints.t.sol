@@ -54,20 +54,8 @@ contract PerpetualMint_resolveMints is
         perpetualMint.exposed_resolveMints(minter, COLLECTION, randomWords);
     }
 
-    /// @dev tests that _resolveMints works with many random values when paid in ETH
-    function testFuzz_resolveMintsPaidInEth(
-        uint256 valueOne,
-        uint256 valueTwo
-    ) external {
-        randomWords.push(valueOne);
-        randomWords.push(valueTwo);
-
-        vm.prank(minter);
-        perpetualMint.exposed_resolveMints(minter, COLLECTION, randomWords);
-    }
-
-    /// @dev tests that _resolveMints works with many random values when paid in $MINT
-    function testFuzz_resolveMintsPaidInMint(
+    /// @dev tests that _resolveMints works with many random values
+    function testFuzz_resolveMints(
         uint256 valueOne,
         uint256 valueTwo
     ) external {

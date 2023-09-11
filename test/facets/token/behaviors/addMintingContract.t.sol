@@ -43,7 +43,7 @@ contract Token_addMintingContract is ArbForkTest, TokenTest, ITokenInternal {
     function test_addMintingContractRevertsWhen_CallerIsNotOwner() public {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
-        vm.prank(NON_OWNER);
+        vm.prank(TOKEN_NON_OWNER);
         token.addMintingContract(MINTER);
     }
 }

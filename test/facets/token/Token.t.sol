@@ -22,7 +22,7 @@ abstract contract TokenTest is TokenProxyTest {
     uint256 internal constant MINT_AMOUNT = 100 ether;
 
     address internal constant MINTER = address(1);
-    address internal constant NON_OWNER = address(100);
+    address internal constant TOKEN_NON_OWNER = address(100);
 
     uint32 internal constant DISTRIBUTION_FRACTION_BP = 100000000; // 10% split
 

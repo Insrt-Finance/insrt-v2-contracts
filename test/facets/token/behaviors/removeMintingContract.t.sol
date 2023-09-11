@@ -50,7 +50,7 @@ contract Token_removeMintingContract is ArbForkTest, TokenTest, ITokenInternal {
     function test_removeMintingContractRevertsWhen_CallerIsNotOwner() public {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
-        vm.prank(NON_OWNER);
+        vm.prank(TOKEN_NON_OWNER);
         token.removeMintingContract(WETH);
     }
 }

@@ -47,7 +47,7 @@ contract Token_setDistributionFractionBP is
     {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
-        vm.prank(NON_OWNER);
+        vm.prank(TOKEN_NON_OWNER);
         token.setDistributionFractionBP(NEW_VALUE);
     }
 }

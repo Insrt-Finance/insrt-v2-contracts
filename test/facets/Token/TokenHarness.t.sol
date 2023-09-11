@@ -5,8 +5,8 @@ pragma solidity 0.8.21;
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
 import { ITokenHarness } from "./ITokenHarness.sol";
-import { TokenStorage as Storage } from "../../../contracts/facets/token/Storage.sol";
-import { Token } from "../../../contracts/facets/token/Token.sol";
+import { TokenStorage as Storage } from "../../../contracts/facets/Token/Storage.sol";
+import { Token } from "../../../contracts/facets/Token/Token.sol";
 
 /// @title TokenHarness
 /// @dev exposes internal Token internal functions for testing

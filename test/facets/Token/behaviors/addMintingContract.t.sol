@@ -6,7 +6,7 @@ import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableI
 
 import { TokenTest } from "../Token.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
-import { ITokenInternal } from "../../../../contracts/facets/token/ITokenInternal.sol";
+import { ITokenInternal } from "../../../../contracts/facets/Token/ITokenInternal.sol";
 
 /// @title Token_addMintingContract
 /// @dev Token test contract for testing expected addMintingContract behavior. Tested on an Arbitrum fork.

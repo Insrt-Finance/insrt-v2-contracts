@@ -8,8 +8,8 @@ import { IDiamondWritableInternal } from "@solidstate/contracts/proxy/diamond/wr
 
 import { ITokenHarness } from "./ITokenHarness.sol";
 import { TokenHarness } from "./TokenHarness.t.sol";
-import { IToken } from "../../../contracts/facets/token/IToken.sol";
-import { TokenStorage as Storage } from "../../../contracts/facets/token/Storage.sol";
+import { IToken } from "../../../contracts/facets/Token/IToken.sol";
+import { TokenStorage as Storage } from "../../../contracts/facets/Token/Storage.sol";
 
 /// @title TokenHelper
 /// @dev Test helper contract for setting up Token facet for diamond cutting and testing

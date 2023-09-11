@@ -121,7 +121,7 @@ contract PerpetualMint_fulfillRandomWords is
         perpetualMint.exposed_pendingRequestsAdd(COLLECTION, mockMintRequestId);
 
         // add the mock mint request data
-        perpetualMint.setRequests(mockMintRequestId, minter, COLLECTION, true);
+        perpetualMint.setRequests(mockMintRequestId, minter, COLLECTION);
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
         uint256 mintFulfillmentBlockNumber = mintBlockNumber +
@@ -183,7 +183,7 @@ contract PerpetualMint_fulfillRandomWords is
         perpetualMint.exposed_pendingRequestsAdd(COLLECTION, mockMintRequestId);
 
         // add the mock mint request data
-        perpetualMint.setRequests(mockMintRequestId, minter, COLLECTION, false);
+        perpetualMint.setRequests(mockMintRequestId, minter, COLLECTION);
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
         uint256 mintFulfillmentBlockNumber = mintBlockNumber +
@@ -270,7 +270,7 @@ contract PerpetualMint_fulfillRandomWords is
         perpetualMint.exposed_pendingRequestsAdd(COLLECTION, mockMintRequestId);
 
         // add the mock mint request data
-        perpetualMint.setRequests(mockMintRequestId, minter, COLLECTION, true);
+        perpetualMint.setRequests(mockMintRequestId, minter, COLLECTION);
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
         uint256 mintFulfillmentBlockNumber = mintBlockNumber +
@@ -351,7 +351,7 @@ contract PerpetualMint_fulfillRandomWords is
         perpetualMint.exposed_pendingRequestsAdd(COLLECTION, mockMintRequestId);
 
         // add the mock mint request data
-        perpetualMint.setRequests(mockMintRequestId, minter, COLLECTION, false);
+        perpetualMint.setRequests(mockMintRequestId, minter, COLLECTION);
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
         uint256 mintFulfillmentBlockNumber = mintBlockNumber +

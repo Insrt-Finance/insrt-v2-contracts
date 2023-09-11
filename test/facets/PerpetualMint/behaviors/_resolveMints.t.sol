@@ -33,12 +33,7 @@ contract PerpetualMint_resolveMints is
         );
 
         vm.prank(minter);
-        perpetualMint.exposed_resolveMints(
-            minter,
-            COLLECTION,
-            randomWords,
-            true
-        );
+        perpetualMint.exposed_resolveMints(minter, COLLECTION, randomWords);
 
         // check that minter received a token receipt for each won mint
         assert(
@@ -56,12 +51,7 @@ contract PerpetualMint_resolveMints is
         emit MintResolved(COLLECTION, true);
 
         vm.prank(minter);
-        perpetualMint.exposed_resolveMints(
-            minter,
-            COLLECTION,
-            randomWords,
-            true
-        );
+        perpetualMint.exposed_resolveMints(minter, COLLECTION, randomWords);
     }
 
     /// @dev tests that _resolveMints works with many random values when paid in ETH
@@ -73,12 +63,7 @@ contract PerpetualMint_resolveMints is
         randomWords.push(valueTwo);
 
         vm.prank(minter);
-        perpetualMint.exposed_resolveMints(
-            minter,
-            COLLECTION,
-            randomWords,
-            true
-        );
+        perpetualMint.exposed_resolveMints(minter, COLLECTION, randomWords);
     }
 
     /// @dev tests that _resolveMints works with many random values when paid in $MINT
@@ -90,11 +75,6 @@ contract PerpetualMint_resolveMints is
         randomWords.push(valueTwo);
 
         vm.prank(minter);
-        perpetualMint.exposed_resolveMints(
-            minter,
-            COLLECTION,
-            randomWords,
-            false
-        );
+        perpetualMint.exposed_resolveMints(minter, COLLECTION, randomWords);
     }
 }

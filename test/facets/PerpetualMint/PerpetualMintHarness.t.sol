@@ -18,7 +18,7 @@ contract PerpetualMintHarness is
 {
     using EnumerableSet for EnumerableSet.UintSet;
 
-    constructor(address vrf) PerpetualMint(vrf) {}
+    constructor(address vrf, address mintToken) PerpetualMint(vrf, mintToken) {}
 
     /// @inheritdoc IPerpetualMintHarness
     function exposed_balanceOf(
@@ -87,46 +87,29 @@ contract PerpetualMintHarness is
     function exposed_requestRandomWords(
         address minter,
         address collection,
-        uint32 numWords,
-        bool paidInEth
+        uint32 numWords
     ) external {
         Storage.Layout storage l = Storage.layout();
 
         CollectionData storage collectionData = l.collections[collection];
 
-        _requestRandomWords(
-            l,
-            collectionData,
-            minter,
-            collection,
-            numWords,
-            paidInEth
-        );
+        _requestRandomWords(l, collectionData, minter, collection, numWords);
     }
 
     /// @inheritdoc IPerpetualMintHarness
     function exposed_requests(
         uint256 requestId
-    )
-        external
-        view
-        returns (address minter, address collection, bool paidInEth)
-    {
+    ) external view returns (address minter, address collection) {
         RequestData storage request = Storage.layout().requests[requestId];
 
-        (minter, collection, paidInEth) = (
-            request.minter,
-            request.collection,
-            request.paidInEth
-        );
+        (minter, collection) = (request.minter, request.collection);
     }
 
     /// @inheritdoc IPerpetualMintHarness
     function exposed_resolveMints(
         address minter,
         address collection,
-        uint256[] memory randomWords,
-        bool paidInEth
+        uint256[] memory randomWords
     ) external {
         Storage.Layout storage l = Storage.layout();
 
@@ -141,8 +124,7 @@ contract PerpetualMintHarness is
             tiersData,
             minter,
             collection,
-            randomWords,
-            paidInEth
+            randomWords
         );
     }
 
@@ -165,13 +147,11 @@ contract PerpetualMintHarness is
     function setRequests(
         uint256 requestId,
         address minter,
-        address collection,
-        bool paidInEth
+        address collection
     ) external {
         Storage.layout().requests[requestId] = RequestData({
             minter: minter,
-            collection: collection,
-            paidInEth: paidInEth
+            collection: collection
         });
     }
 }

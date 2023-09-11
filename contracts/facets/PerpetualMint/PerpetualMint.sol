@@ -17,7 +17,10 @@ contract PerpetualMint is
     Pausable,
     PerpetualMintInternal
 {
-    constructor(address vrf) PerpetualMintInternal(vrf) {}
+    constructor(
+        address vrf,
+        address mintToken
+    ) PerpetualMintInternal(vrf, mintToken) {}
 
     /// @inheritdoc IPerpetualMint
     function accruedConsolationFees()

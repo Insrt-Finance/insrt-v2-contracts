@@ -63,8 +63,7 @@ contract PerpetualMint_requestRandomWords is
         perpetualMint.exposed_requestRandomWords(
             minter,
             COLLECTION,
-            TEST_NUM_WORDS,
-            true
+            TEST_NUM_WORDS
         );
     }
 
@@ -77,8 +76,7 @@ contract PerpetualMint_requestRandomWords is
         perpetualMint.exposed_requestRandomWords(
             minter,
             COLLECTION,
-            TEST_NUM_WORDS,
-            true
+            TEST_NUM_WORDS
         );
 
         // this call succeeds only if the request was added to pendingRequests
@@ -87,17 +85,12 @@ contract PerpetualMint_requestRandomWords is
             0
         );
 
-        (
-            address requestMinter,
-            address requestCollection,
-            bool requestPaidInEth
-        ) = perpetualMint.exposed_requests(requestId);
+        (address requestMinter, address requestCollection) = perpetualMint
+            .exposed_requests(requestId);
 
         assert(requestCollection == COLLECTION);
 
         assert(requestMinter == minter);
-
-        assert(requestPaidInEth == true);
     }
 
     function test_requestRandomWordsPaidInMint() external {
@@ -109,8 +102,7 @@ contract PerpetualMint_requestRandomWords is
         perpetualMint.exposed_requestRandomWords(
             minter,
             COLLECTION,
-            TEST_NUM_WORDS,
-            false
+            TEST_NUM_WORDS
         );
 
         // this call succeeds only if the request was added to pendingRequests
@@ -119,17 +111,12 @@ contract PerpetualMint_requestRandomWords is
             0
         );
 
-        (
-            address requestMinter,
-            address requestCollection,
-            bool requestPaidInEth
-        ) = perpetualMint.exposed_requests(requestId);
+        (address requestMinter, address requestCollection) = perpetualMint
+            .exposed_requests(requestId);
 
         assert(requestCollection == COLLECTION);
 
         assert(requestMinter == minter);
-
-        assert(requestPaidInEth == false);
     }
 
     /// @dev Tests that _requestRandomWords functionality reverts when more than the current max number of words (500) is requested.
@@ -157,8 +144,7 @@ contract PerpetualMint_requestRandomWords is
         perpetualMint.exposed_requestRandomWords(
             minter,
             COLLECTION,
-            ++currentMaxNumWords,
-            true
+            ++currentMaxNumWords
         );
     }
 
@@ -175,8 +161,7 @@ contract PerpetualMint_requestRandomWords is
         perpetualMint.exposed_requestRandomWords(
             minter,
             COLLECTION,
-            TEST_NUM_WORDS,
-            true
+            TEST_NUM_WORDS
         );
     }
 

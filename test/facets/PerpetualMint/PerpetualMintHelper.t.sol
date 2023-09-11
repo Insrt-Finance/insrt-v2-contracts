@@ -21,10 +21,13 @@ contract PerpetualMintHelper {
     address public constant VRF_COORDINATOR =
         0x41034678D6C633D8a95c75e1138A360a28bA15d1;
 
+    address public constant MINT_TOKEN = address(0); // dummy address
+
     /// @dev deploys PerpetualMintHarness implementation
     constructor() {
         perpetualMintHarnessImplementation = new PerpetualMintHarness(
-            VRF_COORDINATOR
+            VRF_COORDINATOR,
+            MINT_TOKEN
         );
     }
 
@@ -128,7 +131,7 @@ contract PerpetualMintHelper {
         perpetualMintFunctionSelectors[20] = IPerpetualMint
             .setMintFeeBP
             .selector;
-            
+
         perpetualMintFunctionSelectors[21] = IPerpetualMint.setTiers.selector;
 
         perpetualMintFunctionSelectors[22] = IPerpetualMint

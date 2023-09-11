@@ -148,14 +148,33 @@ abstract contract PerpetualMintInternal is
 
         CollectionData storage collectionData = l.collections[collection];
 
+        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
+
         // calculate amount of $MINT required, and swap it for ETH
-        _swap(
+        uint256 ethAmount = _swap(
             l,
             minter,
-            _collectionMintPrice(collectionData) *
-                _ethToMintRatio(l) *
-                numberOfMints
+            collectionMintPrice * _ethToMintRatio(l) * numberOfMints
         );
+
+        if (ethAmount < _collectionMintPrice(collectionData)) {
+            revert IncorrectETHReceived();
+        }
+
+        // calculate the consolation fee
+        uint256 consolationFee = (ethAmount * l.consolationFeeBP) / BASIS;
+
+        // calculate the protocol mint fee
+        uint256 mintFee = (ethAmount * l.mintFeeBP) / BASIS;
+
+        // update the accrued consolation fees
+        l.consolationFees += consolationFee;
+
+        // update the accrued depositor mint earnings
+        l.mintEarnings += ethAmount - consolationFee - mintFee;
+
+        // update the accrued protocol fees
+        l.protocolFees += mintFee;
 
         // if the number of words requested is greater than the max allowed by the VRF coordinator,
         // the request for random words will fail (max random words is currently 500 per request).

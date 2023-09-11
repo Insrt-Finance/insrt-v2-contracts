@@ -149,29 +149,31 @@ abstract contract PerpetualMintInternal is
         CollectionData storage collectionData = l.collections[collection];
 
         uint256 collectionMintPrice = _collectionMintPrice(collectionData);
+        uint256 ethToMintRatio = _ethToMintRatio(l);
 
-        // calculate amount of $MINT required, and swap it for ETH
-        uint256 ethAmount = _swap(
-            l,
-            minter,
-            collectionMintPrice * _ethToMintRatio(l) * numberOfMints
-        );
+        uint256 ethRequired = collectionMintPrice * numberOfMints;
 
-        if (ethAmount < _collectionMintPrice(collectionData)) {
-            revert IncorrectETHReceived();
+        if (ethRequired > l.consolationFees) {
+            revert InsufficientConsolationFees();
         }
 
+        // calculate amount of $MINT required
+        uint256 mintRequired = ethRequired * ethToMintRatio;
+
+        IToken(MINT_TOKEN).burn(minter, mintRequired);
+
         // calculate the consolation fee
-        uint256 consolationFee = (ethAmount * l.consolationFeeBP) / BASIS;
+        uint256 consolationFee = (ethRequired * l.consolationFeeBP) / BASIS;
 
         // calculate the protocol mint fee
-        uint256 mintFee = (ethAmount * l.mintFeeBP) / BASIS;
+        uint256 mintFee = (ethRequired * l.mintFeeBP) / BASIS;
 
         // update the accrued consolation fees
-        l.consolationFees += consolationFee;
+        // ETH required for mint taken from consolationFees
+        l.consolationFees -= ethRequired - consolationFee;
 
         // update the accrued depositor mint earnings
-        l.mintEarnings += ethAmount - consolationFee - mintFee;
+        l.mintEarnings += ethRequired - consolationFee - mintFee;
 
         // update the accrued protocol fees
         l.protocolFees += mintFee;

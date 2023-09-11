@@ -13,6 +13,10 @@ interface IPerpetualMintInternal {
     /// @notice thrown when an incorrect amount of ETH is received
     error IncorrectETHReceived();
 
+    /// @notice thrown when there are not enough consolation fees accrued to faciliate
+    /// minting with $MINT
+    error InsufficientConsolationFees();
+
     /// @notice thrown when attempting to mint 0 tokens
     error InvalidNumberOfMints();
 

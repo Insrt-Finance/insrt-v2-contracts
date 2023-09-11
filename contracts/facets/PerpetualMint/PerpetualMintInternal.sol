@@ -148,16 +148,14 @@ abstract contract PerpetualMintInternal is
 
         CollectionData storage collectionData = l.collections[collection];
 
-        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
-
-        uint256 ethToMintRatio = _ethToMintRatio(l);
-
-        uint256 requiredMintAmount = collectionMintPrice *
-            ethToMintRatio *
-            numberOfMints;
-
-        // TODO: integrate $MINT token
-        // MintToken.burn(requiredMintAmount); ??
+        // calculate amount of $MINT required, and swap it for ETH
+        _swap(
+            l,
+            minter,
+            _collectionMintPrice(collectionData) *
+                _ethToMintRatio(l) *
+                numberOfMints
+        );
 
         // if the number of words requested is greater than the max allowed by the VRF coordinator,
         // the request for random words will fail (max random words is currently 500 per request).
@@ -327,6 +325,7 @@ abstract contract PerpetualMintInternal is
     }
 
     /// @notice swaps an amoutn of $MINT tokens for ETH (native token) for an account
+    /// @dev only one-sided ($MINT => ETH (native token)) supported
     /// @param l the PerpetualMint storage layout
     /// @param account address of account
     /// @param amount amount of $MINT

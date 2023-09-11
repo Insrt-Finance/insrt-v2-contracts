@@ -347,6 +347,12 @@ abstract contract PerpetualMintInternal is
         payable(account).sendValue(ethAmount);
     }
 
+    /// @notice returns the current redemption fee in basis points
+    /// @return feeBP redemptionFee in basis points
+    function _redemptionFeeBP() internal view returns (uint32 feeBP) {
+        feeBP = Storage.layout().redemptionFeeBP;
+    }
+
     /// @notice requests random values from Chainlink VRF
     /// @param l the PerpetualMint storage layout
     /// @param collectionData the CollectionData struct for a given collection
@@ -471,6 +477,12 @@ abstract contract PerpetualMintInternal is
     /// @param mintFeeBP mint fee in basis points
     function _setMintFeeBP(uint32 mintFeeBP) internal {
         Storage.layout().mintFeeBP = mintFeeBP;
+    }
+
+    /// @notice sets the redemption fee in basis points
+    /// @param redemptionFeeBP redemption fee in basis points
+    function _setRedemptionFeeBP(uint32 redemptionFeeBP) internal {
+        Storage.layout().redemptionFeeBP = redemptionFeeBP;
     }
 
     /// @notice sets the $MINT consolation tiers data

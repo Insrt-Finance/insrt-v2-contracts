@@ -100,6 +100,10 @@ interface IPerpetualMint is IPausable {
     /// @param amount amount of $MINT
     function redeem(uint256 amount) external;
 
+    /// @notice returns the current redemption fee in basis points
+    /// @return feeBP redemptionFee in basis points
+    function redemptionFeeBP() external view returns (uint32 feeBP);
+
     /// @notice set the mint price for a given collection
     /// @param collection address of collection
     /// @param price mint price of the collection
@@ -121,6 +125,10 @@ interface IPerpetualMint is IPausable {
     /// @notice sets the mint fee in basis points
     /// @param mintFeeBP mint fee in basis points
     function setMintFeeBP(uint32 mintFeeBP) external;
+
+    /// @notice sets the redemption fee in basis points
+    /// @param _redemptionFeeBP redemption fee in basis points
+    function setRedemptionFeeBP(uint32 _redemptionFeeBP) external;
 
     /// @notice sets the $MINT consolation tiers
     /// @param tiersData TiersData struct holding all related data to $MINT consolation tiers

@@ -133,6 +133,11 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function redemptionFeeBP() external view returns (uint32 feeBP) {
+        feeBP = _redemptionFeeBP();
+    }
+
+    /// @inheritdoc IPerpetualMint
     function setCollectionMintPrice(
         address collection,
         uint256 price
@@ -161,6 +166,11 @@ contract PerpetualMint is
     /// @inheritdoc IPerpetualMint
     function setMintFeeBP(uint32 _mintFeeBP) external onlyOwner {
         _setMintFeeBP(_mintFeeBP);
+    }
+
+    /// @inheritdoc IPerpetualMint
+    function setRedemptionFeeBP(uint32 _redemptionFeeBP) external onlyOwner {
+        _setRedemptionFeeBP(_redemptionFeeBP);
     }
 
     /// @inheritdoc IPerpetualMint

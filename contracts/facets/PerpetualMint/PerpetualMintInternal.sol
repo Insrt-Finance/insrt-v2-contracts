@@ -442,14 +442,7 @@ abstract contract PerpetualMintInternal is
                     }
                 }
 
-                if (paidInEth) {
-                    // TODO: integrate $MINT token
-                    // MintToken.mint(minter, tierMintAmount);
-                } else {
-                    // TODO: integrate $MINT token
-                    // apply $MINT discount since paid in $MINT
-                    // MintToken.mint(minter, tierMintAmount);
-                }
+                IToken(MINT_TOKEN).mint(minter, tierMintAmount);
             } else {
                 _safeMint(
                     minter,

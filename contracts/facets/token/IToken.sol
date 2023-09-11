@@ -64,6 +64,6 @@ interface IToken is IERC20 {
     function removeMintingContract(address account) external;
 
     /// @notice sets a new value for distributionFractionBP
-    /// @param distributionFractionBP new distributionFractionBP value
-    function setDistributionFractionBP(uint32 distributionFractionBP) external;
+    /// @param _distributionFractionBP new distributionFractionBP value
+    function setDistributionFractionBP(uint32 _distributionFractionBP) external;
 }

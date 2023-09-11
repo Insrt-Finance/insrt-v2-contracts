@@ -78,7 +78,7 @@ contract PerpetualMint_setCollectionRisk is
     function test_setCollectionRiskRevertsWhen_CallerIsNotOwner() external {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
-        vm.prank(NON_OWNER);
+        vm.prank(PERPETUAL_MINT_NON_OWNER);
         perpetualMint.setCollectionRisk(COLLECTION, newCollectionRisk);
     }
 }

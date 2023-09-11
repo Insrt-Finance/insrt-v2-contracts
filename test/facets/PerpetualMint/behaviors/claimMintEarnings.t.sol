@@ -55,7 +55,7 @@ contract PerpetualMint_claimMintEarnings is ArbForkTest, PerpetualMintTest {
     function test_claimMintEarningsRevertsWhen_CalledByNonOwner() external {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
-        vm.prank(NON_OWNER);
+        vm.prank(PERPETUAL_MINT_NON_OWNER);
         perpetualMint.claimMintEarnings();
     }
 }

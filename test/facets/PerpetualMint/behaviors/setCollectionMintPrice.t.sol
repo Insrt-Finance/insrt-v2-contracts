@@ -71,7 +71,7 @@ contract PerpetualMint_setCollectionMintPrice is
     {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
-        vm.prank(NON_OWNER);
+        vm.prank(PERPETUAL_MINT_NON_OWNER);
         perpetualMint.setCollectionMintPrice(COLLECTION, newMintPrice);
     }
 }

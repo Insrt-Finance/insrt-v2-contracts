@@ -37,7 +37,7 @@ contract PerpetualMint_setEthToMintRatio is ArbForkTest, PerpetualMintTest {
     function test_setEthToMintRatioRevertsWhen_CallerIsNotOwner() external {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
-        vm.prank(NON_OWNER);
+        vm.prank(PERPETUAL_MINT_NON_OWNER);
         perpetualMint.setEthToMintRatio(newEthToMintRatio);
     }
 }

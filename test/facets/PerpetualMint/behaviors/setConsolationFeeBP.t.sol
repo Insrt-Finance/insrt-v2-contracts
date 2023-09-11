@@ -38,7 +38,7 @@ contract PerpetualMint_setConsolationFeeBP is ArbForkTest, PerpetualMintTest {
     function test_setConsolationFeeBPRevertsWhen_CallerIsNotOwner() external {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
-        vm.prank(NON_OWNER);
+        vm.prank(PERPETUAL_MINT_NON_OWNER);
         perpetualMint.setConsolationFeeBP(newConsolationFeeBP);
     }
 }

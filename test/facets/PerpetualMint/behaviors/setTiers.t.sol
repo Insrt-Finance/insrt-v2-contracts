@@ -74,7 +74,7 @@ contract PerpetualMint_setTiers is
     function test_setTiersRevertsWhen_CallerIsNotOwner() external {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
-        vm.prank(NON_OWNER);
+        vm.prank(PERPETUAL_MINT_NON_OWNER);
         perpetualMint.setTiers(testTiersData);
     }
 }

@@ -37,7 +37,7 @@ abstract contract PerpetualMintTest is CoreTest {
     // minter
     address payable internal minter = payable(address(3));
 
-    address internal NON_OWNER = address(100);
+    address internal PERPETUAL_MINT_NON_OWNER = address(100);
 
     // collection risk values
     uint32 internal constant baycCollectionRisk = 100000; // 0.01%

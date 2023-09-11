@@ -21,7 +21,7 @@ contract PerpetualMint_pause is ArbForkTest, PerpetualMintTest {
     function test_pauseRevertsWhen_CalledByNonOwner() external {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
-        vm.prank(NON_OWNER);
+        vm.prank(PERPETUAL_MINT_NON_OWNER);
         perpetualMint.pause();
     }
 }

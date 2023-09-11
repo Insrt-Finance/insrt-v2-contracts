@@ -16,8 +16,8 @@ library PerpetualMintStorage {
         uint32 consolationFeeBP;
         /// @dev mint fee in basis points
         uint32 mintFeeBP;
-        /// @dev redemption fee in basis points
-        uint32 redemptionFeeBP;
+        /// @dev swap fee in basis points
+        uint32 swapFeeBP;
         /// @dev amount of consolation fees accrued in ETH (native token) from mint attempts
         uint256 consolationFees;
         /// @dev amount of mint earnings accrued in ETH (native token) from mint attempts

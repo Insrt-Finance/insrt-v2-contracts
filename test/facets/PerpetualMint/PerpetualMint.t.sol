@@ -17,6 +17,8 @@ abstract contract PerpetualMintTest is CoreTest {
 
     PerpetualMintHelper public perpetualMintHelper;
 
+    uint32 internal constant TEST_CONSOLATION_FEE_BP = 5000000; // 0.5% fee
+
     uint32 internal constant TEST_MINT_FEE_BP = 5000000; // 0.5% fee
 
     uint64 internal constant TEST_VRF_SUBSCRIPTION_ID = 5;
@@ -82,6 +84,12 @@ abstract contract PerpetualMintTest is CoreTest {
 
         perpetualMint.setCollectionMintPrice(PARALLEL_ALPHA, MINT_PRICE);
 
+        // sets the consolation fee
+        perpetualMint.setConsolationFeeBP(TEST_CONSOLATION_FEE_BP);
+
+        // sets the mint fee
+        perpetualMint.setMintFeeBP(TEST_MINT_FEE_BP);
+
         assert(
             baycCollectionRisk ==
                 perpetualMint.collectionRisk(BORED_APE_YACHT_CLUB)
@@ -98,6 +106,10 @@ abstract contract PerpetualMintTest is CoreTest {
             parallelAlphaCollectionRisk ==
                 perpetualMint.collectionRisk(PARALLEL_ALPHA)
         );
+
+        assert(TEST_CONSOLATION_FEE_BP == perpetualMint.consolationFeeBP());
+
+        assert(TEST_MINT_FEE_BP == perpetualMint.mintFeeBP());
     }
 
     /// @dev initializes PerpetualMint as a facet by executing a diamond cut on coreDiamond.
@@ -110,9 +122,8 @@ abstract contract PerpetualMintTest is CoreTest {
         coreDiamond.diamondCut(facetCuts, address(0), "");
     }
 
-    /// @dev mocks unsuccessful attemptBatchMintWithEth attempts to increase mint earnings
-    /// accrued & protocol fees acrrued by the number of unsuccessful mints
-    /// @dev assumes 0 mint fees for simplicity
+    /// @dev mocks unsuccessful attemptBatchMintWithEth attempts to increase accrued
+    /// mint earnings, consolation fees, & protocol fees by the number of unsuccessful mints
     /// @param collection address of collection
     /// @param numberOfMints number of unsuccessful mint attempts
     function mock_unsuccessfulMintWithEthAttempts(
@@ -122,11 +133,21 @@ abstract contract PerpetualMintTest is CoreTest {
         uint256 mockMsgValue = perpetualMint.collectionMintPrice(collection) *
             numberOfMints;
 
+        uint256 mockConsolationFee = (mockMsgValue *
+            perpetualMint.consolationFeeBP()) / perpetualMint.exposed_basis();
+
         uint256 mockMintFee = (mockMsgValue * perpetualMint.mintFeeBP()) /
             perpetualMint.exposed_basis();
 
+        perpetualMint.setConsolationFees(
+            perpetualMint.accruedConsolationFees() + mockConsolationFee
+        );
+
         perpetualMint.setMintEarnings(
-            perpetualMint.accruedMintEarnings() + mockMsgValue - mockMintFee
+            perpetualMint.accruedMintEarnings() +
+                mockMsgValue -
+                mockConsolationFee -
+                mockMintFee
         );
 
         perpetualMint.setProtocolFees(

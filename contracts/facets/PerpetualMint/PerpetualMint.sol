@@ -20,6 +20,15 @@ contract PerpetualMint is
     constructor(address vrf) PerpetualMintInternal(vrf) {}
 
     /// @inheritdoc IPerpetualMint
+    function accruedConsolationFees()
+        external
+        view
+        returns (uint256 accruedFees)
+    {
+        accruedFees = _accruedConsolationFees();
+    }
+
+    /// @inheritdoc IPerpetualMint
     function accruedMintEarnings()
         external
         view
@@ -76,6 +85,15 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function consolationFeeBP()
+        external
+        view
+        returns (uint32 consolationFeeBasisPoints)
+    {
+        consolationFeeBasisPoints = _consolationFeeBP();
+    }
+
+    /// @inheritdoc IPerpetualMint
     function defaultCollectionMintPrice()
         external
         pure
@@ -123,6 +141,11 @@ contract PerpetualMint is
         uint32 risk
     ) external onlyOwner {
         _setCollectionRisk(collection, risk);
+    }
+
+    /// @inheritdoc IPerpetualMint
+    function setConsolationFeeBP(uint32 _consolationFeeBP) external onlyOwner {
+        _setConsolationFeeBP(_consolationFeeBP);
     }
 
     /// @inheritdoc IPerpetualMint

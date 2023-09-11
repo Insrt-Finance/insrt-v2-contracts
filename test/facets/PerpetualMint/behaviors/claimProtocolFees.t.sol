@@ -19,7 +19,7 @@ contract PerpetualMint_claimProtocolFees is ArbForkTest, PerpetualMintTest {
     function setUp() public override {
         super.setUp();
 
-        // mocks unsuccessful mint attempts as a method to increase mint & protocol earnings
+        // mocks unsuccessful mint attempts as a method to increase fees & earnings
         mock_unsuccessfulMintWithEthAttempts(
             COLLECTION,
             unsuccessfulMintAttempts

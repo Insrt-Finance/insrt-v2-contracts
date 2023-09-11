@@ -69,6 +69,9 @@ interface IPerpetualMintHarness {
         bool paidInEth
     ) external;
 
+    /// @dev allowas setting accrued consolation fees
+    function setConsolationFees(uint256 amount) external;
+
     /// @dev allows setting accrued mint earnings
     function setMintEarnings(uint256 amount) external;
 

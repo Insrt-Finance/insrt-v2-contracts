@@ -47,87 +47,99 @@ contract PerpetualMintHelper {
             });
 
         // map the PerpetualMint test related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](23);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](26);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
-            .accruedMintEarnings
+            .accruedConsolationFees
             .selector;
 
         perpetualMintFunctionSelectors[1] = IPerpetualMint
-            .accruedProtocolFees
+            .accruedMintEarnings
             .selector;
 
         perpetualMintFunctionSelectors[2] = IPerpetualMint
-            .attemptBatchMintWithEth
+            .accruedProtocolFees
             .selector;
 
         perpetualMintFunctionSelectors[3] = IPerpetualMint
-            .attemptBatchMintWithMint
+            .attemptBatchMintWithEth
             .selector;
 
         perpetualMintFunctionSelectors[4] = IPerpetualMint
-            .claimMintEarnings
+            .attemptBatchMintWithMint
             .selector;
 
         perpetualMintFunctionSelectors[5] = IPerpetualMint
-            .claimProtocolFees
+            .claimMintEarnings
             .selector;
 
         perpetualMintFunctionSelectors[6] = IPerpetualMint
-            .collectionMintPrice
+            .claimProtocolFees
             .selector;
 
         perpetualMintFunctionSelectors[7] = IPerpetualMint
-            .collectionRisk
+            .collectionMintPrice
             .selector;
 
         perpetualMintFunctionSelectors[8] = IPerpetualMint
-            .defaultCollectionMintPrice
+            .collectionRisk
             .selector;
 
         perpetualMintFunctionSelectors[9] = IPerpetualMint
-            .defaultCollectionRisk
+            .consolationFeeBP
             .selector;
 
         perpetualMintFunctionSelectors[10] = IPerpetualMint
-            .defaultEthToMintRatio
+            .defaultCollectionMintPrice
             .selector;
 
         perpetualMintFunctionSelectors[11] = IPerpetualMint
+            .defaultCollectionRisk
+            .selector;
+
+        perpetualMintFunctionSelectors[12] = IPerpetualMint
+            .defaultEthToMintRatio
+            .selector;
+
+        perpetualMintFunctionSelectors[13] = IPerpetualMint
             .ethToMintRatio
             .selector;
 
-        perpetualMintFunctionSelectors[12] = IPerpetualMint.mintFeeBP.selector;
+        perpetualMintFunctionSelectors[14] = IPerpetualMint.mintFeeBP.selector;
 
-        perpetualMintFunctionSelectors[13] = IPerpetualMint.pause.selector;
+        perpetualMintFunctionSelectors[15] = IPerpetualMint.pause.selector;
 
-        perpetualMintFunctionSelectors[14] = IPerpetualMint
+        perpetualMintFunctionSelectors[16] = IPerpetualMint
             .setCollectionMintPrice
             .selector;
 
-        perpetualMintFunctionSelectors[15] = IPerpetualMint
+        perpetualMintFunctionSelectors[17] = IPerpetualMint
             .setCollectionRisk
             .selector;
 
-        perpetualMintFunctionSelectors[16] = IPerpetualMint
+        perpetualMintFunctionSelectors[18] = IPerpetualMint
+            .setConsolationFeeBP
+            .selector;
+
+        perpetualMintFunctionSelectors[19] = IPerpetualMint
             .setEthToMintRatio
             .selector;
 
-        perpetualMintFunctionSelectors[17] = IPerpetualMint
+        perpetualMintFunctionSelectors[20] = IPerpetualMint
             .setMintFeeBP
             .selector;
+            
+        perpetualMintFunctionSelectors[21] = IPerpetualMint.setTiers.selector;
 
-        perpetualMintFunctionSelectors[18] = IPerpetualMint.setTiers.selector;
-
-        perpetualMintFunctionSelectors[19] = IPerpetualMint
+        perpetualMintFunctionSelectors[22] = IPerpetualMint
             .setVRFConfig
             .selector;
 
-        perpetualMintFunctionSelectors[20] = IPerpetualMint.tiers.selector;
+        perpetualMintFunctionSelectors[23] = IPerpetualMint.tiers.selector;
 
-        perpetualMintFunctionSelectors[21] = IPerpetualMint.unpause.selector;
+        perpetualMintFunctionSelectors[24] = IPerpetualMint.unpause.selector;
 
-        perpetualMintFunctionSelectors[22] = IPerpetualMint.vrfConfig.selector;
+        perpetualMintFunctionSelectors[25] = IPerpetualMint.vrfConfig.selector;
 
         ISolidStateDiamond.FacetCut
             memory perpetualMintFacetCut = IDiamondWritableInternal.FacetCut({
@@ -138,7 +150,7 @@ contract PerpetualMintHelper {
 
         // map the PerpetualMintHrness test related function selectors to their respective interfaces
         bytes4[] memory perpetualMintHarnessFunctionSelectors = new bytes4[](
-            14
+            15
         );
 
         perpetualMintHarnessFunctionSelectors[0] = IPerpetualMintHarness
@@ -186,14 +198,18 @@ contract PerpetualMintHelper {
             .selector;
 
         perpetualMintHarnessFunctionSelectors[11] = IPerpetualMintHarness
-            .setMintEarnings
+            .setConsolationFees
             .selector;
 
         perpetualMintHarnessFunctionSelectors[12] = IPerpetualMintHarness
-            .setProtocolFees
+            .setMintEarnings
             .selector;
 
         perpetualMintHarnessFunctionSelectors[13] = IPerpetualMintHarness
+            .setProtocolFees
+            .selector;
+
+        perpetualMintHarnessFunctionSelectors[14] = IPerpetualMintHarness
             .setRequests
             .selector;
 

@@ -40,6 +40,16 @@ abstract contract PerpetualMintInternal is
         VRF = vrfCoordinator;
     }
 
+    /// @notice returns the current accrued consolation fees
+    /// @return accruedFees the current amount of accrued consolation fees
+    function _accruedConsolationFees()
+        internal
+        view
+        returns (uint256 accruedFees)
+    {
+        accruedFees = Storage.layout().consolationFees;
+    }
+
     /// @notice returns the current accrued mint earnings across all collections
     /// @return accruedMintEarnings the current amount of accrued mint earnings across all collections
     function _accruedMintEarnings()
@@ -85,10 +95,20 @@ abstract contract PerpetualMintInternal is
             revert IncorrectETHReceived();
         }
 
+        // calculate the consolation fee
+        uint256 consolationFee = (msgValue * l.consolationFeeBP) / BASIS;
+
+        // calculate the protocol mint fee
         uint256 mintFee = (msgValue * l.mintFeeBP) / BASIS;
 
+        // update the accrued consolation fees
+        l.consolationFees += consolationFee;
+
+        // update the accrued depositor mint earnings
+        l.mintEarnings += msgValue - consolationFee - mintFee;
+
+        // update the accrued protocol fees
         l.protocolFees += mintFee;
-        l.mintEarnings += msgValue - mintFee;
 
         // if the number of words requested is greater than the max allowed by the VRF coordinator,
         // the request for random words will fail (max random words is currently 500 per request).
@@ -188,6 +208,16 @@ abstract contract PerpetualMintInternal is
         risk = collectionData.risk;
 
         risk = risk == 0 ? DEFAULT_COLLECTION_RISK : risk;
+    }
+
+    /// @notice Returns the current consolation fee in basis points
+    /// @return consolationFeeBasisPoints consolation fee in basis points
+    function _consolationFeeBP()
+        internal
+        view
+        returns (uint32 consolationFeeBasisPoints)
+    {
+        consolationFeeBasisPoints = Storage.layout().consolationFeeBP;
     }
 
     /// @notice Returns the default mint price for a collection
@@ -410,6 +440,12 @@ abstract contract PerpetualMintInternal is
         collectionData.risk = risk;
 
         emit CollectionRiskSet(collection, risk);
+    }
+
+    /// @notice sets the consolation fee in basis points
+    /// @param consolationFeeBP consolation fee in basis points
+    function _setConsolationFeeBP(uint32 consolationFeeBP) internal {
+        Storage.layout().consolationFeeBP = consolationFeeBP;
     }
 
     /// @notice sets the ratio of ETH (native token) to $MINT for mint attempts using $MINT as payment

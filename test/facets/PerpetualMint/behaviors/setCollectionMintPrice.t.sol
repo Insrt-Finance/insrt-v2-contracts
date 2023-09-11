@@ -66,7 +66,9 @@ contract PerpetualMint_setCollectionMintPrice is
     }
 
     /// @dev tests for the revert case when the caller is not the owner
-    function test_setCollectionMintPriceRevertWhen_CallerIsNotOwner() external {
+    function test_setCollectionMintPriceRevertsWhen_CallerIsNotOwner()
+        external
+    {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
         vm.prank(NON_OWNER);

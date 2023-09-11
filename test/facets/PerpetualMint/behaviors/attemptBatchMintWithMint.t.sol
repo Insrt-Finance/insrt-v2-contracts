@@ -29,9 +29,6 @@ contract PerpetualMint_attemptBatchMintWithMint is
         super.setUp();
 
         _activateVRFConsumer();
-
-        // sets the mint fee
-        perpetualMint.setMintFeeBP(TEST_MINT_FEE_BP);
     }
 
     /// @dev Tests attemptBatchMintWithMint functionality.

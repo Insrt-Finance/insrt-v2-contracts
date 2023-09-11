@@ -10,6 +10,7 @@ import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 
 import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
 import { CollectionData, PerpetualMintStorage as Storage, RequestData, TiersData, VRFConfig } from "./Storage.sol";
+import { IToken } from "../token/IToken.sol";
 
 /// @title PerpetualMintInternal facet contract
 /// @dev defines modularly all logic for the PerpetualMint mechanism in internal functions
@@ -36,8 +37,14 @@ abstract contract PerpetualMintInternal is
     /// @dev address of Chainlink VRFCoordinatorV2 contract
     address private immutable VRF;
 
-    constructor(address vrfCoordinator) VRFConsumerBaseV2(vrfCoordinator) {
+    address private immutable MINT_TOKEN;
+
+    constructor(
+        address vrfCoordinator,
+        address mintToken
+    ) VRFConsumerBaseV2(vrfCoordinator) {
         VRF = vrfCoordinator;
+        MINT_TOKEN = mintToken;
     }
 
     /// @notice returns the current accrued consolation fees

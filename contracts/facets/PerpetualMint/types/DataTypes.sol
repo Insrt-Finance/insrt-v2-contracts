@@ -24,8 +24,6 @@ struct RequestData {
     address collection;
     /// @dev address of minter who made the request
     address minter;
-    /// @dev boolean indicating whether the mint attempt was paid in ETH or $MINT
-    bool paidInEth;
 }
 
 /// @dev Represents data specific to $MINT consolation tiers

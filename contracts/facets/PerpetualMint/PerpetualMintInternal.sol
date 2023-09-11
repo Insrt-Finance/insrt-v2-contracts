@@ -121,14 +121,7 @@ abstract contract PerpetualMintInternal is
         // the request for random words will fail (max random words is currently 500 per request).
         uint32 numWords = numberOfMints; // 1 word per mint, current max of 500 mints per tx
 
-        _requestRandomWords(
-            l,
-            collectionData,
-            minter,
-            collection,
-            numWords,
-            true
-        );
+        _requestRandomWords(l, collectionData, minter, collection, numWords);
     }
 
     /// @notice Attempts a batch mint for the msg.sender for a single collection using $MINT tokens as payment.
@@ -182,14 +175,7 @@ abstract contract PerpetualMintInternal is
         // the request for random words will fail (max random words is currently 500 per request).
         uint32 numWords = numberOfMints; // 1 word per mint, current max of 500 mints per tx
 
-        _requestRandomWords(
-            l,
-            collectionData,
-            minter,
-            collection,
-            numWords,
-            false
-        );
+        _requestRandomWords(l, collectionData, minter, collection, numWords);
     }
 
     /// @notice claims all accrued mint earnings across collections
@@ -311,18 +297,10 @@ abstract contract PerpetualMintInternal is
 
         address collection = request.collection;
         address minter = request.minter;
-        bool paidInEth = request.paidInEth;
 
         CollectionData storage collectionData = l.collections[collection];
 
-        _resolveMints(
-            collectionData,
-            l.tiers,
-            minter,
-            collection,
-            randomWords,
-            paidInEth
-        );
+        _resolveMints(collectionData, l.tiers, minter, collection, randomWords);
 
         collectionData.pendingRequests.remove(requestId);
 
@@ -375,14 +353,12 @@ abstract contract PerpetualMintInternal is
     /// @param minter address calling this function
     /// @param collection address of collection to attempt mint for
     /// @param numWords amount of random values to request
-    /// @param paidInEth boolean indicating whether the mint attempt was paid in ETH or $MINT
     function _requestRandomWords(
         Storage.Layout storage l,
         CollectionData storage collectionData,
         address minter,
         address collection,
-        uint32 numWords,
-        bool paidInEth
+        uint32 numWords
     ) internal {
         uint256 requestId = VRFCoordinatorV2Interface(VRF).requestRandomWords(
             l.vrfConfig.keyHash,
@@ -398,10 +374,6 @@ abstract contract PerpetualMintInternal is
 
         request.collection = collection;
         request.minter = minter;
-
-        if (paidInEth) {
-            request.paidInEth = true;
-        }
     }
 
     /// @notice resolves the outcomes of attempted mints for a given collection
@@ -410,14 +382,12 @@ abstract contract PerpetualMintInternal is
     /// @param minter address of minter
     /// @param collection address of collection for mint attempts
     /// @param randomWords array of random values relating to number of attempts
-    /// @param paidInEth boolean indicating whether the mint attempt was paid in ETH or $MINT
     function _resolveMints(
         CollectionData storage collectionData,
         TiersData memory tiersData,
         address minter,
         address collection,
-        uint256[] memory randomWords,
-        bool paidInEth
+        uint256[] memory randomWords
     ) internal {
         uint32 basis = BASIS;
 

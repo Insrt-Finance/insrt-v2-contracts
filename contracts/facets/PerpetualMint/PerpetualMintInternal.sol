@@ -342,16 +342,19 @@ abstract contract PerpetualMintInternal is
         uint32 basis = BASIS;
 
         for (uint256 i = 0; i < randomWords.length; ++i) {
-            bool result = _collectionRisk(collectionData) >
-                _normalizeValue(randomWords[i], basis);
+            uint256 normalizedValue = _normalizeValue(randomWords[i], basis);
+
+            bool result = _collectionRisk(collectionData) > normalizedValue;
 
             if (!result) {
                 uint256 tierMintAmount;
+                uint256 cumulativeRisk;
 
                 // iterate through tiers to find the tier that the random value falls into
                 for (uint256 j = 0; j < tiersData.tierRisks.length; ++j) {
-                    bool tierFound = tiersData.tierRisks[j] >
-                        _normalizeValue(randomWords[i], basis);
+                    cumulativeRisk += tiersData.tierRisks[j];
+
+                    bool tierFound = cumulativeRisk > normalizedValue;
 
                     if (tierFound) {
                         tierMintAmount = tiersData.tierMintAmounts[j];

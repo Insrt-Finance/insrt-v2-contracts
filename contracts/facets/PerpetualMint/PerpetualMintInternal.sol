@@ -326,6 +326,25 @@ abstract contract PerpetualMintInternal is
         normalizedValue = value % basis;
     }
 
+    /// @notice swaps an amoutn of $MINT tokens for ETH (native token) for an account
+    /// @param l the PerpetualMint storage layout
+    /// @param account address of account
+    /// @param amount amount of $MINT
+    function _swap(
+        Storage.Layout storage l,
+        address account,
+        uint256 amount
+    ) internal returns (uint256 ethAmount) {
+        // burn amount of $MINT to be swapped
+        IToken(MINT_TOKEN).burn(account, amount);
+
+        // calculate amount of ETH given for $MINT amount
+        ethAmount = amount / _ethToMintRatio(l);
+
+        // decrease mintEarnings
+        l.mintEarnings -= ethAmount;
+    }
+
     /// @notice requests random values from Chainlink VRF
     /// @param l the PerpetualMint storage layout
     /// @param collectionData the CollectionData struct for a given collection

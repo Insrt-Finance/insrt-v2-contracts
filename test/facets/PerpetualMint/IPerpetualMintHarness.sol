@@ -64,7 +64,7 @@ interface IPerpetualMintHarness {
         uint256[] memory randomWords
     ) external;
 
-    /// @dev allowas setting accrued consolation fees
+    /// @dev allows setting accrued consolation fees
     function setConsolationFees(uint256 amount) external;
 
     /// @dev allows setting accrued mint earnings

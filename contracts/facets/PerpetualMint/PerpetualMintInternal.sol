@@ -117,7 +117,7 @@ abstract contract PerpetualMintInternal is
 
         // if the number of words requested is greater than the max allowed by the VRF coordinator,
         // the request for random words will fail (max random words is currently 500 per request).
-        uint32 numWords = numberOfMints; // 1 word per mint, current max of 500 mints per tx
+        uint32 numWords = numberOfMints * 2; // 2 words per mint, current max of 250 mints per tx
 
         _requestRandomWords(l, collectionData, minter, collection, numWords);
     }
@@ -171,7 +171,7 @@ abstract contract PerpetualMintInternal is
 
         // if the number of words requested is greater than the max allowed by the VRF coordinator,
         // the request for random words will fail (max random words is currently 500 per request).
-        uint32 numWords = numberOfMints; // 1 word per mint, current max of 500 mints per tx
+        uint32 numWords = numberOfMints * 2; // 2 words per mint, current max of 250 mints per tx
 
         _requestRandomWords(l, collectionData, minter, collection, numWords);
     }
@@ -408,13 +408,30 @@ abstract contract PerpetualMintInternal is
         address collection,
         uint256[] memory randomWords
     ) internal {
+        // ensure the number of random words is even
+        // each valid mint attempt requires two random words
+        if (randomWords.length % 2 != 0) {
+            revert UnmatchedRandomWords();
+        }
+
         uint256 totalMintAmount;
         uint256 totalReceiptAmount;
 
-        for (uint256 i = 0; i < randomWords.length; ++i) {
-            uint256 normalizedValue = _normalizeValue(randomWords[i], BASIS);
+        for (uint256 i = 0; i < randomWords.length; i += 2) {
+            // first random word is used to determine whether the mint attempt was successful
+            uint256 firstNormalizedValue = _normalizeValue(
+                randomWords[i],
+                BASIS
+            );
 
-            bool result = _collectionRisk(collectionData) > normalizedValue;
+            // second random word is used to determine the consolation tier
+            uint256 secondNormalizedValue = _normalizeValue(
+                randomWords[i + 1],
+                BASIS
+            );
+
+            bool result = _collectionRisk(collectionData) >
+                firstNormalizedValue;
 
             if (!result) {
                 uint256 tierMintAmount;
@@ -424,8 +441,8 @@ abstract contract PerpetualMintInternal is
                 for (uint256 j = 0; j < tiersData.tierRisks.length; ++j) {
                     cumulativeRisk += tiersData.tierRisks[j];
 
-                    // if the cumulative risk is greater than the normalized value, the tier has been found
-                    if (cumulativeRisk > normalizedValue) {
+                    // if the cumulative risk is greater than the second normalized value, the tier has been found
+                    if (cumulativeRisk > secondNormalizedValue) {
                         tierMintAmount = tiersData.tierMintAmounts[j];
                         break;
                     }

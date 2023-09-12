@@ -24,6 +24,9 @@ interface IPerpetualMintInternal {
     /// there are pending mint requests in a collection
     error PendingRequests();
 
+    /// @notice thrown when fulfilled random words do not match for attempted mints
+    error UnmatchedRandomWords();
+
     /// @notice emitted when the risk for a collection is set
     /// @param collection address of collection
     /// @param risk risk of collection

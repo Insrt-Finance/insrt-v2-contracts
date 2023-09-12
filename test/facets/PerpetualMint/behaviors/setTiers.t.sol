@@ -16,43 +16,16 @@ contract PerpetualMint_setTiers is
     IPerpetualMintInternal,
     PerpetualMintTest
 {
-    TiersData testTiersData;
-
-    /// @dev first tier $MINT amount (lowest amount)
-    uint256 internal constant firstTierMintAmount = 1 ether;
-
-    /// @dev number of tiers
-    uint8 internal constant testNumberOfTiers = 5;
-
     function setUp() public override {
         super.setUp();
 
-        uint256[] memory tierMintAmounts = new uint256[](testNumberOfTiers);
-        uint32[] memory tierRisks = new uint32[](testNumberOfTiers);
-
-        // exponentially decreasing probabilities, from highest to lowest
-        uint32[testNumberOfTiers] memory testRisks = [
-            600000000, // 60%
-            250000000, // 25%
-            100000000, // 10%
-            40000000, // 4%
-            10000000 // 1%
-        ];
-
-        uint256 initialMintAmount = firstTierMintAmount;
-
-        for (uint8 i = 0; i < testNumberOfTiers; ++i) {
-            tierMintAmounts[i] = initialMintAmount;
-
-            initialMintAmount *= 2; // double the mint amount for each tier
-
-            tierRisks[i] = testRisks[i];
-        }
-
-        testTiersData = TiersData({
-            tierMintAmounts: tierMintAmounts,
-            tierRisks: tierRisks
-        });
+        // reset tiers to empty
+        perpetualMint.setTiers(
+            TiersData({
+                tierMintAmounts: new uint256[](0),
+                tierRisks: new uint32[](0)
+            })
+        );
     }
 
     /// @dev tests the setting of TiersData

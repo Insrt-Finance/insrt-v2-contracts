@@ -7,7 +7,7 @@ import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidSt
 import { PerpetualMintHelper } from "./PerpetualMintHelper.t.sol";
 import { IPerpetualMintTest } from "./IPerpetualMintTest.sol";
 import { CoreTest } from "../../diamonds/Core.t.sol";
-import { PerpetualMintStorage as Storage, VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
+import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
 
 /// @title PerpetualMintTest
 /// @dev PerpetualMintTest helper contract. Configures PerpetualMint as facets of Core test.
@@ -17,11 +17,19 @@ abstract contract PerpetualMintTest is CoreTest {
 
     PerpetualMintHelper public perpetualMintHelper;
 
+    TiersData internal testTiersData;
+
+    /// @dev number of tiers
+    uint8 internal constant testNumberOfTiers = 5;
+
     uint32 internal constant TEST_CONSOLATION_FEE_BP = 5000000; // 0.5% fee
 
     uint32 internal constant TEST_MINT_FEE_BP = 5000000; // 0.5% fee
 
     uint64 internal constant TEST_VRF_SUBSCRIPTION_ID = 5;
+
+    /// @dev first tier $MINT amount (lowest amount)
+    uint256 internal constant firstTierMintAmount = 1 ether;
 
     // Ethereum mainnet Bored Ape Yacht Club contract address.
     address internal constant BORED_APE_YACHT_CLUB =
@@ -89,6 +97,35 @@ abstract contract PerpetualMintTest is CoreTest {
 
         // sets the mint fee
         perpetualMint.setMintFeeBP(TEST_MINT_FEE_BP);
+
+        uint256[] memory tierMintAmounts = new uint256[](testNumberOfTiers);
+        uint32[] memory tierRisks = new uint32[](testNumberOfTiers);
+
+        // exponentially decreasing probabilities, from highest to lowest
+        uint32[testNumberOfTiers] memory testRisks = [
+            600000000, // 60%
+            250000000, // 25%
+            100000000, // 10%
+            40000000, // 4%
+            10000000 // 1%
+        ];
+
+        uint256 initialMintAmount = firstTierMintAmount;
+
+        for (uint8 i = 0; i < testNumberOfTiers; ++i) {
+            tierMintAmounts[i] = initialMintAmount;
+
+            initialMintAmount *= 2; // double the mint amount for each tier
+
+            tierRisks[i] = testRisks[i];
+        }
+
+        testTiersData = TiersData({
+            tierMintAmounts: tierMintAmounts,
+            tierRisks: tierRisks
+        });
+
+        perpetualMint.setTiers(testTiersData);
 
         assert(
             baycCollectionRisk ==

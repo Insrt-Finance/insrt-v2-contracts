@@ -36,14 +36,14 @@ contract TokenHarness is Token, ITokenHarness {
     function accountOffset(
         address account
     ) external view returns (uint256 offset) {
-        offset = Storage.layout().accountOffset[account];
+        offset = Storage.layout().accrualData[account].offset;
     }
 
     /// @inheritdoc ITokenHarness
     function accruedTokens(
         address account
     ) external view returns (uint256 amount) {
-        amount = Storage.layout().accruedTokens[account];
+        amount = Storage.layout().accrualData[account].accruedTokens;
     }
 
     /// @inheritdoc ITokenHarness

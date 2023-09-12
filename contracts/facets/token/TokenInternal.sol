@@ -8,6 +8,7 @@ import { ERC20BaseInternal } from "@solidstate/contracts/token/ERC20/base/ERC20B
 
 import { ITokenInternal } from "./ITokenInternal.sol";
 import { TokenStorage as Storage } from "./Storage.sol";
+import { AccrualData } from "./types/DataTypes.sol";
 
 /// @title $MINT Token contract
 /// @dev The internal functionality of $MINT token.
@@ -34,17 +35,23 @@ abstract contract TokenInternal is
     /// @notice accrues the tokens available for claiming for an account
     /// @param l TokenStorage Layout struct
     /// @param account address of account
-    function _accrueTokens(Storage.Layout storage l, address account) internal {
+    /// @return accountData accrualData of given account
+    function _accrueTokens(
+        Storage.Layout storage l,
+        address account
+    ) internal returns (AccrualData storage accountData) {
+        accountData = l.accrualData[account];
+
         // calculate claimable tokens
         uint256 accruedTokens = _scaleDown(
-            (l.globalRatio - l.accountOffset[account]) * _balanceOf(account)
+            (l.globalRatio - accountData.offset) * _balanceOf(account)
         );
 
         // update account's last ratio
-        l.accountOffset[account] = l.globalRatio;
+        accountData.offset = l.globalRatio;
 
         // update claimable tokens
-        l.accruedTokens[account] += accruedTokens;
+        accountData.accruedTokens += accruedTokens;
     }
 
     /// @notice adds an account to the mintingContracts enumerable set
@@ -94,13 +101,17 @@ abstract contract TokenInternal is
     /// @param account address of account
     function _claim(address account) internal {
         Storage.Layout storage l = Storage.layout();
-        _accrueTokens(l, account);
-        uint256 accruedTokens = l.accruedTokens[account];
+
+        // accrue tokens prior to claim
+        AccrualData storage accountData = _accrueTokens(l, account);
+
+        uint256 accruedTokens = accountData.accruedTokens;
 
         // decrease distribution supply by claimed tokens
         l.distributionSupply -= accruedTokens;
+
         // set accruedTokens of account to 0
-        l.accruedTokens[account] = 0;
+        accountData.accruedTokens = 0;
 
         _transfer(address(this), account, accruedTokens);
     }
@@ -112,12 +123,13 @@ abstract contract TokenInternal is
         address account
     ) internal view returns (uint256 amount) {
         Storage.Layout storage l = Storage.layout();
+        AccrualData storage accountData = l.accrualData[account];
 
         amount =
             _scaleDown(
-                (l.globalRatio - l.accountOffset[account]) * _balanceOf(account)
+                (l.globalRatio - accountData.offset) * _balanceOf(account)
             ) +
-            l.accruedTokens[account];
+            accountData.accruedTokens;
     }
 
     /// @notice returns the distributionFractionBP value
@@ -151,6 +163,8 @@ abstract contract TokenInternal is
             l.distributionSupply;
         uint256 accruedTokens;
 
+        AccrualData storage accountData = l.accrualData[account];
+
         // if the supplyDelta is zero, it means there are no tokens in circulation
         // so the receiving account is the first/only receiver therefore is owed the full
         // distribution amount.
@@ -159,17 +173,17 @@ abstract contract TokenInternal is
         if (supplyDelta > 0) {
             // tokens are accrued for account prior to global ratio or offset being updated
             accruedTokens = _scaleDown(
-                (l.globalRatio - l.accountOffset[account]) * accountBalance
+                (l.globalRatio - accountData.offset) * accountBalance
             );
 
             // update global ratio
             l.globalRatio += _scaleUp(distributionAmount) / supplyDelta;
 
-            // update accountOffset of account
-            l.accountOffset[account] = l.globalRatio;
+            // update account offset
+            accountData.offset = l.globalRatio;
 
             // update claimable tokens
-            l.accruedTokens[account] += accruedTokens;
+            accountData.accruedTokens += accruedTokens;
         } else {
             // calculation ratio of distributionAmount to remaining amount
             uint256 distributionRatio = _scaleUp(distributionAmount) / amount;
@@ -179,21 +193,21 @@ abstract contract TokenInternal is
             if (l.globalRatio % distributionRatio == 0) {
                 // update globalRatio
                 l.globalRatio += distributionRatio;
-                // update accountOffset
-                l.accountOffset[account] = l.globalRatio - distributionRatio;
+                // update account offset
+                accountData.offset = l.globalRatio - distributionRatio;
             } else {
                 // sole holder due to all other minters burning tokens
                 // calculate and accrue previous token accrual
                 uint256 previousAccruals = _scaleDown(
-                    (l.globalRatio - l.accountOffset[account]) * accountBalance
+                    (l.globalRatio - accountData.offset) * accountBalance
                 );
-                l.accruedTokens[account] +=
+                accountData.accruedTokens +=
                     distributionAmount +
                     previousAccruals;
                 // update globalRatio
                 l.globalRatio += distributionRatio;
-                // update accountOffset
-                l.accountOffset[account] = l.globalRatio;
+                // update account offset
+                accountData.offset = l.globalRatio;
             }
         }
 

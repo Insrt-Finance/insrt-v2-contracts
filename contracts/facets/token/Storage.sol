@@ -2,6 +2,7 @@
 
 pragma solidity ^0.8.21;
 
+import { AccrualData } from "./types/DataTypes.sol";
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
 /// @title TokenStorage
@@ -14,11 +15,8 @@ library TokenStorage {
         uint256 distributionSupply;
         /// @dev fraction of tokens to be reserved for distribution to token holders in basis points
         uint32 distributionFractionBP;
-        /// @dev last ratio an account had when one of their actions led to a change in the
-        /// reservedSupply
-        mapping(address account => uint256 ratio) accountOffset;
-        /// @dev amount of tokens accrued as a result of distribution to token holders
-        mapping(address account => uint256 amount) accruedTokens;
+        /// @dev information related to Token accruals for an account
+        mapping(address account => AccrualData data) accrualData;
         /// @dev set of contracts which are allowed to call the mint function
         EnumerableSet.AddressSet mintingContracts;
     }

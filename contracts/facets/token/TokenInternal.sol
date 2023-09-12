@@ -57,9 +57,8 @@ abstract contract TokenInternal is
 
         if (size != 0) {
             Storage.layout().mintingContracts.add(account);
+            emit MintingContractAdded(account);
         }
-
-        emit MintingContractAdded(account);
     }
 
     /// @notice overrides _beforeTokenTransfer hook to enforce non-transferability

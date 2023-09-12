@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.21;
 
-import { ERC20MetadataStorage } from "@solidstate/contracts/token/ERC20/metadata/ERC20MetadataStorage.sol";
 import { SolidStateDiamond } from "@solidstate/contracts/proxy/diamond/SolidStateDiamond.sol";
+import { ERC20MetadataStorage } from "@solidstate/contracts/token/ERC20/metadata/ERC20MetadataStorage.sol";
 
 /// @title TokenProxy
 /// @dev The TokenProxy Diamond.

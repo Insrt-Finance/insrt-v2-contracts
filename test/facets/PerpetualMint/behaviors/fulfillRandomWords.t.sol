@@ -123,7 +123,7 @@ contract PerpetualMint_fulfillRandomWords is
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
         }(COLLECTION, TEST_MINT_ATTEMPTS);
 
-        uint32 numberOfRandomWordsRequested = TEST_MINT_ATTEMPTS; // 1 word per mint attempt
+        uint32 numberOfRandomWordsRequested = TEST_MINT_ATTEMPTS * 2; // 2 words per mint attempt
 
         // mock the VRF Coordinator request random words call
         vm.prank(address(perpetualMint));
@@ -185,7 +185,7 @@ contract PerpetualMint_fulfillRandomWords is
         vm.prank(minter);
         perpetualMint.attemptBatchMintWithMint(COLLECTION, TEST_MINT_ATTEMPTS);
 
-        uint32 numberOfRandomWordsRequested = TEST_MINT_ATTEMPTS; // 1 word per mint attempt
+        uint32 numberOfRandomWordsRequested = TEST_MINT_ATTEMPTS * 2; // 2 words per mint attempt
 
         // mock the VRF Coordinator request random words call
         vm.prank(address(perpetualMint));
@@ -238,8 +238,8 @@ contract PerpetualMint_fulfillRandomWords is
         perpetualMint.exposed_pendingRequestsAt(COLLECTION, 1);
     }
 
-    /// @dev Tests that fulfillRandomWords (when paid in ETH) can currently handle the max limit of 500 attempted mints per tx.
-    function testFuzz_fulfillRandomWordsWithETHCanHandleMaximum500MintAttempts(
+    /// @dev Tests that fulfillRandomWords (when paid in ETH) can currently handle the max limit of 250 attempted mints per tx.
+    function testFuzz_fulfillRandomWordsWithETHCanHandleMaximum250MintAttempts(
         uint256 randomness
     ) external {
         // store current block number to use as the mint block number
@@ -253,7 +253,7 @@ contract PerpetualMint_fulfillRandomWords is
         // check that the current max number of words is 500
         assert(currentMaxNumWords == 500);
 
-        uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords;
+        uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords / 2;
 
         // attempt to mint with ETH
         vm.prank(minter);
@@ -264,15 +264,15 @@ contract PerpetualMint_fulfillRandomWords is
         vm.expectRevert(
             abi.encodeWithSelector(
                 VRFCoordinatorV2.NumWordsTooBig.selector,
-                MAXIMUM_MINT_ATTEMPTS + 1,
-                MAXIMUM_MINT_ATTEMPTS
+                currentMaxNumWords + 2,
+                currentMaxNumWords
             )
         );
         perpetualMint.attemptBatchMintWithEth{
             value: MINT_PRICE * (MAXIMUM_MINT_ATTEMPTS + 1)
         }(COLLECTION, MAXIMUM_MINT_ATTEMPTS + 1);
 
-        uint32 numberOfRandomWordsRequested = MAXIMUM_MINT_ATTEMPTS; // 1 word per mint attempt
+        uint32 numberOfRandomWordsRequested = currentMaxNumWords; // 2 words per mint attempt
 
         // mock the VRF Coordinator request random words call
         vm.prank(address(perpetualMint));
@@ -317,8 +317,8 @@ contract PerpetualMint_fulfillRandomWords is
         assert(success == true);
     }
 
-    /// @dev Tests that fulfillRandomWords (when paid in $MINT) can currently handle the max limit of 500 attempted mints per tx.
-    function testFuzz_fulfillRandomWordsWithMintCanHandleMaximum500MintAttempts(
+    /// @dev Tests that fulfillRandomWords (when paid in $MINT) can currently handle the max limit of 250 attempted mints per tx.
+    function testFuzz_fulfillRandomWordsWithMintCanHandleMaximum250MintAttempts(
         uint256 randomness
     ) external {
         // store current block number to use as the mint block number
@@ -332,7 +332,7 @@ contract PerpetualMint_fulfillRandomWords is
         // check that the current max number of words is 500
         assert(currentMaxNumWords == 500);
 
-        uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords;
+        uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords / 2;
 
         // attempt to mint with $MINT
         vm.prank(minter);
@@ -344,8 +344,8 @@ contract PerpetualMint_fulfillRandomWords is
         vm.expectRevert(
             abi.encodeWithSelector(
                 VRFCoordinatorV2.NumWordsTooBig.selector,
-                MAXIMUM_MINT_ATTEMPTS + 1,
-                MAXIMUM_MINT_ATTEMPTS
+                currentMaxNumWords + 2,
+                currentMaxNumWords
             )
         );
 
@@ -355,7 +355,7 @@ contract PerpetualMint_fulfillRandomWords is
             MAXIMUM_MINT_ATTEMPTS + 1
         );
 
-        uint32 numberOfRandomWordsRequested = MAXIMUM_MINT_ATTEMPTS; // 1 word per mint attempt
+        uint32 numberOfRandomWordsRequested = currentMaxNumWords; // 2 words per mint attempt
 
         // mock the VRF Coordinator request random words call
         vm.prank(address(perpetualMint));

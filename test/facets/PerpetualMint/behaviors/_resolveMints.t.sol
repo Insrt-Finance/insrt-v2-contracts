@@ -41,6 +41,8 @@ contract PerpetualMint_resolveMints is
         // expected winning mint resolutions
         randomWords.push(1);
         randomWords.push(2);
+        randomWords.push(3);
+        randomWords.push(4);
 
         uint256 tokenIdForCollection = uint256(bytes32(abi.encode(COLLECTION)));
 
@@ -60,7 +62,7 @@ contract PerpetualMint_resolveMints is
 
     /// @dev tests that the MintResolved event is emitted when successfully resolving a mint
     function test_resolveMintsEmitsMintResolved() external {
-        // expected winning mint resolutions
+        // expected winning mint resolution
         randomWords.push(1);
         randomWords.push(2);
 
@@ -68,6 +70,25 @@ contract PerpetualMint_resolveMints is
         emit MintResolved(COLLECTION, true);
 
         vm.prank(address(perpetualMint));
+        perpetualMint.exposed_resolveMints(minter, COLLECTION, randomWords);
+    }
+
+    /// @dev tests that _resolveMints reverts when random words are unmatched
+    function test_resolveMintsRevertsWhen_RandomWordsAreUnmatched() public {
+        // unmatched expected winning mint resolution
+        randomWords.push(1);
+
+        vm.expectRevert(IPerpetualMintInternal.UnmatchedRandomWords.selector);
+
+        vm.startPrank(address(perpetualMint));
+        perpetualMint.exposed_resolveMints(minter, COLLECTION, randomWords);
+
+        // add additional unmatched extra words to cause unmatched random words revert
+        randomWords.push(2);
+        randomWords.push(3);
+
+        vm.expectRevert(IPerpetualMintInternal.UnmatchedRandomWords.selector);
+
         perpetualMint.exposed_resolveMints(minter, COLLECTION, randomWords);
     }
 

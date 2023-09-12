@@ -410,6 +410,9 @@ abstract contract PerpetualMintInternal is
     ) internal {
         uint32 basis = BASIS;
 
+        uint256 totalMintAmount = 0;
+        uint256 totalReceiptAmount = 0;
+
         for (uint256 i = 0; i < randomWords.length; ++i) {
             uint256 normalizedValue = _normalizeValue(randomWords[i], basis);
 
@@ -423,25 +426,33 @@ abstract contract PerpetualMintInternal is
                 for (uint256 j = 0; j < tiersData.tierRisks.length; ++j) {
                     cumulativeRisk += tiersData.tierRisks[j];
 
-                    bool tierFound = cumulativeRisk > normalizedValue;
-
-                    if (tierFound) {
+                    // if the cumulative risk is greater than the normalized value, the tier has been found
+                    if (cumulativeRisk > normalizedValue) {
                         tierMintAmount = tiersData.tierMintAmounts[j];
                         break;
                     }
                 }
 
-                IToken(mintToken).mint(minter, tierMintAmount);
+                totalMintAmount += tierMintAmount;
             } else {
-                _safeMint(
-                    minter,
-                    uint256(bytes32(abi.encode(collection))), // encode collection address as tokenId
-                    1,
-                    ""
-                );
+                ++totalReceiptAmount;
             }
 
             emit MintResolved(collection, result);
+        }
+
+        // Mint the cumulative amounts at the end
+        if (totalMintAmount > 0) {
+            IToken(mintToken).mint(minter, totalMintAmount);
+        }
+
+        if (totalReceiptAmount > 0) {
+            _safeMint(
+                minter,
+                uint256(bytes32(abi.encode(collection))), // encode collection address as tokenId
+                totalReceiptAmount,
+                ""
+            );
         }
     }
 

@@ -31,28 +31,4 @@ contract TokenHarness is Token, ITokenHarness {
     function mock_addMintingContract(address account) external {
         Storage.layout().mintingContracts.add(account);
     }
-
-    /// @inheritdoc ITokenHarness
-    function accountOffset(
-        address account
-    ) external view returns (uint256 offset) {
-        offset = Storage.layout().accrualData[account].offset;
-    }
-
-    /// @inheritdoc ITokenHarness
-    function accruedTokens(
-        address account
-    ) external view returns (uint256 amount) {
-        amount = Storage.layout().accrualData[account].accruedTokens;
-    }
-
-    /// @inheritdoc ITokenHarness
-    function distributionSupply() external view returns (uint256 supply) {
-        supply = Storage.layout().distributionSupply;
-    }
-
-    /// @inheritdoc ITokenHarness
-    function globalRatio() external view returns (uint256 ratio) {
-        ratio = Storage.layout().globalRatio;
-    }
 }

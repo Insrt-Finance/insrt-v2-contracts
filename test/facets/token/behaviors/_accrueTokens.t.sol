@@ -23,7 +23,7 @@ contract Token_accrueTokens is ArbForkTest, TokenTest {
 
         assert(token.distributionSupply() == DISTRIBUTION_AMOUNT);
 
-        assert(token.accountOffset(MINTER) == 0);
+        assert(token.accrualData(MINTER).offset == 0);
 
         assert(
             token.globalRatio() ==
@@ -38,16 +38,16 @@ contract Token_accrueTokens is ArbForkTest, TokenTest {
 
         token.exposed_accrueTokens(MINTER);
 
-        assert(globalRatio == token.accountOffset(MINTER));
+        assert(globalRatio == token.accrualData(MINTER).offset);
     }
 
     /// @dev ensures that accrueTokens increases the accrued tokens of the account accruing tokens
     function test_accrueTokensIncreasesAccruedTokens() public {
-        uint256 oldAccruedTokens = token.accruedTokens(MINTER);
+        uint256 oldAccruedTokens = token.accrualData(MINTER).accruedTokens;
 
         token.exposed_accrueTokens(MINTER);
 
-        uint256 newAccruedTokens = token.accruedTokens(MINTER);
+        uint256 newAccruedTokens = token.accrualData(MINTER).accruedTokens;
         assert(newAccruedTokens - oldAccruedTokens >= DISTRIBUTION_AMOUNT - 1);
     }
 }

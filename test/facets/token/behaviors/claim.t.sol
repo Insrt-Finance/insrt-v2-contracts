@@ -23,7 +23,7 @@ contract Token_claim is ArbForkTest, TokenTest {
 
         assert(token.distributionSupply() == DISTRIBUTION_AMOUNT);
 
-        assert(token.accountOffset(MINTER) == 0);
+        assert(token.accrualData(MINTER).offset == 0);
 
         assert(
             token.globalRatio() ==
@@ -45,12 +45,12 @@ contract Token_claim is ArbForkTest, TokenTest {
         token.claim();
 
         uint256 newDistributionSupply = token.distributionSupply();
-        uint256 newAccruedTokens = token.accruedTokens(MINTER);
+        uint256 newAccruedTokens = token.accrualData(MINTER).accruedTokens;
 
         assert(
             oldDistributionSupply - newDistributionSupply >= claimableTokens - 1
         );
-        assert(globalRatio == token.accountOffset(MINTER));
+        assert(globalRatio == token.accrualData(MINTER).offset);
 
         assert(newAccruedTokens == 0);
     }

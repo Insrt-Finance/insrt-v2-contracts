@@ -5,8 +5,6 @@ pragma solidity 0.8.21;
 import { TokenTest } from "../Token.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 
-import "forge-std/console.sol";
-
 /// @title Token_mint
 /// @dev Token test contract for testing expected mint behavior. Tested on an Arbitrum fork.
 contract Token_mint is ArbForkTest, TokenTest {
@@ -63,14 +61,14 @@ contract Token_mint is ArbForkTest, TokenTest {
         vm.prank(MINTER);
         token.mint(MINTER, MINT_AMOUNT);
 
-        uint256 accountOffset = token.accountOffset(RECEIVER);
+        uint256 accountOffset = token.accrualData(RECEIVER).offset;
         assert(accountOffset == 0);
 
         vm.prank(MINTER);
         token.mint(RECEIVER, MINT_AMOUNT);
 
         uint256 globalRatio = token.globalRatio();
-        accountOffset = token.accountOffset(RECEIVER);
+        accountOffset = token.accrualData(RECEIVER).offset;
 
         assert(globalRatio == accountOffset);
     }
@@ -86,12 +84,12 @@ contract Token_mint is ArbForkTest, TokenTest {
         vm.prank(MINTER);
         token.mint(RECEIVER, MINT_AMOUNT);
 
-        uint256 oldAccruedTokens = token.accruedTokens(MINTER);
+        uint256 oldAccruedTokens = token.accrualData(MINTER).accruedTokens;
 
         vm.prank(MINTER);
         token.mint(MINTER, MINT_AMOUNT);
 
-        uint256 newAccruedTokens = token.accruedTokens(MINTER);
+        uint256 newAccruedTokens = token.accrualData(MINTER).accruedTokens;
         uint256 expectedAccruedTokens = 2 * DISTRIBUTION_AMOUNT;
 
         assert(
@@ -162,7 +160,9 @@ contract Token_mint is ArbForkTest, TokenTest {
 
         globalRatio = token.globalRatio();
 
-        assert(token.accountOffset(MINTER) == globalRatio - distributionRatio);
+        assert(
+            token.accrualData(MINTER).offset == globalRatio - distributionRatio
+        );
     }
 
     /// @dev ensures mint, when there is a single token holder who is _not_ the first mint,
@@ -205,8 +205,14 @@ contract Token_mint is ArbForkTest, TokenTest {
         // RECEIVER is now entitled to 2 * DISTRIBUTION_AMOUNT of tokens
         // since they are entitled to the full DISTRIBUTION_AMOUNT they
         // contributed
-        assert(2 * DISTRIBUTION_AMOUNT + 1 >= token.accruedTokens(RECEIVER));
-        assert(2 * DISTRIBUTION_AMOUNT - 1 <= token.accruedTokens(RECEIVER));
+        assert(
+            2 * DISTRIBUTION_AMOUNT + 1 >=
+                token.accrualData(RECEIVER).accruedTokens
+        );
+        assert(
+            2 * DISTRIBUTION_AMOUNT - 1 <=
+                token.accrualData(RECEIVER).accruedTokens
+        );
     }
 
     /// @dev ensures mint, when there is a single token holder who is _not_ the first mint,
@@ -292,7 +298,7 @@ contract Token_mint is ArbForkTest, TokenTest {
 
         token.mint(RECEIVER, MINT_AMOUNT);
 
-        assert(token.accountOffset(RECEIVER) == token.globalRatio());
+        assert(token.accrualData(RECEIVER).offset == token.globalRatio());
     }
 
     /// @dev ensures that mint increases the distribution supply by the distribution amount

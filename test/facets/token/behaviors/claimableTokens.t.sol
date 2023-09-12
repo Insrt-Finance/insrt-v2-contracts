@@ -23,7 +23,7 @@ contract Token_claimableTokens is ArbForkTest, TokenTest {
 
         assert(token.distributionSupply() == DISTRIBUTION_AMOUNT);
 
-        assert(token.accountOffset(MINTER) == 0);
+        assert(token.accrualData(MINTER).offset == 0);
 
         assert(
             token.globalRatio() ==

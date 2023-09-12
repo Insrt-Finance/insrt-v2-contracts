@@ -93,6 +93,10 @@ interface IPerpetualMint is IPausable {
     /// @return mintFeeBasisPoints mint fee in basis points
     function mintFeeBP() external view returns (uint32 mintFeeBasisPoints);
 
+    /// @notice Returns the address of the current $MINT token
+    /// @return token address of the current $MINT token
+    function mintToken() external view returns (address token);
+
     /// @notice Triggers paused state, when contract is unpaused.
     function pause() external;
 
@@ -125,6 +129,10 @@ interface IPerpetualMint is IPausable {
     /// @notice sets the mint fee in basis points
     /// @param mintFeeBP mint fee in basis points
     function setMintFeeBP(uint32 mintFeeBP) external;
+
+    /// @notice sets the address of the mint consolation token
+    /// @param mintToken address of the mint consolation token
+    function setMintToken(address mintToken) external;
 
     /// @notice sets the redemption fee in basis points
     /// @param _redemptionFeeBP redemption fee in basis points

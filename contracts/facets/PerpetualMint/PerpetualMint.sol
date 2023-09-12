@@ -19,8 +19,8 @@ contract PerpetualMint is
 {
     constructor(
         address vrf,
-        address mintToken
-    ) PerpetualMintInternal(vrf, mintToken) {}
+        address _mintToken
+    ) PerpetualMintInternal(vrf, _mintToken) {}
 
     /// @inheritdoc IPerpetualMint
     function accruedConsolationFees()
@@ -126,6 +126,11 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function mintToken() external view returns (address token) {
+        token = _mintToken();
+    }
+
+    /// @inheritdoc IPerpetualMint
     function pause() external onlyOwner {
         _pause();
     }
@@ -169,6 +174,11 @@ contract PerpetualMint is
     /// @inheritdoc IPerpetualMint
     function setMintFeeBP(uint32 _mintFeeBP) external onlyOwner {
         _setMintFeeBP(_mintFeeBP);
+    }
+
+    /// @inheritdoc IPerpetualMint
+    function setMintToken(address _mintToken) external onlyOwner {
+        _setMintToken(_mintToken);
     }
 
     /// @inheritdoc IPerpetualMint

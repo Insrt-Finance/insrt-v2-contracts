@@ -30,6 +30,8 @@ library PerpetualMintStorage {
         mapping(address collection => CollectionData) collections;
         /// @dev mapping of mint attempt VRF requests which have not yet been fulfilled
         mapping(uint256 requestId => RequestData) requests;
+        /// @dev address of the current $MINT token
+        address mintToken;
     }
 
     bytes32 internal constant STORAGE_SLOT =

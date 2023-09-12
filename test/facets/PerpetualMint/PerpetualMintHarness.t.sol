@@ -120,6 +120,7 @@ contract PerpetualMintHarness is
         TiersData memory tiersData = l.tiers;
 
         _resolveMints(
+            l.mintToken,
             collectionData,
             tiersData,
             minter,

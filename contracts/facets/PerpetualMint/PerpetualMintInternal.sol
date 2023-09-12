@@ -37,14 +37,12 @@ abstract contract PerpetualMintInternal is
     /// @dev address of Chainlink VRFCoordinatorV2 contract
     address private immutable VRF;
 
-    address private immutable MINT_TOKEN;
-
     constructor(
         address vrfCoordinator,
         address mintToken
     ) VRFConsumerBaseV2(vrfCoordinator) {
         VRF = vrfCoordinator;
-        MINT_TOKEN = mintToken;
+        Storage.layout().mintToken = mintToken;
     }
 
     /// @notice returns the current accrued consolation fees
@@ -153,7 +151,7 @@ abstract contract PerpetualMintInternal is
         // calculate amount of $MINT required
         uint256 mintRequired = ethRequired * ethToMintRatio;
 
-        IToken(MINT_TOKEN).burn(minter, mintRequired);
+        IToken(l.mintToken).burn(minter, mintRequired);
 
         // calculate the consolation fee
         uint256 consolationFee = (ethRequired * l.consolationFeeBP) / BASIS;
@@ -300,7 +298,14 @@ abstract contract PerpetualMintInternal is
 
         CollectionData storage collectionData = l.collections[collection];
 
-        _resolveMints(collectionData, l.tiers, minter, collection, randomWords);
+        _resolveMints(
+            l.mintToken,
+            collectionData,
+            l.tiers,
+            minter,
+            collection,
+            randomWords
+        );
 
         collectionData.pendingRequests.remove(requestId);
 
@@ -311,6 +316,12 @@ abstract contract PerpetualMintInternal is
     /// @return mintFeeBasisPoints mint fee in basis points
     function _mintFeeBP() internal view returns (uint32 mintFeeBasisPoints) {
         mintFeeBasisPoints = Storage.layout().mintFeeBP;
+    }
+
+    /// @notice Returns the address of the current $MINT token
+    /// @return mintToken address of the current $MINT token
+    function _mintToken() internal view returns (address mintToken) {
+        mintToken = Storage.layout().mintToken;
     }
 
     /// @notice ensures a value is within the BASIS range
@@ -334,7 +345,7 @@ abstract contract PerpetualMintInternal is
         Storage.Layout storage l = Storage.layout();
 
         // burn amount of $MINT to be swapped
-        IToken(MINT_TOKEN).burn(account, amount);
+        IToken(l.mintToken).burn(account, amount);
 
         // calculate amount of ETH given for $MINT amount
         ethAmount =
@@ -383,12 +394,14 @@ abstract contract PerpetualMintInternal is
     }
 
     /// @notice resolves the outcomes of attempted mints for a given collection
+    /// @param mintToken address of $MINT token
     /// @param collectionData the CollectionData struct for a given collection
     /// @param tiersData the TiersData struct for mint consolations
     /// @param minter address of minter
     /// @param collection address of collection for mint attempts
     /// @param randomWords array of random values relating to number of attempts
     function _resolveMints(
+        address mintToken,
         CollectionData storage collectionData,
         TiersData memory tiersData,
         address minter,
@@ -418,7 +431,7 @@ abstract contract PerpetualMintInternal is
                     }
                 }
 
-                IToken(MINT_TOKEN).mint(minter, tierMintAmount);
+                IToken(mintToken).mint(minter, tierMintAmount);
             } else {
                 _safeMint(
                     minter,
@@ -477,6 +490,10 @@ abstract contract PerpetualMintInternal is
     /// @param mintFeeBP mint fee in basis points
     function _setMintFeeBP(uint32 mintFeeBP) internal {
         Storage.layout().mintFeeBP = mintFeeBP;
+    }
+
+    function _setMintToken(address mintToken) internal {
+        Storage.layout().mintToken = mintToken;
     }
 
     /// @notice sets the redemption fee in basis points

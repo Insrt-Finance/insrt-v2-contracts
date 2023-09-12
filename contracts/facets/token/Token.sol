@@ -7,10 +7,18 @@ import { SolidStateERC20 } from "@solidstate/contracts/token/ERC20/SolidStateERC
 
 import { IToken } from "./IToken.sol";
 import { TokenInternal } from "./TokenInternal.sol";
+import { AccrualData } from "./types/DataTypes.sol";
 
 /// @title Token contract
 /// @dev contains all externally called functions and necessary override for the Token facet
 contract Token is TokenInternal, SolidStateERC20, IToken {
+    /// @inheritdoc IToken
+    function accrualData(
+        address account
+    ) external view returns (AccrualData memory data) {
+        data = _accrualData(account);
+    }
+
     /// @inheritdoc IToken
     function addMintingContract(address account) external onlyOwner {
         _addMintingContract(account);
@@ -55,6 +63,16 @@ contract Token is TokenInternal, SolidStateERC20, IToken {
         returns (uint32 fractionBP)
     {
         fractionBP = _distributionFractionBP();
+    }
+
+    /// @inheritdoc IToken
+    function distributionSupply() external view returns (uint256 supply) {
+        supply = _distributionSupply();
+    }
+
+    /// @inheritdoc IToken
+    function globalRatio() external view returns (uint256 ratio) {
+        ratio = _globalRatio();
     }
 
     /// @inheritdoc IToken

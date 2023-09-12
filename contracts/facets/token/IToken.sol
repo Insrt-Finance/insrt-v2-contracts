@@ -3,10 +3,19 @@
 pragma solidity ^0.8.21;
 
 import { IERC20 } from "@solidstate/contracts/interfaces/IERC20.sol";
+import { AccrualData } from "./types/DataTypes.sol";
 
 /// @title ITokenMint interface
 /// @dev contains all external functions for Token facet
 interface IToken is IERC20 {
+    /// @notice returns AccrualData struct pertaining to account, which contains Tokena accrual
+    /// information
+    /// @param account address of account
+    /// @return data AccrualData of account
+    function accrualData(
+        address account
+    ) external view returns (AccrualData memory data);
+
     /// @notice adds an account to the mintingContracts enumerable set
     /// @param account address of account
     function addMintingContract(address account) external;
@@ -29,6 +38,14 @@ interface IToken is IERC20 {
     /// @notice returns the distributionFractionBP value
     /// @return fractionBP value of distributionFractionBP
     function distributionFractionBP() external view returns (uint32 fractionBP);
+
+    /// @notice returns the distribution supply value
+    /// @return supply distribution supply value
+    function distributionSupply() external view returns (uint256 supply);
+
+    /// @notice returns the global ratio value
+    /// @return ratio global ratio value
+    function globalRatio() external view returns (uint256 ratio);
 
     /// @notice disburses (mints) an amount of tokens to an account
     /// @param account address of account receive the tokens

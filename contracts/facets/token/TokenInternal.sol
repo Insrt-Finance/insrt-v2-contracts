@@ -32,6 +32,16 @@ abstract contract TokenInternal is
         _;
     }
 
+    /// @notice returns AccrualData struct pertaining to account, which contains Tokena accrual
+    /// information
+    /// @param account address of account
+    /// @return data AccrualData of account
+    function _accrualData(
+        address account
+    ) internal view returns (AccrualData memory data) {
+        data = Storage.layout().accrualData[account];
+    }
+
     /// @notice accrues the tokens available for claiming for an account
     /// @param l TokenStorage Layout struct
     /// @param account address of account
@@ -140,6 +150,18 @@ abstract contract TokenInternal is
         returns (uint32 fractionBP)
     {
         fractionBP = Storage.layout().distributionFractionBP;
+    }
+
+    /// @notice returns the distribution supply value
+    /// @return supply distribution supply value
+    function _distributionSupply() internal view returns (uint256 supply) {
+        supply = Storage.layout().distributionSupply;
+    }
+
+    /// @notice returns the global ratio value
+    /// @return ratio global ratio value
+    function _globalRatio() internal view returns (uint256 ratio) {
+        ratio = Storage.layout().globalRatio;
     }
 
     /// @notice mint an amount of tokens to an account

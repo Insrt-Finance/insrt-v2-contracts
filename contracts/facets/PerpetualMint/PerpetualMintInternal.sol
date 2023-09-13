@@ -338,18 +338,14 @@ abstract contract PerpetualMintInternal is
     /// @dev only one-sided ($MINT => ETH (native token)) supported
     /// @param account address of account
     /// @param amount amount of $MINT
-    function _redeem(
-        address account,
-        uint256 amount
-    ) internal returns (uint256 ethAmount) {
+    function _redeem(address account, uint256 amount) internal {
         Storage.Layout storage l = Storage.layout();
 
         // burn amount of $MINT to be swapped
         IToken(l.mintToken).burn(account, amount);
 
         // calculate amount of ETH given for $MINT amount
-        ethAmount =
-            (amount * (BASIS - l.redemptionFeeBP)) /
+        uint256 ethAmount = (amount * (BASIS - l.redemptionFeeBP)) /
             (BASIS * _ethToMintRatio(l));
 
         // decrease mintEarnings

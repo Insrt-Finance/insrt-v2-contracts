@@ -408,13 +408,11 @@ abstract contract PerpetualMintInternal is
         address collection,
         uint256[] memory randomWords
     ) internal {
-        uint32 basis = BASIS;
-
-        uint256 totalMintAmount = 0;
-        uint256 totalReceiptAmount = 0;
+        uint256 totalMintAmount;
+        uint256 totalReceiptAmount;
 
         for (uint256 i = 0; i < randomWords.length; ++i) {
-            uint256 normalizedValue = _normalizeValue(randomWords[i], basis);
+            uint256 normalizedValue = _normalizeValue(randomWords[i], BASIS);
 
             bool result = _collectionRisk(collectionData) > normalizedValue;
 

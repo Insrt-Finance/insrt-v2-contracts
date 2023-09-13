@@ -15,7 +15,7 @@ contract Token_claim is ArbForkTest, TokenTest {
     function setUp() public override {
         super.setUp();
 
-        // mint stoken to minter
+        // mints token to minter
         vm.prank(MINTER);
         token.mint(MINTER, MINT_AMOUNT);
 

@@ -8,7 +8,7 @@ import { AccrualData } from "./types/DataTypes.sol";
 /// @title ITokenMint interface
 /// @dev contains all external functions for Token facet
 interface IToken is IERC20 {
-    /// @notice returns AccrualData struct pertaining to account, which contains Tokena accrual
+    /// @notice returns AccrualData struct pertaining to account, which contains Token accrual
     /// information
     /// @param account address of account
     /// @return data AccrualData of account

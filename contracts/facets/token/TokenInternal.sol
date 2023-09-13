@@ -32,7 +32,7 @@ abstract contract TokenInternal is
         _;
     }
 
-    /// @notice returns AccrualData struct pertaining to account, which contains Tokena accrual
+    /// @notice returns AccrualData struct pertaining to account, which contains Token accrual
     /// information
     /// @param account address of account
     /// @return data AccrualData of account

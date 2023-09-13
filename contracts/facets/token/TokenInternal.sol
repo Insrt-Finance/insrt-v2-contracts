@@ -67,15 +67,8 @@ abstract contract TokenInternal is
     /// @notice adds an account to the mintingContracts enumerable set
     /// @param account address of account
     function _addMintingContract(address account) internal {
-        uint32 size;
-        assembly {
-            size := extcodesize(account)
-        }
-
-        if (size != 0) {
-            Storage.layout().mintingContracts.add(account);
-            emit MintingContractAdded(account);
-        }
+        Storage.layout().mintingContracts.add(account);
+        emit MintingContractAdded(account);
     }
 
     /// @notice overrides _beforeTokenTransfer hook to enforce non-transferability

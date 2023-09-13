@@ -18,8 +18,4 @@ interface ITokenHarness {
         address to,
         uint256 amount
     ) external;
-
-    /// @notice adds a non-contract minting "contract" for ease of testing
-    /// @param account address of account
-    function mock_addMintingContract(address account) external;
 }

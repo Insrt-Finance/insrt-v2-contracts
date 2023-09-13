@@ -40,7 +40,7 @@ abstract contract TokenTest is TokenProxyTest {
         assert(DISTRIBUTION_FRACTION_BP == token.distributionFractionBP());
 
         // add minter to minting contracts for testing
-        token.mock_addMintingContract(MINTER);
+        token.addMintingContract(MINTER);
 
         assert(MINTER == token.mintingContracts()[0]);
     }

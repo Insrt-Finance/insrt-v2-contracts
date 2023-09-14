@@ -101,6 +101,21 @@ interface IPerpetualMint is IPausable {
     /// @return token address of the current $MINT token
     function mintToken() external view returns (address token);
 
+    /// @notice Validates receipt of an ERC1155 transfer.
+    /// @param operator Executor of transfer.
+    /// @param from Sender of tokens.
+    /// @param id Token ID received.
+    /// @param value Quantity of tokens received.
+    /// @param data Data payload.
+    /// @return bytes4 Function's own selector if transfer is accepted.
+    function onERC1155Received(
+        address operator,
+        address from,
+        uint256 id,
+        uint256 value,
+        bytes calldata data
+    ) external pure returns (bytes4);
+
     /// @notice Triggers paused state, when contract is unpaused.
     function pause() external;
 

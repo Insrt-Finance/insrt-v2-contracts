@@ -136,6 +136,17 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes calldata
+    ) external pure returns (bytes4) {
+        return this.onERC1155Received.selector;
+    }
+
+    /// @inheritdoc IPerpetualMint
     function pause() external onlyOwner {
         _pause();
     }

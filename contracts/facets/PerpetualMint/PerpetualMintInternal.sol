@@ -348,8 +348,12 @@ abstract contract PerpetualMintInternal is
         uint256 ethAmount = (amount * (BASIS - l.redemptionFeeBP)) /
             (BASIS * _ethToMintRatio(l));
 
-        // decrease mintEarnings
-        l.mintEarnings -= ethAmount;
+        if (ethAmount > l.consolationFees) {
+            revert InsufficientConsolationFees();
+        }
+
+        // decrease consolationFees
+        l.consolationFees -= ethAmount;
 
         payable(account).sendValue(ethAmount);
     }

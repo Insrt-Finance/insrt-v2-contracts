@@ -29,7 +29,7 @@ contract PerpetualMint_redeem is
 
         vm.deal(address(perpetualMint), 100 ether);
 
-        perpetualMint.setMintEarnings(100 ether);
+        perpetualMint.setConsolationFees(100 ether);
 
         token.addMintingContract(address(perpetualMint));
 
@@ -41,8 +41,8 @@ contract PerpetualMint_redeem is
     /// @dev Tests redeem functionality.
     /// Tests up to type(uint64).max redemption amount.
     function testFuzz_redeem(uint64 redemptionAmount) external {
-        uint256 preRedeemAccruedMintEarnings = perpetualMint
-            .accruedMintEarnings();
+        uint256 preRedeemAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
 
         uint256 preRedeemProtocolEtherBalance = address(perpetualMint).balance;
 
@@ -55,12 +55,12 @@ contract PerpetualMint_redeem is
             (perpetualMint.exposed_basis() - perpetualMint.redemptionFeeBP())) /
             (perpetualMint.exposed_basis() * perpetualMint.ethToMintRatio());
 
-        uint256 postRedeemAccruedMintEarnings = perpetualMint
-            .accruedMintEarnings();
+        uint256 postRedeemAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
 
         assert(
-            postRedeemAccruedMintEarnings ==
-                preRedeemAccruedMintEarnings - expectedEthRedeemed
+            postRedeemAccruedConsolationFees ==
+                preRedeemAccruedConsolationFees - expectedEthRedeemed
         );
 
         uint256 postRedeemProtocolEtherBalance = address(perpetualMint).balance;

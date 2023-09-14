@@ -51,6 +51,16 @@ interface IPerpetualMintInternal {
         uint256 totalReceiptAmount
     );
 
+    /// @notice emitted when a prize is claimed
+    /// @param claimer address of claimer
+    /// @param prizeRecipient address of specified prize recipient
+    /// @param collection address of collection prize
+    event PrizeClaimed(
+        address claimer,
+        address prizeRecipient,
+        address indexed collection
+    );
+
     /// @notice emitted when the Chainlink VRF config is set
     /// @param config VRFConfig struct holding all related data to ChainlinkVRF
     event VRFConfigSet(VRFConfig config);

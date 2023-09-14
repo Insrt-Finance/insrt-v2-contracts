@@ -50,6 +50,11 @@ interface IPerpetualMint is IPausable {
     /// @notice claims all accrued mint earnings across collections
     function claimMintEarnings() external;
 
+    /// @notice Initiates a claim for a prize for a given collection
+    /// @param prizeRecipient address of intended prize recipient
+    /// @param tokenId token ID of prize, which is the prize collection address encoded as uint256
+    function claimPrize(address prizeRecipient, uint256 tokenId) external;
+
     /// @notice claims all accrued protocol fees
     function claimProtocolFees() external;
 

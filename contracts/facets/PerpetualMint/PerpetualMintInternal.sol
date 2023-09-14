@@ -193,6 +193,20 @@ abstract contract PerpetualMintInternal is
         payable(recipient).sendValue(mintEarnings);
     }
 
+    function _claimPrize(
+        address claimer,
+        address prizeRecipient,
+        uint256 tokenId
+    ) internal {
+        _safeTransfer(msg.sender, claimer, address(this), tokenId, 1, "");
+
+        emit PrizeClaimed(
+            claimer,
+            prizeRecipient,
+            address(uint160(tokenId)) // decode tokenId to get collection address
+        );
+    }
+
     /// @notice claims all accrued protocol fees
     /// @param recipient address of protocol fees recipient
     function _claimProtocolFees(address recipient) internal {

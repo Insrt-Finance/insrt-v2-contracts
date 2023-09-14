@@ -182,6 +182,18 @@ abstract contract PerpetualMintInternal is
         value = BASIS;
     }
 
+    /// @notice Cancels a claim for a given claimer for given token ID
+    /// @param claimer address of rejected claimer
+    /// @param tokenId token ID of rejected claim
+    function _cancelClaim(address claimer, uint256 tokenId) internal {
+        _safeTransfer(address(this), address(this), claimer, tokenId, 1, "");
+
+        emit ClaimCancelled(
+            claimer,
+            address(uint160(tokenId)) // decode tokenId to get collection address
+        );
+    }
+
     /// @notice claims all accrued mint earnings across collections
     /// @param recipient address of mint earnings recipient
     function _claimMintEarnings(address recipient) internal {

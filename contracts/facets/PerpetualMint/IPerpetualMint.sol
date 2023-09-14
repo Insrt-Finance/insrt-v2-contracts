@@ -47,6 +47,11 @@ interface IPerpetualMint is IPausable {
     /// @return value BASIS value
     function BASIS() external pure returns (uint32 value);
 
+    /// @notice Cancels a claim for a given claimer for given token ID
+    /// @param claimer address of rejected claimer
+    /// @param tokenId token ID of rejected claim
+    function cancelClaim(address claimer, uint256 tokenId) external;
+
     /// @notice claims all accrued mint earnings across collections
     function claimMintEarnings() external;
 

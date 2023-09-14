@@ -27,6 +27,11 @@ interface IPerpetualMintInternal {
     /// @notice thrown when fulfilled random words do not match for attempted mints
     error UnmatchedRandomWords();
 
+    /// @notice emitted when a claim is cancelled
+    /// @param claimer address of rejected claimer
+    /// @param collection address of rejected claim collection
+    event ClaimCancelled(address claimer, address indexed collection);
+
     /// @notice emitted when the risk for a collection is set
     /// @param collection address of collection
     /// @param risk risk of collection

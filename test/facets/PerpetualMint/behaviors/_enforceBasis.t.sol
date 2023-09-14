@@ -12,7 +12,7 @@ contract PerpetualMint_enforceBasis is ArbForkTest, PerpetualMintTest {
     /// @dev tests that risk values cannot exceed the BASIS
     function testFuzz_enforceBasis(uint32 risk) external {
         // _enforceBasis should revert if risk exceeds BASIS
-        if (risk > perpetualMint.exposed_basis()) {
+        if (risk > perpetualMint.basis()) {
             vm.expectRevert(IPerpetualMintInternal.BasisExceeded.selector);
 
             perpetualMint.exposed_enforceBasis(risk);

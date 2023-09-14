@@ -176,6 +176,12 @@ abstract contract PerpetualMintInternal is
         _requestRandomWords(l, collectionData, minter, collection, numWords);
     }
 
+    /// @notice returns the value of BASIS
+    /// @return value BASIS value
+    function _basis() internal pure returns (uint256 value) {
+        value = BASIS;
+    }
+
     /// @notice claims all accrued mint earnings across collections
     /// @param recipient address of mint earnings recipient
     function _claimMintEarnings(address recipient) internal {

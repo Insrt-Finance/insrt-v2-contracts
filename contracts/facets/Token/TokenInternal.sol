@@ -71,6 +71,12 @@ abstract contract TokenInternal is
         emit MintingContractAdded(account);
     }
 
+    /// @notice returns the value of BASIS
+    /// @return value BASIS value
+    function _basis() internal pure returns (uint256 value) {
+        value = BASIS;
+    }
+
     /// @notice overrides _beforeTokenTransfer hook to enforce non-transferability
     /// @param from sender of tokens
     /// @param to receiver of tokens
@@ -248,6 +254,12 @@ abstract contract TokenInternal is
     function _removeMintingContract(address account) internal {
         Storage.layout().mintingContracts.remove(account);
         emit MintingContractRemoved(account);
+    }
+
+    /// @notice returns the value of SCALE
+    /// @return value SCALE value
+    function _scale() internal pure returns (uint256 value) {
+        value = SCALE;
     }
 
     /// @notice multiplies a value by the scale, to enable floating point calculations

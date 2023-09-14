@@ -125,6 +125,16 @@ contract PerpetualMintHarness is
     }
 
     /// @inheritdoc IPerpetualMintHarness
+    function mintReceipts(address collection, uint256 receiptAmount) external {
+        _safeMint(
+            msg.sender,
+            uint256(bytes32(abi.encode(collection))),
+            receiptAmount,
+            ""
+        );
+    }
+
+    /// @inheritdoc IPerpetualMintHarness
     function setConsolationFees(uint256 amount) external {
         Storage.layout().consolationFees = amount;
     }

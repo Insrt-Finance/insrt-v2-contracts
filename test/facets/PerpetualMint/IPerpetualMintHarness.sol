@@ -61,6 +61,9 @@ interface IPerpetualMintHarness {
         uint256[] memory randomWords
     ) external;
 
+    /// @dev allows minting won collection receipts
+    function mintReceipts(address collection, uint256 receiptAmount) external;
+
     /// @dev allows setting accrued consolation fees
     function setConsolationFees(uint256 amount) external;
 

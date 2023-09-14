@@ -38,7 +38,7 @@ contract PerpetualMint_setCollectionRisk is
             );
         } else {
             // if the new collection risk is greater than the basis, the function should revert
-            if (_newCollectionRisk > perpetualMint.exposed_basis()) {
+            if (_newCollectionRisk > perpetualMint.basis()) {
                 vm.expectRevert(IPerpetualMintInternal.BasisExceeded.selector);
 
                 perpetualMint.exposed_enforceBasis(_newCollectionRisk);

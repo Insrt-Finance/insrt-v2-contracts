@@ -13,9 +13,6 @@ interface IPerpetualMintHarness {
         uint256 tokenId
     ) external view returns (uint256 balance);
 
-    /// @dev exposes BASIS
-    function exposed_basis() external view returns (uint32 basis);
-
     /// @dev exposes _enforceBasis
     function exposed_enforceBasis(uint32 risk) external pure;
 

@@ -72,7 +72,7 @@ contract PerpetualMint_attemptBatchMintWithMint is
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
 
         uint256 expectedConsolationFee = (expectedEthRequired *
-            perpetualMint.consolationFeeBP()) / perpetualMint.exposed_basis();
+            perpetualMint.consolationFeeBP()) / perpetualMint.basis();
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -87,7 +87,7 @@ contract PerpetualMint_attemptBatchMintWithMint is
             .accruedProtocolFees();
 
         uint256 expectedMintFee = (expectedEthRequired *
-            perpetualMint.mintFeeBP()) / perpetualMint.exposed_basis();
+            perpetualMint.mintFeeBP()) / perpetualMint.basis();
 
         assert(postMintAccruedProtocolFees == expectedMintFee);
 

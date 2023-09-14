@@ -29,11 +29,6 @@ contract PerpetualMintHarness is
     }
 
     /// @inheritdoc IPerpetualMintHarness
-    function exposed_basis() external pure returns (uint32 basis) {
-        basis = BASIS;
-    }
-
-    /// @inheritdoc IPerpetualMintHarness
     function exposed_enforceBasis(uint32 risk) external pure {
         _enforceBasis(risk);
     }

@@ -8,9 +8,6 @@ import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 /// @title Token_burn
 /// @dev Token test contract for testing expected burn behavior. Tested on an Arbitrum fork.
 contract Token_burn is ArbForkTest, TokenTest {
-    uint256 internal constant DISTRIBUTION_AMOUNT =
-        (MINT_AMOUNT * DISTRIBUTION_FRACTION_BP) / BASIS;
-
     uint256 internal constant BURN_AMOUNT = 0.1 ether;
 
     /// @dev sets up the testing environment

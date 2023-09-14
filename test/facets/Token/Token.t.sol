@@ -16,8 +16,8 @@ abstract contract TokenTest is TokenProxyTest {
 
     TokenHelper public tokenHelper;
 
-    uint256 internal constant SCALE = 10 ** 36;
-    uint32 internal constant BASIS = 1000000000;
+    uint256 internal SCALE;
+    uint32 internal BASIS;
 
     uint256 internal constant MINT_AMOUNT = 100 ether;
 
@@ -25,6 +25,8 @@ abstract contract TokenTest is TokenProxyTest {
     address internal constant TOKEN_NON_OWNER = address(100);
 
     uint32 internal constant DISTRIBUTION_FRACTION_BP = 100000000; // 10% split
+
+    uint256 internal DISTRIBUTION_AMOUNT;
 
     /// @dev sets up Token for testing
     function setUp() public virtual override {
@@ -43,6 +45,11 @@ abstract contract TokenTest is TokenProxyTest {
         token.addMintingContract(MINTER);
 
         assert(MINTER == token.mintingContracts()[0]);
+
+        SCALE = token.scale();
+        BASIS = uint32(token.basis());
+
+        DISTRIBUTION_AMOUNT = (MINT_AMOUNT * DISTRIBUTION_FRACTION_BP) / BASIS;
     }
 
     /// @dev initializes token as a facet by executing a diamond cut on tokenProxy

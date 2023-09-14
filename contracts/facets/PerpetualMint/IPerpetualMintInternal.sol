@@ -38,9 +38,18 @@ interface IPerpetualMintInternal {
     event MintPriceSet(address collection, uint256 price);
 
     /// @notice emitted when the outcome of an attempted mint is resolved
+    /// @param minter address of account attempting the mint
     /// @param collection address of collection that attempted mint is for
-    /// @param result success status of mint attempt
-    event MintResolved(address indexed collection, bool result);
+    /// @param attempts number of mint attempts
+    /// @param totalMintAmount amount of $MINT tokens minted
+    /// @param totalReceiptAmount amount of receipts (ERC1155 tokens) minted (successful mint attempts)
+    event MintResult(
+        address indexed minter,
+        address indexed collection,
+        uint256 attempts,
+        uint256 totalMintAmount,
+        uint256 totalReceiptAmount
+    );
 
     /// @notice emitted when the Chainlink VRF config is set
     /// @param config VRFConfig struct holding all related data to ChainlinkVRF

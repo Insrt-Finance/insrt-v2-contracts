@@ -453,7 +453,13 @@ abstract contract PerpetualMintInternal is
                 ++totalReceiptAmount;
             }
 
-            emit MintResolved(collection, result);
+            emit MintResult(
+                minter,
+                collection,
+                randomWords.length / 2,
+                totalMintAmount,
+                totalReceiptAmount
+            );
         }
 
         // Mint the cumulative amounts at the end

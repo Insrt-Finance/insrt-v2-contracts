@@ -67,7 +67,7 @@ contract PerpetualMint_resolveMints is
         randomWords.push(2);
 
         vm.expectEmit();
-        emit MintResolved(COLLECTION, true);
+        emit MintResult(minter, COLLECTION, 1, 0, 1);
 
         vm.prank(address(perpetualMint));
         perpetualMint.exposed_resolveMints(minter, COLLECTION, randomWords);

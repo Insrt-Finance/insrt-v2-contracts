@@ -10,9 +10,6 @@ import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 contract Token_mint is ArbForkTest, TokenTest {
     address internal constant RECEIVER = address(2);
 
-    uint256 internal constant DISTRIBUTION_AMOUNT =
-        (MINT_AMOUNT * DISTRIBUTION_FRACTION_BP) / BASIS;
-
     /// @dev sets up the testing environment
     function setUp() public override {
         super.setUp();

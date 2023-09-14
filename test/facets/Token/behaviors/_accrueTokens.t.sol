@@ -8,9 +8,6 @@ import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 /// @title Token_accrueTokens
 /// @dev Token test contract for testing expected accrueToken behavior. Tested on an Arbitrum fork.
 contract Token_accrueTokens is ArbForkTest, TokenTest {
-    uint256 internal constant DISTRIBUTION_AMOUNT =
-        (MINT_AMOUNT * DISTRIBUTION_FRACTION_BP) / BASIS;
-
     /// @dev sets up the testing environment
     function setUp() public override {
         super.setUp();

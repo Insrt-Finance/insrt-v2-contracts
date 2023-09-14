@@ -12,9 +12,6 @@ contract Token_mint is ArbForkTest, TokenTest {
     address internal constant RECEIVER_ONE = address(1001);
     address internal constant RECEIVER_TWO = address(1002);
 
-    uint256 internal constant DISTRIBUTION_AMOUNT =
-        (MINT_AMOUNT * DISTRIBUTION_FRACTION_BP) / BASIS;
-
     /// @dev sets up the testing environment
     function setUp() public override {
         super.setUp();

@@ -58,6 +58,7 @@ contract PerpetualMint_claimPrize is
         );
     }
 
+    /// @dev Tests claimPrize emits PrizeClaimed event.
     function test_claimPrizeEmitsPrizeClaimed() external {
         vm.expectEmit();
 
@@ -71,6 +72,7 @@ contract PerpetualMint_claimPrize is
         perpetualMint.claimPrize(minter, testTokenId);
     }
 
+    /// @dev Tests claimPrize reverts when claimer balance is insufficient.
     function test_claimPrizeRevertsWhen_ClaimerBalanceInsufficient() external {
         vm.expectRevert(
             IERC1155BaseInternal.ERC1155Base__TransferExceedsBalance.selector

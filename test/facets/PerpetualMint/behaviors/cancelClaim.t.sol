@@ -57,6 +57,7 @@ contract PerpetualMint_cancelClaim is
         );
     }
 
+    /// @dev Tests cancelClaim emits ClaimCancelled event.
     function test_cancelClaimEmitsClaimCancelled() external {
         vm.expectEmit();
 
@@ -65,6 +66,7 @@ contract PerpetualMint_cancelClaim is
         perpetualMint.cancelClaim(minter, testTokenId);
     }
 
+    /// @dev Tests cancelClaim reverts when called by non-owner.
     function test_cancelClaimRevertsWhen_CalledByNonOwner() external {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
@@ -72,6 +74,7 @@ contract PerpetualMint_cancelClaim is
         perpetualMint.cancelClaim(minter, testTokenId);
     }
 
+    /// @dev Tests cancelClaim reverts when protocol balance is insufficient.
     function test_cancelClaimRevertsWhen_ProtocolBalanceInsufficient()
         external
     {

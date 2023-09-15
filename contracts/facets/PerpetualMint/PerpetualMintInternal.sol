@@ -205,6 +205,10 @@ abstract contract PerpetualMintInternal is
         payable(recipient).sendValue(mintEarnings);
     }
 
+    /// @notice Initiates a claim for a prize for a given collection
+    /// @param claimer address of claimer
+    /// @param prizeRecipient address of intended prize recipient
+    /// @param tokenId token ID of prize, which is the prize collection address encoded as uint256
     function _claimPrize(
         address claimer,
         address prizeRecipient,

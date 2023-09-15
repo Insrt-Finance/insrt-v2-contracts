@@ -22,7 +22,7 @@ interface IToken is IERC20 {
 
     /// @notice returns the value of BASIS
     /// @return value BASIS value
-    function basis() external view returns (uint256 value);
+    function BASIS() external pure returns (uint32 value);
 
     /// @notice burns an amount of tokens of an account
     /// @param account account to burn from
@@ -69,7 +69,7 @@ interface IToken is IERC20 {
 
     /// @notice returns the value of SCALE
     /// @return value SCALE value
-    function scale() external pure returns (uint256 value);
+    function SCALE() external pure returns (uint256 value);
 
     /// @notice sets a new value for distributionFractionBP
     /// @param _distributionFractionBP new distributionFractionBP value

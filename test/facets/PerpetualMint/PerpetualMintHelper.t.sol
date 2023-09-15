@@ -72,7 +72,7 @@ contract PerpetualMintHelper {
             .attemptBatchMintWithMint
             .selector;
 
-        perpetualMintFunctionSelectors[5] = IPerpetualMint.basis.selector;
+        perpetualMintFunctionSelectors[5] = IPerpetualMint.BASIS.selector;
 
         perpetualMintFunctionSelectors[6] = IPerpetualMint
             .claimMintEarnings

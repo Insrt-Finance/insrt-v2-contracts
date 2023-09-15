@@ -23,7 +23,7 @@ abstract contract PerpetualMintInternal is
     using EnumerableSet for EnumerableSet.UintSet;
 
     /// @dev denominator used in percentage calculations
-    uint32 internal constant BASIS = 1000000000;
+    uint32 private constant BASIS = 1000000000;
 
     /// @dev default mint price for a collection
     uint64 internal constant DEFAULT_COLLECTION_MINT_PRICE = 0.01 ether;
@@ -178,7 +178,7 @@ abstract contract PerpetualMintInternal is
 
     /// @notice returns the value of BASIS
     /// @return value BASIS value
-    function _basis() internal pure returns (uint256 value) {
+    function _BASIS() internal pure returns (uint32 value) {
         value = BASIS;
     }
 

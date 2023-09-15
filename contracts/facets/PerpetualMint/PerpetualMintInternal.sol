@@ -11,11 +11,13 @@ import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
 import { CollectionData, PerpetualMintStorage as Storage, RequestData, TiersData, VRFConfig } from "./Storage.sol";
 import { IToken } from "../Token/IToken.sol";
+import { GuardsInternal } from "../../common/GuardsInternal.sol";
 
 /// @title PerpetualMintInternal facet contract
 /// @dev defines modularly all logic for the PerpetualMint mechanism in internal functions
 abstract contract PerpetualMintInternal is
     ERC1155BaseInternal,
+    GuardsInternal,
     IPerpetualMintInternal,
     VRFConsumerBaseV2
 {
@@ -288,14 +290,6 @@ abstract contract PerpetualMintInternal is
         ratio = DEFAULT_ETH_TO_MINT_RATIO;
     }
 
-    /// @notice enforces that a risk value does not exceed the BASIS
-    /// @param risk risk value to check
-    function _enforceBasis(uint32 risk) internal pure {
-        if (risk > BASIS) {
-            revert BasisExceeded();
-        }
-    }
-
     /// @dev enforces that there are no pending mint requests for a collection
     /// @param collectionData the CollectionData struct for a given collection
     function _enforceNoPendingMints(
@@ -533,7 +527,7 @@ abstract contract PerpetualMintInternal is
             collection
         ];
 
-        _enforceBasis(risk);
+        _enforceBasis(risk, BASIS);
 
         _enforceNoPendingMints(collectionData);
 

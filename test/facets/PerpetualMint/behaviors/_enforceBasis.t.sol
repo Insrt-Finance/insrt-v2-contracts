@@ -4,7 +4,7 @@ pragma solidity 0.8.21;
 
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
-import { IPerpetualMintInternal } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
+import { IGuardsInternal } from "../../../../contracts/common/IGuardsInternal.sol";
 
 /// @title PerpetualMint_enforceBasis
 /// @dev PerpetualMint test contract for testing expected behavior of the _enforceBasis function
@@ -13,7 +13,7 @@ contract PerpetualMint_enforceBasis is ArbForkTest, PerpetualMintTest {
     function testFuzz_enforceBasis(uint32 risk) external {
         // _enforceBasis should revert if risk exceeds BASIS
         if (risk > perpetualMint.BASIS()) {
-            vm.expectRevert(IPerpetualMintInternal.BasisExceeded.selector);
+            vm.expectRevert(IGuardsInternal.BasisExceeded.selector);
 
             perpetualMint.exposed_enforceBasis(risk);
         } else {

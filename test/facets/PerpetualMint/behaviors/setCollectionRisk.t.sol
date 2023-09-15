@@ -6,6 +6,7 @@ import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableI
 
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
+import { IGuardsInternal } from "../../../../contracts/common/IGuardsInternal.sol";
 import { IPerpetualMintInternal } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 
 /// @title PerpetualMint_setCollectionRisk
@@ -25,8 +26,13 @@ contract PerpetualMint_setCollectionRisk is
     address COLLECTION = BORED_APE_YACHT_CLUB;
 
     /// @dev tests the setting of a new collection risk
-    function testFuzz_setCollectionRisk(uint24 _newCollectionRisk) external {
+    function testFuzz_setCollectionRisk(uint32 _newCollectionRisk) external {
         assert(COLLECTION_RISK == perpetualMint.collectionRisk(COLLECTION));
+
+        // if the new collection risk is greater than the basis, the function should revert
+        if (_newCollectionRisk > perpetualMint.BASIS()) {
+            vm.expectRevert(IGuardsInternal.BasisExceeded.selector);
+        }
 
         perpetualMint.setCollectionRisk(COLLECTION, _newCollectionRisk);
 
@@ -37,11 +43,12 @@ contract PerpetualMint_setCollectionRisk is
                     perpetualMint.collectionRisk(COLLECTION)
             );
         } else {
-            // if the new collection risk is greater than the basis, the function should revert
+            // if the new collection risk was greater than the basis, the function should have reverted
+            // and the collection risk should not have changed
             if (_newCollectionRisk > perpetualMint.BASIS()) {
-                vm.expectRevert(IPerpetualMintInternal.BasisExceeded.selector);
-
-                perpetualMint.exposed_enforceBasis(_newCollectionRisk);
+                assert(
+                    COLLECTION_RISK == perpetualMint.collectionRisk(COLLECTION)
+                );
             } else {
                 assert(
                     _newCollectionRisk ==

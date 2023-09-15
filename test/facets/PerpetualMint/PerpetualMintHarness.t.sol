@@ -29,8 +29,8 @@ contract PerpetualMintHarness is
     }
 
     /// @inheritdoc IPerpetualMintHarness
-    function exposed_enforceBasis(uint32 risk) external pure {
-        _enforceBasis(risk);
+    function exposed_enforceBasis(uint32 value) external pure {
+        _enforceBasis(value, _BASIS());
     }
 
     function exposed_enforceNoPendingMints(address collection) external view {

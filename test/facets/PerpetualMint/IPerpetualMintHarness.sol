@@ -14,7 +14,7 @@ interface IPerpetualMintHarness {
     ) external view returns (uint256 balance);
 
     /// @dev exposes _enforceBasis
-    function exposed_enforceBasis(uint32 risk) external pure;
+    function exposed_enforceBasis(uint32 value) external pure;
 
     /// @dev exposes _enforceNoPendingMints
     function exposed_enforceNoPendingMints(address collection) external view;

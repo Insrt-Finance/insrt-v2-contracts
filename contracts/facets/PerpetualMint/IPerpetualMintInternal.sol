@@ -7,9 +7,6 @@ import { PerpetualMintStorage as Storage, VRFConfig } from "./Storage.sol";
 /// @title IPerpetualMintInternal interface
 /// @dev contains all errors and events used in the PerpetualMint facet contract
 interface IPerpetualMintInternal {
-    /// @notice thrown when attempting to set a value of risk larger than basis
-    error BasisExceeded();
-
     /// @notice thrown when an incorrect amount of ETH is received
     error IncorrectETHReceived();
 

@@ -73,6 +73,7 @@ contract TokenHelper {
         tokenHarnessFunctionSelectors[0] = ITokenHarness
             .exposed_accrueTokens
             .selector;
+
         tokenHarnessFunctionSelectors[1] = ITokenHarness
             .exposed_beforeTokenTransfer
             .selector;

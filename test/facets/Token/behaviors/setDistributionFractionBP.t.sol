@@ -6,6 +6,7 @@ import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableI
 
 import { TokenTest } from "../Token.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
+import { IGuardsInternal } from "../../../../contracts/common/IGuardsInternal.sol";
 import { ITokenInternal } from "../../../../contracts/facets/Token/ITokenInternal.sol";
 
 /// @title Token_setDistributionFractionBP
@@ -41,7 +42,7 @@ contract Token_setDistributionFractionBP is
         token.setDistributionFractionBP(NEW_VALUE);
     }
 
-    /// @dev ensures setDistributionFractionB{} reverts when owner is not caller
+    /// @dev ensures setDistributionFractionBP reverts when owner is not caller
     function test_setDistributionFractionBPRevertsWhen_CallerIsNotOwner()
         public
     {
@@ -49,5 +50,16 @@ contract Token_setDistributionFractionBP is
 
         vm.prank(TOKEN_NON_OWNER);
         token.setDistributionFractionBP(NEW_VALUE);
+    }
+
+    /// @dev ensures setDistributionFractionBP reverts when new value is greater than basis
+    function test_setDistributionFractionBPRevertsWhen_NewBPValueIsGreaterThanBasis()
+        public
+    {
+        uint32 newDistributionFractionBP = token.BASIS() + 1;
+
+        vm.expectRevert(IGuardsInternal.BasisExceeded.selector);
+
+        token.setDistributionFractionBP(newDistributionFractionBP);
     }
 }

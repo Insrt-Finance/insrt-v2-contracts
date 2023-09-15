@@ -9,13 +9,15 @@ import { ERC20BaseInternal } from "@solidstate/contracts/token/ERC20/base/ERC20B
 import { ITokenInternal } from "./ITokenInternal.sol";
 import { TokenStorage as Storage } from "./Storage.sol";
 import { AccrualData } from "./types/DataTypes.sol";
+import { GuardsInternal } from "../../common/GuardsInternal.sol";
 
 /// @title $MINT Token contract
 /// @dev The internal functionality of $MINT token.
 abstract contract TokenInternal is
     ERC20BaseInternal,
-    OwnableInternal,
-    ITokenInternal
+    GuardsInternal,
+    ITokenInternal,
+    OwnableInternal
 {
     using EnumerableSet for EnumerableSet.AddressSet;
 
@@ -285,6 +287,8 @@ abstract contract TokenInternal is
     function _setDistributionFractionBP(
         uint32 distributionFractionBP
     ) internal {
+        _enforceBasis(distributionFractionBP, BASIS);
+
         Storage.layout().distributionFractionBP = distributionFractionBP;
         emit DistributionFractionSet(distributionFractionBP);
     }

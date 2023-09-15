@@ -20,9 +20,9 @@ abstract contract TokenInternal is
     using EnumerableSet for EnumerableSet.AddressSet;
 
     // used for floating point calculations
-    uint256 internal constant SCALE = 10 ** 36;
+    uint256 private constant SCALE = 10 ** 36;
     // used for fee calculations - not sufficient for floating point calculations
-    uint32 internal constant BASIS = 1000000000;
+    uint32 private constant BASIS = 1000000000;
 
     /// @notice modifier to only allow addresses contained in mintingContracts
     /// to call modified function
@@ -73,7 +73,7 @@ abstract contract TokenInternal is
 
     /// @notice returns the value of BASIS
     /// @return value BASIS value
-    function _basis() internal pure returns (uint256 value) {
+    function _BASIS() internal pure returns (uint32 value) {
         value = BASIS;
     }
 
@@ -258,7 +258,7 @@ abstract contract TokenInternal is
 
     /// @notice returns the value of SCALE
     /// @return value SCALE value
-    function _scale() internal pure returns (uint256 value) {
+    function _SCALE() internal pure returns (uint256 value) {
         value = SCALE;
     }
 

@@ -62,8 +62,8 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
-    function basis() external pure returns (uint256 value) {
-        value = _basis();
+    function BASIS() external pure returns (uint32 value) {
+        value = _BASIS();
     }
 
     /// @inheritdoc IPerpetualMint

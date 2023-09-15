@@ -48,7 +48,7 @@ contract TokenHelper {
 
         tokenFunctionSelectors[0] = IToken.accrualData.selector;
         tokenFunctionSelectors[1] = IToken.addMintingContract.selector;
-        tokenFunctionSelectors[2] = IToken.basis.selector;
+        tokenFunctionSelectors[2] = IToken.BASIS.selector;
         tokenFunctionSelectors[3] = IToken.burn.selector;
         tokenFunctionSelectors[4] = IToken.claim.selector;
         tokenFunctionSelectors[5] = IToken.claimableTokens.selector;
@@ -58,7 +58,7 @@ contract TokenHelper {
         tokenFunctionSelectors[9] = IToken.mint.selector;
         tokenFunctionSelectors[10] = IToken.mintingContracts.selector;
         tokenFunctionSelectors[11] = IToken.removeMintingContract.selector;
-        tokenFunctionSelectors[12] = IToken.scale.selector;
+        tokenFunctionSelectors[12] = IToken.SCALE.selector;
         tokenFunctionSelectors[13] = IToken.setDistributionFractionBP.selector;
 
         ISolidStateDiamond.FacetCut

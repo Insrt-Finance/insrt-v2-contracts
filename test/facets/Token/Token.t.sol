@@ -46,8 +46,8 @@ abstract contract TokenTest is TokenProxyTest {
 
         assert(MINTER == token.mintingContracts()[0]);
 
-        SCALE = token.scale();
-        BASIS = uint32(token.basis());
+        SCALE = token.SCALE();
+        BASIS = token.BASIS();
 
         DISTRIBUTION_AMOUNT = (MINT_AMOUNT * DISTRIBUTION_FRACTION_BP) / BASIS;
     }

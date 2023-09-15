@@ -37,8 +37,8 @@ contract Token is TokenInternal, SolidStateERC20, IToken {
     }
 
     /// @inheritdoc IToken
-    function basis() external pure returns (uint256 value) {
-        value = _basis();
+    function BASIS() external pure returns (uint32 value) {
+        value = _BASIS();
     }
 
     /// @inheritdoc IToken
@@ -103,8 +103,8 @@ contract Token is TokenInternal, SolidStateERC20, IToken {
     }
 
     /// @inheritdoc IToken
-    function scale() external pure returns (uint256 value) {
-        value = _scale();
+    function SCALE() external pure returns (uint256 value) {
+        value = _SCALE();
     }
 
     /// @inheritdoc IToken

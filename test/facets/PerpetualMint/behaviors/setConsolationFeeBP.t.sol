@@ -6,6 +6,7 @@ import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableI
 
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
+import { IGuardsInternal } from "../../../../contracts/common/IGuardsInternal.sol";
 
 /// @title PerpetualMint_setConsolationFeeBP
 /// @dev PerpetualMint test contract for testing expected behavior of the setConsolationFeeBP function
@@ -28,9 +29,24 @@ contract PerpetualMint_setConsolationFeeBP is ArbForkTest, PerpetualMintTest {
         if (_newConsolationFeeBP != 0) {
             assert(perpetualMint.consolationFeeBP() == TEST_CONSOLATION_FEE_BP);
 
+            // if the new consolation fee BP is greater than the basis, the function should revert
+            if (_newConsolationFeeBP > perpetualMint.BASIS()) {
+                vm.expectRevert(IGuardsInternal.BasisExceeded.selector);
+            }
+
             perpetualMint.setConsolationFeeBP(_newConsolationFeeBP);
 
-            assert(_newConsolationFeeBP == perpetualMint.consolationFeeBP());
+            // if the new consolation fee BP was greater than the basis, the function should have reverted
+            // and the consolation fee BP should not have been updated
+            if (_newConsolationFeeBP > perpetualMint.BASIS()) {
+                assert(
+                    perpetualMint.consolationFeeBP() == TEST_CONSOLATION_FEE_BP
+                );
+            } else {
+                assert(
+                    perpetualMint.consolationFeeBP() == _newConsolationFeeBP
+                );
+            }
         }
     }
 

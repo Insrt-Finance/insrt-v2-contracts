@@ -539,6 +539,8 @@ abstract contract PerpetualMintInternal is
     /// @notice sets the consolation fee in basis points
     /// @param consolationFeeBP consolation fee in basis points
     function _setConsolationFeeBP(uint32 consolationFeeBP) internal {
+        _enforceBasis(consolationFeeBP, BASIS);
+
         Storage.layout().consolationFeeBP = consolationFeeBP;
     }
 
@@ -551,6 +553,8 @@ abstract contract PerpetualMintInternal is
     /// @notice sets the mint fee in basis points
     /// @param mintFeeBP mint fee in basis points
     function _setMintFeeBP(uint32 mintFeeBP) internal {
+        _enforceBasis(mintFeeBP, BASIS);
+
         Storage.layout().mintFeeBP = mintFeeBP;
     }
 
@@ -561,6 +565,8 @@ abstract contract PerpetualMintInternal is
     /// @notice sets the redemption fee in basis points
     /// @param redemptionFeeBP redemption fee in basis points
     function _setRedemptionFeeBP(uint32 redemptionFeeBP) internal {
+        _enforceBasis(redemptionFeeBP, BASIS);
+
         Storage.layout().redemptionFeeBP = redemptionFeeBP;
     }
 

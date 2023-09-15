@@ -6,6 +6,7 @@ import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableI
 
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
+import { IGuardsInternal } from "../../../../contracts/common/IGuardsInternal.sol";
 
 /// @title PerpetualMint_setRedemptionFeeBP
 /// @dev PerpetualMint test contract for testing expected behavior of the setRedemptionFeeBP function
@@ -23,9 +24,20 @@ contract PerpetualMint_setRedemptionFeeBP is ArbForkTest, PerpetualMintTest {
         if (_redemptionFeeBP != 0) {
             assert(perpetualMint.redemptionFeeBP() == 0);
 
+            // if the new redemption fee BP is greater than the basis, the function should revert
+            if (_redemptionFeeBP > perpetualMint.BASIS()) {
+                vm.expectRevert(IGuardsInternal.BasisExceeded.selector);
+            }
+
             perpetualMint.setRedemptionFeeBP(_redemptionFeeBP);
 
-            assert(_redemptionFeeBP == perpetualMint.redemptionFeeBP());
+            // if the new redemption fee BP was greater than the basis, the function should have reverted
+            // and the redemption fee BP should not have been updated
+            if (_redemptionFeeBP > perpetualMint.BASIS()) {
+                assert(perpetualMint.redemptionFeeBP() == 0);
+            } else {
+                assert(perpetualMint.redemptionFeeBP() == _redemptionFeeBP);
+            }
         }
     }
 

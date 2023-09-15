@@ -6,6 +6,7 @@ import { Ownable } from "@solidstate/contracts/access/ownable/Ownable.sol";
 import { ERC165Base } from "@solidstate/contracts/introspection/ERC165/base/ERC165Base.sol";
 import { Pausable } from "@solidstate/contracts/security/pausable/Pausable.sol";
 import { ERC1155Base } from "@solidstate/contracts/token/ERC1155/base/ERC1155Base.sol";
+import { ERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/ERC1155Metadata.sol";
 
 import { ERC1155MetadataExtension } from "./ERC1155MetadataExtension.sol";
 import { IPerpetualMint } from "./IPerpetualMint.sol";
@@ -16,6 +17,7 @@ import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage
 /// @dev contains all externally called functions
 contract PerpetualMint is
     ERC1155Base,
+    ERC1155Metadata,
     ERC1155MetadataExtension,
     ERC165Base,
     IPerpetualMint,
@@ -213,6 +215,19 @@ contract PerpetualMint is
     /// @inheritdoc IPerpetualMint
     function setMintToken(address _mintToken) external onlyOwner {
         _setMintToken(_mintToken);
+    }
+
+    /// @inheritdoc IPerpetualMint
+    function setReceiptBaseURI(string calldata baseURI) external onlyOwner {
+        _setBaseURI(baseURI);
+    }
+
+    /// @inheritdoc IPerpetualMint
+    function setReceiptTokenURI(
+        uint256 tokenId,
+        string calldata tokenURI
+    ) external onlyOwner {
+        _setTokenURI(tokenId, tokenURI);
     }
 
     /// @inheritdoc IPerpetualMint

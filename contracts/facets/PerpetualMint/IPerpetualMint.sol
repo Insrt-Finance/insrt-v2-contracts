@@ -6,6 +6,7 @@ import { IOwnable } from "@solidstate/contracts/access/ownable/IOwnable.sol";
 import { IERC165Base } from "@solidstate/contracts/introspection/ERC165/base/IERC165Base.sol";
 import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol";
 import { IERC1155Base } from "@solidstate/contracts/token/ERC1155/base/IERC1155Base.sol";
+import { IERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/IERC1155Metadata.sol";
 
 import { IERC1155MetadataExtension } from "./IERC1155MetadataExtension.sol";
 import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
@@ -14,6 +15,7 @@ import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage
 /// @dev Interface of the PerpetualMint facet
 interface IPerpetualMint is
     IERC1155Base,
+    IERC1155Metadata,
     IERC1155MetadataExtension,
     IERC165Base,
     IOwnable,
@@ -172,6 +174,18 @@ interface IPerpetualMint is
     /// @notice sets the address of the mint consolation token
     /// @param mintToken address of the mint consolation token
     function setMintToken(address mintToken) external;
+
+    /// @notice sets the baseURI for the ERC1155 token receipts
+    /// @param baseURI URI string
+    function setReceiptBaseURI(string calldata baseURI) external;
+
+    /// @notice sets the tokenURI for ERC1155 token receipts
+    /// @param tokenId token ID, which is the collection address encoded as uint256
+    /// @param tokenURI URI string
+    function setReceiptTokenURI(
+        uint256 tokenId,
+        string calldata tokenURI
+    ) external;
 
     /// @notice sets the redemption fee in basis points
     /// @param _redemptionFeeBP redemption fee in basis points

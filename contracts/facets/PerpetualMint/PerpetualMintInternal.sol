@@ -458,14 +458,6 @@ abstract contract PerpetualMintInternal is
             } else {
                 ++totalReceiptAmount;
             }
-
-            emit MintResult(
-                minter,
-                collection,
-                randomWords.length / 2,
-                totalMintAmount,
-                totalReceiptAmount
-            );
         }
 
         // Mint the cumulative amounts at the end
@@ -481,6 +473,14 @@ abstract contract PerpetualMintInternal is
                 ""
             );
         }
+
+        emit MintResult(
+            minter,
+            collection,
+            randomWords.length / 2,
+            totalMintAmount,
+            totalReceiptAmount
+        );
     }
 
     /// @notice set the mint price for a given collection

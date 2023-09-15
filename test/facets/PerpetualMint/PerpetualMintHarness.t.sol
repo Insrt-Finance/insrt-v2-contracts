@@ -18,7 +18,12 @@ contract PerpetualMintHarness is
 {
     using EnumerableSet for EnumerableSet.UintSet;
 
-    constructor(address vrf, address mintToken) PerpetualMint(vrf, mintToken) {}
+    constructor(
+        address vrf,
+        address mintToken,
+        string memory receiptName,
+        string memory receiptSymbol
+    ) PerpetualMint(vrf, mintToken, receiptName, receiptSymbol) {}
 
     /// @inheritdoc IPerpetualMintHarness
     function exposed_balanceOf(

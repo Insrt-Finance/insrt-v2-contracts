@@ -2,13 +2,23 @@
 
 pragma solidity 0.8.21;
 
+import { IOwnable } from "@solidstate/contracts/access/ownable/IOwnable.sol";
+import { IERC165Base } from "@solidstate/contracts/introspection/ERC165/base/IERC165Base.sol";
 import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol";
+import { IERC1155Base } from "@solidstate/contracts/token/ERC1155/base/IERC1155Base.sol";
 
+import { IERC1155MetadataExtension } from "./IERC1155MetadataExtension.sol";
 import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title IPerpetualMint
 /// @dev Interface of the PerpetualMint facet
-interface IPerpetualMint is IPausable {
+interface IPerpetualMint is
+    IERC1155Base,
+    IERC1155MetadataExtension,
+    IERC165Base,
+    IOwnable,
+    IPausable
+{
     /// @notice Returns the current accrued consolation fees
     /// @return accruedFees the current amount of accrued consolation fees
     function accruedConsolationFees()

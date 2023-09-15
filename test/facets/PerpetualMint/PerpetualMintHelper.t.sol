@@ -27,7 +27,9 @@ contract PerpetualMintHelper {
     constructor() {
         perpetualMintHarnessImplementation = new PerpetualMintHarness(
             VRF_COORDINATOR,
-            MINT_TOKEN
+            MINT_TOKEN,
+            "Perpetual Mint IOU",
+            "IOU"
         );
     }
 

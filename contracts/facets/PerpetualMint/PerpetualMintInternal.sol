@@ -8,6 +8,7 @@ import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { ERC1155BaseInternal } from "@solidstate/contracts/token/ERC1155/base/ERC1155BaseInternal.sol";
 import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 
+import { ERC1155MetadataExtensionInternal } from "./ERC1155MetadataExtensionInternal.sol";
 import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
 import { CollectionData, PerpetualMintStorage as Storage, RequestData, TiersData, VRFConfig } from "./Storage.sol";
 import { IToken } from "../Token/IToken.sol";
@@ -17,6 +18,7 @@ import { GuardsInternal } from "../../common/GuardsInternal.sol";
 /// @dev defines modularly all logic for the PerpetualMint mechanism in internal functions
 abstract contract PerpetualMintInternal is
     ERC1155BaseInternal,
+    ERC1155MetadataExtensionInternal,
     GuardsInternal,
     IPerpetualMintInternal,
     VRFConsumerBaseV2
@@ -41,10 +43,17 @@ abstract contract PerpetualMintInternal is
 
     constructor(
         address vrfCoordinator,
-        address mintToken
+        address mintToken,
+        string memory receiptName,
+        string memory receiptSymbol
     ) VRFConsumerBaseV2(vrfCoordinator) {
         VRF = vrfCoordinator;
+
         Storage.layout().mintToken = mintToken;
+
+        _setName(receiptName);
+
+        _setSymbol(receiptSymbol);
     }
 
     /// @notice returns the current accrued consolation fees

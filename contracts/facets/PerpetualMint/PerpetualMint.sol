@@ -3,8 +3,11 @@
 pragma solidity ^0.8.21;
 
 import { Ownable } from "@solidstate/contracts/access/ownable/Ownable.sol";
+import { ERC165Base } from "@solidstate/contracts/introspection/ERC165/base/ERC165Base.sol";
 import { Pausable } from "@solidstate/contracts/security/pausable/Pausable.sol";
+import { ERC1155Base } from "@solidstate/contracts/token/ERC1155/base/ERC1155Base.sol";
 
+import { ERC1155MetadataExtension } from "./ERC1155MetadataExtension.sol";
 import { IPerpetualMint } from "./IPerpetualMint.sol";
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
@@ -12,6 +15,9 @@ import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage
 /// @title PerpetualMint facet contract
 /// @dev contains all externally called functions
 contract PerpetualMint is
+    ERC1155Base,
+    ERC1155MetadataExtension,
+    ERC165Base,
     IPerpetualMint,
     Ownable,
     Pausable,
@@ -19,8 +25,10 @@ contract PerpetualMint is
 {
     constructor(
         address vrf,
-        address _mintToken
-    ) PerpetualMintInternal(vrf, _mintToken) {}
+        address _mintToken,
+        string memory receiptName,
+        string memory receiptSymbol
+    ) PerpetualMintInternal(vrf, _mintToken, receiptName, receiptSymbol) {}
 
     /// @inheritdoc IPerpetualMint
     function accruedConsolationFees()

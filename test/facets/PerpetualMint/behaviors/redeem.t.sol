@@ -52,8 +52,8 @@ contract PerpetualMint_redeem is
         perpetualMint.redeem(redemptionAmount);
 
         uint256 expectedEthRedeemed = (uint256(redemptionAmount) *
-            (perpetualMint.exposed_basis() - perpetualMint.redemptionFeeBP())) /
-            (perpetualMint.exposed_basis() * perpetualMint.ethToMintRatio());
+            (perpetualMint.BASIS() - perpetualMint.redemptionFeeBP())) /
+            (perpetualMint.BASIS() * perpetualMint.ethToMintRatio());
 
         uint256 postRedeemAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();

@@ -2,12 +2,12 @@
 
 pragma solidity ^0.8.21;
 
-import { IERC20 } from "@solidstate/contracts/interfaces/IERC20.sol";
+import { ISolidStateERC20 } from "@solidstate/contracts/token/ERC20/ISolidStateERC20.sol";
 import { AccrualData } from "./types/DataTypes.sol";
 
 /// @title ITokenMint interface
 /// @dev contains all external functions for Token facet
-interface IToken is IERC20 {
+interface IToken is ISolidStateERC20 {
     /// @notice returns AccrualData struct pertaining to account, which contains Token accrual
     /// information
     /// @param account address of account

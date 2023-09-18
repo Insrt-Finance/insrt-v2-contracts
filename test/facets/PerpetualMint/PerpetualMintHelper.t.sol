@@ -23,15 +23,10 @@ contract PerpetualMintHelper {
     address public constant VRF_COORDINATOR =
         0x41034678D6C633D8a95c75e1138A360a28bA15d1;
 
-    address internal constant MINT_TOKEN = address(0); // dummy address
-
     /// @dev deploys PerpetualMintHarness implementation
     constructor() {
         perpetualMintHarnessImplementation = new PerpetualMintHarness(
-            VRF_COORDINATOR,
-            MINT_TOKEN,
-            "Perpetual Mint IOU",
-            "IOU"
+            VRF_COORDINATOR
         );
     }
 

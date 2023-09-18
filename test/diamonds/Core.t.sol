@@ -12,12 +12,18 @@ import { Core } from "../../contracts/diamonds/Core/Core.sol";
 abstract contract CoreTest is Test {
     Core public coreDiamond;
 
+    address internal constant MINT_TOKEN = address(0); // dummy address
+
     receive() external payable virtual {}
 
     /// @notice Setup function to initialize contract state before tests.
     /// @dev Creates a new instance of Core (diamond contract) and assigns it to CoreDiamond.
     /// Function is virtual, so it can be overridden in derived contracts.
     function setUp() public virtual {
-        coreDiamond = new Core();
+        coreDiamond = new Core(
+            MINT_TOKEN,
+            "Perpetual Mint IOU", // receiptName
+            "IOU" // receiptSymbol
+        );
     }
 }

@@ -2,6 +2,7 @@
 
 pragma solidity 0.8.21;
 
+import { IERC1155 } from "@solidstate/contracts/interfaces/IERC1155.sol";
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 import { IDiamondWritableInternal } from "@solidstate/contracts/proxy/diamond/writable/IDiamondWritableInternal.sol";
 import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol";
@@ -40,6 +41,18 @@ contract PerpetualMintHelper {
         view
         returns (ISolidStateDiamond.FacetCut[] memory)
     {
+        // map the ERC1155 test related function selectors to their respective interfaces
+        bytes4[] memory erc1155FunctionSelectors = new bytes4[](1);
+
+        erc1155FunctionSelectors[0] = IERC1155.balanceOf.selector;
+
+        ISolidStateDiamond.FacetCut
+            memory erc1155FacetCut = IDiamondWritableInternal.FacetCut({
+                target: address(perpetualMintHarnessImplementation),
+                action: IDiamondWritableInternal.FacetCutAction.ADD,
+                selectors: erc1155FunctionSelectors
+            });
+
         // map the ERC1155Metadata test related function selectors to their respective interfaces
         bytes4[] memory erc1155MetadataFunctionSelectors = new bytes4[](1);
 
@@ -202,66 +215,62 @@ contract PerpetualMintHelper {
 
         // map the PerpetualMintHarness test related function selectors to their respective interfaces
         bytes4[] memory perpetualMintHarnessFunctionSelectors = new bytes4[](
-            15
+            14
         );
 
         perpetualMintHarnessFunctionSelectors[0] = IPerpetualMintHarness
-            .exposed_balanceOf
-            .selector;
-
-        perpetualMintHarnessFunctionSelectors[1] = IPerpetualMintHarness
             .exposed_enforceBasis
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[2] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[1] = IPerpetualMintHarness
             .exposed_enforceNoPendingMints
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[3] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[2] = IPerpetualMintHarness
             .exposed_normalizeValue
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[4] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[3] = IPerpetualMintHarness
             .exposed_pendingRequestsAdd
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[5] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[4] = IPerpetualMintHarness
             .exposed_pendingRequestsAt
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[6] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[5] = IPerpetualMintHarness
             .exposed_pendingRequestsLength
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[7] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[6] = IPerpetualMintHarness
             .exposed_requestRandomWords
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[8] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[7] = IPerpetualMintHarness
             .exposed_requests
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[9] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[8] = IPerpetualMintHarness
             .exposed_resolveMints
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[10] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[9] = IPerpetualMintHarness
             .mintReceipts
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[11] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[10] = IPerpetualMintHarness
             .setConsolationFees
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[12] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[11] = IPerpetualMintHarness
             .setMintEarnings
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[13] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[12] = IPerpetualMintHarness
             .setProtocolFees
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[14] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[13] = IPerpetualMintHarness
             .setRequests
             .selector;
 
@@ -291,17 +300,19 @@ contract PerpetualMintHelper {
                 });
 
         ISolidStateDiamond.FacetCut[]
-            memory facetCuts = new ISolidStateDiamond.FacetCut[](5);
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](6);
 
-        facetCuts[0] = erc1155MetadataFacetCut;
+        facetCuts[0] = erc1155FacetCut;
 
-        facetCuts[1] = pausableFacetCut;
+        facetCuts[1] = erc1155MetadataFacetCut;
 
-        facetCuts[2] = perpetualMintFacetCut;
+        facetCuts[2] = pausableFacetCut;
 
-        facetCuts[3] = perpetualMintHarnessFacetCut;
+        facetCuts[3] = perpetualMintFacetCut;
 
-        facetCuts[4] = vrfConsumerBaseV2MockFacetCut;
+        facetCuts[4] = perpetualMintHarnessFacetCut;
+
+        facetCuts[5] = vrfConsumerBaseV2MockFacetCut;
 
         return facetCuts;
     }

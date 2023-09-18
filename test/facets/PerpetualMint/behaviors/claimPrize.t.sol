@@ -31,26 +31,32 @@ contract PerpetualMint_claimPrize is
 
     /// @dev Tests claimPrize functionality.
     function test_claimPrize() external {
-        uint256 preClaimClaimerReceiptBalance = perpetualMint.exposed_balanceOf(
+        uint256 preClaimClaimerReceiptBalance = perpetualMint.balanceOf(
             minter,
             testTokenId
         );
 
-        uint256 preClaimProtocolReceiptBalance = perpetualMint
-            .exposed_balanceOf(address(perpetualMint), testTokenId);
+        uint256 preClaimProtocolReceiptBalance = perpetualMint.balanceOf(
+            address(perpetualMint),
+            testTokenId
+        );
 
         vm.prank(minter);
         perpetualMint.claimPrize(minter, testTokenId);
 
-        uint256 postClaimClaimerReceiptBalance = perpetualMint
-            .exposed_balanceOf(minter, testTokenId);
+        uint256 postClaimClaimerReceiptBalance = perpetualMint.balanceOf(
+            minter,
+            testTokenId
+        );
 
         assert(
             postClaimClaimerReceiptBalance == preClaimClaimerReceiptBalance - 1
         );
 
-        uint256 postClaimProtocolReceiptBalance = perpetualMint
-            .exposed_balanceOf(address(perpetualMint), testTokenId);
+        uint256 postClaimProtocolReceiptBalance = perpetualMint.balanceOf(
+            address(perpetualMint),
+            testTokenId
+        );
 
         assert(
             postClaimProtocolReceiptBalance ==

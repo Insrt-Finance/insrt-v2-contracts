@@ -32,24 +32,32 @@ contract PerpetualMint_cancelClaim is
 
     /// @dev Tests cancelClaim functionality.
     function test_cancelClaim() external {
-        uint256 preCancelClaimerReceiptBalance = perpetualMint
-            .exposed_balanceOf(minter, testTokenId);
+        uint256 preCancelClaimerReceiptBalance = perpetualMint.balanceOf(
+            minter,
+            testTokenId
+        );
 
-        uint256 preCancelProtocolReceiptBalance = perpetualMint
-            .exposed_balanceOf(address(perpetualMint), testTokenId);
+        uint256 preCancelProtocolReceiptBalance = perpetualMint.balanceOf(
+            address(perpetualMint),
+            testTokenId
+        );
 
         perpetualMint.cancelClaim(minter, testTokenId);
 
-        uint256 postCancelClaimerReceiptBalance = perpetualMint
-            .exposed_balanceOf(minter, testTokenId);
+        uint256 postCancelClaimerReceiptBalance = perpetualMint.balanceOf(
+            minter,
+            testTokenId
+        );
 
         assert(
             postCancelClaimerReceiptBalance ==
                 preCancelClaimerReceiptBalance + 1
         );
 
-        uint256 postCancelProtocolReceiptBalance = perpetualMint
-            .exposed_balanceOf(address(perpetualMint), testTokenId);
+        uint256 postCancelProtocolReceiptBalance = perpetualMint.balanceOf(
+            address(perpetualMint),
+            testTokenId
+        );
 
         assert(
             postCancelProtocolReceiptBalance ==

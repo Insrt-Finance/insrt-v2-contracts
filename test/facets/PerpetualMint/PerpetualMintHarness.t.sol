@@ -26,14 +26,6 @@ contract PerpetualMintHarness is
     ) PerpetualMint(vrf, mintToken, receiptName, receiptSymbol) {}
 
     /// @inheritdoc IPerpetualMintHarness
-    function exposed_balanceOf(
-        address account,
-        uint256 tokenId
-    ) external view returns (uint256 balance) {
-        balance = _balanceOf(account, tokenId);
-    }
-
-    /// @inheritdoc IPerpetualMintHarness
     function exposed_enforceBasis(uint32 value) external pure {
         _enforceBasis(value, _BASIS());
     }

@@ -7,12 +7,6 @@ import { VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
 /// @title IPerpetualMintHarness
 /// @dev Interface for PerpetualMintHarness contract
 interface IPerpetualMintHarness {
-    /// @dev exposes _balanceOf method
-    function exposed_balanceOf(
-        address account,
-        uint256 tokenId
-    ) external view returns (uint256 balance);
-
     /// @dev exposes _enforceBasis
     function exposed_enforceBasis(uint32 value) external pure;
 

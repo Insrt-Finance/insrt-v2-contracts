@@ -47,17 +47,13 @@ contract PerpetualMint_resolveMints is
         uint256 tokenIdForCollection = uint256(bytes32(abi.encode(COLLECTION)));
 
         // assert that the minter currently has no token receipts
-        assert(
-            perpetualMint.exposed_balanceOf(minter, tokenIdForCollection) == 0
-        );
+        assert(perpetualMint.balanceOf(minter, tokenIdForCollection) == 0);
 
         vm.prank(address(perpetualMint));
         perpetualMint.exposed_resolveMints(minter, COLLECTION, randomWords);
 
         // check that minter received a token receipt for each won mint
-        assert(
-            perpetualMint.exposed_balanceOf(minter, tokenIdForCollection) == 2
-        );
+        assert(perpetualMint.balanceOf(minter, tokenIdForCollection) == 2);
     }
 
     /// @dev tests that the MintResolved event is emitted when successfully resolving a mint

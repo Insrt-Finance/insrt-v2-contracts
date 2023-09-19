@@ -185,7 +185,7 @@ abstract contract PerpetualMintInternal is
     function _burnReceipt(uint256 tokenId) internal {
         _burn(address(this), tokenId, 1);
     }
-    
+
     /// @notice Cancels a claim for a given claimer for given token ID
     /// @param claimer address of rejected claimer
     /// @param tokenId token ID of rejected claim

@@ -100,7 +100,7 @@ contract PerpetualMintHelper {
         perpetualMintFunctionSelectors[6] = IPerpetualMint.burnReceipt.selector;
 
         perpetualMintFunctionSelectors[7] = IPerpetualMint.cancelClaim.selector;
-        
+
         perpetualMintFunctionSelectors[8] = IPerpetualMint
             .claimMintEarnings
             .selector;

@@ -78,7 +78,7 @@ contract PerpetualMint is
     function cancelClaim(address claimer, uint256 tokenId) external onlyOwner {
         _cancelClaim(claimer, tokenId);
     }
-    
+
     /// @inheritdoc IPerpetualMint
     function claimMintEarnings() external onlyOwner {
         _claimMintEarnings(msg.sender);

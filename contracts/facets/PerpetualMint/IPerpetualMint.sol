@@ -60,7 +60,7 @@ interface IPerpetualMint is
     /// @notice burns a receipt after a claim request is fulfilled
     /// @param tokenId id of receipt to burn
     function burnReceipt(uint256 tokenId) external;
-    
+
     /// @notice Cancels a claim for a given claimer for given token ID
     /// @param claimer address of rejected claimer
     /// @param tokenId token ID of rejected claim

@@ -53,7 +53,7 @@ interface IPerpetualMintInternal {
 
     /// @notice emitted when the address of the $MINT token is set
     /// @param mintToken address of mint token
-    event MintTokenSset(address mintToken);
+    event MintTokenSet(address mintToken);
 
     /// @notice emitted when the outcome of an attempted mint is resolved
     /// @param minter address of account attempting the mint

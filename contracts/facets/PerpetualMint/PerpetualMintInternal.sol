@@ -571,7 +571,7 @@ abstract contract PerpetualMintInternal is
     function _setMintToken(address mintToken) internal {
         Storage.layout().mintToken = mintToken;
 
-        emit MintTokenSset(mintToken);
+        emit MintTokenSet(mintToken);
     }
 
     /// @notice sets the redemption fee in basis points

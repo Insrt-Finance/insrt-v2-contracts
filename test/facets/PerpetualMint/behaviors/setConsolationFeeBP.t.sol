@@ -7,10 +7,15 @@ import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableI
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 import { IGuardsInternal } from "../../../../contracts/common/IGuardsInternal.sol";
+import { IPerpetualMintInternal } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 
 /// @title PerpetualMint_setConsolationFeeBP
 /// @dev PerpetualMint test contract for testing expected behavior of the setConsolationFeeBP function
-contract PerpetualMint_setConsolationFeeBP is ArbForkTest, PerpetualMintTest {
+contract PerpetualMint_setConsolationFeeBP is
+    ArbForkTest,
+    IPerpetualMintInternal,
+    PerpetualMintTest
+{
     /// @dev new consolation fee basis points to test, 1.0%
     uint32 newConsolationFeeBP = 10000000;
 
@@ -48,6 +53,14 @@ contract PerpetualMint_setConsolationFeeBP is ArbForkTest, PerpetualMintTest {
                 );
             }
         }
+    }
+
+    /// @dev tests for the ConsolationFeeSet event emission after a new consolation fee is set
+    function test_setConsolationFeeBPEmitsConsolationFeeSetEvent() external {
+        vm.expectEmit();
+        emit ConsolationFeeSet(newConsolationFeeBP);
+
+        perpetualMint.setConsolationFeeBP(newConsolationFeeBP);
     }
 
     /// @dev tests for the revert case when the caller is not the owner

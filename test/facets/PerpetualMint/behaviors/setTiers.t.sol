@@ -43,6 +43,14 @@ contract PerpetualMint_setTiers is
         }
     }
 
+    /// @dev tests for the TiersSet event emission after new tiers are set
+    function test_setTiersEmitsTiersSetEvent() external {
+        vm.expectEmit();
+        emit TiersSet(testTiersData);
+
+        perpetualMint.setTiers(testTiersData);
+    }
+
     /// @dev tests for the revert case when the caller is not the owner
     function test_setTiersRevertsWhen_CallerIsNotOwner() external {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);

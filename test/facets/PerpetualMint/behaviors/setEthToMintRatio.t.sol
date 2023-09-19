@@ -6,10 +6,15 @@ import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableI
 
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
+import { IPerpetualMintInternal } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 
 /// @title PerpetualMint_setEthToMintRatio
 /// @dev PerpetualMint test contract for testing expected behavior of the setEthToMintRatio function
-contract PerpetualMint_setEthToMintRatio is ArbForkTest, PerpetualMintTest {
+contract PerpetualMint_setEthToMintRatio is
+    ArbForkTest,
+    IPerpetualMintInternal,
+    PerpetualMintTest
+{
     /// @dev new ETH:$MINT ratio to test, 1 ETH = 100,000 $MINT
     uint32 newEthToMintRatio = 100000;
 
@@ -31,6 +36,14 @@ contract PerpetualMint_setEthToMintRatio is ArbForkTest, PerpetualMintTest {
         } else {
             assert(_newEthToMintRatio == perpetualMint.ethToMintRatio());
         }
+    }
+
+    /// @dev tests for the EthToMintRatioSet event emission after a new EthToMint ratio is set
+    function test_setEthToMintRatioEmitsEthToMintRatioSetEvent() external {
+        vm.expectEmit();
+        emit EthToMintRatioSet(newEthToMintRatio);
+
+        perpetualMint.setEthToMintRatio(newEthToMintRatio);
     }
 
     /// @dev tests for the revert case when the caller is not the owner

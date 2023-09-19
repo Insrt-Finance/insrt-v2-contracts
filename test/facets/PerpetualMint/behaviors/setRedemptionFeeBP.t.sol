@@ -7,10 +7,15 @@ import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableI
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 import { IGuardsInternal } from "../../../../contracts/common/IGuardsInternal.sol";
+import { IPerpetualMintInternal } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 
 /// @title PerpetualMint_setRedemptionFeeBP
 /// @dev PerpetualMint test contract for testing expected behavior of the setRedemptionFeeBP function
-contract PerpetualMint_setRedemptionFeeBP is ArbForkTest, PerpetualMintTest {
+contract PerpetualMint_setRedemptionFeeBP is
+    ArbForkTest,
+    IPerpetualMintInternal,
+    PerpetualMintTest
+{
     /// @dev redemption fee basis points to test, 1.0%
     uint32 redemptionFeeBP = 10000000;
 
@@ -39,6 +44,14 @@ contract PerpetualMint_setRedemptionFeeBP is ArbForkTest, PerpetualMintTest {
                 assert(perpetualMint.redemptionFeeBP() == _redemptionFeeBP);
             }
         }
+    }
+
+    /// @dev tests for the RedemptionFeeSet event emission after a new RedemptionFeeBP is set
+    function test_setRedemptionFeeBPEmitsRedemptionFeeSetEvent() external {
+        vm.expectEmit();
+        emit RedemptionFeeSet(redemptionFeeBP);
+
+        perpetualMint.setRedemptionFeeBP(redemptionFeeBP);
     }
 
     /// @dev tests for the revert case when the caller is not the owner

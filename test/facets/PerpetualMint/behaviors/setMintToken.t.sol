@@ -6,10 +6,15 @@ import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableI
 
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
+import { IPerpetualMintInternal } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 
 /// @title PerpetualMint_setMintToken
 /// @dev PerpetualMint test contract for testing expected behavior of the setMintToken function
-contract PerpetualMint_setMintToken is ArbForkTest, PerpetualMintTest {
+contract PerpetualMint_setMintToken is
+    ArbForkTest,
+    IPerpetualMintInternal,
+    PerpetualMintTest
+{
     /// @dev new mint token address to test
     address testMintToken = address(1234);
 
@@ -27,6 +32,14 @@ contract PerpetualMint_setMintToken is ArbForkTest, PerpetualMintTest {
 
             assert(_newMintToken == perpetualMint.mintToken());
         }
+    }
+
+    /// @dev tests for the MintTokenSet event emission after a new MintToken is set
+    function test_setMintTokenEmitsMintTokenSetEvent() external {
+        vm.expectEmit();
+        emit MintTokenSet(testMintToken);
+
+        perpetualMint.setMintToken(testMintToken);
     }
 
     /// @dev tests for the revert case when the caller is not the owner

@@ -7,10 +7,15 @@ import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableI
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 import { IGuardsInternal } from "../../../../contracts/common/IGuardsInternal.sol";
+import { IPerpetualMintInternal } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 
 /// @title PerpetualMint_setMintFeeBP
 /// @dev PerpetualMint test contract for testing expected behavior of the setMintFeeBP function
-contract PerpetualMint_setMintFeeBP is ArbForkTest, PerpetualMintTest {
+contract PerpetualMint_setMintFeeBP is
+    ArbForkTest,
+    IPerpetualMintInternal,
+    PerpetualMintTest
+{
     /// @dev new mint fee basis points to test, 1.0%
     uint32 newMintFeeBP = 10000000;
 
@@ -42,6 +47,14 @@ contract PerpetualMint_setMintFeeBP is ArbForkTest, PerpetualMintTest {
                 assert(perpetualMint.mintFeeBP() == _newMintFeeBP);
             }
         }
+    }
+
+    /// @dev tests for the MintFeeSet event emission after a new MintFeeBP is set
+    function test_setMintFeeBPEmitsMintFeeSetEvent() external {
+        vm.expectEmit();
+        emit MintFeeSet(newMintFeeBP);
+
+        perpetualMint.setMintFeeBP(newMintFeeBP);
     }
 
     /// @dev tests for the revert case when the caller is not the owner

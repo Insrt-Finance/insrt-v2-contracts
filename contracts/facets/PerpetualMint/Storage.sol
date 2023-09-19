@@ -12,6 +12,8 @@ library PerpetualMintStorage {
         TiersData tiers;
         /// @dev all variables related to Chainlink VRF configuration
         VRFConfig vrfConfig;
+        /// @dev collection price to $MINT ratio in basis points
+        uint32 collectionPriceToMintRatioBP;
         /// @dev consolation fee in basis points
         uint32 consolationFeeBP;
         /// @dev mint fee in basis points

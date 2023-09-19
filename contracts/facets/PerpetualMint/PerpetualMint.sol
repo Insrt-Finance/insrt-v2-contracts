@@ -104,6 +104,15 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function collectionPriceToMintRatioBP()
+        external
+        view
+        returns (uint32 collectionPriceToMintRatioBasisPoints)
+    {
+        collectionPriceToMintRatioBasisPoints = _collectionPriceToMintRatioBP();
+    }
+
+    /// @inheritdoc IPerpetualMint
     function collectionRisk(
         address collection
     ) external view returns (uint32 risk) {
@@ -185,6 +194,13 @@ contract PerpetualMint is
         uint256 price
     ) external onlyOwner {
         _setCollectionMintPrice(collection, price);
+    }
+
+    /// @inheritdoc IPerpetualMint
+    function setCollectionPriceToMintRatioBP(
+        uint32 _collectionPriceToMintRatioBP
+    ) external onlyOwner {
+        _setCollectionPriceToMintRatioBP(_collectionPriceToMintRatioBP);
     }
 
     /// @inheritdoc IPerpetualMint

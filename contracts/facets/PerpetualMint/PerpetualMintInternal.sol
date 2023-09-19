@@ -249,6 +249,18 @@ abstract contract PerpetualMintInternal is
         mintPrice = mintPrice == 0 ? DEFAULT_COLLECTION_MINT_PRICE : mintPrice;
     }
 
+    /// @notice Returns the current collection price to $MINT ratio in basis points
+    /// @return collectionPriceToMintRatioBasisPoints collection price to $MINT ratio in basis points
+    function _collectionPriceToMintRatioBP()
+        internal
+        view
+        returns (uint32 collectionPriceToMintRatioBasisPoints)
+    {
+        collectionPriceToMintRatioBasisPoints = Storage
+            .layout()
+            .collectionPriceToMintRatioBP;
+    }
+
     /// @notice Returns the current collection-wide risk of a collection
     /// @param collectionData the CollectionData struct for a given collection
     /// @return risk value of collection-wide risk
@@ -519,6 +531,20 @@ abstract contract PerpetualMintInternal is
         Storage.layout().collections[collection].mintPrice = price;
 
         emit MintPriceSet(collection, price);
+    }
+
+    /// @notice sets the ratio of collection price to $MINT in basis points for mint consolations
+    /// @param collectionPriceToMintRatioBP new ratio of collection price to $MINT in basis points
+    function _setCollectionPriceToMintRatioBP(
+        uint32 collectionPriceToMintRatioBP
+    ) internal {
+        _enforceBasis(collectionPriceToMintRatioBP, BASIS);
+
+        Storage
+            .layout()
+            .collectionPriceToMintRatioBP = collectionPriceToMintRatioBP;
+
+        emit CollectionPriceToMintRatioSet(collectionPriceToMintRatioBP);
     }
 
     /// @notice sets the risk for a given collection

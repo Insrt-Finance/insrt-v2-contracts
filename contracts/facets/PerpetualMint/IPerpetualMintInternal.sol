@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.21;
 
-import { PerpetualMintStorage as Storage, VRFConfig } from "./Storage.sol";
+import { PerpetualMintStorage as Storage, VRFConfig, TiersData } from "./Storage.sol";
 
 /// @title IPerpetualMintInternal interface
 /// @dev contains all errors and events used in the PerpetualMint facet contract
@@ -34,10 +34,26 @@ interface IPerpetualMintInternal {
     /// @param risk risk of collection
     event CollectionRiskSet(address collection, uint32 risk);
 
+    /// @notice emitted when the consolation fee is set
+    /// @param consolationFeeBP consolation fee in basis points
+    event ConsolationFeeSet(uint32 consolationFeeBP);
+
+    /// @notice emitted when the ETH:MINT ratio is set
+    /// @param ratio value of ETH:MINT ratio
+    event EthToMintRatioSet(uint256 ratio);
+
+    /// @notice emitted when the mint fee is set
+    /// @param mintFeeBP mint fee in basis points
+    event MintFeeSet(uint32 mintFeeBP);
+
     /// @notice emitted when the mint price of a collection is set
     /// @param collection address of collection
     /// @param price mint price of collection
     event MintPriceSet(address collection, uint256 price);
+
+    /// @notice emitted when the address of the $MINT token is set
+    /// @param mintToken address of mint token
+    event MintTokenSset(address mintToken);
 
     /// @notice emitted when the outcome of an attempted mint is resolved
     /// @param minter address of account attempting the mint
@@ -62,6 +78,14 @@ interface IPerpetualMintInternal {
         address prizeRecipient,
         address indexed collection
     );
+
+    /// @notice emitted when the redemption fee is set
+    /// @param redemptionFeeBP redemption fee in basis points
+    event RedemptionFeeSet(uint32 redemptionFeeBP);
+
+    /// @notice emitted when the tiers are set
+    /// @param tiersData new tiers
+    event TiersSet(TiersData tiersData);
 
     /// @notice emitted when the Chainlink VRF config is set
     /// @param config VRFConfig struct holding all related data to ChainlinkVRF

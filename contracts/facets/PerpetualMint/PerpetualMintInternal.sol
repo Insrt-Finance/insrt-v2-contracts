@@ -544,12 +544,16 @@ abstract contract PerpetualMintInternal is
         _enforceBasis(consolationFeeBP, BASIS);
 
         Storage.layout().consolationFeeBP = consolationFeeBP;
+
+        emit ConsolationFeeSet(consolationFeeBP);
     }
 
     /// @notice sets the ratio of ETH (native token) to $MINT for mint attempts using $MINT as payment
     /// @param ratio new ratio of ETH to $MINT
     function _setEthToMintRatio(uint256 ratio) internal {
         Storage.layout().ethToMintRatio = ratio;
+
+        emit EthToMintRatioSet(ratio);
     }
 
     /// @notice sets the mint fee in basis points
@@ -558,10 +562,16 @@ abstract contract PerpetualMintInternal is
         _enforceBasis(mintFeeBP, BASIS);
 
         Storage.layout().mintFeeBP = mintFeeBP;
+
+        emit MintFeeSet(mintFeeBP);
     }
 
+    /// @notice sets the address of the mint consolation token
+    /// @param mintToken address of the mint consolation token
     function _setMintToken(address mintToken) internal {
         Storage.layout().mintToken = mintToken;
+
+        emit MintTokenSset(mintToken);
     }
 
     /// @notice sets the redemption fee in basis points
@@ -570,12 +580,16 @@ abstract contract PerpetualMintInternal is
         _enforceBasis(redemptionFeeBP, BASIS);
 
         Storage.layout().redemptionFeeBP = redemptionFeeBP;
+
+        emit RedemptionFeeSet(redemptionFeeBP);
     }
 
     /// @notice sets the $MINT consolation tiers data
     /// @param tiersData TiersData struct holding all related data to $MINT consolations
     function _setTiers(TiersData calldata tiersData) internal {
         Storage.layout().tiers = tiersData;
+
+        emit TiersSet(tiersData);
     }
 
     /// @notice sets the Chainlink VRF config

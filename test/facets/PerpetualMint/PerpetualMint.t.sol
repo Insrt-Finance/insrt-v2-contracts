@@ -28,8 +28,8 @@ abstract contract PerpetualMintTest is CoreTest {
 
     uint64 internal constant TEST_VRF_SUBSCRIPTION_ID = 5;
 
-    /// @dev first tier $MINT amount (lowest amount)
-    uint256 internal constant firstTierMintAmount = 1 ether;
+    /// @dev first tier multiplier (lowest multiplier)
+    uint256 internal constant firstTierMultiplier = 1; // 1x multiplier
 
     // Ethereum mainnet Bored Ape Yacht Club contract address.
     address internal constant BORED_APE_YACHT_CLUB =
@@ -98,7 +98,7 @@ abstract contract PerpetualMintTest is CoreTest {
         // sets the mint fee
         perpetualMint.setMintFeeBP(TEST_MINT_FEE_BP);
 
-        uint256[] memory tierMintAmounts = new uint256[](testNumberOfTiers);
+        uint256[] memory tierMultipliers = new uint256[](testNumberOfTiers);
         uint32[] memory tierRisks = new uint32[](testNumberOfTiers);
 
         // exponentially decreasing probabilities, from highest to lowest
@@ -110,18 +110,18 @@ abstract contract PerpetualMintTest is CoreTest {
             10000000 // 1%
         ];
 
-        uint256 initialMintAmount = firstTierMintAmount;
+        uint256 initialMultiplier = firstTierMultiplier;
 
         for (uint8 i = 0; i < testNumberOfTiers; ++i) {
-            tierMintAmounts[i] = initialMintAmount;
+            tierMultipliers[i] = initialMultiplier;
 
-            initialMintAmount *= 2; // double the mint amount for each tier
+            initialMultiplier *= 2; // double the multiplier for each tier
 
             tierRisks[i] = testRisks[i];
         }
 
         testTiersData = TiersData({
-            tierMintAmounts: tierMintAmounts,
+            tierMultipliers: tierMultipliers,
             tierRisks: tierRisks
         });
 

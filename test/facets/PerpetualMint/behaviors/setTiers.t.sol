@@ -22,7 +22,7 @@ contract PerpetualMint_setTiers is
         // reset tiers to empty
         perpetualMint.setTiers(
             TiersData({
-                tierMintAmounts: new uint256[](0),
+                tierMultipliers: new uint256[](0),
                 tierRisks: new uint32[](0)
             })
         );
@@ -36,7 +36,7 @@ contract PerpetualMint_setTiers is
 
         for (uint8 i = 0; i < tiersData.tierRisks.length; ++i) {
             assert(
-                testTiersData.tierMintAmounts[i] == tiersData.tierMintAmounts[i]
+                testTiersData.tierMultipliers[i] == tiersData.tierMultipliers[i]
             );
 
             assert(testTiersData.tierRisks[i] == tiersData.tierRisks[i]);

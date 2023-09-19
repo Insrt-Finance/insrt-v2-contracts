@@ -30,8 +30,8 @@ struct RequestData {
 struct TiersData {
     /// @dev assumed ordered array of risks for each tier
     uint32[] tierRisks;
-    /// @dev assumed ordered array of $MINT consolation amounts for each tier
-    uint256[] tierMintAmounts;
+    /// @dev assumed ordered array of $MINT consolation multipliers for each tier
+    uint256[] tierMultipliers;
 }
 
 /// @dev Encapsulates variables related to Chainlink VRF

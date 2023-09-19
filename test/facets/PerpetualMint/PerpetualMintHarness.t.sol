@@ -100,9 +100,7 @@ contract PerpetualMintHarness is
     ) external {
         Storage.Layout storage l = Storage.layout();
 
-        CollectionData storage collectionData = Storage.layout().collections[
-            collection
-        ];
+        CollectionData storage collectionData = l.collections[collection];
 
         TiersData memory tiersData = l.tiers;
 
@@ -112,7 +110,8 @@ contract PerpetualMintHarness is
             tiersData,
             minter,
             collection,
-            randomWords
+            randomWords,
+            l.collectionPriceToMintRatioBP
         );
     }
 

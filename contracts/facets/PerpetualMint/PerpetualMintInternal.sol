@@ -348,7 +348,8 @@ abstract contract PerpetualMintInternal is
             l.tiers,
             minter,
             collection,
-            randomWords
+            randomWords,
+            l.collectionPriceToMintRatioBP
         );
 
         collectionData.pendingRequests.remove(requestId);
@@ -444,13 +445,15 @@ abstract contract PerpetualMintInternal is
     /// @param minter address of minter
     /// @param collection address of collection for mint attempts
     /// @param randomWords array of random values relating to number of attempts
+    /// @param collectionPriceToMintRatioBP collection price to $MINT ratio in basis points
     function _resolveMints(
         address mintToken,
         CollectionData storage collectionData,
         TiersData memory tiersData,
         address minter,
         address collection,
-        uint256[] memory randomWords
+        uint256[] memory randomWords,
+        uint32 collectionPriceToMintRatioBP
     ) internal {
         // ensure the number of random words is even
         // each valid mint attempt requires two random words
@@ -487,7 +490,10 @@ abstract contract PerpetualMintInternal is
 
                     // if the cumulative risk is greater than the second normalized value, the tier has been found
                     if (cumulativeRisk > secondNormalizedValue) {
-                        tierMintAmount = tiersData.tierMintAmounts[j];
+                        tierMintAmount =
+                            tiersData.tierMultipliers[j] *
+                            collectionPriceToMintRatioBP *
+                            collectionData.mintPrice;
                         break;
                     }
                 }

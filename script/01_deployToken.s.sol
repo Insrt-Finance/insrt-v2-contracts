@@ -49,7 +49,7 @@ contract DeployToken is Script {
         vm.stopBroadcast();
     }
 
-    /// @dev provides the facet cuts for setting cutting Token facet into TokenProxy
+    /// @dev provides the facet cuts for cutting Token facet into TokenProxy
     /// @param facetAddress address of Token facet
     function getTokenFacetCuts(
         address facetAddress

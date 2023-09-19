@@ -20,6 +20,10 @@ import { Token } from "../contracts/facets/Token/Token.sol";
 contract DeployToken is Script {
     /// @dev runs the script logic
     function run() external {
+        //NOTE: CHANGE AS NEEDED FOR PRODUCTION
+        string memory name = "MINT";
+        string memory symbol = "$MINT";
+
         // read deployer private key
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_KEY");
 
@@ -29,7 +33,10 @@ contract DeployToken is Script {
         Token tokenFacet = new Token();
 
         // deploy TokenProxy
-        TokenProxy proxy = new TokenProxy("MINT", "$MINT"); //NOTE: CHANGE AS NEEDED FOR PRODUCTION
+        TokenProxy proxy = new TokenProxy(name, symbol);
+
+        console.log("Token Facet Address: ", address(tokenFacet));
+        console.log("Token Proxy Address: ", address(proxy));
 
         // get Token facet cuts
         ISolidStateDiamond.FacetCut[] memory facetCuts = getTokenFacetCuts(

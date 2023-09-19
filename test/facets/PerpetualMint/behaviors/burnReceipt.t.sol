@@ -29,14 +29,14 @@ contract PerpetualMint_burnReceipt is ArbForkTest, PerpetualMintTest {
 
     /// @dev tests that burnReceipt burns a single receipt of the given token ID from the PerpetualMint contract
     function test_burnReceiptBurnsSingleReceiptOfTokenId() external {
-        uint256 oldBalance = perpetualMint.exposed_balanceOf(
+        uint256 oldBalance = perpetualMint.balanceOf(
             address(perpetualMint),
             testTokenId
         );
 
         perpetualMint.burnReceipt(testTokenId);
 
-        uint256 newBalance = perpetualMint.exposed_balanceOf(
+        uint256 newBalance = perpetualMint.balanceOf(
             address(perpetualMint),
             testTokenId
         );

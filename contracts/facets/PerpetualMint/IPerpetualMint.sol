@@ -8,6 +8,7 @@ import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol
 import { IERC1155Base } from "@solidstate/contracts/token/ERC1155/base/IERC1155Base.sol";
 import { IERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/IERC1155Metadata.sol";
 
+import { IERC1155MetadataExtension } from "./IERC1155MetadataExtension.sol";
 import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title IPerpetualMint
@@ -17,7 +18,8 @@ interface IPerpetualMint is
     IERC1155Metadata,
     IERC165Base,
     IOwnable,
-    IPausable
+    IPausable,
+    IERC1155MetadataExtension
 {
     /// @notice Returns the current accrued consolation fees
     /// @return accruedFees the current amount of accrued consolation fees

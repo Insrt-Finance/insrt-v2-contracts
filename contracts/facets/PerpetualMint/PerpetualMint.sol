@@ -8,6 +8,7 @@ import { Pausable } from "@solidstate/contracts/security/pausable/Pausable.sol";
 import { ERC1155Base } from "@solidstate/contracts/token/ERC1155/base/ERC1155Base.sol";
 import { ERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/ERC1155Metadata.sol";
 
+import { ERC1155MetadataExtension } from "./ERC1155MetadataExtension.sol";
 import { IPerpetualMint } from "./IPerpetualMint.sol";
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
@@ -21,6 +22,7 @@ contract PerpetualMint is
     IPerpetualMint,
     Ownable,
     Pausable,
+    ERC1155MetadataExtension,
     PerpetualMintInternal
 {
     constructor(address vrf) PerpetualMintInternal(vrf) {}

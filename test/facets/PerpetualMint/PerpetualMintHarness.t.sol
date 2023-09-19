@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.21;
 
+import "forge-std/Test.sol";
+
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
 import { IPerpetualMintHarness } from "./IPerpetualMintHarness.sol";
@@ -14,6 +16,7 @@ import { CollectionData, RequestData, PerpetualMintStorage as Storage, TiersData
 contract PerpetualMintHarness is
     IPerpetualMintHarness,
     PerpetualMint,
+    Test,
     VRFConsumerBaseV2Mock
 {
     using EnumerableSet for EnumerableSet.UintSet;

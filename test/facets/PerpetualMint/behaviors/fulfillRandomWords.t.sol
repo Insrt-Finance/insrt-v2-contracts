@@ -4,7 +4,6 @@ pragma solidity 0.8.19;
 
 import "forge-std/Test.sol";
 
-import { VRFCoordinatorV2 } from "@chainlink/vrf/VRFCoordinatorV2.sol";
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
@@ -12,6 +11,7 @@ import { TokenTest } from "../../Token/Token.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 import { CoreTest } from "../../../diamonds/Core.t.sol";
 import { TokenProxyTest } from "../../../diamonds/TokenProxy.t.sol";
+import { IVRFCoordinatorV2 } from "../../../interfaces/IVRFCoordinatorV2.sol";
 import { VRFCoordinatorV2MockPlus } from "../../../mocks/VRFCoordinatorV2MockPlus.sol";
 import { IPerpetualMintInternal } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage, VRFConfig } from "../../../../contracts/facets/PerpetualMint/Storage.sol";
@@ -26,7 +26,7 @@ contract PerpetualMint_fulfillRandomWords is
 {
     VRFConfig vrfConfig;
 
-    VRFCoordinatorV2 private vrfCoordinatorV2;
+    IVRFCoordinatorV2 private vrfCoordinatorV2;
 
     VRFCoordinatorV2MockPlus private vrfCoordinatorV2Mock;
 
@@ -53,7 +53,7 @@ contract PerpetualMint_fulfillRandomWords is
 
         token.addMintingContract(address(perpetualMint));
 
-        vrfCoordinatorV2 = VRFCoordinatorV2(
+        vrfCoordinatorV2 = IVRFCoordinatorV2(
             this.perpetualMintHelper().VRF_COORDINATOR()
         );
 
@@ -246,7 +246,7 @@ contract PerpetualMint_fulfillRandomWords is
         uint256 mintBlockNumber = block.number;
 
         // grab the current max number of words
-        uint32 currentMaxNumWords = VRFCoordinatorV2(
+        uint32 currentMaxNumWords = IVRFCoordinatorV2(
             this.perpetualMintHelper().VRF_COORDINATOR()
         ).MAX_NUM_WORDS();
 
@@ -263,7 +263,7 @@ contract PerpetualMint_fulfillRandomWords is
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                VRFCoordinatorV2.NumWordsTooBig.selector,
+                IVRFCoordinatorV2.NumWordsTooBig.selector,
                 currentMaxNumWords + 2,
                 currentMaxNumWords
             )
@@ -325,7 +325,7 @@ contract PerpetualMint_fulfillRandomWords is
         uint256 mintBlockNumber = block.number;
 
         // grab the current max number of words
-        uint32 currentMaxNumWords = VRFCoordinatorV2(
+        uint32 currentMaxNumWords = IVRFCoordinatorV2(
             this.perpetualMintHelper().VRF_COORDINATOR()
         ).MAX_NUM_WORDS();
 
@@ -343,7 +343,7 @@ contract PerpetualMint_fulfillRandomWords is
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                VRFCoordinatorV2.NumWordsTooBig.selector,
+                IVRFCoordinatorV2.NumWordsTooBig.selector,
                 currentMaxNumWords + 2,
                 currentMaxNumWords
             )
@@ -452,7 +452,7 @@ contract PerpetualMint_fulfillRandomWords is
             randomWords[i] = i;
         }
 
-        vm.expectRevert(VRFCoordinatorV2.InsufficientBalance.selector);
+        vm.expectRevert(IVRFCoordinatorV2.InsufficientBalance.selector);
 
         vrfCoordinatorV2Mock.fulfillRandomWordsWithOverridePlus(
             mockMintRequestId,

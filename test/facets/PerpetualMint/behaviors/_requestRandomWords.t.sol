@@ -2,10 +2,9 @@
 
 pragma solidity 0.8.19;
 
-import { VRFCoordinatorV2 } from "@chainlink/vrf/VRFCoordinatorV2.sol";
-
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
+import { IVRFCoordinatorV2 } from "../../../interfaces/IVRFCoordinatorV2.sol";
 import { IVRFCoordinatorV2Events } from "../../../interfaces/IVRFCoordinatorV2Events.sol";
 import { VRFConfig } from "../../../../contracts/facets/PerpetualMint/Storage.sol";
 
@@ -126,7 +125,7 @@ contract PerpetualMint_requestRandomWords is
         _activateVRFConsumer();
 
         // grab the current max number of words
-        uint32 currentMaxNumWords = VRFCoordinatorV2(
+        uint32 currentMaxNumWords = IVRFCoordinatorV2(
             this.perpetualMintHelper().VRF_COORDINATOR()
         ).MAX_NUM_WORDS();
 
@@ -135,7 +134,7 @@ contract PerpetualMint_requestRandomWords is
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                VRFCoordinatorV2.NumWordsTooBig.selector,
+                IVRFCoordinatorV2.NumWordsTooBig.selector,
                 currentMaxNumWords + 1,
                 currentMaxNumWords
             )
@@ -152,7 +151,7 @@ contract PerpetualMint_requestRandomWords is
     function test_requestRandomWordsRevertsWhen_VRFConsumerIsNotSet() external {
         vm.expectRevert(
             abi.encodeWithSelector(
-                VRFCoordinatorV2.InvalidConsumer.selector,
+                IVRFCoordinatorV2.InvalidConsumer.selector,
                 TEST_VRF_SUBSCRIPTION_ID,
                 address(perpetualMint)
             )

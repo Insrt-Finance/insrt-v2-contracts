@@ -15,7 +15,7 @@ import { IPerpetualMint } from "../contracts/facets/PerpetualMint/IPerpetualMint
 import { PerpetualMint } from "../contracts/facets/PerpetualMint/PerpetualMint.sol";
 
 /// @title DeployPerpetualMint
-/// @dev deplots the Core diamond contract and the PerpetualMint facet, and performs
+/// @dev deploys the Core diamond contract and the PerpetualMint facet, and performs
 /// a diamondCut of the PerpetualMint facet onto the Core diamond
 contract DeployPerpetualMint is Script {
     /// @dev runs the script logic
@@ -36,19 +36,19 @@ contract DeployPerpetualMint is Script {
         // deploy PerpetualMint facet
         PerpetualMint perpetualMint = new PerpetualMint(VRF_COORDINATOR);
 
-        // deploy TokenProxy
+        // deploy Core
         Core core = new Core(mintToken, receiptName, receiptSymbol);
 
         console.log("PerpetualMint Facet Address: ", address(perpetualMint));
         console.log("Core Address: ", address(core));
 
-        // get Token facet cuts
+        // get PerpetualMint facet cuts
         ISolidStateDiamond.FacetCut[]
             memory facetCuts = getPerpetualMintFacetCuts(
                 address(perpetualMint)
             );
 
-        // cut Token into TokenProxy
+        // cut PerpetualMint into Core
         ISolidStateDiamond(core).diamondCut(facetCuts, address(0), "0x");
 
         vm.stopBroadcast();
@@ -260,7 +260,7 @@ contract DeployPerpetualMint is Script {
         ISolidStateDiamond.FacetCut[]
             memory facetCuts = new ISolidStateDiamond.FacetCut[](5);
 
-        //omit ownable and ERC165 since SolidStateDiamond includes those
+        // omit Ownable and ERC165 since SolidStateDiamond includes those
         facetCuts[0] = erc1155FacetCut;
         facetCuts[1] = erc1155MetadataFacetCut;
         facetCuts[2] = erc1155MetadataExtensionFacetCut;

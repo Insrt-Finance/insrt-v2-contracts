@@ -15,7 +15,7 @@ import { IToken } from "../contracts/facets/Token/IToken.sol";
 import { Token } from "../contracts/facets/Token/Token.sol";
 
 /// @title DeployToken
-/// @dev deplots the TokenProxy diamond contract and the Token facet, and performs
+/// @dev deploys the TokenProxy diamond contract and the Token facet, and performs
 /// a diamondCut of the Token facet onto the TokenProxy diamond
 contract DeployToken is Script {
     /// @dev runs the script logic

@@ -19,5 +19,9 @@ verbosity = 1
 fuzz_runs = 100_000
 verbosity = 4
 
+[rpc_endpoints]
+arb_fork_tenderly = "${PERP_MINT_ARB_URL}"
+arb_goerli = "${ARBITRUM_GOERLI_RPC_URL}"
+
 [etherscan]
 mainnet = { key = "${ETHERSCAN_API_KEY}" }

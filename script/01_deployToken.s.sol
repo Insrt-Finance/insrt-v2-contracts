@@ -44,7 +44,7 @@ contract DeployToken is Script {
         );
 
         // cut Token into TokenProxy
-        ISolidStateDiamond(proxy).diamondCut(facetCuts, address(0), "0x");
+        ISolidStateDiamond(proxy).diamondCut(facetCuts, address(0), "");
 
         vm.stopBroadcast();
     }
@@ -111,7 +111,7 @@ contract DeployToken is Script {
             });
 
         ISolidStateDiamond.FacetCut[]
-            memory facetCuts = new ISolidStateDiamond.FacetCut[](3);
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](2);
 
         facetCuts[0] = erc20FacetCut;
         facetCuts[1] = tokenFacetCut;

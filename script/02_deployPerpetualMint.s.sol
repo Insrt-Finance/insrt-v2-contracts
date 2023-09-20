@@ -49,7 +49,7 @@ contract DeployPerpetualMint is Script {
             );
 
         // cut PerpetualMint into Core
-        ISolidStateDiamond(core).diamondCut(facetCuts, address(0), "0x");
+        ISolidStateDiamond(core).diamondCut(facetCuts, address(0), "");
 
         vm.stopBroadcast();
     }

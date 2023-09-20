@@ -6,7 +6,6 @@ import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableI
 
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
-import { IGuardsInternal } from "../../../../contracts/common/IGuardsInternal.sol";
 import { IPerpetualMintInternal } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 
 /// @title PerpetualMint_setCollectionPriceToMintRatioBP
@@ -23,11 +22,8 @@ contract PerpetualMint_setCollectionPriceToMintRatioBP is
     function testFuzz_setCollectionPriceToMintRatioBP(
         uint32 _newCollectionPriceToMintRatioBP
     ) external {
-        // it is assumed we will never set collectionPriceToMintRatioBP to 0 & that it will never exceed the basis
-        if (
-            _newCollectionPriceToMintRatioBP > 0 &&
-            _newCollectionPriceToMintRatioBP < perpetualMint.BASIS()
-        ) {
+        // it is assumed we will never set collectionPriceToMintRatioBP to 0
+        if (_newCollectionPriceToMintRatioBP > 0) {
             assert(perpetualMint.collectionPriceToMintRatioBP() == 0);
 
             perpetualMint.setCollectionPriceToMintRatioBP(
@@ -62,20 +58,6 @@ contract PerpetualMint_setCollectionPriceToMintRatioBP is
         vm.prank(PERPETUAL_MINT_NON_OWNER);
         perpetualMint.setCollectionPriceToMintRatioBP(
             newCollectionPriceToMintRatioBP
-        );
-    }
-
-    /// @dev ensures setCollectionPriceToMintRatioBP reverts when new value is greater than basis
-    function test_setCollectionPriceToMintRatioBPRevertsWhen_NewBPValueIsGreaterThanBasis()
-        public
-    {
-        uint32 revertCollectionPriceToMintRatioBPValue = perpetualMint.BASIS() +
-            1;
-
-        vm.expectRevert(IGuardsInternal.BasisExceeded.selector);
-
-        perpetualMint.setCollectionPriceToMintRatioBP(
-            revertCollectionPriceToMintRatioBPValue
         );
     }
 }

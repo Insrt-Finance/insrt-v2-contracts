@@ -477,10 +477,9 @@ abstract contract PerpetualMintInternal is
                 BASIS
             );
 
-            bool result = _collectionRisk(collectionData) >
-                firstNormalizedValue;
-
-            if (!result) {
+            // if the first normalized value is less than the collection risk, the mint attempt is unsuccessful
+            // and the second normalized value is used to determine the consolation tier
+            if (!(_collectionRisk(collectionData) > firstNormalizedValue)) {
                 uint256 tierMintAmount;
                 uint256 cumulativeRisk;
 
@@ -491,15 +490,17 @@ abstract contract PerpetualMintInternal is
                     // if the cumulative risk is greater than the second normalized value, the tier has been found
                     if (cumulativeRisk > secondNormalizedValue) {
                         tierMintAmount =
-                            tiersData.tierMultipliers[j] *
-                            collectionPriceToMintRatioBP *
-                            collectionData.mintPrice;
+                            (tiersData.tierMultipliers[j] *
+                                collectionPriceToMintRatioBP *
+                                collectionData.mintPrice) /
+                            BASIS;
                         break;
                     }
                 }
 
                 totalMintAmount += tierMintAmount;
             } else {
+                // mint attempt is successful, so the total receipt amount is incremented
                 ++totalReceiptAmount;
             }
         }
@@ -544,8 +545,6 @@ abstract contract PerpetualMintInternal is
     function _setCollectionPriceToMintRatioBP(
         uint32 collectionPriceToMintRatioBP
     ) internal {
-        _enforceBasis(collectionPriceToMintRatioBP, BASIS);
-
         Storage
             .layout()
             .collectionPriceToMintRatioBP = collectionPriceToMintRatioBP;

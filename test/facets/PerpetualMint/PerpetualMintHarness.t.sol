@@ -16,6 +16,7 @@ import { CollectionData, RequestData, PerpetualMintStorage as Storage, TiersData
 contract PerpetualMintHarness is
     IPerpetualMintHarness,
     PerpetualMint,
+    Test,
     VRFConsumerBaseV2Mock
 {
     using EnumerableSet for EnumerableSet.UintSet;

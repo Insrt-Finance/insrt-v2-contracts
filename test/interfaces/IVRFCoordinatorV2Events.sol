@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.21;
+pragma solidity 0.8.19;
 
 /// @title IVRFCoordinatorV2Events
 /// @dev Defines the base interface for VRFCoordinatorV2 contract events.

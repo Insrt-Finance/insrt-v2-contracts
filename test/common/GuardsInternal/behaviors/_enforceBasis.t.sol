@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.21;
+pragma solidity 0.8.19;
 
 import { PerpetualMintTest } from "../../../facets/PerpetualMint/PerpetualMint.t.sol";
 import { IGuardsInternal } from "../../../../contracts/common/IGuardsInternal.sol";

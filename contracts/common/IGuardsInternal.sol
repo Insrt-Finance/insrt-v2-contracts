@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.21;
+pragma solidity 0.8.19;
 
 /// @title IGuardsInternal interface
 /// @dev interface holding all errors related to common guards

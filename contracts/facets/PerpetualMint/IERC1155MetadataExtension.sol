@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.21;
+pragma solidity 0.8.19;
 
 /// @title IERC1155MetadataExtension
 /// @dev ERC1155MetadataExtension interface

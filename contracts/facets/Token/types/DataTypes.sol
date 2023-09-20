@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.21;
+pragma solidity 0.8.19;
 
 /// @dev DataTypes.sol defines the Token struct data types used in the TokenStorage layout
 

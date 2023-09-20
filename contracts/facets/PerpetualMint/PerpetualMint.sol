@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity ^0.8.21;
+pragma solidity 0.8.19;
 
 import { Ownable } from "@solidstate/contracts/access/ownable/Ownable.sol";
 import { ERC165Base } from "@solidstate/contracts/introspection/ERC165/base/ERC165Base.sol";

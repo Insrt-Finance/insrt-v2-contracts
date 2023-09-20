@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity ^0.8.21;
+pragma solidity 0.8.19;
 
 import { ISolidStateERC20 } from "@solidstate/contracts/token/ERC20/ISolidStateERC20.sol";
 import { AccrualData } from "./types/DataTypes.sol";

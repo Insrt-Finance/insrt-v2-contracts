@@ -10,7 +10,7 @@ remappings = [
   "@solidstate/contracts/=lib/solidstate-solidity/contracts/",
   "forge-std/=lib/forge-std/src/",
 ]
-solc_version = '0.8.21'
+solc_version = '0.8.19'
 src = "contracts"
 verbosity = 1
 

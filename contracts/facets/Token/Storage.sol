@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity ^0.8.21;
+pragma solidity 0.8.19;
 
 import { AccrualData } from "./types/DataTypes.sol";
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";

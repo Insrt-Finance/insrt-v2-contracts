@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.21;
 
+import "forge-std/Test.sol";
+
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
 import { IPerpetualMintHarness } from "./IPerpetualMintHarness.sol";

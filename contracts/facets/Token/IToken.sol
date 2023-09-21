@@ -39,6 +39,14 @@ interface IToken is ISolidStateERC20 {
         address account
     ) external view returns (uint256 amount);
 
+    /// @notice Disperses tokens to a list of recipients
+    /// @param recipients assumed ordered array of recipient addresses
+    /// @param amounts assumed ordered array of token amounts to disperse
+    function disperseTokens(
+        address[] calldata recipients,
+        uint256[] calldata amounts
+    ) external;
+
     /// @notice returns the distributionFractionBP value
     /// @return fractionBP value of distributionFractionBP
     function distributionFractionBP() external view returns (uint32 fractionBP);

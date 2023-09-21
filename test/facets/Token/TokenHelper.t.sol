@@ -44,7 +44,7 @@ contract TokenHelper {
                 selectors: erc20FunctionSelectors
             });
 
-        bytes4[] memory tokenFunctionSelectors = new bytes4[](14);
+        bytes4[] memory tokenFunctionSelectors = new bytes4[](15);
 
         tokenFunctionSelectors[0] = IToken.accrualData.selector;
         tokenFunctionSelectors[1] = IToken.addMintingContract.selector;
@@ -52,14 +52,15 @@ contract TokenHelper {
         tokenFunctionSelectors[3] = IToken.burn.selector;
         tokenFunctionSelectors[4] = IToken.claim.selector;
         tokenFunctionSelectors[5] = IToken.claimableTokens.selector;
-        tokenFunctionSelectors[6] = IToken.distributionFractionBP.selector;
-        tokenFunctionSelectors[7] = IToken.distributionSupply.selector;
-        tokenFunctionSelectors[8] = IToken.globalRatio.selector;
-        tokenFunctionSelectors[9] = IToken.mint.selector;
-        tokenFunctionSelectors[10] = IToken.mintingContracts.selector;
-        tokenFunctionSelectors[11] = IToken.removeMintingContract.selector;
-        tokenFunctionSelectors[12] = IToken.SCALE.selector;
-        tokenFunctionSelectors[13] = IToken.setDistributionFractionBP.selector;
+        tokenFunctionSelectors[6] = IToken.disperseTokens.selector;
+        tokenFunctionSelectors[7] = IToken.distributionFractionBP.selector;
+        tokenFunctionSelectors[8] = IToken.distributionSupply.selector;
+        tokenFunctionSelectors[9] = IToken.globalRatio.selector;
+        tokenFunctionSelectors[10] = IToken.mint.selector;
+        tokenFunctionSelectors[11] = IToken.mintingContracts.selector;
+        tokenFunctionSelectors[12] = IToken.removeMintingContract.selector;
+        tokenFunctionSelectors[13] = IToken.SCALE.selector;
+        tokenFunctionSelectors[14] = IToken.setDistributionFractionBP.selector;
 
         ISolidStateDiamond.FacetCut
             memory tokenFacetCut = IDiamondWritableInternal.FacetCut({

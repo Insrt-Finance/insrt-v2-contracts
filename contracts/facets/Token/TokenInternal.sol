@@ -143,6 +143,18 @@ abstract contract TokenInternal is
             accountData.accruedTokens;
     }
 
+    /// @notice Disperses tokens to a list of recipients
+    /// @param recipients assumed ordered array of recipient addresses
+    /// @param amounts assumed ordered array of token amounts to disperse
+    function _disperseTokens(
+        address[] calldata recipients,
+        uint256[] calldata amounts
+    ) internal {
+        for (uint256 i = 0; i < recipients.length; ++i) {
+            require(_transfer(address(this), recipients[i], amounts[i]));
+        }
+    }
+
     /// @notice returns the distributionFractionBP value
     /// @return fractionBP value of distributionFractionBP
     function _distributionFractionBP()

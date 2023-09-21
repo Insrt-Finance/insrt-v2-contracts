@@ -62,6 +62,14 @@ contract Token is TokenInternal, SolidStateERC20, IToken {
     }
 
     /// @inheritdoc IToken
+    function disperseTokens(
+        address[] calldata recipients,
+        uint256[] calldata amounts
+    ) external onlyOwner {
+        _disperseTokens(recipients, amounts);
+    }
+
+    /// @inheritdoc IToken
     function distributionFractionBP()
         external
         view

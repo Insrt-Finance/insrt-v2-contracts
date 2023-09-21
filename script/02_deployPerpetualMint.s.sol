@@ -104,7 +104,7 @@ contract DeployPerpetualMint is Script {
                 .FacetCut({
                     target: address(facetAddress),
                     action: IDiamondWritableInternal.FacetCutAction.ADD,
-                    selectors: erc1155MetadataFunctionSelectors
+                    selectors: erc1155MetadataExtensionFunctionSelectors
                 });
 
         // map the Pausable test related function selectors to their respective interfaces

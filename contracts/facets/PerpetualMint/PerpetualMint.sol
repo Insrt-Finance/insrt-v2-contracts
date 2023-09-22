@@ -52,7 +52,7 @@ contract PerpetualMint is
 
     /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
     /// @param amount amount of mintToken tokens to mint
-    function airdropMint(uint256 amount) external onlyOwner {
+    function airdropMint(uint256 amount) external payable onlyOwner {
         _airdropMint(amount);
     }
 

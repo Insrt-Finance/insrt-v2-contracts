@@ -42,7 +42,7 @@ interface IPerpetualMint is
     function accruedProtocolFees() external view returns (uint256 accruedFees);
 
     /// @notice
-    function airdropMint(uint256 amount) external;
+    function airdropMint(uint256 amount) external payable;
 
     /// @notice Attempts a batch mint for the msg.sender for a single collection using ETH as payment.
     /// @param collection address of collection for mint attempts

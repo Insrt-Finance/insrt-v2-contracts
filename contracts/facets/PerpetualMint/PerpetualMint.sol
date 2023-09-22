@@ -50,6 +50,12 @@ contract PerpetualMint is
         accruedFees = _accruedProtocolFees();
     }
 
+    /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
+    /// @param amount amount of mintToken tokens to mint
+    function airdropMint(uint256 amount) external onlyOwner {
+        _airdropMint(amount);
+    }
+
     /// @inheritdoc IPerpetualMint
     function attemptBatchMintWithEth(
         address collection,

@@ -31,3 +31,19 @@ trace   :; forge test -vvv
 # prevent make from looking for a file named test
 .PHONY: test
 
+# Anvil process control for local testing & development
+start-anvil:
+	./script/start-anvil.sh
+stop-anvil:
+	./script/stop-anvil.sh
+
+
+# Deployments
+deploy-arb:
+	@./script/deploy-arb.sh $(DEPLOYER_KEY) $(ARBITRUM_RPC_URL) ${ARBISCAN_API_KEY}
+
+deploy-arb-goerli:
+	@./script/deploy-arb-goerli.sh $(DEPLOYER_KEY) $(ARBITRUM_GOERLI_RPC_URL) ${ARBISCAN_API_KEY}
+
+deploy-local:
+	@./script/deploy-local.sh $(DEPLOYER_KEY)

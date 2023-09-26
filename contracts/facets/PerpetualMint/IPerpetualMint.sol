@@ -9,6 +9,7 @@ import { IERC1155Base } from "@solidstate/contracts/token/ERC1155/base/IERC1155B
 import { IERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/IERC1155Metadata.sol";
 
 import { IERC1155MetadataExtension } from "./IERC1155MetadataExtension.sol";
+import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title IPerpetualMint
@@ -18,6 +19,7 @@ interface IPerpetualMint is
     IERC1155Metadata,
     IERC165Base,
     IOwnable,
+    IPerpetualMintInternal,
     IPausable,
     IERC1155MetadataExtension
 {

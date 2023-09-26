@@ -21,7 +21,9 @@ verbosity = 4
 
 [rpc_endpoints]
 arb_fork_tenderly = "${PERP_MINT_ARB_URL}"
-arb_goerli = "${ARBITRUM_GOERLI_RPC_URL}"
+arbitrum = "${ARBITRUM_RPC_URL}"
+arbitrum-goerli = "${ARBITRUM_GOERLI_RPC_URL}"
 
 [etherscan]
-mainnet = { key = "${ETHERSCAN_API_KEY}" }
+arbitrum = { key = "${ARBISCAN_API_KEY}" }
+arbitrum-goerli = { key = "${ARBISCAN_API_KEY}" }

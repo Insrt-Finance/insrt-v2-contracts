@@ -38,6 +38,8 @@ contract DeployToken is Script {
         console.log("Token Facet Address: ", address(tokenFacet));
         console.log("Token Proxy Address: ", address(proxy));
 
+        writeTokenProxyAddress(address(proxy));
+
         // get Token facet cuts
         ISolidStateDiamond.FacetCut[] memory facetCuts = getTokenFacetCuts(
             address(tokenFacet)
@@ -118,5 +120,24 @@ contract DeployToken is Script {
         facetCuts[1] = tokenFacetCut;
 
         return facetCuts;
+    }
+
+    function writeTokenProxyAddress(address tokenProxyAddress) internal {
+        string memory inputDir = string.concat(
+            vm.projectRoot(),
+            "/broadcast/01_deployToken.s.sol/"
+        );
+
+        string memory chainDir = string.concat(vm.toString(block.chainid), "/");
+
+        string memory file = string.concat(
+            "run-latest-token-proxy-address",
+            ".txt"
+        );
+
+        vm.writeFile(
+            string.concat(inputDir, chainDir, file),
+            vm.toString(tokenProxyAddress)
+        );
     }
 }

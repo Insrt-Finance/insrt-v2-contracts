@@ -2,6 +2,7 @@
 [profile.default]
 evm_version = "shanghai"
 ffi = false
+fs_permissions = [{ access = "read-write", path = "./"}]
 fuzz_runs = 256
 optimizer = true
 optimizer_runs = 1_000_000

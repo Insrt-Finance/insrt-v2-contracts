@@ -1,6 +1,7 @@
 # include .env file and export its env vars
 # (-include to ignore error if it does not exist)
 -include .env
+export
 
 ### Install dependencies
 install:
@@ -40,10 +41,10 @@ stop-anvil:
 
 # Deployments
 deploy-arb:
-	@./script/deploy-arb.sh $(DEPLOYER_KEY) $(ARBITRUM_RPC_URL) ${ARBISCAN_API_KEY}
+	@./script/deploy-arb.sh
 
 deploy-arb-goerli:
-	@./script/deploy-arb-goerli.sh $(DEPLOYER_KEY) $(ARBITRUM_GOERLI_RPC_URL) ${ARBISCAN_API_KEY}
+	@./script/deploy-arb-goerli.sh
 
 deploy-local:
-	@./script/deploy-local.sh $(DEPLOYER_KEY)
+	@./script/deploy-local.sh

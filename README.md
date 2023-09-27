@@ -78,6 +78,10 @@ make deploy-arb-goerli
 
 ### Localhost
 
+Requires the following additional environment variables set:
+
+- `ARBITRUM_RPC_URL`: Arbitrum RPC URL for forking the initial local state
+
 ```
 make deploy-local
 ```

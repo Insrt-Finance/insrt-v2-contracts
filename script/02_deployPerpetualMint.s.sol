@@ -21,11 +21,11 @@ import { PerpetualMint } from "../contracts/facets/PerpetualMint/PerpetualMint.s
 contract DeployPerpetualMint is Script {
     /// @dev runs the script logic
     function run() external {
-        //NOTE: CHANGE AS NEEDED FOR PRODUCTION
-        // address of $MINT token contract
-        address mintToken = address(0);
-        // Arbitrum mainnet Chainlink VRF Coordinator address
-        address VRF_COORDINATOR = 0x41034678D6C633D8a95c75e1138A360a28bA15d1;
+        // read address of $MINT token contract
+        address mintToken = readTokenProxyAddress();
+        // Chainlink VRF Coordinator address
+        address VRF_COORDINATOR = vm.envAddress("VRF_COORDINATOR");
+
         string memory receiptName = "I-O-U";
         string memory receiptSymbol = "IOU";
 

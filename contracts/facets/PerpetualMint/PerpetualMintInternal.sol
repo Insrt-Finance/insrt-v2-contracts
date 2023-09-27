@@ -494,7 +494,7 @@ abstract contract PerpetualMintInternal is
                         tierMintAmount =
                             (tiersData.tierMultipliers[j] *
                                 collectionPriceToMintRatioBP *
-                                collectionData.mintPrice) /
+                                _collectionMintPrice(collectionData)) /
                             BASIS;
                         break;
                     }

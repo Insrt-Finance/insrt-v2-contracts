@@ -2,9 +2,16 @@
 set -e
 
 CHAIN_ID=31337
-DEPLOYER_KEY=$1
 DEPLOYMENT_SCRIPTS=("01_deployToken.s.sol" "02_deployPerpetualMint.s.sol")
+export FORK_URL=$ARBITRUM_RPC_URL
 LOCALHOST="http://localhost:8545"
+export VRF_COORDINATOR="0x41034678D6C633D8a95c75e1138A360a28bA15d1"
+
+# Check if ARBITRUM_RPC_URL is set
+if [[ -z $ARBITRUM_RPC_URL ]]; then
+  echo -e "Error: ARBITRUM_RPC_URL is being used to fork and deploy locally and is not set in .env.\n"
+  exit 1
+fi
 
 # Check if DEPLOYER_KEY is set
 if [[ -z $DEPLOYER_KEY ]]; then
@@ -16,9 +23,9 @@ fi
 DEPLOYER_ADDRESS=$(cast wallet address $DEPLOYER_KEY)
 echo -e "Deployer Address: $DEPLOYER_ADDRESS\n"
 
-# Start anvil and wait for 1 second
+# Start anvil and wait for 2 seconds
 make start-anvil
-sleep 1
+sleep 2
 
 # Set balance using curl
 curl -X POST -H "Content-Type: application/json" --data "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"anvil_setBalance\",\"params\":[\"$DEPLOYER_ADDRESS\", \"0x056BC75E2D63100000\"]}" $LOCALHOST > /dev/null 2>&1

@@ -20,8 +20,15 @@ if [ -f $PIDFILE ]; then
   fi
 fi
 
-# Start anvil in the background
-anvil --silent &
+# If FORK_URL is not set, start anvil without forking
+if [[ -z $FORK_URL ]]; then
+  anvil --silent &
+else
+  echo -e "\nStarting anvil forked from $FORK_URL...\n"
+
+  anvil --fork-url ${FORK_URL} --silent &
+  sleep 1
+fi
 
 # Save PID to file
 PID=$!

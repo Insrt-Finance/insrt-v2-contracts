@@ -151,11 +151,16 @@ abstract contract TokenInternal is
         uint256[] calldata amounts
     ) internal {
         Storage.Layout storage l = Storage.layout();
+        uint256 totalAmount;
+
         for (uint256 i = 0; i < recipients.length; ++i) {
             require(_transfer(address(this), recipients[i], amounts[i]));
             l.accrualData[recipients[i]].offset = l.globalRatio;
+            totalAmount += amounts[i];
         }
-        l.distributionSupply = 0;
+        l.distributionSupply -=
+            (totalAmount * l.distributionFractionBP) /
+            BASIS;
     }
 
     /// @notice returns the distributionFractionBP value

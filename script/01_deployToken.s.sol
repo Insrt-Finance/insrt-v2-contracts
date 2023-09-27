@@ -72,9 +72,9 @@ contract DeployToken is Script {
         erc20FunctionSelectors[7] = IERC20Extended.decreaseAllowance.selector;
 
         // metadata selectors
-        erc20FunctionSelectors[8] = IERC20Metadata.name.selector;
-        erc20FunctionSelectors[9] = IERC20Metadata.symbol.selector;
-        erc20FunctionSelectors[10] = IERC20Metadata.decimals.selector;
+        erc20FunctionSelectors[8] = IERC20Metadata.decimals.selector;
+        erc20FunctionSelectors[9] = IERC20Metadata.name.selector;
+        erc20FunctionSelectors[10] = IERC20Metadata.symbol.selector;
 
         // permit selectors
         erc20FunctionSelectors[11] = IERC2612.DOMAIN_SEPARATOR.selector;

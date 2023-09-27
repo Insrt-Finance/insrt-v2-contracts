@@ -65,9 +65,9 @@ contract DeployPerpetualMint is Script {
         erc1155FunctionSelectors[0] = IERC1155.balanceOf.selector;
         erc1155FunctionSelectors[1] = IERC1155.balanceOfBatch.selector;
         erc1155FunctionSelectors[2] = IERC1155.isApprovedForAll.selector;
-        erc1155FunctionSelectors[3] = IERC1155.setApprovalForAll.selector;
+        erc1155FunctionSelectors[3] = IERC1155.safeBatchTransferFrom.selector;
         erc1155FunctionSelectors[4] = IERC1155.safeTransferFrom.selector;
-        erc1155FunctionSelectors[5] = IERC1155.safeBatchTransferFrom.selector;
+        erc1155FunctionSelectors[5] = IERC1155.setApprovalForAll.selector;
 
         ISolidStateDiamond.FacetCut
             memory erc1155FacetCut = IDiamondWritableInternal.FacetCut({

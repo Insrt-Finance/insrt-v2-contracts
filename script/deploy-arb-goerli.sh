@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
 set -e
 
-ARBISCAN_API_KEY=$3
 CHAIN_ID=421613
-DEPLOYER_KEY=$1
 DEPLOYMENT_SCRIPTS=("01_deployToken.s.sol" "02_deployPerpetualMint.s.sol")
-RPC_URL=$2
+RPC_URL=$ARBITRUM_GOERLI_RPC_URL
 VERIFIER_URL="https://api-goerli.arbiscan.io/api"
+export VRF_COORDINATOR="0x6D80646bEAdd07cE68cab36c27c626790bBcf17f"
 
 # Check if ARBISCAN_API_KEY is set
 if [[ -z $ARBISCAN_API_KEY ]]; then
   echo -e "Error: ARBISCAN_API_KEY is not set in .env.\n"
+  exit 1
+fi
+
+# Check if ARBITRUM_RPC_URL is set
+if [[ -z $ARBITRUM_RPC_URL ]]; then
+  echo -e "Error: ARBITRUM_RPC_URL is not set in .env.\n"
   exit 1
 fi
 

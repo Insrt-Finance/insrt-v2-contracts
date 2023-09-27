@@ -294,4 +294,27 @@ contract DeployPerpetualMint is Script {
 
         return facetCuts;
     }
+
+    function readTokenProxyAddress()
+        internal
+        view
+        returns (address tokenProxyAddress)
+    {
+        string memory inputDir = string.concat(
+            vm.projectRoot(),
+            "/broadcast/01_deployToken.s.sol/"
+        );
+
+        string memory chainDir = string.concat(vm.toString(block.chainid), "/");
+
+        string memory file = string.concat(
+            "run-latest-token-proxy-address",
+            ".txt"
+        );
+
+        return
+            vm.parseAddress(
+                vm.readFile(string.concat(inputDir, chainDir, file))
+            );
+    }
 }

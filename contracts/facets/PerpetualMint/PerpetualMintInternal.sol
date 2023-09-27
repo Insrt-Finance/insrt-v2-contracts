@@ -84,6 +84,8 @@ abstract contract PerpetualMintInternal is
             revert IncorrectETHReceived();
         }
 
+        l.consolationFees += msg.value;
+
         IToken(l.mintToken).mint(l.mintToken, amount);
     }
 

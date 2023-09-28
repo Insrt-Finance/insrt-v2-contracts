@@ -200,8 +200,7 @@ abstract contract TokenInternal is
         amount -= distributionAmount;
 
         uint256 accountBalance = _balanceOf(account);
-        uint256 totalSupply = _totalSupply();
-        uint256 supplyDelta = totalSupply -
+        uint256 supplyDelta = _totalSupply() -
             accountBalance -
             l.distributionSupply;
         uint256 accruedTokens;

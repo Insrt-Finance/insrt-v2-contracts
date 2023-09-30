@@ -85,3 +85,65 @@ Requires the following additional environment variables set:
 ```
 make deploy-local
 ```
+
+## Post-deployment configuration
+
+### Arbitrum
+
+1. Token configuration
+
+```
+make configure-token-arb
+```
+
+2. VRF configuration
+
+```
+make configure-vrf-arb
+```
+
+3. PerpetualMint configuration
+
+```
+make configure-perp-mint-arb
+```
+
+### Arbitrum Goerli
+
+1. Token configuration
+
+```
+make configure-token-arb-goerli
+```
+
+2. VRF configuration
+
+```
+make configure-vrf-arb-goerli
+```
+
+3. PerpetualMint configuration
+
+```
+make configure-perp-mint-arb-goerli
+```
+
+### Localhost
+
+1. Token configuration
+
+```
+make configure-token-local
+```
+
+2. VRF configuration
+
+```
+make configure-vrf-local
+```
+
+3. PerpetualMint configuration
+
+```
+make configure-perp-mint-local
+```

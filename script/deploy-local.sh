@@ -2,6 +2,7 @@
 set -e
 
 CHAIN_ID=31337
+DEPLOYER_BALANCE=100 # 100 ETH
 DEPLOYMENT_SCRIPTS=("01_deployToken.s.sol" "02_deployPerpetualMint.s.sol")
 export FORK_URL=$ARBITRUM_RPC_URL
 LOCALHOST="http://localhost:8545"
@@ -27,9 +28,20 @@ echo -e "Deployer Address: $DEPLOYER_ADDRESS\n"
 make start-anvil
 sleep 2
 
+# Convert Ether to Wei
+DEPLOYER_BALANCE_WEI=$(cast to-wei $DEPLOYER_BALANCE)
+
+# Convert decimal to hex
+DEPLOYER_BALANCE_HEX=$(cast to-hex $DEPLOYER_BALANCE_WEI)
+
 # Set balance using curl
-curl -X POST -H "Content-Type: application/json" --data "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"anvil_setBalance\",\"params\":[\"$DEPLOYER_ADDRESS\", \"0x056BC75E2D63100000\"]}" $LOCALHOST > /dev/null 2>&1
-echo -e "Deployer balance set to 100 ETH.\n"
+curl -X POST -H "Content-Type: application/json" --data "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"anvil_setBalance\",\"params\":[\"$DEPLOYER_ADDRESS\", \"$DEPLOYER_BALANCE_HEX\"]}" $LOCALHOST > /dev/null 2>&1
+
+echo -e "Deployer balance set to $DEPLOYER_BALANCE ETH.\n"
+
+# Create broadcast directories for storing deployment data
+mkdir -p ./broadcast/${DEPLOYMENT_SCRIPTS[0]}/$CHAIN_ID
+mkdir -p ./broadcast/${DEPLOYMENT_SCRIPTS[1]}/$CHAIN_ID
 
 # Run forge scripts
 forge script script/${DEPLOYMENT_SCRIPTS[0]} --rpc-url $LOCALHOST --broadcast

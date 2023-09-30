@@ -42,6 +42,10 @@ contract DeployPerpetualMint is Script {
 
         console.log("PerpetualMint Facet Address: ", address(perpetualMint));
         console.log("Core Address: ", address(core));
+        console.log("VRF Coordinator Address: ", VRF_COORDINATOR);
+
+        writeCoreAddress(address(core));
+        writeVRFCoordinatorAddress(VRF_COORDINATOR);
 
         // get PerpetualMint facet cuts
         ISolidStateDiamond.FacetCut[]
@@ -316,5 +320,42 @@ contract DeployPerpetualMint is Script {
             vm.parseAddress(
                 vm.readFile(string.concat(inputDir, chainDir, file))
             );
+    }
+
+    function writeCoreAddress(address coreAddress) internal {
+        string memory inputDir = string.concat(
+            vm.projectRoot(),
+            "/broadcast/02_deployPerpetualMint.s.sol/"
+        );
+
+        string memory chainDir = string.concat(vm.toString(block.chainid), "/");
+
+        string memory file = string.concat("run-latest-core-address", ".txt");
+
+        vm.writeFile(
+            string.concat(inputDir, chainDir, file),
+            vm.toString(coreAddress)
+        );
+    }
+
+    function writeVRFCoordinatorAddress(
+        address vrfCoordinatorAddress
+    ) internal {
+        string memory inputDir = string.concat(
+            vm.projectRoot(),
+            "/broadcast/02_deployPerpetualMint.s.sol/"
+        );
+
+        string memory chainDir = string.concat(vm.toString(block.chainid), "/");
+
+        string memory file = string.concat(
+            "run-latest-vrf-coordinator-address",
+            ".txt"
+        );
+
+        vm.writeFile(
+            string.concat(inputDir, chainDir, file),
+            vm.toString(vrfCoordinatorAddress)
+        );
     }
 }

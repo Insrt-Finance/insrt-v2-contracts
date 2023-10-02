@@ -24,7 +24,7 @@ contract Token_disperseTokens is ArbForkTest, TokenTest {
 
         // mimic tokens being minted as part of an airdrop
         vm.prank(MINTER);
-        token.mint(address(token), MINT_AMOUNT);
+        token.airdropMint(MINT_AMOUNT);
 
         // set up test amounts and recipients
         for (uint8 i = 0; i < testNumberOfRecipients; ++i) {

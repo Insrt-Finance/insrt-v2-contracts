@@ -8,8 +8,6 @@ import { IERC20BaseInternal } from "@solidstate/contracts/token/ERC20/base/IERC2
 import { TokenTest } from "../Token.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 
-import "forge-std/console.sol";
-
 /// @title Token_disperseTokens
 /// @dev Token test contract for testing expected disperseTokens behavior. Tested on an Arbitrum fork.
 contract Token_disperseTokens is ArbForkTest, TokenTest {

@@ -24,6 +24,10 @@ interface IToken is ISolidStateERC20 {
     /// @param amount airdrop token amount
     function airdropMint(uint256 amount) external;
 
+    /// @notice returns value of airdropSupply
+    /// @return supply value of airdropSupply
+    function airdropSupply() external view returns (uint256 supply);
+
     /// @notice returns the value of BASIS
     /// @return value BASIS value
     function BASIS() external pure returns (uint32 value);

@@ -90,6 +90,12 @@ abstract contract TokenInternal is
         l.airdropSupply += amount;
     }
 
+    /// @notice returns value of airdropSupply
+    /// @return supply value of airdropSupply
+    function _airdropSupply() internal view returns (uint256 supply) {
+        supply = Storage.layout().airdropSupply;
+    }
+
     /// @notice returns the value of BASIS
     /// @return value BASIS value
     function _BASIS() internal pure returns (uint32 value) {
@@ -182,7 +188,7 @@ abstract contract TokenInternal is
             accountData.accruedTokens += accruedTokens;
 
             // update account offsey
-            l.accrualData[recipients[i]].offset = l.globalRatio;
+            accountData.offset = l.globalRatio;
 
             require(_transfer(address(this), recipients[i], amounts[i]));
 

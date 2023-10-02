@@ -29,6 +29,11 @@ contract Token is TokenInternal, SolidStateERC20, IToken {
         _airdropMint(amount);
     }
 
+    /// @inheritdoc IToken
+    function airdropSupply() external view returns (uint256 supply) {
+        supply = _airdropSupply();
+    }
+
     /// @notice overrides _beforeTokenTransfer hook to enforce non-transferability
     /// @param from sender of tokens
     /// @param to receiver of tokens

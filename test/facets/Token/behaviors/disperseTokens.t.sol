@@ -8,6 +8,8 @@ import { IERC20BaseInternal } from "@solidstate/contracts/token/ERC20/base/IERC2
 import { TokenTest } from "../Token.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 
+import "forge-std/console.sol";
+
 /// @title Token_disperseTokens
 /// @dev Token test contract for testing expected disperseTokens behavior. Tested on an Arbitrum fork.
 contract Token_disperseTokens is ArbForkTest, TokenTest {
@@ -47,6 +49,55 @@ contract Token_disperseTokens is ArbForkTest, TokenTest {
         assert(token.balanceOf(address(token)) == 0);
     }
 
+    /// @dev tests disperseTokens updates accruedTokens and offset of account receiving tokens
+    function test_disperseTokensUpdatesAccrualDataOfRecipient() external {
+        // mint some tokens to first test recipient so they are able to claim something
+        vm.prank(MINTER);
+        token.mint(testRecipients[0], MINT_AMOUNT);
+
+        uint256 DISTRIBUTION_AMOUNT = (MINT_AMOUNT *
+            token.distributionFractionBP()) / token.BASIS();
+
+        uint256 oldGlobalRatio = token.globalRatio();
+
+        token.disperseTokens(testRecipients, testAmounts);
+
+        for (uint256 i; i < testRecipients.length; ++i) {
+            assert(
+                token.accrualData(testRecipients[i]).offset == oldGlobalRatio
+            );
+            if (i == 0) {
+                assert(
+                    token.accrualData(testRecipients[i]).accruedTokens + 1 >=
+                        DISTRIBUTION_AMOUNT
+                );
+            } else {
+                assert(
+                    token.accrualData(testRecipients[i]).accruedTokens + 1 >= 0
+                );
+            }
+        }
+    }
+
+    /// @dev tests disperseTokens decreases aridropSupply by total amount of $MINT distributed
+    function test_disperseTokensIncreasesAirdropSupplyByTokensDispersed()
+        external
+    {
+        uint256 airdropAmount;
+
+        for (uint256 i; i < testRecipients.length; ++i) {
+            airdropAmount += testAmounts[i];
+        }
+
+        uint256 oldAirdropSupply = token.airdropSupply();
+        token.disperseTokens(testRecipients, testAmounts);
+
+        uint256 newAirdropSupply = token.airdropSupply();
+
+        assert(oldAirdropSupply - newAirdropSupply == airdropAmount);
+    }
+
+    /// @dev tests that disepseTokens reverts when called by non-owner
     function test_disperseTokensRevertsWhen_CallerIsNotOwner() external {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
@@ -54,6 +105,8 @@ contract Token_disperseTokens is ArbForkTest, TokenTest {
         token.disperseTokens(testRecipients, testAmounts);
     }
 
+    /// @dev tests that disepseTokens reverts when token contract does not have enough
+    /// balance to send out full amount of dispersed tokens
     function test_disperseTokensRevertsWhen_ContractBalanceIsInsufficient()
         external
     {

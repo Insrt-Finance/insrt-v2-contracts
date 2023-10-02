@@ -85,7 +85,7 @@ abstract contract TokenInternal is
         // set new global ratio to be the same as prior to airdrop mint
         l.globalRatio = oldGlobalRatio;
         // decrease distribution supply by the amount minted for airdrop
-        l.distributionSupply -= amount;
+        l.distributionSupply -= (amount * l.distributionFractionBP) / BASIS;
         // increase supply by the amount minted for airdrop
         l.airdropSupply += amount;
     }
@@ -169,15 +169,27 @@ abstract contract TokenInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
         uint256 totalAmount;
+        uint256 accruedTokens;
 
         for (uint256 i = 0; i < recipients.length; ++i) {
-            require(_transfer(address(this), recipients[i], amounts[i]));
+            AccrualData storage accountData = l.accrualData[recipients[i]];
+
+            accruedTokens = _scaleDown(
+                (l.globalRatio - accountData.offset) * _balanceOf(recipients[i])
+            );
+
+            // update claimable tokens
+            accountData.accruedTokens += accruedTokens;
+
+            // update account offsey
             l.accrualData[recipients[i]].offset = l.globalRatio;
+
+            require(_transfer(address(this), recipients[i], amounts[i]));
+
             totalAmount += amounts[i];
         }
-        l.distributionSupply -=
-            (totalAmount * l.distributionFractionBP) /
-            BASIS;
+
+        l.airdropSupply -= totalAmount;
     }
 
     /// @notice returns the distributionFractionBP value
@@ -219,7 +231,8 @@ abstract contract TokenInternal is
         uint256 accountBalance = _balanceOf(account);
         uint256 supplyDelta = _totalSupply() -
             accountBalance -
-            l.distributionSupply;
+            l.distributionSupply -
+            l.airdropSupply;
         uint256 accruedTokens;
 
         AccrualData storage accountData = l.accrualData[account];

@@ -85,3 +85,104 @@ Requires the following additional environment variables set:
 ```
 make deploy-local
 ```
+
+## Post-deployment configuration
+
+### Arbitrum
+
+1. Token configuration
+
+Note: `TOKEN_DISTRIBUTION_FRACTION_BP` is modifiable in `./scripts/configure-token-arb.sh`.
+
+```
+make configure-token-arb
+```
+
+2. VRF configuration
+
+Note: `LINK_FUND_AMOUNT` is modifiable in `./scripts/configure-vrf-arb.sh`.
+
+```
+make configure-vrf-arb
+```
+
+3. PerpetualMint configuration
+
+Note: The following environment variables are modifiable in `./scripts/configure-perp-mint-arb.sh`:
+
+- `COLLECTION_PRICE_TO_MINT_RATIO_BP`
+- `CONSOLATION_FEE_BP`
+- `MINT_FEE_BP`
+- `REDEMPTION_FEE_BP`
+- `TIER_MULTIPLIERS`
+- `TIER_RISKS`
+
+```
+make configure-perp-mint-arb
+```
+
+### Arbitrum Goerli
+
+1. Token configuration
+
+Note: `TOKEN_DISTRIBUTION_FRACTION_BP` is modifiable in `./scripts/configure-token-arb-goerli.sh`.
+
+```
+make configure-token-arb-goerli
+```
+
+2. VRF configuration
+
+Note: `LINK_FUND_AMOUNT` is modifiable in `./scripts/configure-vrf-arb-goerli.sh`.
+
+```
+make configure-vrf-arb-goerli
+```
+
+3. PerpetualMint configuration
+
+Note: The following environment variables are modifiable in `./scripts/configure-perp-mint-arb-goerli.sh`:
+
+- `COLLECTION_PRICE_TO_MINT_RATIO_BP`
+- `CONSOLATION_FEE_BP`
+- `MINT_FEE_BP`
+- `REDEMPTION_FEE_BP`
+- `TIER_MULTIPLIERS`
+- `TIER_RISKS`
+
+```
+make configure-perp-mint-arb-goerli
+```
+
+### Localhost
+
+1. Token configuration
+
+Note: `TOKEN_DISTRIBUTION_FRACTION_BP` is modifiable in `./scripts/configure-token-local.sh`.
+
+```
+make configure-token-local
+```
+
+2. VRF configuration
+
+Note: `LINK_FUND_AMOUNT` is modifiable in `./scripts/configure-vrf-local.sh`.
+
+```
+make configure-vrf-local
+```
+
+3. PerpetualMint configuration
+
+Note: The following environment variables are modifiable in `./scripts/configure-perp-mint-local.sh`:
+
+- `COLLECTION_PRICE_TO_MINT_RATIO_BP`
+- `CONSOLATION_FEE_BP`
+- `MINT_FEE_BP`
+- `REDEMPTION_FEE_BP`
+- `TIER_MULTIPLIERS`
+- `TIER_RISKS`
+
+```
+make configure-perp-mint-local
+```

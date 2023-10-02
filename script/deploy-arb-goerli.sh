@@ -29,17 +29,16 @@ fi
 DEPLOYER_ADDRESS=$(cast wallet address $DEPLOYER_KEY)
 echo -e "Deployer Address: $DEPLOYER_ADDRESS\n"
 
-# Check balance using curl
-DEPLOYER_BALANCE_JSON=$(curl -s -X POST -H "Content-Type: application/json" --data "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getBalance\",\"params\":[\"$DEPLOYER_ADDRESS\", \"latest\"]}" $RPC_URL)
-
-DEPLOYER_BALANCE_HEX=$(echo $DEPLOYER_BALANCE_JSON | node -e "let data = ''; process.stdin.on('data', chunk => { data += chunk; }); process.stdin.on('end', () => { let json = JSON.parse(data); console.log(json.result); });")
-
-# Convert hex to decimal
-DEPLOYER_BALANCE_DEC=$((16#${DEPLOYER_BALANCE_HEX#*x}))
+# Get ETH balance in Wei
+DEPLOYER_BALANCE_DEC=$(cast balance $DEPLOYER_ADDRESS --rpc-url $RPC_URL)
 
 # Convert from Wei to Ether
-DEPLOYER_BALANCE_ETH=$(echo "scale=18; $DEPLOYER_BALANCE_DEC / 1000000000000000000" | bc)
+DEPLOYER_BALANCE_ETH=$(cast from-wei $DEPLOYER_BALANCE_DEC)
 echo -e "Deployer address balance is $DEPLOYER_BALANCE_ETH ETH.\n"
+
+# Create broadcast directories for storing deployment data
+mkdir -p ./broadcast/${DEPLOYMENT_SCRIPTS[0]}/$CHAIN_ID
+mkdir -p ./broadcast/${DEPLOYMENT_SCRIPTS[1]}/$CHAIN_ID
 
 # Run forge scripts
 forge script script/${DEPLOYMENT_SCRIPTS[0]} --rpc-url $RPC_URL --verify --broadcast --verifier-url $VERIFIER_URL

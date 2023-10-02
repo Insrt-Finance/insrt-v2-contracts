@@ -13,9 +13,9 @@ if [[ -z $ARBISCAN_API_KEY ]]; then
   exit 1
 fi
 
-# Check if ARBITRUM_RPC_URL is set
-if [[ -z $ARBITRUM_RPC_URL ]]; then
-  echo -e "Error: ARBITRUM_RPC_URL is not set in .env.\n"
+# Check if ARBITRUM_GOERLI_RPC_URL is set
+if [[ -z $ARBITRUM_GOERLI_RPC_URL ]]; then
+  echo -e "Error: ARBITRUM_GOERLI_RPC_URL is not set in .env.\n"
   exit 1
 fi
 

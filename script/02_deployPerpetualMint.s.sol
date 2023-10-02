@@ -322,6 +322,8 @@ contract DeployPerpetualMint is Script {
             );
     }
 
+    /// @notice writes the address of the deployed Core diamond to a file
+    /// @param coreAddress address of the deployed Core diamond
     function writeCoreAddress(address coreAddress) internal {
         string memory inputDir = string.concat(
             vm.projectRoot(),
@@ -338,6 +340,8 @@ contract DeployPerpetualMint is Script {
         );
     }
 
+    /// @notice writes the address of the VRF Coordinator set in the deployed Core diamond to a file
+    /// @param vrfCoordinatorAddress address of the VRF Coordinator set in the deployed Core diamond
     function writeVRFCoordinatorAddress(
         address vrfCoordinatorAddress
     ) internal {

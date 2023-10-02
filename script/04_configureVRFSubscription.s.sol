@@ -65,6 +65,8 @@ contract ConfigureVRFSubscription is Script {
         vm.stopBroadcast();
     }
 
+    /// @notice attempts to read the saved address of the Core diamond contract, post-deployment
+    /// @return coreAddress address of the deployed Core diamond contract
     function readCoreAddress() internal view returns (address coreAddress) {
         string memory inputDir = string.concat(
             vm.projectRoot(),
@@ -81,6 +83,8 @@ contract ConfigureVRFSubscription is Script {
             );
     }
 
+    /// @notice attempts to read the saved address of the VRF Coordinator contract, post-deployment
+    /// @return vrfCoordinatorAddress address of the deployed VRF Coordinator contract
     function readVRFCoordinatorAddress()
         internal
         view
@@ -104,6 +108,8 @@ contract ConfigureVRFSubscription is Script {
             );
     }
 
+    /// @notice writes the created VRF subscription ID to a file
+    /// @param subscriptionId the created VRF subscription ID
     function writeVRFSubscriptionId(uint64 subscriptionId) internal {
         string memory inputDir = string.concat(
             vm.projectRoot(),

@@ -38,6 +38,8 @@ contract ConfigureToken is Script {
         vm.stopBroadcast();
     }
 
+    /// @notice attempts to read the saved address of the Core diamond contract, post-deployment
+    /// @return coreAddress address of the deployed Core diamond contract
     function readCoreAddress() internal view returns (address coreAddress) {
         string memory inputDir = string.concat(
             vm.projectRoot(),
@@ -54,6 +56,8 @@ contract ConfigureToken is Script {
             );
     }
 
+    /// @notice attempts to read the saved address of the TokenProxy diamond contract, post-deployment
+    /// @return tokenProxyAddress address of the deployed TokenProxy diamond contract
     function readTokenProxyAddress()
         internal
         view

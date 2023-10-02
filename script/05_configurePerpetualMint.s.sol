@@ -86,6 +86,8 @@ contract ConfigurePerpetualMint is Script, Test {
         vm.stopBroadcast();
     }
 
+    /// @notice attempts to read the saved address of the Core diamond contract, post-deployment
+    /// @return coreAddress address of the deployed Core diamond contract
     function readCoreAddress() internal view returns (address coreAddress) {
         string memory inputDir = string.concat(
             vm.projectRoot(),
@@ -102,6 +104,8 @@ contract ConfigurePerpetualMint is Script, Test {
             );
     }
 
+    /// @notice attempts to read the saved address of the newly created VRF subscription ID, post-configuration
+    /// @return subscriptionId the newly created VRF subscription ID
     function readVRFSubscriptionId()
         internal
         view
@@ -127,6 +131,9 @@ contract ConfigurePerpetualMint is Script, Test {
             );
     }
 
+    /// @notice converts a uint256 array to a uint32 array
+    /// @param uint256Array the uint256 array to convert
+    /// @return uint32Array the converted uint32 array
     function toUint32Array(
         uint256[] memory uint256Array
     ) internal pure returns (uint32[] memory uint32Array) {

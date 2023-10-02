@@ -73,6 +73,23 @@ abstract contract TokenInternal is
         emit MintingContractAdded(account);
     }
 
+    /// @notice mints an amount of tokens intended for aidrop
+    /// @param amount airdrop token amount
+    function _airdropMint(uint256 amount) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        uint256 oldGlobalRatio = l.globalRatio;
+
+        _mint(amount, address(this));
+
+        // set new global ratio to be the same as prior to airdrop mint
+        l.globalRatio = oldGlobalRatio;
+        // decrease distribution supply by the amount minted for airdrop
+        l.distributionSupply -= amount;
+        // increase supply by the amount minted for airdrop
+        l.airdropSupply += amount;
+    }
+
     /// @notice returns the value of BASIS
     /// @return value BASIS value
     function _BASIS() internal pure returns (uint32 value) {

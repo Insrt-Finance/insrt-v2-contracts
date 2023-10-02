@@ -20,6 +20,10 @@ interface IToken is ISolidStateERC20 {
     /// @param account address of account
     function addMintingContract(address account) external;
 
+    /// @notice mints an amount of tokens intended for aidrop
+    /// @param amount airdrop token amount
+    function airdropMint(uint256 amount) external;
+
     /// @notice returns the value of BASIS
     /// @return value BASIS value
     function BASIS() external pure returns (uint32 value);

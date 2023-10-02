@@ -13,6 +13,8 @@ library TokenStorage {
         uint256 globalRatio;
         /// @dev number of tokens held for distribution to token holders
         uint256 distributionSupply;
+        /// @dev number of tokens held for airdrop dispersion
+        uint256 airdropSupply;
         /// @dev fraction of tokens to be reserved for distribution to token holders in basis points
         uint32 distributionFractionBP;
         /// @dev information related to Token accruals for an account

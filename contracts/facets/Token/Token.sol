@@ -24,6 +24,11 @@ contract Token is TokenInternal, SolidStateERC20, IToken {
         _addMintingContract(account);
     }
 
+    /// @inheritdoc IToken
+    function airdropMint(uint256 amount) external onlyMintingContract {
+        _airdropMint(amount);
+    }
+
     /// @notice overrides _beforeTokenTransfer hook to enforce non-transferability
     /// @param from sender of tokens
     /// @param to receiver of tokens

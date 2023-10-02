@@ -86,7 +86,7 @@ abstract contract PerpetualMintInternal is
 
         l.consolationFees += msg.value;
 
-        IToken(l.mintToken).mint(l.mintToken, amount);
+        IToken(l.mintToken).airdropMint(amount);
     }
 
     /// @notice Attempts a batch mint for the msg.sender for a single collection using ETH as payment.

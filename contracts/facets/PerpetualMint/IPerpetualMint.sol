@@ -41,10 +41,6 @@ interface IPerpetualMint is
     /// @return accruedFees the current amount of accrued protocol fees
     function accruedProtocolFees() external view returns (uint256 accruedFees);
 
-    /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
-    /// @param amount amount of mintToken tokens to mint
-    function mintAirdrop(uint256 amount) external payable;
-
     /// @notice Attempts a batch mint for the msg.sender for a single collection using ETH as payment.
     /// @param collection address of collection for mint attempts
     /// @param numberOfMints number of mints to attempt
@@ -131,6 +127,10 @@ interface IPerpetualMint is
     /// @notice Returns the current ETH to $MINT ratio
     /// @return ratio current ETH to $MINT ratio
     function ethToMintRatio() external view returns (uint256 ratio);
+
+    /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
+    /// @param amount amount of mintToken tokens to mint
+    function mintAirdrop(uint256 amount) external payable;
 
     /// @notice Returns the mint fee in basis points
     /// @return mintFeeBasisPoints mint fee in basis points

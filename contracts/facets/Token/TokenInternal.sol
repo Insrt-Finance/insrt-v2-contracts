@@ -73,23 +73,6 @@ abstract contract TokenInternal is
         emit MintingContractAdded(account);
     }
 
-    /// @notice mints an amount of tokens intended for airdrop
-    /// @param amount airdrop token amount
-    function _mintAirdrop(uint256 amount) internal {
-        Storage.Layout storage l = Storage.layout();
-
-        uint256 oldGlobalRatio = l.globalRatio;
-
-        _mint(amount, address(this));
-
-        // set new global ratio to be the same as prior to airdrop mint
-        l.globalRatio = oldGlobalRatio;
-        // decrease distribution supply by the amount minted for airdrop
-        l.distributionSupply -= (amount * l.distributionFractionBP) / BASIS;
-        // increase supply by the amount minted for airdrop
-        l.airdropSupply += amount;
-    }
-
     /// @notice returns value of airdropSupply
     /// @return supply value of airdropSupply
     function _airdropSupply() internal view returns (uint256 supply) {
@@ -294,6 +277,23 @@ abstract contract TokenInternal is
         // mint tokens to contract and account
         _mint(address(this), distributionAmount);
         _mint(account, amount);
+    }
+
+    /// @notice mints an amount of tokens intended for airdrop
+    /// @param amount airdrop token amount
+    function _mintAirdrop(uint256 amount) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        uint256 oldGlobalRatio = l.globalRatio;
+
+        _mint(amount, address(this));
+
+        // set new global ratio to be the same as prior to airdrop mint
+        l.globalRatio = oldGlobalRatio;
+        // decrease distribution supply by the amount minted for airdrop
+        l.distributionSupply -= (amount * l.distributionFractionBP) / BASIS;
+        // increase supply by the amount minted for airdrop
+        l.airdropSupply += amount;
     }
 
     /// @notice returns all addresses of contracts which are allowed to call mint/burn

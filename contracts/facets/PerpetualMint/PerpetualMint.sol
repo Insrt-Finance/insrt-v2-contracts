@@ -50,12 +50,6 @@ contract PerpetualMint is
         accruedFees = _accruedProtocolFees();
     }
 
-    /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
-    /// @param amount amount of mintToken tokens to mint
-    function mintAirdrop(uint256 amount) external payable onlyOwner {
-        _mintAirdrop(amount);
-    }
-
     /// @inheritdoc IPerpetualMint
     function attemptBatchMintWithEth(
         address collection,
@@ -158,6 +152,12 @@ contract PerpetualMint is
     /// @inheritdoc IPerpetualMint
     function ethToMintRatio() external view returns (uint256 ratio) {
         ratio = _ethToMintRatio(Storage.layout());
+    }
+
+    /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
+    /// @param amount amount of mintToken tokens to mint
+    function mintAirdrop(uint256 amount) external payable onlyOwner {
+        _mintAirdrop(amount);
     }
 
     /// @inheritdoc IPerpetualMint

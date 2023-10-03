@@ -75,20 +75,6 @@ abstract contract PerpetualMintInternal is
         accruedFees = Storage.layout().protocolFees;
     }
 
-    /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
-    /// @param amount amount of mintToken tokens to mint
-    function _mintAirdrop(uint256 amount) internal {
-        Storage.Layout storage l = Storage.layout();
-
-        if (amount / _ethToMintRatio(l) != msg.value) {
-            revert IncorrectETHReceived();
-        }
-
-        l.consolationFees += msg.value;
-
-        IToken(l.mintToken).mintAirdrop(amount);
-    }
-
     /// @notice Attempts a batch mint for the msg.sender for a single collection using ETH as payment.
     /// @param minter address of minter
     /// @param collection address of collection for mint attempts
@@ -371,6 +357,20 @@ abstract contract PerpetualMintInternal is
         collectionData.pendingRequests.remove(requestId);
 
         delete l.requests[requestId];
+    }
+
+    /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
+    /// @param amount amount of mintToken tokens to mint
+    function _mintAirdrop(uint256 amount) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        if (amount / _ethToMintRatio(l) != msg.value) {
+            revert IncorrectETHReceived();
+        }
+
+        l.consolationFees += msg.value;
+
+        IToken(l.mintToken).mintAirdrop(amount);
     }
 
     /// @notice Returns the current mint fee in basis points

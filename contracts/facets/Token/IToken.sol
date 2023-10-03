@@ -20,10 +20,6 @@ interface IToken is ISolidStateERC20 {
     /// @param account address of account
     function addMintingContract(address account) external;
 
-    /// @notice mints an amount of tokens intended for airdrop
-    /// @param amount airdrop token amount
-    function mintAirdrop(uint256 amount) external;
-
     /// @notice returns value of airdropSupply
     /// @return supply value of airdropSupply
     function airdropSupply() external view returns (uint256 supply);
@@ -71,6 +67,10 @@ interface IToken is ISolidStateERC20 {
     /// @param account address of account receive the tokens
     /// @param amount amount of tokens to disburse
     function mint(address account, uint256 amount) external;
+
+    /// @notice mints an amount of tokens intended for airdrop
+    /// @param amount airdrop token amount
+    function mintAirdrop(uint256 amount) external;
 
     /// @notice returns all addresses of contracts which are allowed to call mint/burn
     /// @return contracts array of addresses of contracts which are allowed to call mint/burn

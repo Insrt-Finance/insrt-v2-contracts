@@ -87,62 +87,64 @@ contract PerpetualMintHelper {
             .accruedProtocolFees
             .selector;
 
-        perpetualMintFunctionSelectors[3] = IPerpetualMint.mintAirdrop.selector;
-
-        perpetualMintFunctionSelectors[4] = IPerpetualMint
+        perpetualMintFunctionSelectors[3] = IPerpetualMint
             .attemptBatchMintWithEth
             .selector;
 
-        perpetualMintFunctionSelectors[5] = IPerpetualMint
+        perpetualMintFunctionSelectors[4] = IPerpetualMint
             .attemptBatchMintWithMint
             .selector;
 
-        perpetualMintFunctionSelectors[6] = IPerpetualMint.BASIS.selector;
+        perpetualMintFunctionSelectors[5] = IPerpetualMint.BASIS.selector;
 
-        perpetualMintFunctionSelectors[7] = IPerpetualMint.burnReceipt.selector;
+        perpetualMintFunctionSelectors[6] = IPerpetualMint.burnReceipt.selector;
 
-        perpetualMintFunctionSelectors[8] = IPerpetualMint.cancelClaim.selector;
+        perpetualMintFunctionSelectors[7] = IPerpetualMint.cancelClaim.selector;
 
-        perpetualMintFunctionSelectors[9] = IPerpetualMint
+        perpetualMintFunctionSelectors[8] = IPerpetualMint
             .claimMintEarnings
             .selector;
 
-        perpetualMintFunctionSelectors[10] = IPerpetualMint.claimPrize.selector;
+        perpetualMintFunctionSelectors[9] = IPerpetualMint.claimPrize.selector;
 
-        perpetualMintFunctionSelectors[11] = IPerpetualMint
+        perpetualMintFunctionSelectors[10] = IPerpetualMint
             .claimProtocolFees
             .selector;
 
-        perpetualMintFunctionSelectors[12] = IPerpetualMint
+        perpetualMintFunctionSelectors[11] = IPerpetualMint
             .collectionMintPrice
             .selector;
 
-        perpetualMintFunctionSelectors[13] = IPerpetualMint
+        perpetualMintFunctionSelectors[12] = IPerpetualMint
             .collectionPriceToMintRatioBP
             .selector;
 
-        perpetualMintFunctionSelectors[14] = IPerpetualMint
+        perpetualMintFunctionSelectors[13] = IPerpetualMint
             .collectionRisk
             .selector;
 
-        perpetualMintFunctionSelectors[15] = IPerpetualMint
+        perpetualMintFunctionSelectors[14] = IPerpetualMint
             .consolationFeeBP
             .selector;
 
-        perpetualMintFunctionSelectors[16] = IPerpetualMint
+        perpetualMintFunctionSelectors[15] = IPerpetualMint
             .defaultCollectionMintPrice
             .selector;
 
-        perpetualMintFunctionSelectors[17] = IPerpetualMint
+        perpetualMintFunctionSelectors[16] = IPerpetualMint
             .defaultCollectionRisk
             .selector;
 
-        perpetualMintFunctionSelectors[18] = IPerpetualMint
+        perpetualMintFunctionSelectors[17] = IPerpetualMint
             .defaultEthToMintRatio
             .selector;
 
-        perpetualMintFunctionSelectors[19] = IPerpetualMint
+        perpetualMintFunctionSelectors[18] = IPerpetualMint
             .ethToMintRatio
+            .selector;
+
+        perpetualMintFunctionSelectors[19] = IPerpetualMint
+            .mintAirdrop
             .selector;
 
         perpetualMintFunctionSelectors[20] = IPerpetualMint.mintFeeBP.selector;

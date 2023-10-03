@@ -88,7 +88,7 @@ contract DeployToken is Script {
                 selectors: erc20FunctionSelectors
             });
 
-        bytes4[] memory tokenFunctionSelectors = new bytes4[](15);
+        bytes4[] memory tokenFunctionSelectors = new bytes4[](17);
 
         tokenFunctionSelectors[0] = IToken.accrualData.selector;
         tokenFunctionSelectors[1] = IToken.addMintingContract.selector;

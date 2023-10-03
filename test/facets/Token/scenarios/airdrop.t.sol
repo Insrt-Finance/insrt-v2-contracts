@@ -67,7 +67,7 @@ contract PerpetualMint_airdrop is
     function test_airdropPriorToAnyMinting() public {
         uint256 ethRequired = AIRDROP_AMOUNT / ETH_TO_MINT_RATIO;
 
-        perpetualMint.airdropMint{ value: ethRequired }(AIRDROP_AMOUNT);
+        perpetualMint.mintAirdrop{ value: ethRequired }(AIRDROP_AMOUNT);
 
         address[] memory accounts = new address[](3);
         uint256[] memory amounts = new uint256[](3);
@@ -263,7 +263,7 @@ contract PerpetualMint_airdrop is
         uint256 ethRequired = AIRDROP_AMOUNT / ETH_TO_MINT_RATIO;
 
         // perform first aidrop
-        perpetualMint.airdropMint{ value: ethRequired }(AIRDROP_AMOUNT);
+        perpetualMint.mintAirdrop{ value: ethRequired }(AIRDROP_AMOUNT);
 
         address[] memory accounts = new address[](3);
         uint256[] memory amounts = new uint256[](3);
@@ -322,7 +322,7 @@ contract PerpetualMint_airdrop is
         );
 
         // perform second aidrop
-        perpetualMint.airdropMint{ value: ethRequired }(AIRDROP_AMOUNT);
+        perpetualMint.mintAirdrop{ value: ethRequired }(AIRDROP_AMOUNT);
 
         oldMinterBalance = token.balanceOf(MINTER);
         oldReceiverOneBalance = token.balanceOf(RECEIVER_ONE);

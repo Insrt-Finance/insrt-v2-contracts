@@ -77,7 +77,7 @@ abstract contract PerpetualMintInternal is
 
     /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
     /// @param amount amount of mintToken tokens to mint
-    function _airdropMint(uint256 amount) internal {
+    function _mintAirdrop(uint256 amount) internal {
         Storage.Layout storage l = Storage.layout();
 
         if (amount / _ethToMintRatio(l) != msg.value) {
@@ -86,7 +86,7 @@ abstract contract PerpetualMintInternal is
 
         l.consolationFees += msg.value;
 
-        IToken(l.mintToken).airdropMint(amount);
+        IToken(l.mintToken).mintAirdrop(amount);
     }
 
     /// @notice Attempts a batch mint for the msg.sender for a single collection using ETH as payment.

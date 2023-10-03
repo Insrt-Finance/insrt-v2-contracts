@@ -43,7 +43,7 @@ interface IPerpetualMint is
 
     /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
     /// @param amount amount of mintToken tokens to mint
-    function airdropMint(uint256 amount) external payable;
+    function mintAirdrop(uint256 amount) external payable;
 
     /// @notice Attempts a batch mint for the msg.sender for a single collection using ETH as payment.
     /// @param collection address of collection for mint attempts

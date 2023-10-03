@@ -48,7 +48,7 @@ contract TokenHelper {
 
         tokenFunctionSelectors[0] = IToken.accrualData.selector;
         tokenFunctionSelectors[1] = IToken.addMintingContract.selector;
-        tokenFunctionSelectors[2] = IToken.airdropMint.selector;
+        tokenFunctionSelectors[2] = IToken.mintAirdrop.selector;
         tokenFunctionSelectors[3] = IToken.airdropSupply.selector;
         tokenFunctionSelectors[4] = IToken.BASIS.selector;
         tokenFunctionSelectors[5] = IToken.burn.selector;

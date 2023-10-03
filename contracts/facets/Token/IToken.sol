@@ -22,7 +22,7 @@ interface IToken is ISolidStateERC20 {
 
     /// @notice mints an amount of tokens intended for aidrop
     /// @param amount airdrop token amount
-    function airdropMint(uint256 amount) external;
+    function mintAirdrop(uint256 amount) external;
 
     /// @notice returns value of airdropSupply
     /// @return supply value of airdropSupply

@@ -75,7 +75,7 @@ abstract contract TokenInternal is
 
     /// @notice mints an amount of tokens intended for aidrop
     /// @param amount airdrop token amount
-    function _airdropMint(uint256 amount) internal {
+    function _mintAirdrop(uint256 amount) internal {
         Storage.Layout storage l = Storage.layout();
 
         uint256 oldGlobalRatio = l.globalRatio;

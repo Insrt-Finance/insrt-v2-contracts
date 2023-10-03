@@ -87,7 +87,7 @@ contract PerpetualMintHelper {
             .accruedProtocolFees
             .selector;
 
-        perpetualMintFunctionSelectors[3] = IPerpetualMint.airdropMint.selector;
+        perpetualMintFunctionSelectors[3] = IPerpetualMint.mintAirdrop.selector;
 
         perpetualMintFunctionSelectors[4] = IPerpetualMint
             .attemptBatchMintWithEth

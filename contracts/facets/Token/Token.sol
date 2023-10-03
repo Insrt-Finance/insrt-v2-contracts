@@ -25,8 +25,8 @@ contract Token is TokenInternal, SolidStateERC20, IToken {
     }
 
     /// @inheritdoc IToken
-    function airdropMint(uint256 amount) external onlyMintingContract {
-        _airdropMint(amount);
+    function mintAirdrop(uint256 amount) external onlyMintingContract {
+        _mintAirdrop(amount);
     }
 
     /// @inheritdoc IToken

@@ -41,7 +41,8 @@ interface IPerpetualMint is
     /// @return accruedFees the current amount of accrued protocol fees
     function accruedProtocolFees() external view returns (uint256 accruedFees);
 
-    /// @notice
+    /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
+    /// @param amount amount of mintToken tokens to mint
     function airdropMint(uint256 amount) external payable;
 
     /// @notice Attempts a batch mint for the msg.sender for a single collection using ETH as payment.

@@ -73,7 +73,7 @@ abstract contract TokenInternal is
         emit MintingContractAdded(account);
     }
 
-    /// @notice mints an amount of tokens intended for aidrop
+    /// @notice mints an amount of tokens intended for airdrop
     /// @param amount airdrop token amount
     function _mintAirdrop(uint256 amount) internal {
         Storage.Layout storage l = Storage.layout();
@@ -187,7 +187,7 @@ abstract contract TokenInternal is
             // update claimable tokens
             accountData.accruedTokens += accruedTokens;
 
-            // update account offsey
+            // update account offset
             accountData.offset = l.globalRatio;
 
             require(_transfer(address(this), recipients[i], amounts[i]));

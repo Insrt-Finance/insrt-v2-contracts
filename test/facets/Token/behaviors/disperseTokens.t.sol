@@ -95,7 +95,7 @@ contract Token_disperseTokens is ArbForkTest, TokenTest {
         assert(oldAirdropSupply - newAirdropSupply == airdropAmount);
     }
 
-    /// @dev tests that disepseTokens reverts when called by non-owner
+    /// @dev tests that disperseTokens reverts when called by non-owner
     function test_disperseTokensRevertsWhen_CallerIsNotOwner() external {
         vm.expectRevert(IOwnableInternal.Ownable__NotOwner.selector);
 
@@ -103,7 +103,7 @@ contract Token_disperseTokens is ArbForkTest, TokenTest {
         token.disperseTokens(testRecipients, testAmounts);
     }
 
-    /// @dev tests that disepseTokens reverts when token contract does not have enough
+    /// @dev tests that disperseTokens reverts when token contract does not have enough
     /// balance to send out full amount of dispersed tokens
     function test_disperseTokensRevertsWhen_ContractBalanceIsInsufficient()
         external

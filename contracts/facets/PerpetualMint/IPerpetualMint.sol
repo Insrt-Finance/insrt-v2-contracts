@@ -209,6 +209,12 @@ interface IPerpetualMint is
     /// @param config VRFConfig struct holding all related data to ChainlinkVRF setup
     function setVRFConfig(VRFConfig calldata config) external;
 
+    /// @notice sets the minimum threshold for the VRF subscription balance in LINK tokens
+    /// @param vrfSubscriptionBalanceThreshold minimum threshold for the VRF subscription balance in LINK tokens
+    function setVRFSubscriptionBalanceThreshold(
+        uint96 vrfSubscriptionBalanceThreshold
+    ) external;
+
     /// @notice Returns the current $MINT consolation tiers
     function tiers() external view returns (TiersData memory tiersData);
 
@@ -218,4 +224,11 @@ interface IPerpetualMint is
     /// @notice returns the current VRF config
     /// @return config VRFConfig struct
     function vrfConfig() external view returns (VRFConfig memory config);
+
+    /// @notice returns the current VRF subscription LINK balance threshold
+    /// @return vrfSubscriptionBalanceThreshold VRF subscription balance threshold
+    function vrfSubscriptionBalanceThreshold()
+        external
+        view
+        returns (uint96 vrfSubscriptionBalanceThreshold);
 }

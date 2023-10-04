@@ -623,6 +623,20 @@ abstract contract PerpetualMintInternal is
         emit VRFConfigSet(config);
     }
 
+    /// @notice sets the Chainlink VRF subscription LINK balance threshold
+    /// @param vrfSubscriptionBalanceThreshold VRF subscription balance threshold
+    function _setVRFSubscriptionBalanceThreshold(
+        uint96 vrfSubscriptionBalanceThreshold
+    ) internal {
+        Storage
+            .layout()
+            .vrfSubscriptionBalanceThreshold = vrfSubscriptionBalanceThreshold;
+
+        emit VRFSubscriptionBalanceThresholdSet(
+            vrfSubscriptionBalanceThreshold
+        );
+    }
+
     function _tiers() internal view returns (TiersData memory tiersData) {
         tiersData = Storage.layout().tiers;
     }
@@ -631,5 +645,17 @@ abstract contract PerpetualMintInternal is
     /// @return config VRFConfig struct
     function _vrfConfig() internal view returns (VRFConfig memory config) {
         config = Storage.layout().vrfConfig;
+    }
+
+    /// @notice Returns the current Chainlink VRF subscription LINK balance threshold
+    /// @return vrfSubscriptionBalanceThreshold VRF subscription balance threshold
+    function _vrfSubscriptionBalanceThreshold()
+        internal
+        view
+        returns (uint96 vrfSubscriptionBalanceThreshold)
+    {
+        vrfSubscriptionBalanceThreshold = Storage
+            .layout()
+            .vrfSubscriptionBalanceThreshold;
     }
 }

@@ -252,6 +252,13 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function setVRFSubscriptionBalanceThreshold(
+        uint96 _vrfSubscriptionBalanceThreshold
+    ) external onlyOwner {
+        _setVRFSubscriptionBalanceThreshold(_vrfSubscriptionBalanceThreshold);
+    }
+
+    /// @inheritdoc IPerpetualMint
     function tiers() external view returns (TiersData memory tiersData) {
         tiersData = _tiers();
     }
@@ -264,6 +271,15 @@ contract PerpetualMint is
     /// @inheritdoc IPerpetualMint
     function vrfConfig() external view returns (VRFConfig memory config) {
         config = _vrfConfig();
+    }
+
+    /// @inheritdoc IPerpetualMint
+    function vrfSubscriptionBalanceThreshold()
+        external
+        view
+        returns (uint96 threshold)
+    {
+        threshold = _vrfSubscriptionBalanceThreshold();
     }
 
     /// @notice Chainlink VRF Coordinator callback

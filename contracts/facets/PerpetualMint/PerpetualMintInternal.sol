@@ -426,7 +426,19 @@ abstract contract PerpetualMintInternal is
         address collection,
         uint32 numWords
     ) internal {
-        uint256 requestId = VRFCoordinatorV2Interface(VRF).requestRandomWords(
+        VRFCoordinatorV2Interface vrfCoordinator = VRFCoordinatorV2Interface(
+            VRF
+        );
+
+        (uint96 vrfSubscriptionBalance, , , ) = vrfCoordinator.getSubscription(
+            l.vrfConfig.subscriptionId
+        );
+
+        if (vrfSubscriptionBalance < l.vrfSubscriptionBalanceThreshold) {
+            revert VRFSubscriptionBalanceBelowThreshold();
+        }
+
+        uint256 requestId = vrfCoordinator.requestRandomWords(
             l.vrfConfig.keyHash,
             l.vrfConfig.subscriptionId,
             l.vrfConfig.minConfirmations,

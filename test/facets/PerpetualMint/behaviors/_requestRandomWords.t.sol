@@ -6,6 +6,7 @@ import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 import { IVRFCoordinatorV2 } from "../../../interfaces/IVRFCoordinatorV2.sol";
 import { IVRFCoordinatorV2Events } from "../../../interfaces/IVRFCoordinatorV2Events.sol";
+import { IPerpetualMintInternal } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 import { VRFConfig } from "../../../../contracts/facets/PerpetualMint/Storage.sol";
 
 /// @title PerpetualMint_requestRandomWords
@@ -20,6 +21,9 @@ contract PerpetualMint_requestRandomWords is
 
     /// @dev activation nonce for the Chainlink VRF Coordinator
     uint64 internal TEST_VRF_CONSUMER_NONCE = 1;
+
+    /// @dev test VRF subscription balance threshold, 400 LINK, 1e18
+    uint96 internal TEST_VRF_SUBSCRIPTION_THRESHOLD = 400 ether;
 
     /// @dev collection to test
     address COLLECTION = BORED_APE_YACHT_CLUB;
@@ -155,6 +159,27 @@ contract PerpetualMint_requestRandomWords is
                 TEST_VRF_SUBSCRIPTION_ID,
                 address(perpetualMint)
             )
+        );
+
+        perpetualMint.exposed_requestRandomWords(
+            minter,
+            COLLECTION,
+            TEST_NUM_WORDS
+        );
+    }
+
+    /// @dev Tests that _requestRandomWords functionality reverts when the VRF subscription balance falls below the configured threshold.
+    function test_requestRandomWordsRevertsWhen_VRFSubscriptionBalanceBelowThreshold()
+        external
+    {
+        _activateVRFConsumer();
+
+        perpetualMint.setVRFSubscriptionBalanceThreshold(
+            TEST_VRF_SUBSCRIPTION_THRESHOLD
+        );
+
+        vm.expectRevert(
+            IPerpetualMintInternal.VRFSubscriptionBalanceBelowThreshold.selector
         );
 
         perpetualMint.exposed_requestRandomWords(

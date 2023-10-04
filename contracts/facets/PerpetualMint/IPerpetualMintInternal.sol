@@ -24,6 +24,9 @@ interface IPerpetualMintInternal {
     /// @notice thrown when fulfilled random words do not match for attempted mints
     error UnmatchedRandomWords();
 
+    /// @notice thrown when VRF subscription LINK balance falls below the required threshold
+    error VRFSubscriptionBalanceBelowThreshold();
+
     /// @notice emitted when a claim is cancelled
     /// @param claimer address of rejected claimer
     /// @param collection address of rejected claim collection
@@ -90,4 +93,10 @@ interface IPerpetualMintInternal {
     /// @notice emitted when the Chainlink VRF config is set
     /// @param config VRFConfig struct holding all related data to ChainlinkVRF
     event VRFConfigSet(VRFConfig config);
+
+    /// @notice emitted when the VRF subscription LINK balance threshold is set
+    /// @param vrfSubscriptionBalanceThreshold VRF subscription balance threshold
+    event VRFSubscriptionBalanceThresholdSet(
+        uint96 vrfSubscriptionBalanceThreshold
+    );
 }

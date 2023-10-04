@@ -158,12 +158,11 @@ abstract contract TokenInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
         uint256 totalAmount;
-        uint256 accruedTokens;
 
         for (uint256 i = 0; i < recipients.length; ++i) {
             AccrualData storage accountData = l.accrualData[recipients[i]];
 
-            accruedTokens = _scaleDown(
+            uint256 accruedTokens = _scaleDown(
                 (l.globalRatio - accountData.offset) * _balanceOf(recipients[i])
             );
 

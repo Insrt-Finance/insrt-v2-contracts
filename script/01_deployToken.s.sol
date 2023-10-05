@@ -56,7 +56,7 @@ contract DeployToken is Script {
     function getTokenFacetCuts(
         address facetAddress
     ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
-        // map the Token test related function selectors to their respective interfaces
+        // map the ERC20 function selectors to their respective interfaces
         bytes4[] memory erc20FunctionSelectors = new bytes4[](14);
 
         // base selector
@@ -88,6 +88,7 @@ contract DeployToken is Script {
                 selectors: erc20FunctionSelectors
             });
 
+        // map the Token function selectors to their respective interfaces
         bytes4[] memory tokenFunctionSelectors = new bytes4[](17);
 
         tokenFunctionSelectors[0] = IToken.accrualData.selector;

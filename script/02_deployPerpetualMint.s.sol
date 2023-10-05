@@ -64,7 +64,7 @@ contract DeployPerpetualMint is Script {
     function getPerpetualMintFacetCuts(
         address facetAddress
     ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
-        /// map the ERC1155 test related function selectors to their respective interfaces
+        /// map the ERC1155 function selectors to their respective interfaces
         bytes4[] memory erc1155FunctionSelectors = new bytes4[](6);
 
         erc1155FunctionSelectors[0] = IERC1155.balanceOf.selector;
@@ -81,7 +81,7 @@ contract DeployPerpetualMint is Script {
                 selectors: erc1155FunctionSelectors
             });
 
-        // map the ERC1155Metadata test related function selectors to their respective interfaces
+        // map the ERC1155Metadata function selectors to their respective interfaces
         bytes4[] memory erc1155MetadataFunctionSelectors = new bytes4[](1);
 
         erc1155MetadataFunctionSelectors[0] = IERC1155Metadata.uri.selector;
@@ -93,7 +93,7 @@ contract DeployPerpetualMint is Script {
                 selectors: erc1155MetadataFunctionSelectors
             });
 
-        // map the ERC1155Metadata test related function selectors to their respective interfaces
+        // map the ERC1155Metadata function selectors to their respective interfaces
         bytes4[]
             memory erc1155MetadataExtensionFunctionSelectors = new bytes4[](2);
 
@@ -112,7 +112,7 @@ contract DeployPerpetualMint is Script {
                     selectors: erc1155MetadataExtensionFunctionSelectors
                 });
 
-        // map the Pausable test related function selectors to their respective interfaces
+        // map the Pausable function selectors to their respective interfaces
         bytes4[] memory pausableFunctionSelectors = new bytes4[](1);
 
         pausableFunctionSelectors[0] = IPausable.paused.selector;

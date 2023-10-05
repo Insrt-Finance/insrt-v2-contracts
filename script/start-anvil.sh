@@ -26,7 +26,7 @@ if [[ -z $FORK_URL ]]; then
 else
   echo -e "\nStarting anvil forked from $FORK_URL...\n"
 
-  anvil --fork-url ${FORK_URL} --silent &
+  anvil --fork-url ${FORK_URL} --chain-id anvil-hardhat --silent &
   sleep 1
 fi
 

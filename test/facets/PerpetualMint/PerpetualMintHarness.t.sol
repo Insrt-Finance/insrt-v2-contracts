@@ -114,7 +114,7 @@ contract PerpetualMintHarness is
             minter,
             collection,
             randomWords,
-            l.collectionPriceToMintRatioBP
+            _ethToMintRatio(l)
         );
     }
 

@@ -29,10 +29,6 @@ interface IPerpetualMintInternal {
     /// @param collection address of rejected claim collection
     event ClaimCancelled(address claimer, address indexed collection);
 
-    /// @notice emitted when the collection price to $MINT ratio is set
-    /// @param collectionPriceToMintRatioBP collection price to $MINT ratio in basis points
-    event CollectionPriceToMintRatioSet(uint32 collectionPriceToMintRatioBP);
-
     /// @notice emitted when the risk for a collection is set
     /// @param collection address of collection
     /// @param risk risk of collection

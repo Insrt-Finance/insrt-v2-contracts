@@ -88,13 +88,6 @@ interface IPerpetualMint is
         address collection
     ) external view returns (uint256 mintPrice);
 
-    /// @notice Returns the current collection price to $MINT ratio in basis points
-    /// @return collectionPriceToMintRatioBasisPoints collection price to $MINT ratio in basis points
-    function collectionPriceToMintRatioBP()
-        external
-        view
-        returns (uint32 collectionPriceToMintRatioBasisPoints);
-
     /// @notice Returns the current collection-wide risk of a collection
     /// @param collection address of collection
     /// @return risk value of collection-wide risk
@@ -170,12 +163,6 @@ interface IPerpetualMint is
     /// @param collection address of collection
     /// @param price mint price of the collection
     function setCollectionMintPrice(address collection, uint256 price) external;
-
-    /// @notice sets the ratio of collection price to $MINT in basis points for mint consolations
-    /// @param collectionPriceToMintRatioBP collection price to $MINT ratio in basis points
-    function setCollectionPriceToMintRatioBP(
-        uint32 collectionPriceToMintRatioBP
-    ) external;
 
     /// @notice sets the risk of a given collection
     /// @param collection address of collection

@@ -20,10 +20,6 @@ contract ConfigurePerpetualMint is Script, Test {
         // read deployer private key
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_KEY");
 
-        uint32 collectionPriceToMintRatioBP = uint32(
-            vm.envUint("COLLECTION_PRICE_TO_MINT_RATIO_BP")
-        );
-
         uint32 consolationFeeBP = uint32(vm.envUint("CONSOLATION_FEE_BP"));
 
         uint32 mintFeeBP = uint32(vm.envUint("MINT_FEE_BP"));
@@ -48,10 +44,6 @@ contract ConfigurePerpetualMint is Script, Test {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        perpetualMint.setCollectionPriceToMintRatioBP(
-            collectionPriceToMintRatioBP
-        );
-
         perpetualMint.setConsolationFeeBP(consolationFeeBP);
 
         perpetualMint.setMintFeeBP(mintFeeBP);
@@ -67,10 +59,6 @@ contract ConfigurePerpetualMint is Script, Test {
 
         perpetualMint.setVRFConfig(vrfConfig);
 
-        console.log(
-            "Collection Price to Mint Ratio BP Set: ",
-            collectionPriceToMintRatioBP
-        );
         console.log("Consolation Fee BP Set: ", consolationFeeBP);
         console.log("Mint Fee BP Set: ", mintFeeBP);
         console.log("Redemption Fee BP Set: ", redemptionFeeBP);

@@ -5,6 +5,8 @@ import "forge-std/Script.sol";
 import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV2Interface.sol";
 import { LinkTokenInterface } from "@chainlink/shared/interfaces/LinkTokenInterface.sol";
 
+import { IPerpetualMint } from "../contracts/facets/PerpetualMint/IPerpetualMint.sol";
+
 /// @title ConfigureVRFSubscription
 /// @dev configures the VRF subscription by creating a subscription, adding the PerpetualMint contract as a consumer,
 /// and optionally funding the subscription with LINK tokens
@@ -24,9 +26,17 @@ contract ConfigureVRFSubscription is Script {
             "LINK_FUND_AMOUNT"
         );
 
+        uint96 envVRFSubscriptionBalanceThreshold = uint96(
+            vm.envUint("VRF_SUBSCRIPTION_BALANCE_THRESHOLD")
+        );
+
         // scale LINK amount to fund subscription by 1e18
         uint256 linkAmountToFundSubscription = envLinkAmountToFundSubscription *
             1 ether;
+
+        // scale VRF subscription balance threshold by 1e18
+        uint96 vrfSubscriptionBalanceThreshold = envVRFSubscriptionBalanceThreshold *
+                1 ether;
 
         // read deployer private key
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_KEY");
@@ -51,6 +61,10 @@ contract ConfigureVRFSubscription is Script {
             );
         }
 
+        IPerpetualMint(perpetualMint).setVRFSubscriptionBalanceThreshold(
+            vrfSubscriptionBalanceThreshold
+        );
+
         console.log("VRF Coordinator Address: ", vrfCoordinator);
         console.log("VRF Consumer Added: ", perpetualMint);
         console.log("VRF Subscription ID: ", subscriptionId);
@@ -58,6 +72,11 @@ contract ConfigureVRFSubscription is Script {
             "VRF Subscription Funded: %s.%s LINK",
             envLinkAmountToFundSubscription,
             linkAmountToFundSubscription % 1e18
+        );
+        console.log(
+            "VRF Subscription Balance Threshold Set: %s.%s LINK",
+            envVRFSubscriptionBalanceThreshold,
+            vrfSubscriptionBalanceThreshold % 1e18
         );
 
         writeVRFSubscriptionId(subscriptionId);

@@ -16,6 +16,9 @@ contract ConfigureVRFSubscription is Script {
         // read $LINK token address
         address linkTokenAddress = vm.envAddress("LINK_TOKEN");
 
+        // read new owner address
+        address newOwner = vm.envAddress("NEW_VRF_OWNER");
+
         // get PerpetualMint address
         address perpetualMint = readCoreAddress();
 
@@ -65,6 +68,11 @@ contract ConfigureVRFSubscription is Script {
             vrfSubscriptionBalanceThreshold
         );
 
+        vrfCoordinatorV2.requestSubscriptionOwnerTransfer(
+            subscriptionId,
+            newOwner
+        );
+
         console.log("VRF Coordinator Address: ", vrfCoordinator);
         console.log("VRF Consumer Added: ", perpetualMint);
         console.log("VRF Subscription ID: ", subscriptionId);
@@ -77,6 +85,10 @@ contract ConfigureVRFSubscription is Script {
             "VRF Subscription Balance Threshold Set: %s.%s LINK",
             envVRFSubscriptionBalanceThreshold,
             vrfSubscriptionBalanceThreshold % 1e18
+        );
+        console.log(
+            "VRF Subscription Owner Transfer Requested To New Owner: ",
+            newOwner
         );
 
         writeVRFSubscriptionId(subscriptionId);

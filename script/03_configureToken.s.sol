@@ -3,6 +3,7 @@ pragma solidity 0.8.19;
 
 import "forge-std/Script.sol";
 
+import { ITokenProxy } from "../contracts/diamonds/Token/ITokenProxy.sol";
 import { IToken } from "../contracts/facets/Token/IToken.sol";
 
 /// @title ConfigureToken
@@ -13,6 +14,9 @@ contract ConfigureToken is Script {
     function run() external {
         // read deployer private key
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_KEY");
+
+        // read new TokenProxy owner address
+        address newOwner = vm.envAddress("NEW_TOKEN_PROXY_OWNER");
 
         // read PerpetualMint address
         address perpetualMint = readCoreAddress();
@@ -29,11 +33,14 @@ contract ConfigureToken is Script {
 
         token.setDistributionFractionBP(distributionFractionBP);
 
+        ITokenProxy(payable(address(token))).transferOwnership(newOwner);
+
         console.log(
             "Token Distribution Fraction BP Set: ",
             distributionFractionBP
         );
         console.log("Token Minting Contract Added: ", perpetualMint);
+        console.log("TokenProxy Ownership Transferred To: ", newOwner);
 
         vm.stopBroadcast();
     }

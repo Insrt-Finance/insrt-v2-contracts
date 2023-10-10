@@ -4,6 +4,7 @@ pragma solidity 0.8.19;
 import "forge-std/Script.sol";
 import "forge-std/Test.sol";
 
+import { ICore } from "../contracts/diamonds/Core/ICore.sol";
 import { IPerpetualMint, TiersData, VRFConfig } from "../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 
 /// @title ConfigurePerpetualMint
@@ -16,6 +17,9 @@ contract ConfigurePerpetualMint is Script, Test {
     function run() external {
         // get PerpetualMint address
         address perpetualMintAddress = readCoreAddress();
+
+        // read new Core/PerpetualMint owner address
+        address newOwner = vm.envAddress("NEW_PERP_MINT_OWNER");
 
         // read deployer private key
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_KEY");
@@ -59,7 +63,10 @@ contract ConfigurePerpetualMint is Script, Test {
 
         perpetualMint.setVRFConfig(vrfConfig);
 
+        ICore(perpetualMintAddress).transferOwnership(newOwner);
+
         console.log("Consolation Fee BP Set: ", consolationFeeBP);
+        console.log("Core/PerpetualMint Ownership Transferred To: ", newOwner);
         console.log("Mint Fee BP Set: ", mintFeeBP);
         console.log("Redemption Fee BP Set: ", redemptionFeeBP);
         console.log("Tiers Set: ");

@@ -60,10 +60,26 @@ contract DeployPerpetualMint is Script {
 
         // get PerpetualMint facet cuts
         ISolidStateDiamond.FacetCut[]
-            memory facetCuts = getPerpetualMintFacetCuts(
-                address(perpetualMint),
+            memory perpetualMintFacetCuts = getPerpetualMintFacetCuts(
+                address(perpetualMint)
+            );
+
+        // get PerpetualMintView facet cuts
+        ISolidStateDiamond.FacetCut[]
+            memory perpetualMintViewFacetCuts = getPerpetualMintViewFacetCuts(
                 address(perpetualMintView)
             );
+
+        ISolidStateDiamond.FacetCut[]
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](7);
+
+        facetCuts[0] = perpetualMintFacetCuts[0];
+        facetCuts[1] = perpetualMintFacetCuts[1];
+        facetCuts[2] = perpetualMintFacetCuts[2];
+        facetCuts[3] = perpetualMintFacetCuts[3];
+        facetCuts[4] = perpetualMintFacetCuts[4];
+        facetCuts[5] = perpetualMintFacetCuts[5];
+        facetCuts[6] = perpetualMintViewFacetCuts[0];
 
         // cut PerpetualMint into Core
         ISolidStateDiamond(core).diamondCut(facetCuts, address(0), "");
@@ -73,10 +89,8 @@ contract DeployPerpetualMint is Script {
 
     /// @dev provides the facet cuts for cutting PerpetualMint facet into Core
     /// @param facetAddress address of PerpetualMint facet
-    /// @param viewFacetAddress address of PerpetualMintView facet
     function getPerpetualMintFacetCuts(
-        address facetAddress,
-        address viewFacetAddress
+        address facetAddress
     ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
         /// map the ERC1155 function selectors to their respective interfaces
         bytes4[] memory erc1155FunctionSelectors = new bytes4[](6);
@@ -90,7 +104,7 @@ contract DeployPerpetualMint is Script {
 
         ISolidStateDiamond.FacetCut
             memory erc1155FacetCut = IDiamondWritableInternal.FacetCut({
-                target: address(facetAddress),
+                target: facetAddress,
                 action: IDiamondWritableInternal.FacetCutAction.ADD,
                 selectors: erc1155FunctionSelectors
             });
@@ -102,7 +116,7 @@ contract DeployPerpetualMint is Script {
 
         ISolidStateDiamond.FacetCut
             memory erc1155MetadataFacetCut = IDiamondWritableInternal.FacetCut({
-                target: address(facetAddress),
+                target: facetAddress,
                 action: IDiamondWritableInternal.FacetCutAction.ADD,
                 selectors: erc1155MetadataFunctionSelectors
             });
@@ -121,7 +135,7 @@ contract DeployPerpetualMint is Script {
         ISolidStateDiamond.FacetCut
             memory erc1155MetadataExtensionFacetCut = IDiamondWritableInternal
                 .FacetCut({
-                    target: address(facetAddress),
+                    target: facetAddress,
                     action: IDiamondWritableInternal.FacetCutAction.ADD,
                     selectors: erc1155MetadataExtensionFunctionSelectors
                 });
@@ -133,7 +147,7 @@ contract DeployPerpetualMint is Script {
 
         ISolidStateDiamond.FacetCut
             memory pausableFacetCut = IDiamondWritableInternal.FacetCut({
-                target: address(facetAddress),
+                target: facetAddress,
                 action: IDiamondWritableInternal.FacetCutAction.ADD,
                 selectors: pausableFunctionSelectors
             });
@@ -224,11 +238,45 @@ contract DeployPerpetualMint is Script {
 
         ISolidStateDiamond.FacetCut
             memory perpetualMintFacetCut = IDiamondWritableInternal.FacetCut({
-                target: address(facetAddress),
+                target: facetAddress,
                 action: IDiamondWritableInternal.FacetCutAction.ADD,
                 selectors: perpetualMintFunctionSelectors
             });
 
+        // map the VRFConsumerBaseV2 function selectors to their respective interfaces
+        bytes4[] memory vrfConsumerBaseV2FunctionSelectors = new bytes4[](1);
+
+        vrfConsumerBaseV2FunctionSelectors[0] = VRFConsumerBaseV2
+            .rawFulfillRandomWords
+            .selector;
+
+        ISolidStateDiamond.FacetCut
+            memory vrfConsumerBaseV2FacetCut = IDiamondWritableInternal
+                .FacetCut({
+                    target: facetAddress,
+                    action: IDiamondWritableInternal.FacetCutAction.ADD,
+                    selectors: vrfConsumerBaseV2FunctionSelectors
+                });
+
+        ISolidStateDiamond.FacetCut[]
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](6);
+
+        // omit Ownable and ERC165 since SolidStateDiamond includes those
+        facetCuts[0] = erc1155FacetCut;
+        facetCuts[1] = erc1155MetadataFacetCut;
+        facetCuts[2] = erc1155MetadataExtensionFacetCut;
+        facetCuts[3] = pausableFacetCut;
+        facetCuts[4] = perpetualMintFacetCut;
+        facetCuts[5] = vrfConsumerBaseV2FacetCut;
+
+        return facetCuts;
+    }
+
+    /// @dev provides the facet cuts for cutting PerpetualMintView facet into Core
+    /// @param viewFacetAddress address of PerpetualMintView facet
+    function getPerpetualMintViewFacetCuts(
+        address viewFacetAddress
+    ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
         // map the PerpetualMint test related function selectors to their respective interfaces
         bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](17);
 
@@ -303,36 +351,15 @@ contract DeployPerpetualMint is Script {
         ISolidStateDiamond.FacetCut
             memory perpetualMintViewFacetCut = IDiamondWritableInternal
                 .FacetCut({
-                    target: address(viewFacetAddress),
+                    target: viewFacetAddress,
                     action: IDiamondWritableInternal.FacetCutAction.ADD,
                     selectors: perpetualMintViewFunctionSelectors
                 });
 
-        // map the VRFConsumerBaseV2 function selectors to their respective interfaces
-        bytes4[] memory vrfConsumerBaseV2FunctionSelectors = new bytes4[](1);
-
-        vrfConsumerBaseV2FunctionSelectors[0] = VRFConsumerBaseV2
-            .rawFulfillRandomWords
-            .selector;
-
-        ISolidStateDiamond.FacetCut
-            memory vrfConsumerBaseV2FacetCut = IDiamondWritableInternal
-                .FacetCut({
-                    target: address(facetAddress),
-                    action: IDiamondWritableInternal.FacetCutAction.ADD,
-                    selectors: vrfConsumerBaseV2FunctionSelectors
-                });
-
         ISolidStateDiamond.FacetCut[]
-            memory facetCuts = new ISolidStateDiamond.FacetCut[](6);
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](1);
 
-        // omit Ownable and ERC165 since SolidStateDiamond includes those
-        facetCuts[0] = erc1155FacetCut;
-        facetCuts[1] = erc1155MetadataFacetCut;
-        facetCuts[2] = erc1155MetadataExtensionFacetCut;
-        facetCuts[3] = pausableFacetCut;
-        facetCuts[4] = perpetualMintFacetCut;
-        facetCuts[5] = vrfConsumerBaseV2FacetCut;
+        facetCuts[0] = perpetualMintViewFacetCut;
 
         return facetCuts;
     }

@@ -95,11 +95,6 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
-    function redeemPaused() external view returns (bool status) {
-        status = _redeemPaused();
-    }
-
-    /// @inheritdoc IPerpetualMint
     function setCollectionMintPrice(
         address collection,
         uint256 price

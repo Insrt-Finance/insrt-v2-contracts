@@ -82,6 +82,10 @@ interface IPerpetualMintView {
     /// @return feeBP redemptionFee in basis points
     function redemptionFeeBP() external view returns (uint32 feeBP);
 
+    /// @notice returns value of redeemPaused
+    /// @return status boolean indicating whether redeeming is paused
+    function redeemPaused() external view returns (bool status);
+
     /// @notice Returns the current $MINT consolation tiers
     function tiers() external view returns (TiersData memory tiersData);
 

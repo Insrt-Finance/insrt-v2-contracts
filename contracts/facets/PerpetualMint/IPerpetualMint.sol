@@ -85,10 +85,6 @@ interface IPerpetualMint is
     /// @param amount amount of $MINT
     function redeem(uint256 amount) external;
 
-    /// @notice returns value of redeemPaused
-    /// @return status boolean indicating whether redeeming is paused
-    function redeemPaused() external view returns (bool status);
-
     /// @notice set the mint price for a given collection
     /// @param collection address of collection
     /// @param price mint price of the collection

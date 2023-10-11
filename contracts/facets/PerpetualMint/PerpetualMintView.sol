@@ -104,6 +104,11 @@ contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
     }
 
     /// @inheritdoc IPerpetualMintView
+    function redeemPaused() external view returns (bool status) {
+        status = _redeemPaused();
+    }
+
+    /// @inheritdoc IPerpetualMintView
     function tiers() external view returns (TiersData memory tiersData) {
         tiersData = _tiers();
     }

@@ -390,6 +390,10 @@ abstract contract PerpetualMintInternal is
     function _redeem(address account, uint256 amount) internal {
         Storage.Layout storage l = Storage.layout();
 
+        if (l.redeemPaused) {
+            revert RedeemPaused();
+        }
+
         // burn amount of $MINT to be swapped
         IToken(l.mintToken).burn(account, amount);
 

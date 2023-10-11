@@ -34,6 +34,8 @@ library PerpetualMintStorage {
         mapping(uint256 requestId => RequestData) requests;
         /// @dev address of the current $MINT token
         address mintToken;
+        /// @dev status of whether redeem is paused
+        bool redeemPaused;
     }
 
     bytes32 internal constant STORAGE_SLOT =

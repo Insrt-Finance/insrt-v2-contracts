@@ -21,6 +21,9 @@ interface IPerpetualMintInternal {
     /// there are pending mint requests in a collection
     error PendingRequests();
 
+    /// @dev thrown when attempting to redeem when redeeming is paused
+    error RedeemPaused();
+
     /// @notice thrown when fulfilled random words do not match for attempted mints
     error UnmatchedRandomWords();
 

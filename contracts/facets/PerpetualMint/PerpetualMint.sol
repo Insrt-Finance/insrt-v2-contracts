@@ -68,8 +68,7 @@ contract PerpetualMint is
         _claimProtocolFees(msg.sender);
     }
 
-    /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
-    /// @param amount amount of mintToken tokens to mint
+    /// @inheritdoc IPerpetualMint
     function mintAirdrop(uint256 amount) external payable onlyOwner {
         _mintAirdrop(amount);
     }

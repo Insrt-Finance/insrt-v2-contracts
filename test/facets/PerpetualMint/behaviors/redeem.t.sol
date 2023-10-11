@@ -76,4 +76,13 @@ contract PerpetualMint_redeem is
             postRedeemTokenBalance == preRedeemTokenBalance - redemptionAmount
         );
     }
+
+    /// @dev ensures that redeem reverts when redeeming is paused
+    function test_redeemRevertsWhen_RedeemingIsPaused() external {
+        perpetualMint.setRedeemPaused(true);
+
+        vm.expectRevert(IPerpetualMintInternal.RedeemPaused.selector);
+
+        perpetualMint.redeem(MINT_AMOUNT);
+    }
 }

@@ -79,7 +79,7 @@ contract PerpetualMintHelper {
             });
 
         // map the PerpetualMint test related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](24);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](25);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
             .attemptBatchMintWithEth
@@ -146,20 +146,24 @@ contract PerpetualMintHelper {
             .selector;
 
         perpetualMintFunctionSelectors[19] = IPerpetualMint
+            .setRedeemPaused
+            .selector;
+
+        perpetualMintFunctionSelectors[20] = IPerpetualMint
             .setRedemptionFeeBP
             .selector;
 
-        perpetualMintFunctionSelectors[20] = IPerpetualMint.setTiers.selector;
+        perpetualMintFunctionSelectors[21] = IPerpetualMint.setTiers.selector;
 
-        perpetualMintFunctionSelectors[21] = IPerpetualMint
+        perpetualMintFunctionSelectors[22] = IPerpetualMint
             .setVRFConfig
             .selector;
 
-        perpetualMintFunctionSelectors[22] = IPerpetualMint
+        perpetualMintFunctionSelectors[23] = IPerpetualMint
             .setVRFSubscriptionBalanceThreshold
             .selector;
 
-        perpetualMintFunctionSelectors[23] = IPerpetualMint.unpause.selector;
+        perpetualMintFunctionSelectors[24] = IPerpetualMint.unpause.selector;
 
         ISolidStateDiamond.FacetCut
             memory perpetualMintFacetCut = IDiamondWritableInternal.FacetCut({

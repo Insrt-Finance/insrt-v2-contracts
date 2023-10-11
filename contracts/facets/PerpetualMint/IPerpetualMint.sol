@@ -23,24 +23,6 @@ interface IPerpetualMint is
     IPausable,
     IERC1155MetadataExtension
 {
-    /// @notice Returns the current accrued consolation fees
-    /// @return accruedFees the current amount of accrued consolation fees
-    function accruedConsolationFees()
-        external
-        view
-        returns (uint256 accruedFees);
-
-    /// @notice returns the current accrued mint earnings across all collections
-    /// @return accruedEarnings the current amount of accrued mint earnings across all collections
-    function accruedMintEarnings()
-        external
-        view
-        returns (uint256 accruedEarnings);
-
-    /// @notice returns the current accrued protocol fees
-    /// @return accruedFees the current amount of accrued protocol fees
-    function accruedProtocolFees() external view returns (uint256 accruedFees);
-
     /// @notice Attempts a batch mint for the msg.sender for a single collection using ETH as payment.
     /// @param collection address of collection for mint attempts
     /// @param numberOfMints number of mints to attempt
@@ -56,10 +38,6 @@ interface IPerpetualMint is
         address collection,
         uint32 numberOfMints
     ) external;
-
-    /// @notice returns the value of BASIS
-    /// @return value BASIS value
-    function BASIS() external pure returns (uint32 value);
 
     /// @notice burns a receipt after a claim request is fulfilled
     /// @param tokenId id of receipt to burn
@@ -81,57 +59,9 @@ interface IPerpetualMint is
     /// @notice claims all accrued protocol fees
     function claimProtocolFees() external;
 
-    /// @notice Returns the current mint price for a collection
-    /// @param collection address of collection
-    /// @return mintPrice current collection mint price
-    function collectionMintPrice(
-        address collection
-    ) external view returns (uint256 mintPrice);
-
-    /// @notice Returns the current collection-wide risk of a collection
-    /// @param collection address of collection
-    /// @return risk value of collection-wide risk
-    function collectionRisk(
-        address collection
-    ) external view returns (uint32 risk);
-
-    /// @notice Returns the consolation fee in basis points
-    /// @return consolationFeeBasisPoints consolation fee in basis points
-    function consolationFeeBP()
-        external
-        view
-        returns (uint32 consolationFeeBasisPoints);
-
-    /// @notice Returns the default mint price for a collection
-    /// @return mintPrice default collection mint price
-    function defaultCollectionMintPrice()
-        external
-        pure
-        returns (uint256 mintPrice);
-
-    /// @notice Returns the default risk for a collection
-    /// @return risk default collection risk
-    function defaultCollectionRisk() external pure returns (uint32 risk);
-
-    /// @notice Returns the default ETH to $MINT ratio
-    /// @return ratio default ETH to $MINT ratio
-    function defaultEthToMintRatio() external pure returns (uint32 ratio);
-
-    /// @notice Returns the current ETH to $MINT ratio
-    /// @return ratio current ETH to $MINT ratio
-    function ethToMintRatio() external view returns (uint256 ratio);
-
     /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
     /// @param amount amount of mintToken tokens to mint
     function mintAirdrop(uint256 amount) external payable;
-
-    /// @notice Returns the mint fee in basis points
-    /// @return mintFeeBasisPoints mint fee in basis points
-    function mintFeeBP() external view returns (uint32 mintFeeBasisPoints);
-
-    /// @notice Returns the address of the current $MINT token
-    /// @return token address of the current $MINT token
-    function mintToken() external view returns (address token);
 
     /// @notice Validates receipt of an ERC1155 transfer.
     /// @param operator Executor of transfer.
@@ -154,10 +84,6 @@ interface IPerpetualMint is
     /// @notice redeems an amount of $MINT tokens for ETH (native token) for the msg.sender
     /// @param amount amount of $MINT
     function redeem(uint256 amount) external;
-
-    /// @notice returns the current redemption fee in basis points
-    /// @return feeBP redemptionFee in basis points
-    function redemptionFeeBP() external view returns (uint32 feeBP);
 
     /// @notice set the mint price for a given collection
     /// @param collection address of collection
@@ -215,20 +141,6 @@ interface IPerpetualMint is
         uint96 vrfSubscriptionBalanceThreshold
     ) external;
 
-    /// @notice Returns the current $MINT consolation tiers
-    function tiers() external view returns (TiersData memory tiersData);
-
     ///  @notice Triggers unpaused state, when contract is paused.
     function unpause() external;
-
-    /// @notice returns the current VRF config
-    /// @return config VRFConfig struct
-    function vrfConfig() external view returns (VRFConfig memory config);
-
-    /// @notice returns the current VRF subscription LINK balance threshold
-    /// @return vrfSubscriptionBalanceThreshold VRF subscription balance threshold
-    function vrfSubscriptionBalanceThreshold()
-        external
-        view
-        returns (uint96 vrfSubscriptionBalanceThreshold);
 }

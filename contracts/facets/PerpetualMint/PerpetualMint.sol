@@ -28,29 +28,6 @@ contract PerpetualMint is
     constructor(address vrf) PerpetualMintInternal(vrf) {}
 
     /// @inheritdoc IPerpetualMint
-    function accruedConsolationFees()
-        external
-        view
-        returns (uint256 accruedFees)
-    {
-        accruedFees = _accruedConsolationFees();
-    }
-
-    /// @inheritdoc IPerpetualMint
-    function accruedMintEarnings()
-        external
-        view
-        returns (uint256 accruedEarnings)
-    {
-        accruedEarnings = _accruedMintEarnings();
-    }
-
-    /// @inheritdoc IPerpetualMint
-    function accruedProtocolFees() external view returns (uint256 accruedFees) {
-        accruedFees = _accruedProtocolFees();
-    }
-
-    /// @inheritdoc IPerpetualMint
     function attemptBatchMintWithEth(
         address collection,
         uint32 numberOfMints
@@ -64,11 +41,6 @@ contract PerpetualMint is
         uint32 numberOfMints
     ) external whenNotPaused {
         _attemptBatchMintWithMint(msg.sender, collection, numberOfMints);
-    }
-
-    /// @inheritdoc IPerpetualMint
-    function BASIS() external pure returns (uint32 value) {
-        value = _BASIS();
     }
 
     /// @inheritdoc IPerpetualMint
@@ -96,69 +68,10 @@ contract PerpetualMint is
         _claimProtocolFees(msg.sender);
     }
 
-    /// @inheritdoc IPerpetualMint
-    function collectionMintPrice(
-        address collection
-    ) external view returns (uint256 mintPrice) {
-        mintPrice = _collectionMintPrice(
-            Storage.layout().collections[collection]
-        );
-    }
-
-    /// @inheritdoc IPerpetualMint
-    function collectionRisk(
-        address collection
-    ) external view returns (uint32 risk) {
-        risk = _collectionRisk(Storage.layout().collections[collection]);
-    }
-
-    /// @inheritdoc IPerpetualMint
-    function consolationFeeBP()
-        external
-        view
-        returns (uint32 consolationFeeBasisPoints)
-    {
-        consolationFeeBasisPoints = _consolationFeeBP();
-    }
-
-    /// @inheritdoc IPerpetualMint
-    function defaultCollectionMintPrice()
-        external
-        pure
-        returns (uint256 mintPrice)
-    {
-        mintPrice = _defaultCollectionMintPrice();
-    }
-
-    /// @inheritdoc IPerpetualMint
-    function defaultCollectionRisk() external pure returns (uint32 risk) {
-        risk = _defaultCollectionRisk();
-    }
-
-    /// @inheritdoc IPerpetualMint
-    function defaultEthToMintRatio() external pure returns (uint32 ratio) {
-        ratio = _defaultEthToMintRatio();
-    }
-
-    /// @inheritdoc IPerpetualMint
-    function ethToMintRatio() external view returns (uint256 ratio) {
-        ratio = _ethToMintRatio(Storage.layout());
-    }
-
     /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
     /// @param amount amount of mintToken tokens to mint
     function mintAirdrop(uint256 amount) external payable onlyOwner {
         _mintAirdrop(amount);
-    }
-
-    /// @inheritdoc IPerpetualMint
-    function mintFeeBP() external view returns (uint32 mintFeeBasisPoints) {
-        mintFeeBasisPoints = _mintFeeBP();
-    }
-
-    /// @inheritdoc IPerpetualMint
-    function mintToken() external view returns (address token) {
-        token = _mintToken();
     }
 
     /// @inheritdoc IPerpetualMint
@@ -180,11 +93,6 @@ contract PerpetualMint is
     /// @inheritdoc IPerpetualMint
     function redeem(uint256 amount) external {
         _redeem(msg.sender, amount);
-    }
-
-    /// @inheritdoc IPerpetualMint
-    function redemptionFeeBP() external view returns (uint32 feeBP) {
-        feeBP = _redemptionFeeBP();
     }
 
     /// @inheritdoc IPerpetualMint
@@ -259,27 +167,8 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
-    function tiers() external view returns (TiersData memory tiersData) {
-        tiersData = _tiers();
-    }
-
-    /// @inheritdoc IPerpetualMint
     function unpause() external onlyOwner {
         _unpause();
-    }
-
-    /// @inheritdoc IPerpetualMint
-    function vrfConfig() external view returns (VRFConfig memory config) {
-        config = _vrfConfig();
-    }
-
-    /// @inheritdoc IPerpetualMint
-    function vrfSubscriptionBalanceThreshold()
-        external
-        view
-        returns (uint96 threshold)
-    {
-        threshold = _vrfSubscriptionBalanceThreshold();
     }
 
     /// @notice Chainlink VRF Coordinator callback

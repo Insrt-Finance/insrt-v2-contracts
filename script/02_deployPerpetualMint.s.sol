@@ -18,8 +18,8 @@ import { PerpetualMint } from "../contracts/facets/PerpetualMint/PerpetualMint.s
 import { PerpetualMintView } from "../contracts/facets/PerpetualMint/PerpetualMintView.sol";
 
 /// @title DeployPerpetualMint
-/// @dev deploys the Core diamond contract and the PerpetualMint facet, and performs
-/// a diamondCut of the PerpetualMint facet onto the Core diamond
+/// @dev deploys the Core diamond contract, PerpetualMint facet and PerpetualMintView facet, and performs
+/// a diamondCut of the PerpetualMint and PerpetualMintView facets onto the Core diamond
 contract DeployPerpetualMint is Script {
     /// @dev runs the script logic
     function run() external {

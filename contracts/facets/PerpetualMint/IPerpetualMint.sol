@@ -85,6 +85,10 @@ interface IPerpetualMint is
     /// @param amount amount of $MINT
     function redeem(uint256 amount) external;
 
+    /// @notice returns value of redeemPaused
+    /// @return status boolean indicating whether redeeming is paused
+    function redeemPaused() external view returns (bool status);
+
     /// @notice set the mint price for a given collection
     /// @param collection address of collection
     /// @param price mint price of the collection
@@ -122,6 +126,10 @@ interface IPerpetualMint is
         uint256 tokenId,
         string calldata tokenURI
     ) external;
+
+    /// @notice sets the status of the redeemPaused state
+    /// @param status boolean indicating whether redeeming is paused
+    function setRedeemPaused(bool status) external;
 
     /// @notice sets the redemption fee in basis points
     /// @param _redemptionFeeBP redemption fee in basis points

@@ -95,6 +95,11 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function redeemPaused() external view returns (bool status) {
+        status = _redeemPaused();
+    }
+
+    /// @inheritdoc IPerpetualMint
     function setCollectionMintPrice(
         address collection,
         uint256 price
@@ -141,6 +146,11 @@ contract PerpetualMint is
         string calldata tokenURI
     ) external onlyOwner {
         _setTokenURI(tokenId, tokenURI);
+    }
+
+    /// @inheritdoc IPerpetualMint
+    function setRedeemPaused(bool status) external onlyOwner {
+        _setRedeemPaused(status);
     }
 
     /// @inheritdoc IPerpetualMint

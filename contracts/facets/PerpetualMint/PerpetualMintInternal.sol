@@ -411,6 +411,12 @@ abstract contract PerpetualMintInternal is
         payable(account).sendValue(ethAmount);
     }
 
+    /// @notice returns value of redeemPaused
+    /// @return status boolean indicating whether redeeming is paused
+    function _redeemPaused() internal view returns (bool status) {
+        status = Storage.layout().redeemPaused;
+    }
+
     /// @notice returns the current redemption fee in basis points
     /// @return feeBP redemptionFee in basis points
     function _redemptionFeeBP() internal view returns (uint32 feeBP) {
@@ -611,6 +617,14 @@ abstract contract PerpetualMintInternal is
         Storage.layout().mintToken = mintToken;
 
         emit MintTokenSet(mintToken);
+    }
+
+    /// @notice sets the status of the redeemPaused state
+    /// @param status boolean indicating whether redeeming is paused
+    function _setRedeemPaused(bool status) internal {
+        Storage.layout().redeemPaused = status;
+
+        emit RedeemPausedSet(status);
     }
 
     /// @notice sets the redemption fee in basis points

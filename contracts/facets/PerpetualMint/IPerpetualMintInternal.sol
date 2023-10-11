@@ -85,6 +85,10 @@ interface IPerpetualMintInternal {
         address indexed collection
     );
 
+    /// @notice emitted when redeemPaused is set
+    /// @param status boolean value indicating whether redeeming is paused
+    event RedeemPausedSet(bool status);
+
     /// @notice emitted when the redemption fee is set
     /// @param redemptionFeeBP redemption fee in basis points
     event RedemptionFeeSet(uint32 redemptionFeeBP);

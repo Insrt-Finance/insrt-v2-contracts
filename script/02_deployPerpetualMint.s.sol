@@ -13,7 +13,9 @@ import { ICore } from "../contracts/diamonds/Core/ICore.sol";
 import { Core } from "../contracts/diamonds/Core/Core.sol";
 import { IERC1155MetadataExtension } from "../contracts/facets/PerpetualMint/IERC1155MetadataExtension.sol";
 import { IPerpetualMint } from "../contracts/facets/PerpetualMint/IPerpetualMint.sol";
+import { IPerpetualMintView } from "../contracts/facets/PerpetualMint/IPerpetualMintView.sol";
 import { PerpetualMint } from "../contracts/facets/PerpetualMint/PerpetualMint.sol";
+import { PerpetualMintView } from "../contracts/facets/PerpetualMint/PerpetualMintView.sol";
 
 /// @title DeployPerpetualMint
 /// @dev deploys the Core diamond contract and the PerpetualMint facet, and performs
@@ -37,10 +39,19 @@ contract DeployPerpetualMint is Script {
         // deploy PerpetualMint facet
         PerpetualMint perpetualMint = new PerpetualMint(VRF_COORDINATOR);
 
+        // deploy PerpetualMintView facet
+        PerpetualMintView perpetualMintView = new PerpetualMintView(
+            VRF_COORDINATOR
+        );
+
         // deploy Core
         Core core = new Core(mintToken, receiptName, receiptSymbol);
 
         console.log("PerpetualMint Facet Address: ", address(perpetualMint));
+        console.log(
+            "PerpetualMintView Facet Address: ",
+            address(perpetualMintView)
+        );
         console.log("Core Address: ", address(core));
         console.log("VRF Coordinator Address: ", VRF_COORDINATOR);
 
@@ -50,7 +61,8 @@ contract DeployPerpetualMint is Script {
         // get PerpetualMint facet cuts
         ISolidStateDiamond.FacetCut[]
             memory facetCuts = getPerpetualMintFacetCuts(
-                address(perpetualMint)
+                address(perpetualMint),
+                address(perpetualMintView)
             );
 
         // cut PerpetualMint into Core
@@ -61,8 +73,10 @@ contract DeployPerpetualMint is Script {
 
     /// @dev provides the facet cuts for cutting PerpetualMint facet into Core
     /// @param facetAddress address of PerpetualMint facet
+    /// @param viewFacetAddress address of PerpetualMintView facet
     function getPerpetualMintFacetCuts(
-        address facetAddress
+        address facetAddress,
+        address viewFacetAddress
     ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
         /// map the ERC1155 function selectors to their respective interfaces
         bytes4[] memory erc1155FunctionSelectors = new bytes4[](6);
@@ -214,6 +228,85 @@ contract DeployPerpetualMint is Script {
                 action: IDiamondWritableInternal.FacetCutAction.ADD,
                 selectors: perpetualMintFunctionSelectors
             });
+
+        // map the PerpetualMint test related function selectors to their respective interfaces
+        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](17);
+
+        perpetualMintViewFunctionSelectors[0] = IPerpetualMintView
+            .accruedConsolationFees
+            .selector;
+
+        perpetualMintViewFunctionSelectors[1] = IPerpetualMintView
+            .accruedMintEarnings
+            .selector;
+
+        perpetualMintViewFunctionSelectors[2] = IPerpetualMintView
+            .accruedProtocolFees
+            .selector;
+
+        perpetualMintViewFunctionSelectors[3] = IPerpetualMintView
+            .BASIS
+            .selector;
+
+        perpetualMintViewFunctionSelectors[4] = IPerpetualMintView
+            .collectionMintPrice
+            .selector;
+
+        perpetualMintViewFunctionSelectors[5] = IPerpetualMintView
+            .collectionRisk
+            .selector;
+
+        perpetualMintViewFunctionSelectors[6] = IPerpetualMintView
+            .consolationFeeBP
+            .selector;
+
+        perpetualMintViewFunctionSelectors[7] = IPerpetualMintView
+            .defaultCollectionMintPrice
+            .selector;
+
+        perpetualMintViewFunctionSelectors[8] = IPerpetualMintView
+            .defaultCollectionRisk
+            .selector;
+
+        perpetualMintViewFunctionSelectors[9] = IPerpetualMintView
+            .defaultEthToMintRatio
+            .selector;
+
+        perpetualMintViewFunctionSelectors[10] = IPerpetualMintView
+            .ethToMintRatio
+            .selector;
+
+        perpetualMintViewFunctionSelectors[11] = IPerpetualMintView
+            .mintFeeBP
+            .selector;
+
+        perpetualMintViewFunctionSelectors[12] = IPerpetualMintView
+            .mintToken
+            .selector;
+
+        perpetualMintViewFunctionSelectors[13] = IPerpetualMintView
+            .redemptionFeeBP
+            .selector;
+
+        perpetualMintViewFunctionSelectors[14] = IPerpetualMintView
+            .tiers
+            .selector;
+
+        perpetualMintViewFunctionSelectors[15] = IPerpetualMintView
+            .vrfConfig
+            .selector;
+
+        perpetualMintViewFunctionSelectors[16] = IPerpetualMintView
+            .vrfSubscriptionBalanceThreshold
+            .selector;
+
+        ISolidStateDiamond.FacetCut
+            memory perpetualMintViewFacetCut = IDiamondWritableInternal
+                .FacetCut({
+                    target: address(viewFacetAddress),
+                    action: IDiamondWritableInternal.FacetCutAction.ADD,
+                    selectors: perpetualMintViewFunctionSelectors
+                });
 
         // map the VRFConsumerBaseV2 function selectors to their respective interfaces
         bytes4[] memory vrfConsumerBaseV2FunctionSelectors = new bytes4[](1);

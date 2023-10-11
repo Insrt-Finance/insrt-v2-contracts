@@ -78,7 +78,7 @@ interface IPerpetualMint is
         bytes calldata data
     ) external pure returns (bytes4);
 
-    /// @notice Triggers paused state, when contract is unpaused.
+    /// @notice Triggers paused state, _ONLY FOR attemptBatchMint FUNCTIONS_ when contract is unpaused.
     function pause() external;
 
     /// @notice redeems an amount of $MINT tokens for ETH (native token) for the msg.sender
@@ -145,6 +145,6 @@ interface IPerpetualMint is
         uint96 vrfSubscriptionBalanceThreshold
     ) external;
 
-    ///  @notice Triggers unpaused state, when contract is paused.
+    /// @notice Triggers unpaused state, _ONLY FOR attemptBatchMint FUNCTIONS_ when contract is unpaused.
     function unpause() external;
 }

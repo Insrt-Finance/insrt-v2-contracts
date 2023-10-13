@@ -69,6 +69,11 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function fundConsolationFees() external payable {
+        _fundConsolationFees();
+    }
+
+    /// @inheritdoc IPerpetualMint
     function mintAirdrop(uint256 amount) external payable onlyOwner {
         _mintAirdrop(amount);
     }

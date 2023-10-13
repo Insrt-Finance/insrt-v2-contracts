@@ -44,6 +44,11 @@ interface IPerpetualMintInternal {
     /// @param consolationFeeBP consolation fee in basis points
     event ConsolationFeeSet(uint32 consolationFeeBP);
 
+    /// @notice emitted when the consolation fees are funded
+    /// @param funder address of funder
+    /// @param amount amount of ETH funded
+    event ConsolationFeesFunded(address indexed funder, uint256 amount);
+
     /// @notice emitted when the ETH:MINT ratio is set
     /// @param ratio value of ETH:MINT ratio
     event EthToMintRatioSet(uint256 ratio);

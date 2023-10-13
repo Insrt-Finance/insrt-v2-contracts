@@ -59,6 +59,9 @@ interface IPerpetualMint is
     /// @notice claims all accrued protocol fees
     function claimProtocolFees() external;
 
+    /// @notice funds the consolation fees pool with ETH
+    function fundConsolationFees() external payable;
+
     /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
     /// @param amount amount of mintToken tokens to mint
     function mintAirdrop(uint256 amount) external payable;

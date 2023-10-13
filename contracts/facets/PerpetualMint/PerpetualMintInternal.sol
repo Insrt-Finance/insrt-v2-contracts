@@ -347,6 +347,13 @@ abstract contract PerpetualMintInternal is
         delete l.requests[requestId];
     }
 
+    /// @notice funds the consolation fees pool with ETH
+    function _fundConsolationFees() internal {
+        Storage.layout().consolationFees += msg.value;
+
+        emit ConsolationFeesFunded(msg.sender, msg.value);
+    }
+
     /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
     /// @param amount amount of mintToken tokens to mint
     function _mintAirdrop(uint256 amount) internal {

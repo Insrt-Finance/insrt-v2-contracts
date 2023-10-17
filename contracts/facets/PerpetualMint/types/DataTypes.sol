@@ -17,6 +17,28 @@ struct CollectionData {
     uint32 risk;
 }
 
+/// @dev Represents the outcome of a single mint attempt.
+struct MintOutcome {
+    /// @dev The index of the tier in which the outcome falls under
+    uint256 tierIndex;
+    /// @dev The multiplier of the tier, scaled by BASIS
+    uint256 tierMultiplier;
+    /// @dev The risk or probability of landing in this tier, scaled by BASIS
+    uint256 tierRisk;
+    /// @dev The amount of $MINT to be issued if this outcome is hit, in units of wei
+    uint256 mintAmount;
+}
+
+/// @dev Represents the total result of a batch mint attempt.
+struct MintResultData {
+    /// @dev An array containing the outcomes of each individual mint attempt
+    MintOutcome[] mintOutcomes;
+    /// @dev The total amount of $MINT to be issued based on all outcomes, in units of wei
+    uint256 totalMintAmount;
+    /// @dev The total number of successful mint attempts where a prize ticket was awarded
+    uint256 totalSuccessfulMints;
+}
+
 /// @dev Represents data specific to mint requests
 /// @dev Updated as a new request is made and removed when the request is fulfilled
 struct RequestData {

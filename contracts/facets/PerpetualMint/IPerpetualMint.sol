@@ -10,7 +10,7 @@ import { IERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/I
 
 import { IERC1155MetadataExtension } from "./IERC1155MetadataExtension.sol";
 import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
-import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
+import { MintOutcome, MintResultData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title IPerpetualMint
 /// @dev Interface of the PerpetualMint facet

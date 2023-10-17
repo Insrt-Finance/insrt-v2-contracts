@@ -3,7 +3,7 @@
 pragma solidity 0.8.19;
 
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
-import { TiersData, VRFConfig } from "./Storage.sol";
+import { MintResultData, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title PerpetualMint facet contract
 /// @dev contains all externally called functions
@@ -29,6 +29,16 @@ interface IPerpetualMintView {
     /// @notice returns the value of BASIS
     /// @return value BASIS value
     function BASIS() external pure returns (uint32 value);
+
+    /// @notice calculates the mint result of a given number of mint attempts for a given collection using given randomness
+    /// @param collection address of collection for mint attempts
+    /// @param numberOfMints number of mints to attempt
+    /// @param randomness random value to use in calculation
+    function calculateMintResult(
+        address collection,
+        uint32 numberOfMints,
+        uint256 randomness
+    ) external view returns (MintResultData memory result);
 
     /// @notice Returns the current mint price for a collection
     /// @param collection address of collection

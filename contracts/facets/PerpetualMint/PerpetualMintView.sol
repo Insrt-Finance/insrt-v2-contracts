@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 import { IPerpetualMintView } from "./IPerpetualMintView.sol";
-import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
+import { MintResultData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title PerpetualMintView facet contract
 /// @dev contains all externally called view functions
@@ -37,6 +37,15 @@ contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
     /// @inheritdoc IPerpetualMintView
     function BASIS() external pure returns (uint32 value) {
         value = _BASIS();
+    }
+
+    /// @inheritdoc IPerpetualMintView
+    function calculateMintResult(
+        address collection,
+        uint32 numberOfMints,
+        uint256 randomness
+    ) external view returns (MintResultData memory result) {
+        result = _calculateMintResult(collection, numberOfMints, randomness);
     }
 
     /// @inheritdoc IPerpetualMintView

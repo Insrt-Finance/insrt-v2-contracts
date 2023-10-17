@@ -409,7 +409,8 @@ abstract contract PerpetualMintInternal is
 
         _resolveMints(
             l.mintToken,
-            collectionData,
+            _collectionMintPrice(collectionData),
+            _collectionRisk(collectionData),
             l.tiers,
             minter,
             collection,
@@ -548,7 +549,8 @@ abstract contract PerpetualMintInternal is
 
     /// @notice resolves the outcomes of attempted mints for a given collection
     /// @param mintToken address of $MINT token
-    /// @param collectionData the CollectionData struct for a given collection
+    /// @param collectionMintPrice mint price of given collection
+    /// @param collectionRisk risk of given collection
     /// @param tiersData the TiersData struct for mint consolations
     /// @param minter address of minter
     /// @param collection address of collection for mint attempts
@@ -556,7 +558,8 @@ abstract contract PerpetualMintInternal is
     /// @param ethToMintRatio ratio of ETH to $MINT
     function _resolveMints(
         address mintToken,
-        CollectionData storage collectionData,
+        uint256 collectionMintPrice,
+        uint32 collectionRisk,
         TiersData memory tiersData,
         address minter,
         address collection,
@@ -587,7 +590,7 @@ abstract contract PerpetualMintInternal is
 
             // if the first normalized value is less than the collection risk, the mint attempt is unsuccessful
             // and the second normalized value is used to determine the consolation tier
-            if (!(_collectionRisk(collectionData) > firstNormalizedValue)) {
+            if (!(collectionRisk > firstNormalizedValue)) {
                 uint256 tierMintAmount;
                 uint256 cumulativeRisk;
 
@@ -600,7 +603,7 @@ abstract contract PerpetualMintInternal is
                         tierMintAmount =
                             (tiersData.tierMultipliers[j] *
                                 ethToMintRatio *
-                                _collectionMintPrice(collectionData)) /
+                                collectionMintPrice) /
                             BASIS;
                         break;
                     }

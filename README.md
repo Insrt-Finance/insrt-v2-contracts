@@ -92,7 +92,10 @@ make deploy-local
 
 1. Token configuration
 
-Note: `TOKEN_DISTRIBUTION_FRACTION_BP` is modifiable in `./scripts/configure-token-arb.sh`.
+Note: The following environment variables are modifiable in `./scripts/configure-token-arb.sh`:
+
+- `NEW_TOKEN_PROXY_OWNER`
+- `TOKEN_DISTRIBUTION_FRACTION_BP`
 
 ```
 make configure-token-arb
@@ -100,7 +103,12 @@ make configure-token-arb
 
 2. VRF configuration
 
-Note: `LINK_FUND_AMOUNT` is modifiable in `./scripts/configure-vrf-arb.sh`.
+Note: The following environment variables are modifiable in `./scripts/configure-vrf-arb.sh`:
+
+- `LINK_FUND_AMOUNT`
+- `LINK_TOKEN`
+- `NEW_VRF_OWNER`
+- `VRF_SUBSCRIPTION_BALANCE_THRESHOLD`
 
 ```
 make configure-vrf-arb
@@ -110,12 +118,13 @@ make configure-vrf-arb
 
 Note: The following environment variables are modifiable in `./scripts/configure-perp-mint-arb.sh`:
 
-- `COLLECTION_PRICE_TO_MINT_RATIO_BP`
 - `CONSOLATION_FEE_BP`
 - `MINT_FEE_BP`
+- `NEW_PERP_MINT_OWNER`
 - `REDEMPTION_FEE_BP`
 - `TIER_MULTIPLIERS`
 - `TIER_RISKS`
+- `VRF_KEY_HASH`
 
 ```
 make configure-perp-mint-arb
@@ -125,7 +134,10 @@ make configure-perp-mint-arb
 
 1. Token configuration
 
-Note: `TOKEN_DISTRIBUTION_FRACTION_BP` is modifiable in `./scripts/configure-token-arb-goerli.sh`.
+Note: The following environment variables are modifiable in `./scripts/configure-token-arb-goerli.sh`:
+
+- `NEW_TOKEN_PROXY_OWNER`
+- `TOKEN_DISTRIBUTION_FRACTION_BP`
 
 ```
 make configure-token-arb-goerli
@@ -133,7 +145,12 @@ make configure-token-arb-goerli
 
 2. VRF configuration
 
-Note: `LINK_FUND_AMOUNT` is modifiable in `./scripts/configure-vrf-arb-goerli.sh`.
+Note: The following environment variables are modifiable in `./scripts/configure-vrf-arb-goerli.sh`:
+
+- `LINK_FUND_AMOUNT`
+- `LINK_TOKEN`
+- `NEW_VRF_OWNER`
+- `VRF_SUBSCRIPTION_BALANCE_THRESHOLD`
 
 ```
 make configure-vrf-arb-goerli
@@ -143,12 +160,13 @@ make configure-vrf-arb-goerli
 
 Note: The following environment variables are modifiable in `./scripts/configure-perp-mint-arb-goerli.sh`:
 
-- `COLLECTION_PRICE_TO_MINT_RATIO_BP`
 - `CONSOLATION_FEE_BP`
 - `MINT_FEE_BP`
+- `NEW_PERP_MINT_OWNER`
 - `REDEMPTION_FEE_BP`
 - `TIER_MULTIPLIERS`
 - `TIER_RISKS`
+- `VRF_KEY_HASH`
 
 ```
 make configure-perp-mint-arb-goerli
@@ -158,7 +176,10 @@ make configure-perp-mint-arb-goerli
 
 1. Token configuration
 
-Note: `TOKEN_DISTRIBUTION_FRACTION_BP` is modifiable in `./scripts/configure-token-local.sh`.
+Note: The following environment variables are modifiable in `./scripts/configure-token-local.sh`:
+
+- `NEW_TOKEN_PROXY_OWNER`
+- `TOKEN_DISTRIBUTION_FRACTION_BP`
 
 ```
 make configure-token-local
@@ -166,7 +187,12 @@ make configure-token-local
 
 2. VRF configuration
 
-Note: `LINK_FUND_AMOUNT` is modifiable in `./scripts/configure-vrf-local.sh`.
+Note: The following environment variables are modifiable in `./scripts/configure-vrf-local.sh`:
+
+- `LINK_FUND_AMOUNT`
+- `LINK_TOKEN`
+- `NEW_VRF_OWNER`
+- `VRF_SUBSCRIPTION_BALANCE_THRESHOLD`
 
 ```
 make configure-vrf-local
@@ -176,12 +202,13 @@ make configure-vrf-local
 
 Note: The following environment variables are modifiable in `./scripts/configure-perp-mint-local.sh`:
 
-- `COLLECTION_PRICE_TO_MINT_RATIO_BP`
 - `CONSOLATION_FEE_BP`
 - `MINT_FEE_BP`
+- `NEW_PERP_MINT_OWNER`
 - `REDEMPTION_FEE_BP`
 - `TIER_MULTIPLIERS`
 - `TIER_RISKS`
+- `VRF_KEY_HASH`
 
 ```
 make configure-perp-mint-local

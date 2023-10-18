@@ -41,13 +41,13 @@ stop-anvil:
 
 ### Deployments
 deploy-arb:
-	@./script/deploy-arb.sh
+	@./script/deployment/deploy-arb.sh
 
 deploy-arb-goerli:
-	@./script/deploy-arb-goerli.sh
+	@./script/deployment/deploy-arb-goerli.sh
 
 deploy-local:
-	@./script/deploy-local.sh
+	@./script/deployment/deploy-local.sh
 
 ### Post-deployment configuration
 

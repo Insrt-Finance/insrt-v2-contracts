@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-CHAIN_ID=421613
+CHAIN_ID=42161
 DEPLOYMENT_SCRIPTS=("01_deployToken.s.sol" "02_deployPerpetualMint.s.sol")
-RPC_URL=$ARBITRUM_GOERLI_RPC_URL
-VERIFIER_URL="https://api-goerli.arbiscan.io/api"
-export VRF_COORDINATOR="0x6D80646bEAdd07cE68cab36c27c626790bBcf17f"
+RPC_URL=$ARBITRUM_RPC_URL
+VERIFIER_URL="https://api.arbiscan.io/api"
+export VRF_COORDINATOR="0x41034678D6C633D8a95c75e1138A360a28bA15d1"
 
 # Check if ARBISCAN_API_KEY is set
 if [[ -z $ARBISCAN_API_KEY ]]; then
@@ -13,9 +13,9 @@ if [[ -z $ARBISCAN_API_KEY ]]; then
   exit 1
 fi
 
-# Check if ARBITRUM_GOERLI_RPC_URL is set
-if [[ -z $ARBITRUM_GOERLI_RPC_URL ]]; then
-  echo -e "Error: ARBITRUM_GOERLI_RPC_URL is not set in .env.\n"
+# Check if ARBITRUM_RPC_URL is set
+if [[ -z $ARBITRUM_RPC_URL ]]; then
+  echo -e "Error: ARBITRUM_RPC_URL is not set in .env.\n"
   exit 1
 fi
 
@@ -41,11 +41,11 @@ mkdir -p ./broadcast/${DEPLOYMENT_SCRIPTS[0]}/$CHAIN_ID
 mkdir -p ./broadcast/${DEPLOYMENT_SCRIPTS[1]}/$CHAIN_ID
 
 # Run forge scripts
-forge script script/${DEPLOYMENT_SCRIPTS[0]} --rpc-url $RPC_URL --verify --broadcast --verifier-url $VERIFIER_URL
-forge script script/${DEPLOYMENT_SCRIPTS[1]} --rpc-url $RPC_URL --verify --broadcast --verifier-url $VERIFIER_URL
+forge script script/deployment/${DEPLOYMENT_SCRIPTS[0]} --rpc-url $RPC_URL --verify --broadcast --verifier-url $VERIFIER_URL
+forge script script/deployment/${DEPLOYMENT_SCRIPTS[1]} --rpc-url $RPC_URL --verify --broadcast --verifier-url $VERIFIER_URL
 
 # Read and output deployed contract data using Node.js
-node script/process-deployment.js ./broadcast/${DEPLOYMENT_SCRIPTS[0]}/$CHAIN_ID/run-latest.json
-node script/process-deployment.js ./broadcast/${DEPLOYMENT_SCRIPTS[1]}/$CHAIN_ID/run-latest.json
+node script/deployment/process-deployment.js ./broadcast/${DEPLOYMENT_SCRIPTS[0]}/$CHAIN_ID/run-latest.json
+node script/deployment/process-deployment.js ./broadcast/${DEPLOYMENT_SCRIPTS[1]}/$CHAIN_ID/run-latest.json
 
 echo -e "\nDeployer Address: $DEPLOYER_ADDRESS\n"

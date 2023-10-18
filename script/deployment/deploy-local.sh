@@ -44,11 +44,11 @@ mkdir -p ./broadcast/${DEPLOYMENT_SCRIPTS[0]}/$CHAIN_ID
 mkdir -p ./broadcast/${DEPLOYMENT_SCRIPTS[1]}/$CHAIN_ID
 
 # Run forge scripts
-forge script script/${DEPLOYMENT_SCRIPTS[0]} --rpc-url $LOCALHOST --broadcast
-forge script script/${DEPLOYMENT_SCRIPTS[1]} --rpc-url $LOCALHOST --broadcast
+forge script script/deployment/${DEPLOYMENT_SCRIPTS[0]} --rpc-url $LOCALHOST --broadcast
+forge script script/deployment/${DEPLOYMENT_SCRIPTS[1]} --rpc-url $LOCALHOST --broadcast
 
 # Read and output deployed contract data using Node.js
-node script/process-deployment.js ./broadcast/${DEPLOYMENT_SCRIPTS[0]}/$CHAIN_ID/run-latest.json
-node script/process-deployment.js ./broadcast/${DEPLOYMENT_SCRIPTS[1]}/$CHAIN_ID/run-latest.json
+node script/deployment/process-deployment.js ./broadcast/${DEPLOYMENT_SCRIPTS[0]}/$CHAIN_ID/run-latest.json
+node script/deployment/process-deployment.js ./broadcast/${DEPLOYMENT_SCRIPTS[1]}/$CHAIN_ID/run-latest.json
 
 echo -e "\nDeployer Address: $DEPLOYER_ADDRESS\n"

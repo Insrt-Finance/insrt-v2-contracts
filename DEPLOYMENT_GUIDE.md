@@ -97,12 +97,12 @@ export VRF_COORDINATOR="0x..." # Address of the Chainlink VRF Coordinator
 
 The following metadata is set on deployment in the Solidity deployment scripts:
 
-### [./scripts/01_deployToken.s.sol](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/01_deployToken.s.sol)
+### [./script/deployment/01_deployToken.s.sol](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/deployment/01_deployToken.s.sol)
 
 - `name`: Name of the mint consolation token
 - `symbol`: Symbol of the mint consolation token
 
-#### [./scripts/02_deployPerpetualMint.s.sol](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/02_deployPerpetualMint.s.sol)
+#### [./script/deployment/02_deployPerpetualMint.s.sol](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/deployment/02_deployPerpetualMint.s.sol)
 
 - `receiptName`: Name of the receipt token received when winning mints
 - `receiptSymbol`: Symbol of the receipt token received when winning mints

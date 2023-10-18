@@ -9,10 +9,10 @@ import { IERC20Extended } from "@solidstate/contracts/token/ERC20/extended/IERC2
 import { IERC20Metadata } from "@solidstate/contracts/token/ERC20/metadata/IERC20Metadata.sol";
 import { IERC2612 } from "@solidstate/contracts/token/ERC20/permit/IERC20Permit.sol";
 
-import { ITokenProxy } from "../contracts/diamonds/Token/ITokenProxy.sol";
-import { TokenProxy } from "../contracts/diamonds/Token/TokenProxy.sol";
-import { IToken } from "../contracts/facets/Token/IToken.sol";
-import { Token } from "../contracts/facets/Token/Token.sol";
+import { ITokenProxy } from "../../contracts/diamonds/Token/ITokenProxy.sol";
+import { TokenProxy } from "../../contracts/diamonds/Token/TokenProxy.sol";
+import { IToken } from "../../contracts/facets/Token/IToken.sol";
+import { Token } from "../../contracts/facets/Token/Token.sol";
 
 /// @title DeployToken
 /// @dev deploys the TokenProxy diamond contract and the Token facet, and performs

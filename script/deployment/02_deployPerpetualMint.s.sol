@@ -9,13 +9,13 @@ import { IDiamondWritableInternal } from "@solidstate/contracts/proxy/diamond/wr
 import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol";
 import { IERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/IERC1155Metadata.sol";
 
-import { ICore } from "../contracts/diamonds/Core/ICore.sol";
-import { Core } from "../contracts/diamonds/Core/Core.sol";
-import { IERC1155MetadataExtension } from "../contracts/facets/PerpetualMint/IERC1155MetadataExtension.sol";
-import { IPerpetualMint } from "../contracts/facets/PerpetualMint/IPerpetualMint.sol";
-import { IPerpetualMintView } from "../contracts/facets/PerpetualMint/IPerpetualMintView.sol";
-import { PerpetualMint } from "../contracts/facets/PerpetualMint/PerpetualMint.sol";
-import { PerpetualMintView } from "../contracts/facets/PerpetualMint/PerpetualMintView.sol";
+import { ICore } from "../../contracts/diamonds/Core/ICore.sol";
+import { Core } from "../../contracts/diamonds/Core/Core.sol";
+import { IERC1155MetadataExtension } from "../../contracts/facets/PerpetualMint/IERC1155MetadataExtension.sol";
+import { IPerpetualMint } from "../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
+import { IPerpetualMintView } from "../../contracts/facets/PerpetualMint/IPerpetualMintView.sol";
+import { PerpetualMint } from "../../contracts/facets/PerpetualMint/PerpetualMint.sol";
+import { PerpetualMintView } from "../../contracts/facets/PerpetualMint/PerpetualMintView.sol";
 
 /// @title DeployPerpetualMint
 /// @dev deploys the Core diamond contract, PerpetualMint facet and PerpetualMintView facet, and performs

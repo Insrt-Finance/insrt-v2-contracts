@@ -16,6 +16,7 @@
     "@chainlink=lib/chainlink/contracts/src/v0.8/",
     "@chainlink/vrf/=lib/chainlink/contracts/src/v0.8/vrf/",
     "@solidstate/contracts/=lib/solidstate-solidity/contracts/",
+    "forge-safe/=lib/forge-safe/src",
     "forge-std/=lib/forge-std/src/"
   ]
 }

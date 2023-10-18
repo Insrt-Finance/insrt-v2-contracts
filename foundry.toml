@@ -9,6 +9,7 @@ optimizer_runs = 1_000_000
 remappings = [
   "@chainlink=lib/chainlink/contracts/src/v0.8/",
   "@solidstate/contracts/=lib/solidstate-solidity/contracts/",
+  "forge-safe/=lib/forge-safe/src/",
   "forge-std/=lib/forge-std/src/",
 ]
 solc_version = '0.8.19'

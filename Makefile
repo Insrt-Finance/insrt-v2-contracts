@@ -53,30 +53,30 @@ deploy-local:
 
 #### 1. Token configuration
 configure-token-arb:
-	@./script/configure-token-arb.sh
+	@./script/post-deployment/configure-token-arb.sh
 
 configure-token-arb-goerli:
-	@./script/configure-token-arb-goerli.sh
+	@./script/post-deployment/configure-token-arb-goerli.sh
 
 configure-token-local:
-	@./script/configure-token-local.sh
+	@./script/post-deployment/configure-token-local.sh
 
 #### 2. VRF configuration
 configure-vrf-arb:
-	@./script/configure-vrf-arb.sh
+	@./script/post-deployment/configure-vrf-arb.sh
 
 configure-vrf-arb-goerli:
-	@./script/configure-vrf-arb-goerli.sh
+	@./script/post-deployment/configure-vrf-arb-goerli.sh
 
 configure-vrf-local:
-	@./script/configure-vrf-local.sh
+	@./script/post-deployment/configure-vrf-local.sh
 
 #### 3. PerpetualMint configuration
 configure-perp-mint-arb:
-	@./script/configure-perp-mint-arb.sh
+	@./script/post-deployment/configure-perp-mint-arb.sh
 
 configure-perp-mint-arb-goerli:
-	@./script/configure-perp-mint-arb-goerli.sh
+	@./script/post-deployment/configure-perp-mint-arb-goerli.sh
 
 configure-perp-mint-local:
-	@./script/configure-perp-mint-local.sh
+	@./script/post-deployment/configure-perp-mint-local.sh

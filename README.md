@@ -92,7 +92,7 @@ make deploy-local
 
 1. Token configuration
 
-Note: The following environment variables are modifiable in `./scripts/configure-token-arb.sh`:
+Note: The following environment variables are modifiable in `./script/post-deployment/configure-token-arb.sh`:
 
 - `NEW_TOKEN_PROXY_OWNER`
 - `TOKEN_DISTRIBUTION_FRACTION_BP`
@@ -103,7 +103,7 @@ make configure-token-arb
 
 2. VRF configuration
 
-Note: The following environment variables are modifiable in `./scripts/configure-vrf-arb.sh`:
+Note: The following environment variables are modifiable in `./script/post-deployment/configure-vrf-arb.sh`:
 
 - `LINK_FUND_AMOUNT`
 - `LINK_TOKEN`
@@ -116,7 +116,7 @@ make configure-vrf-arb
 
 3. PerpetualMint configuration
 
-Note: The following environment variables are modifiable in `./scripts/configure-perp-mint-arb.sh`:
+Note: The following environment variables are modifiable in `./script/post-deployment/configure-perp-mint-arb.sh`:
 
 - `CONSOLATION_FEE_BP`
 - `MINT_FEE_BP`
@@ -134,7 +134,7 @@ make configure-perp-mint-arb
 
 1. Token configuration
 
-Note: The following environment variables are modifiable in `./scripts/configure-token-arb-goerli.sh`:
+Note: The following environment variables are modifiable in `./script/post-deployment/configure-token-arb-goerli.sh`:
 
 - `NEW_TOKEN_PROXY_OWNER`
 - `TOKEN_DISTRIBUTION_FRACTION_BP`
@@ -145,7 +145,7 @@ make configure-token-arb-goerli
 
 2. VRF configuration
 
-Note: The following environment variables are modifiable in `./scripts/configure-vrf-arb-goerli.sh`:
+Note: The following environment variables are modifiable in `./script/post-deployment/configure-vrf-arb-goerli.sh`:
 
 - `LINK_FUND_AMOUNT`
 - `LINK_TOKEN`
@@ -158,7 +158,7 @@ make configure-vrf-arb-goerli
 
 3. PerpetualMint configuration
 
-Note: The following environment variables are modifiable in `./scripts/configure-perp-mint-arb-goerli.sh`:
+Note: The following environment variables are modifiable in `./script/post-deployment/configure-perp-mint-arb-goerli.sh`:
 
 - `CONSOLATION_FEE_BP`
 - `MINT_FEE_BP`
@@ -176,7 +176,7 @@ make configure-perp-mint-arb-goerli
 
 1. Token configuration
 
-Note: The following environment variables are modifiable in `./scripts/configure-token-local.sh`:
+Note: The following environment variables are modifiable in `./script/post-deployment/configure-token-local.sh`:
 
 - `NEW_TOKEN_PROXY_OWNER`
 - `TOKEN_DISTRIBUTION_FRACTION_BP`
@@ -187,7 +187,7 @@ make configure-token-local
 
 2. VRF configuration
 
-Note: The following environment variables are modifiable in `./scripts/configure-vrf-local.sh`:
+Note: The following environment variables are modifiable in `./script/post-deployment/configure-vrf-local.sh`:
 
 - `LINK_FUND_AMOUNT`
 - `LINK_TOKEN`
@@ -200,7 +200,7 @@ make configure-vrf-local
 
 3. PerpetualMint configuration
 
-Note: The following environment variables are modifiable in `./scripts/configure-perp-mint-local.sh`:
+Note: The following environment variables are modifiable in `./script/post-deployment/configure-perp-mint-local.sh`:
 
 - `CONSOLATION_FEE_BP`
 - `MINT_FEE_BP`

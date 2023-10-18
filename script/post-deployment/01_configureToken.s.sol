@@ -3,8 +3,8 @@ pragma solidity 0.8.19;
 
 import "forge-std/Script.sol";
 
-import { ITokenProxy } from "../contracts/diamonds/Token/ITokenProxy.sol";
-import { IToken } from "../contracts/facets/Token/IToken.sol";
+import { ITokenProxy } from "../../contracts/diamonds/Token/ITokenProxy.sol";
+import { IToken } from "../../contracts/facets/Token/IToken.sol";
 
 /// @title ConfigureToken
 /// @dev configures the Token contract after deployment by setting the distribution fraction BP,

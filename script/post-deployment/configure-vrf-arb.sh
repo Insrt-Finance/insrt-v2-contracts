@@ -2,7 +2,7 @@
 set -e
 
 CHAIN_ID=42161
-CONFIGURATION_SCRIPT="04_configureVRFSubscription.s.sol"
+CONFIGURATION_SCRIPT="02_configureVRFSubscription.s.sol"
 RPC_URL=$ARBITRUM_RPC_URL
 export LINK_FUND_AMOUNT=20 # 20 LINK
 export LINK_TOKEN="0xf97f4df75117a78c1A5a0DBb814Af92458539FB4"
@@ -42,4 +42,4 @@ echo -e "Deployer LINK balance is $DEPLOYER_BALANCE_LINK_DEC LINK.\n"
 mkdir -p ./broadcast/${CONFIGURATION_SCRIPT}/$CHAIN_ID
 
 # Run forge scripts
-forge script script/${CONFIGURATION_SCRIPT} --rpc-url $RPC_URL --broadcast
+forge script script/post-deployment/${CONFIGURATION_SCRIPT} --rpc-url $RPC_URL --broadcast

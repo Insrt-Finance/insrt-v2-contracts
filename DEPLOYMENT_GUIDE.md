@@ -141,7 +141,7 @@ These are set in each of the post-deployment configuration bash scripts.
 
 Double-check that they are correct before running the script.
 
-#### [./scripts/configure-token-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/configure-token-arb.sh)
+#### [./script/post-deployment/configure-token-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/post-deployment/configure-token-arb.sh)
 
 ```bash
 export NEW_TOKEN_PROXY_OWNER="0x..." # Address to set as the new TokenProxy owner
@@ -150,7 +150,7 @@ export NEW_TOKEN_PROXY_OWNER="0x..." # Address to set as the new TokenProxy owne
 export TOKEN_DISTRIBUTION_FRACTION_BP=<1e7 percentage number> # Example: 1e7 = 1%
 ```
 
-#### [./scripts/configure-vrf-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/configure-vrf-arb.sh)
+#### [./script/post-deployment/configure-vrf-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/post-deployment/configure-vrf-arb.sh)
 
 ```bash
 export LINK_FUND_AMOUNT=<base LINK unit amount> # Example: 1 = 1 LINK, can be 0 to fund subscription later
@@ -162,7 +162,7 @@ export NEW_VRF_OWNER="0x..." # Address to set and request as the new VRF subscri
 export VRF_SUBSCRIPTION_BALANCE_THRESHOLD=<base LINK unit amount> # Example: 1 = 1 LINK
 ```
 
-#### [./scripts/configure-perp-mint-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/configure-perp-mint-arb.sh)
+#### [./script/post-deployment/configure-perp-mint-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/post-deployment/configure-perp-mint-arb.sh)
 
 ```bash
 # Mint fee for funding $MINT

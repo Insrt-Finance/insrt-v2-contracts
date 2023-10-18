@@ -4,8 +4,8 @@ pragma solidity 0.8.19;
 import "forge-std/Script.sol";
 import "forge-std/Test.sol";
 
-import { ICore } from "../contracts/diamonds/Core/ICore.sol";
-import { IPerpetualMint, TiersData, VRFConfig } from "../contracts/facets/PerpetualMint/IPerpetualMint.sol";
+import { ICore } from "../../contracts/diamonds/Core/ICore.sol";
+import { IPerpetualMint, TiersData, VRFConfig } from "../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 
 /// @title ConfigurePerpetualMint
 /// @dev configures the PerpetualMint contract by setting the collection price to mint ratio BP,
@@ -108,7 +108,7 @@ contract ConfigurePerpetualMint is Script, Test {
     {
         string memory inputDir = string.concat(
             vm.projectRoot(),
-            "/broadcast/04_configureVRFSubscription.s.sol/"
+            "/broadcast/02_configureVRFSubscription.s.sol/"
         );
 
         string memory chainDir = string.concat(vm.toString(block.chainid), "/");

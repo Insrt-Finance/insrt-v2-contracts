@@ -227,3 +227,11 @@ make upgrade-perp-mint-arb
 ```
 make upgrade-perp-mint-view-arb
 ```
+
+## On-chain calculations
+
+### Calculating mint results
+
+```
+make calculate-mint-result <mint-collection-address> <number-of-mint-attempts> <randomness>
+```

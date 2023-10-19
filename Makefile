@@ -95,3 +95,12 @@ upgrade-perp-mint-arb:
 #### Upgrade PerpetualMintView facet
 upgrade-perp-mint-view-arb:
 	@./script/upgrade/upgrade-perp-mint-view-arb.sh
+
+
+### Calculations
+
+calculate-mint-result:
+	@./script/calculate-mint-result.sh $(filter-out $@,$(MAKECMDGOALS))
+
+%:      # Do nothing to silence "No rule to make target" error when calculating mint results
+	@:

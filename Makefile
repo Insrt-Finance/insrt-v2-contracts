@@ -3,6 +3,7 @@
 -include .env
 export
 
+
 ### Install dependencies
 install:
 	@command -v pnpm >/dev/null 2>&1 || npm i -g pnpm
@@ -12,6 +13,7 @@ install:
 	@forge install
 	@echo
 update:; forge update
+
 
 ### Build & test
 build  :; forge build
@@ -32,6 +34,7 @@ trace   :; forge test -vvv
 # prevent make from looking for a file named test
 .PHONY: test
 
+
 ### Anvil process control for local testing & development
 start-anvil:
 	./script/start-anvil.sh
@@ -48,6 +51,7 @@ deploy-arb-goerli:
 
 deploy-local:
 	@./script/deployment/deploy-local.sh
+
 
 ### Post-deployment configuration
 
@@ -80,3 +84,14 @@ configure-perp-mint-arb-goerli:
 
 configure-perp-mint-local:
 	@./script/post-deployment/configure-perp-mint-local.sh
+
+
+### Upgrading contracts
+
+#### Upgrade PerpetualMint facet
+upgrade-perp-mint-arb:
+	@./script/upgrade/upgrade-perp-mint-arb.sh
+
+#### Upgrade PerpetualMintView facet
+upgrade-perp-mint-view-arb:
+	@./script/upgrade/upgrade-perp-mint-view-arb.sh

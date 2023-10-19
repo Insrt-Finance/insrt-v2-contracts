@@ -213,3 +213,17 @@ Note: The following environment variables are modifiable in `./script/post-deplo
 ```
 make configure-perp-mint-local
 ```
+
+## Upgrading contracts
+
+### Upgrade PerpetualMint facet
+
+```
+make upgrade-perp-mint-arb
+```
+
+### Upgrade PerpetualMintView facet
+
+```
+make upgrade-perp-mint-view-arb
+```

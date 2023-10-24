@@ -143,6 +143,8 @@ Double-check that they are correct before running the script.
 
 #### [./script/post-deployment/configure-token-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/post-deployment/configure-token-arb.sh)
 
+NOTE: For reference, currently the `BASIS` being used by `PerpetualMint` & `Token` is `1e9`.
+
 ```bash
 export NEW_TOKEN_PROXY_OWNER="0x..." # Address to set as the new TokenProxy owner
 

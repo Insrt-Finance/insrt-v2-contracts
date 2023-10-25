@@ -31,7 +31,7 @@ contract PerpetualMint is
     function attemptBatchMintWithEth(
         address collection,
         uint32 numberOfMints
-    ) external payable whenNotPaused {
+    ) external payable virtual whenNotPaused {
         _attemptBatchMintWithEth(msg.sender, collection, numberOfMints);
     }
 
@@ -39,7 +39,7 @@ contract PerpetualMint is
     function attemptBatchMintWithMint(
         address collection,
         uint32 numberOfMints
-    ) external whenNotPaused {
+    ) external virtual whenNotPaused {
         _attemptBatchMintWithMint(msg.sender, collection, numberOfMints);
     }
 

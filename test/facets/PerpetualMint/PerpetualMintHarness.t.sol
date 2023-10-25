@@ -87,6 +87,25 @@ contract PerpetualMintHarness is
     }
 
     /// @inheritdoc IPerpetualMintHarness
+    function exposed_requestRandomWordsBase(
+        address minter,
+        address collection,
+        uint8 numWords
+    ) external {
+        Storage.Layout storage l = Storage.layout();
+
+        CollectionData storage collectionData = l.collections[collection];
+
+        _requestRandomWordsBase(
+            l,
+            collectionData,
+            minter,
+            collection,
+            numWords
+        );
+    }
+
+    /// @inheritdoc IPerpetualMintHarness
     function exposed_requests(
         uint256 requestId
     ) external view returns (address minter, address collection) {

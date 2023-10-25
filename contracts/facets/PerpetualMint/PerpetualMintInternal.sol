@@ -4,10 +4,12 @@ pragma solidity 0.8.19;
 
 import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV2Interface.sol";
 import { VRFConsumerBaseV2 } from "@chainlink/vrf/VRFConsumerBaseV2.sol";
+import { OwnableInternal } from "@solidstate/contracts/access/ownable/OwnableInternal.sol";
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { ERC1155BaseInternal } from "@solidstate/contracts/token/ERC1155/base/ERC1155BaseInternal.sol";
 import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 
+import { ISupraRouterContract } from "./Base/ISupraRouterContract.sol";
 import { ERC1155MetadataExtensionInternal } from "./ERC1155MetadataExtensionInternal.sol";
 import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
 import { CollectionData, MintOutcome, MintResultData, PerpetualMintStorage as Storage, RequestData, TiersData, VRFConfig } from "./Storage.sol";
@@ -20,6 +22,7 @@ abstract contract PerpetualMintInternal is
     ERC1155BaseInternal,
     ERC1155MetadataExtensionInternal,
     GuardsInternal,
+    OwnableInternal,
     IPerpetualMintInternal,
     VRFConsumerBaseV2
 {
@@ -38,7 +41,7 @@ abstract contract PerpetualMintInternal is
     // Starting default conversion ratio: 1 ETH = 1,000,000 $MINT
     uint32 internal constant DEFAULT_ETH_TO_MINT_RATIO = 1000000;
 
-    /// @dev address of Chainlink VRFCoordinatorV2 contract
+    /// @dev address of the configured VRF
     address private immutable VRF;
 
     constructor(address vrfCoordinator) VRFConsumerBaseV2(vrfCoordinator) {
@@ -122,6 +125,59 @@ abstract contract PerpetualMintInternal is
         _requestRandomWords(l, collectionData, minter, collection, numWords);
     }
 
+    /// @notice Attempts a Base-specific batch mint for the msg.sender for a single collection using ETH as payment.
+    /// @param minter address of minter
+    /// @param collection address of collection for mint attempts
+    /// @param numberOfMints number of mints to attempt
+    function _attemptBatchMintWithEthBase(
+        address minter,
+        address collection,
+        uint8 numberOfMints
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        uint256 msgValue = msg.value;
+
+        if (numberOfMints == 0) {
+            revert InvalidNumberOfMints();
+        }
+
+        CollectionData storage collectionData = l.collections[collection];
+
+        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
+
+        if (msgValue != collectionMintPrice * numberOfMints) {
+            revert IncorrectETHReceived();
+        }
+
+        // calculate the consolation fee
+        uint256 consolationFee = (msgValue * l.consolationFeeBP) / BASIS;
+
+        // calculate the protocol mint fee
+        uint256 mintFee = (msgValue * l.mintFeeBP) / BASIS;
+
+        // update the accrued consolation fees
+        l.consolationFees += consolationFee;
+
+        // update the accrued depositor mint earnings
+        l.mintEarnings += msgValue - consolationFee - mintFee;
+
+        // update the accrued protocol fees
+        l.protocolFees += mintFee;
+
+        // if the number of words requested is greater than uint8, the function call will revert.
+        // the current max allowed by Supra VRF is 255 per request.
+        uint8 numWords = numberOfMints * 2; // 2 words per mint, current max of 127 mints per tx
+
+        _requestRandomWordsBase(
+            l,
+            collectionData,
+            minter,
+            collection,
+            numWords
+        );
+    }
+
     /// @notice Attempts a batch mint for the msg.sender for a single collection using $MINT tokens as payment.
     /// @param minter address of minter
     /// @param collection address of collection for mint attempts
@@ -174,6 +230,66 @@ abstract contract PerpetualMintInternal is
         uint32 numWords = numberOfMints * 2; // 2 words per mint, current max of 250 mints per tx
 
         _requestRandomWords(l, collectionData, minter, collection, numWords);
+    }
+
+    /// @notice Attempts a Base-specific batch mint for the msg.sender for a single collection using $MINT tokens as payment.
+    /// @param minter address of minter
+    /// @param collection address of collection for mint attempts
+    /// @param numberOfMints number of mints to attempt
+    function _attemptBatchMintWithMintBase(
+        address minter,
+        address collection,
+        uint8 numberOfMints
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        if (numberOfMints == 0) {
+            revert InvalidNumberOfMints();
+        }
+
+        CollectionData storage collectionData = l.collections[collection];
+
+        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
+        uint256 ethToMintRatio = _ethToMintRatio(l);
+
+        uint256 ethRequired = collectionMintPrice * numberOfMints;
+
+        if (ethRequired > l.consolationFees) {
+            revert InsufficientConsolationFees();
+        }
+
+        // calculate amount of $MINT required
+        uint256 mintRequired = ethRequired * ethToMintRatio;
+
+        IToken(l.mintToken).burn(minter, mintRequired);
+
+        // calculate the consolation fee
+        uint256 consolationFee = (ethRequired * l.consolationFeeBP) / BASIS;
+
+        // calculate the protocol mint fee
+        uint256 mintFee = (ethRequired * l.mintFeeBP) / BASIS;
+
+        // update the accrued consolation fees
+        // ETH required for mint taken from consolationFees
+        l.consolationFees -= ethRequired - consolationFee;
+
+        // update the accrued depositor mint earnings
+        l.mintEarnings += ethRequired - consolationFee - mintFee;
+
+        // update the accrued protocol fees
+        l.protocolFees += mintFee;
+
+        // if the number of words requested is greater than uint8, the function call will revert.
+        // the current max allowed by Supra VRF is 255 per request.
+        uint8 numWords = numberOfMints * 2; // 2 words per mint, current max of 127 mints per tx
+
+        _requestRandomWordsBase(
+            l,
+            collectionData,
+            minter,
+            collection,
+            numWords
+        );
     }
 
     /// @notice returns the value of BASIS
@@ -390,10 +506,10 @@ abstract contract PerpetualMintInternal is
         ratio = ratio == 0 ? DEFAULT_ETH_TO_MINT_RATIO : ratio;
     }
 
-    /// @notice internal Chainlink VRF callback
-    /// @notice is executed by the ChainlinkVRF Coordinator contract
-    /// @param requestId id of chainlinkVRF request
-    /// @param randomWords random values return by ChainlinkVRF Coordinator
+    /// @notice internal VRF callback
+    /// @notice is executed by the configured VRF contract
+    /// @param requestId id of VRF request
+    /// @param randomWords random values return by the configured VRF contract
     function _fulfillRandomWords(
         uint256 requestId,
         uint256[] memory randomWords
@@ -537,6 +653,36 @@ abstract contract PerpetualMintInternal is
             l.vrfConfig.minConfirmations,
             l.vrfConfig.callbackGasLimit,
             numWords
+        );
+
+        collectionData.pendingRequests.add(requestId);
+
+        RequestData storage request = l.requests[requestId];
+
+        request.collection = collection;
+        request.minter = minter;
+    }
+
+    /// @notice requests random values from Supra VRF, Base-specific
+    /// @param l the PerpetualMint storage layout
+    /// @param collectionData the CollectionData struct for a given collection
+    /// @param minter address calling this function
+    /// @param collection address of collection to attempt mint for
+    /// @param numWords amount of random values to request
+    function _requestRandomWordsBase(
+        Storage.Layout storage l,
+        CollectionData storage collectionData,
+        address minter,
+        address collection,
+        uint8 numWords
+    ) internal {
+        ISupraRouterContract supraRouter = ISupraRouterContract(VRF);
+
+        uint256 requestId = supraRouter.generateRequest(
+            "rawFulfillRandomWords(uint256,uint256[])",
+            numWords,
+            1, // number of confirmations
+            _owner()
         );
 
         collectionData.pendingRequests.add(requestId);

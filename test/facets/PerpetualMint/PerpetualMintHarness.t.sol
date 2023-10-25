@@ -12,7 +12,7 @@ import { PerpetualMint } from "../../../contracts/facets/PerpetualMint/Perpetual
 import { CollectionData, RequestData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
 
 /// @title PerpetualMintHarness
-/// @dev exposes internal PerpetualMint internal functions for testing
+/// @dev exposes PerpetualMint external & internal functions for testing
 contract PerpetualMintHarness is
     IPerpetualMintHarness,
     PerpetualMint,

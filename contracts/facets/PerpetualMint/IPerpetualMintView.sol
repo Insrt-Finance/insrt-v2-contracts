@@ -2,11 +2,10 @@
 
 pragma solidity 0.8.19;
 
-import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 import { MintResultData, TiersData, VRFConfig } from "./Storage.sol";
 
-/// @title PerpetualMint facet contract
-/// @dev contains all externally called functions
+/// @title IPerpetualMintView interface
+/// @dev Interface of the PerpetualMintView facet
 interface IPerpetualMintView {
     /// @notice Returns the current accrued consolation fees
     /// @return accruedFees the current amount of accrued consolation fees

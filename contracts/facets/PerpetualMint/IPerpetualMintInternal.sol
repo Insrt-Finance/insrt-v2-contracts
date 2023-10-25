@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.19;
 
-import { PerpetualMintStorage as Storage, VRFConfig, TiersData } from "./Storage.sol";
+import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title IPerpetualMintInternal interface
 /// @dev contains all errors and events used in the PerpetualMint facet contract

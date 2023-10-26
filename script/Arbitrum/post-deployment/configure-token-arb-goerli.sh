@@ -21,4 +21,4 @@ echo -e "Deployer Address: $DEPLOYER_ADDRESS\n"
 mkdir -p ./broadcast/${CONFIGURATION_SCRIPT}/$CHAIN_ID
 
 # Run forge scripts
-forge script script/post-deployment/${CONFIGURATION_SCRIPT} --rpc-url $RPC_URL --broadcast
+forge script script/common/post-deployment/${CONFIGURATION_SCRIPT} --rpc-url $RPC_URL --broadcast

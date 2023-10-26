@@ -41,9 +41,23 @@ This guide outlines the steps to deploy & configure the Insrt V2 protocol.
 - `ARBITRUM_GOERLI_RPC_URL`: Arbitrum Goerli RPC URL
 - `ARBISCAN_API_KEY`: Arbiscan API key for contract verification
 
-### Localhost Deployments
+### Base Deployments
+
+- `BASE_RPC_URL`: Base RPC URL
+- `BASESCAN_API_KEY`: Basescan API key for contract verification
+
+### Base Goerli Deployments
+
+- `BASE_GOERLI_RPC_URL`: Base Goerli RPC URL
+- `BASESCAN_API_KEY`: Basescan API key for contract verification
+
+### Localhost Deployments (Arbitrum Fork)
 
 - `ARBITRUM_RPC_URL`: Arbitrum RPC URL for forking the initial local state
+
+### Localhost Deployments (Base Fork)
+
+- `BASE_RPC_URL`: Base RPC URL for forking the initial local state
 
 ---
 
@@ -75,7 +89,10 @@ We provide deployment scripts for the following networks:
 
 1. **Arbitrum**
 2. **Arbitrum Goerli (Testnet)**
-3. **Localhost (Arbitrum Fork)**
+3. **Base**
+4. **Base Goerli (Testnet)**
+5. **Localhost (Arbitrum Fork)**
+6. **Localhost (Base Fork)**
 
 ---
 
@@ -89,8 +106,16 @@ These are set in each of the deployment bash scripts.
 
 Double-check that they are correct before running the deployment script.
 
+#### Arbitrum
+
 ```bash
 export VRF_COORDINATOR="0x..." # Address of the Chainlink VRF Coordinator
+```
+
+#### Base
+
+```bash
+export VRF_ROUTER="0x..." # Address of the Supra VRF Router
 ```
 
 ### Hardcoded Metadata
@@ -119,10 +144,28 @@ make deploy-arb
 make deploy-arb-goerli
 ```
 
+### Deploying on Base
+
+```bash
+make deploy-base
+```
+
+### Deploying on Base Goerli (Testnet)
+
+```bash
+make deploy-base-goerli
+```
+
 ### Deploying Locally (on an Arbitrum Fork)
 
 ```bash
 make deploy-local-arb
+```
+
+### Deploying Locally (on a Base Fork)
+
+```bash
+make deploy-local-base
 ```
 
 ---

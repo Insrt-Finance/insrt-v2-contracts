@@ -55,6 +55,17 @@ deploy-arb-goerli:
 deploy-local-arb:
 	@./script/Arbitrum/deployment/deploy-local.sh
 
+#### Base
+
+deploy-base:
+	@./script/Base/deployment/deploy-base.sh
+
+deploy-base-goerli:
+	@./script/Base/deployment/deploy-base-goerli.sh
+
+deploy-local-base:
+	@./script/Base/deployment/deploy-local.sh
+
 
 ### Post-deployment configuration
 

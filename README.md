@@ -86,6 +86,38 @@ Requires the following additional environment variables set:
 make deploy-local-arb
 ```
 
+### Base
+
+Requires the following additional environment variables set:
+
+- `BASE_RPC_URL`: Base RPC URL
+- `BASESCAN_API_KEY`: Basescan API key for contract verification
+
+```
+make deploy-base
+```
+
+#### Base Goerli
+
+Requires the following additional environment variables set:
+
+- `BASE_GOERLI_RPC_URL`: Base Goerli RPC URL
+- `BASESCAN_API_KEY`: Basescan API key for contract verification
+
+```
+make deploy-base-goerli
+```
+
+#### Localhost (Base Fork)
+
+Requires the following additional environment variables set:
+
+- `BASE_RPC_URL`: Base RPC URL for forking the initial local state
+
+```
+make deploy-local-base
+```
+
 ## Post-deployment configuration
 
 ### Arbitrum

@@ -2,18 +2,25 @@
 
 pragma solidity 0.8.19;
 
+import { IOwnable } from "@solidstate/contracts/access/ownable/IOwnable.sol";
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
 import { PerpetualMintHelperBase } from "./PerpetualMintHelper.t.sol";
 import { IPerpetualMintTest } from "../IPerpetualMintTest.sol";
 import { CoreTest } from "../../../diamonds/Core.t.sol";
+import { IDepositContract } from "../../../interfaces/IDepositContract.sol";
 import { PerpetualMintStorage as Storage, TiersData } from "../../../../contracts/facets/PerpetualMint/Storage.sol";
+import { ISupraRouterContract } from "../../../../contracts/facets/PerpetualMint/Base/ISupraRouterContract.sol";
 
 /// @title PerpetualMintTestBase
 /// @dev PerpetualMintTest Base-specific helper contract. Configures PerpetualMint as facets of Core test.
 /// @dev Should function identically across all forks.
 abstract contract PerpetualMintTestBase is CoreTest {
+    IDepositContract internal supraVRFDepositContract;
+
     IPerpetualMintTest public perpetualMint;
+
+    ISupraRouterContract internal supraRouterContract;
 
     PerpetualMintHelperBase public perpetualMintHelper;
 
@@ -34,6 +41,8 @@ abstract contract PerpetualMintTestBase is CoreTest {
     /// @dev the VRF request function signature
     string internal constant VRF_REQUEST_FUNCTION_SIGNATURE =
         "rawFulfillRandomWords(uint256,uint256[])";
+
+    address internal supraVRFDepositContractOwner;
 
     // Ethereum mainnet Bored Ape Yacht Club contract address.
     address internal constant BORED_APE_YACHT_CLUB =
@@ -136,6 +145,20 @@ abstract contract PerpetualMintTestBase is CoreTest {
         assert(TEST_CONSOLATION_FEE_BP == perpetualMint.consolationFeeBP());
 
         assert(TEST_MINT_FEE_BP == perpetualMint.mintFeeBP());
+
+        supraRouterContract = ISupraRouterContract(
+            this.perpetualMintHelper().VRF_ROUTER()
+        );
+
+        supraVRFDepositContract = IDepositContract(
+            supraRouterContract._depositContract()
+        );
+
+        supraVRFDepositContractOwner = IOwnable(
+            address(supraVRFDepositContract)
+        ).owner();
+
+        _activateVRF();
     }
 
     /// @dev initializes PerpetualMint as a facet by executing a diamond cut on coreDiamond.
@@ -179,5 +202,15 @@ abstract contract PerpetualMintTestBase is CoreTest {
         perpetualMint.setProtocolFees(
             perpetualMint.accruedProtocolFees() + mockMintFee
         );
+    }
+
+    /// @dev Helper function to activate Supra VRF by adding the contract and client to the Supra VRF Deposit Contract whitelist and depositing funds.
+    function _activateVRF() private {
+        vm.prank(supraVRFDepositContractOwner);
+        supraVRFDepositContract.addClientToWhitelist(address(this), true);
+
+        supraVRFDepositContract.addContractToWhitelist(address(perpetualMint));
+
+        supraVRFDepositContract.depositFundClient{ value: 10 ether }();
     }
 }

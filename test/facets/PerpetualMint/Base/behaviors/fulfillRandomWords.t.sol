@@ -2,17 +2,13 @@
 
 pragma solidity 0.8.19;
 
-import { IOwnable } from "@solidstate/contracts/access/ownable/IOwnable.sol";
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
-import { IPausableInternal } from "@solidstate/contracts/security/pausable/IPausableInternal.sol";
 
 import { PerpetualMintTestBase } from "../PerpetualMint.t.sol";
 import { TokenTest } from "../../../Token/Token.t.sol";
 import { BaseForkTest } from "../../../../BaseForkTest.t.sol";
 import { CoreTest } from "../../../../diamonds/Core.t.sol";
 import { TokenProxyTest } from "../../../../diamonds/TokenProxy.t.sol";
-import { IDepositContract } from "../../../../interfaces/IDepositContract.sol";
-import { ISupraRouterContract } from "../../../../../contracts/facets/PerpetualMint/Base/ISupraRouterContract.sol";
 
 /// @title PerpetualMint_fulfillRandomWordsBase
 /// @dev PerpetualMint test contract for testing expected fulfillRandomWords behavior. Tested on a Base fork.
@@ -21,18 +17,12 @@ contract PerpetualMint_fulfillRandomWordsBase is
     PerpetualMintTestBase,
     TokenTest
 {
-    IDepositContract private supraVRFDepositContract;
-
-    ISupraRouterContract private supraRouterContract;
-
     uint32 internal constant TEST_MINT_ATTEMPTS = 3;
 
     uint32 internal constant ZERO_MINT_ATTEMPTS = 0;
 
     /// @dev collection to test
     address internal constant COLLECTION = BORED_APE_YACHT_CLUB;
-
-    address supraVRFDepositContractOwner;
 
     /// @dev overrides the receive function to accept ETH
     receive() external payable override(CoreTest, TokenProxyTest) {}
@@ -51,20 +41,6 @@ contract PerpetualMint_fulfillRandomWordsBase is
         // mint a bunch of tokens to minter
         vm.prank(MINTER);
         token.mint(minter, MINT_AMOUNT * 1e10);
-
-        supraRouterContract = ISupraRouterContract(
-            this.perpetualMintHelper().VRF_ROUTER()
-        );
-
-        supraVRFDepositContract = IDepositContract(
-            supraRouterContract._depositContract()
-        );
-
-        supraVRFDepositContractOwner = IOwnable(
-            address(supraVRFDepositContract)
-        ).owner();
-
-        _activateVRF();
     }
 
     /// @dev Tests fulfillRandomWords functionality when mint is paid in ETH.
@@ -304,15 +280,5 @@ contract PerpetualMint_fulfillRandomWordsBase is
         );
 
         assert(success == true);
-    }
-
-    /// @dev Helper function to activate Supra VRF by adding the contract and client to the Supra VRF Deposit Contract whitelist and depositing funds.
-    function _activateVRF() private {
-        vm.prank(supraVRFDepositContractOwner);
-        supraVRFDepositContract.addClientToWhitelist(address(this), true);
-
-        supraVRFDepositContract.addContractToWhitelist(address(perpetualMint));
-
-        supraVRFDepositContract.depositFundClient{ value: 10 ether }();
     }
 }

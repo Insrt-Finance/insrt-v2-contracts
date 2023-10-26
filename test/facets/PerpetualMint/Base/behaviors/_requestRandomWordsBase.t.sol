@@ -2,14 +2,10 @@
 
 pragma solidity 0.8.19;
 
-import { IOwnable } from "@solidstate/contracts/access/ownable/IOwnable.sol";
-
 import { PerpetualMintTestBase } from "../PerpetualMint.t.sol";
 import { BaseForkTest } from "../../../../BaseForkTest.t.sol";
-import { IDepositContract } from "../../../../interfaces/IDepositContract.sol";
 import { ISupraGeneratorContract } from "../../../../interfaces/ISupraGeneratorContract.sol";
 import { ISupraGeneratorContractEvents } from "../../../../interfaces/ISupraGeneratorContractEvents.sol";
-import { ISupraRouterContract } from "../../../../../contracts/facets/PerpetualMint/Base/ISupraRouterContract.sol";
 
 /// @title PerpetualMint_requestRandomWordsBase
 /// @dev PerpetualMint test contract for testing expected behavior of the _requestRandomWordsBase function
@@ -18,36 +14,11 @@ contract PerpetualMint_requestRandomWordsBase is
     ISupraGeneratorContractEvents,
     PerpetualMintTestBase
 {
-    IDepositContract private supraVRFDepositContract;
-
-    ISupraRouterContract private supraRouterContract;
-
     /// @dev test number of random words to request, current ratio of random words to mint attempts is 2:1
     uint8 internal constant TEST_NUM_WORDS = 2;
 
     /// @dev collection to test
     address COLLECTION = BORED_APE_YACHT_CLUB;
-
-    address supraVRFDepositContractOwner;
-
-    /// @dev Sets up the test case environment.
-    function setUp() public override {
-        super.setUp();
-
-        supraRouterContract = ISupraRouterContract(
-            this.perpetualMintHelper().VRF_ROUTER()
-        );
-
-        supraVRFDepositContract = IDepositContract(
-            supraRouterContract._depositContract()
-        );
-
-        supraVRFDepositContractOwner = IOwnable(
-            address(supraVRFDepositContract)
-        ).owner();
-
-        _activateVRF();
-    }
 
     /// @dev Tests that _requestRandomWordsBase functionality emits a RequestGenerated event when successfully requesting random words.
     function test_requestRandomWordsBaseEmitsRequestGenerated() external {
@@ -168,15 +139,5 @@ contract PerpetualMint_requestRandomWordsBase is
             COLLECTION,
             TEST_NUM_WORDS
         );
-    }
-
-    /// @dev Helper function to activate Supra VRF by adding the contract and client to the Supra VRF Deposit Contract whitelist and depositing funds.
-    function _activateVRF() private {
-        vm.prank(supraVRFDepositContractOwner);
-        supraVRFDepositContract.addClientToWhitelist(address(this), true);
-
-        supraVRFDepositContract.addContractToWhitelist(address(perpetualMint));
-
-        supraVRFDepositContract.depositFundClient{ value: 10 ether }();
     }
 }

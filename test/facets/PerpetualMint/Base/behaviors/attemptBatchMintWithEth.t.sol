@@ -2,14 +2,11 @@
 
 pragma solidity 0.8.19;
 
-import { IOwnable } from "@solidstate/contracts/access/ownable/IOwnable.sol";
 import { IPausableInternal } from "@solidstate/contracts/security/pausable/IPausableInternal.sol";
 
 import { PerpetualMintTestBase } from "../PerpetualMint.t.sol";
 import { BaseForkTest } from "../../../../BaseForkTest.t.sol";
-import { IDepositContract } from "../../../../interfaces/IDepositContract.sol";
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
-import { ISupraRouterContract } from "../../../../../contracts/facets/PerpetualMint/Base/ISupraRouterContract.sol";
 
 /// @title PerpetualMint_attemptBatchMintWithEthBase
 /// @dev PerpetualMint test contract for testing expected attemptBatchMintWithEth behavior. Tested on a Base fork.
@@ -18,37 +15,12 @@ contract PerpetualMint_attemptBatchMintWithEthBase is
     IPerpetualMintInternal,
     PerpetualMintTestBase
 {
-    IDepositContract private supraVRFDepositContract;
-
-    ISupraRouterContract private supraRouterContract;
-
     uint32 internal constant TEST_MINT_ATTEMPTS = 3;
 
     uint32 internal constant ZERO_MINT_ATTEMPTS = 0;
 
     /// @dev collection to test
     address COLLECTION = BORED_APE_YACHT_CLUB;
-
-    address supraVRFDepositContractOwner;
-
-    /// @dev Sets up the test case environment.
-    function setUp() public override {
-        super.setUp();
-
-        supraRouterContract = ISupraRouterContract(
-            this.perpetualMintHelper().VRF_ROUTER()
-        );
-
-        supraVRFDepositContract = IDepositContract(
-            supraRouterContract._depositContract()
-        );
-
-        supraVRFDepositContractOwner = IOwnable(
-            address(supraVRFDepositContract)
-        ).owner();
-
-        _activateVRF();
-    }
 
     /// @dev Tests attemptBatchMintWithEth functionality.
     function test_attemptBatchMintWithEth() external {
@@ -138,15 +110,5 @@ contract PerpetualMint_attemptBatchMintWithEthBase is
         perpetualMint.attemptBatchMintWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
         }(COLLECTION, TEST_MINT_ATTEMPTS);
-    }
-
-    /// @dev Helper function to activate Supra VRF by adding the contract and client to the Supra VRF Deposit Contract whitelist and depositing funds.
-    function _activateVRF() private {
-        vm.prank(supraVRFDepositContractOwner);
-        supraVRFDepositContract.addClientToWhitelist(address(this), true);
-
-        supraVRFDepositContract.addContractToWhitelist(address(perpetualMint));
-
-        supraVRFDepositContract.depositFundClient{ value: 10 ether }();
     }
 }

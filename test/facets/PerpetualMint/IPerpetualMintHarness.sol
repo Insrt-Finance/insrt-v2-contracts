@@ -43,6 +43,13 @@ interface IPerpetualMintHarness {
         uint32 numWords
     ) external;
 
+    /// @dev exposes _requestRandomWordsBase
+    function exposed_requestRandomWordsBase(
+        address minter,
+        address collection,
+        uint8 numWords
+    ) external;
+
     /// @dev exposes requests
     function exposed_requests(
         uint256 requestId

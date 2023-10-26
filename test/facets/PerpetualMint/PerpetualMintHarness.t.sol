@@ -12,7 +12,7 @@ import { PerpetualMint } from "../../../contracts/facets/PerpetualMint/Perpetual
 import { CollectionData, RequestData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
 
 /// @title PerpetualMintHarness
-/// @dev exposes internal PerpetualMint internal functions for testing
+/// @dev exposes PerpetualMint external & internal functions for testing
 contract PerpetualMintHarness is
     IPerpetualMintHarness,
     PerpetualMint,
@@ -84,6 +84,25 @@ contract PerpetualMintHarness is
         CollectionData storage collectionData = l.collections[collection];
 
         _requestRandomWords(l, collectionData, minter, collection, numWords);
+    }
+
+    /// @inheritdoc IPerpetualMintHarness
+    function exposed_requestRandomWordsBase(
+        address minter,
+        address collection,
+        uint8 numWords
+    ) external {
+        Storage.Layout storage l = Storage.layout();
+
+        CollectionData storage collectionData = l.collections[collection];
+
+        _requestRandomWordsBase(
+            l,
+            collectionData,
+            minter,
+            collection,
+            numWords
+        );
     }
 
     /// @inheritdoc IPerpetualMintHarness

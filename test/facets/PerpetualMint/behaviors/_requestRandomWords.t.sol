@@ -16,8 +16,8 @@ contract PerpetualMint_requestRandomWords is
     IVRFCoordinatorV2Events,
     PerpetualMintTest
 {
-    /// @dev test number of random words to request, current ratio of random words to mint attempts is 1:1
-    uint32 internal constant TEST_NUM_WORDS = 3;
+    /// @dev test number of random words to request, current ratio of random words to mint attempts is 2:1
+    uint32 internal constant TEST_NUM_WORDS = 2;
 
     /// @dev activation nonce for the Chainlink VRF Coordinator
     uint64 internal TEST_VRF_CONSUMER_NONCE = 1;
@@ -29,7 +29,7 @@ contract PerpetualMint_requestRandomWords is
     address COLLECTION = BORED_APE_YACHT_CLUB;
 
     /// @dev Tests that _requestRandomWords functionality emits a RandomWordsRequested event when successfully requesting random words.
-    function test_requestRandomWordsEmitsMessageSent() external {
+    function test_requestRandomWordsEmitsRandomWordsRequested() external {
         _activateVRFConsumer();
 
         VRFConfig memory vrfConfig = perpetualMint.vrfConfig();
@@ -70,33 +70,8 @@ contract PerpetualMint_requestRandomWords is
         );
     }
 
-    function test_requestRandomWordsPaidInEth() external {
-        _activateVRFConsumer();
-
-        // assert that this will be the first request added to pendingRequests
-        assert(perpetualMint.exposed_pendingRequestsLength(COLLECTION) == 0);
-
-        perpetualMint.exposed_requestRandomWords(
-            minter,
-            COLLECTION,
-            TEST_NUM_WORDS
-        );
-
-        // this call succeeds only if the request was added to pendingRequests
-        uint256 requestId = perpetualMint.exposed_pendingRequestsAt(
-            COLLECTION,
-            0
-        );
-
-        (address requestMinter, address requestCollection) = perpetualMint
-            .exposed_requests(requestId);
-
-        assert(requestCollection == COLLECTION);
-
-        assert(requestMinter == minter);
-    }
-
-    function test_requestRandomWordsPaidInMint() external {
+    /// @dev Tests that _requestRandomWords functionality updates pendingRequests appropriately.
+    function test_requestRandomWordsUpdatesPendingRequests() external {
         _activateVRFConsumer();
 
         // assert that this will be the first request added to pendingRequests

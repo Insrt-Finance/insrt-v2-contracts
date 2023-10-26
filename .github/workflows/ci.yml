@@ -33,7 +33,7 @@ jobs:
 
       - name: Run Forge tests
         run: |
-          ARBITRUM_RPC_URL=${{ secrets.ARBITRUM_RPC_URL }} MAINNET_RPC_URL=${{ secrets.MAINNET_RPC_URL }} forge test --gas-report
+          ARBITRUM_RPC_URL=${{ secrets.ARBITRUM_RPC_URL }} BASE_RPC_URL=${{ secrets.BASE_RPC_URL }} MAINNET_RPC_URL=${{ secrets.MAINNET_RPC_URL }} forge test --gas-report
         id: test
 
       - name: "Generate coverage report"

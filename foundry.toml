@@ -25,7 +25,11 @@ verbosity = 4
 arb_fork_tenderly = "${PERP_MINT_ARB_URL}"
 arbitrum = "${ARBITRUM_RPC_URL}"
 arbitrum-goerli = "${ARBITRUM_GOERLI_RPC_URL}"
+base = "${BASE_RPC_URL}"
+base-goerli = "${BASE_GOERLI_RPC_URL}"
 
 [etherscan]
 arbitrum = { key = "${ARBISCAN_API_KEY}" }
 arbitrum-goerli = { key = "${ARBISCAN_API_KEY}" }
+base = { key = "${BASESCAN_API_KEY}" }
+base-goerli = { key = "${BASESCAN_API_KEY}" }

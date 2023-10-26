@@ -423,7 +423,7 @@ contract PerpetualMint_fulfillRandomWords is
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
         }(COLLECTION, TEST_MINT_ATTEMPTS);
 
-        uint32 numberOfRandomWordsRequested = TEST_MINT_ATTEMPTS; // 1 word per mint attempt
+        uint32 numberOfRandomWordsRequested = TEST_MINT_ATTEMPTS * 2; // 2 words per mint attempt
 
         // mock the VRF Coordinator request random words call
         vm.prank(address(perpetualMint));

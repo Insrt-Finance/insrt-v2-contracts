@@ -88,13 +88,15 @@ configure-perp-mint-local:
 
 ### Upgrading contracts
 
-#### Upgrade PerpetualMint facet
-upgrade-perp-mint-arb:
-	@./script/upgrade/upgrade-perp-mint-arb.sh
+#### Arbitrum
 
-#### Upgrade PerpetualMintView facet
+##### Upgrade PerpetualMint facet
+upgrade-perp-mint-arb:
+	@./script/Arbitrum/upgrade/upgrade-perp-mint-arb.sh
+
+##### Upgrade PerpetualMintView facet
 upgrade-perp-mint-view-arb:
-	@./script/upgrade/upgrade-perp-mint-view-arb.sh
+	@./script/Arbitrum/upgrade/upgrade-perp-mint-view-arb.sh
 
 
 ### Calculations

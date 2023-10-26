@@ -216,13 +216,24 @@ make configure-perp-mint-local
 
 ## Upgrading contracts
 
-### Upgrade PerpetualMint facet
+Note: All upgrades must have the following environment variables set:
+
+- `DEPLOYER_KEY`: Private key of the deployer account
+
+### Arbitrum
+
+Requires the following additional environment variables set:
+
+- `ARBITRUM_RPC_URL`: Arbitrum RPC URL
+- `ARBISCAN_API_KEY`: Arbiscan API key for contract verification
+
+#### Upgrade PerpetualMint facet
 
 ```
 make upgrade-perp-mint-arb
 ```
 
-### Upgrade PerpetualMintView facet
+#### Upgrade PerpetualMintView facet
 
 ```
 make upgrade-perp-mint-view-arb

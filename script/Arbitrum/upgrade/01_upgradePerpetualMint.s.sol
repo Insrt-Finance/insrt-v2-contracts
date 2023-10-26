@@ -11,9 +11,9 @@ import { IDiamondWritableInternal } from "@solidstate/contracts/proxy/diamond/wr
 import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol";
 import { IERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/IERC1155Metadata.sol";
 
-import { IERC1155MetadataExtension } from "../../contracts/facets/PerpetualMint/IERC1155MetadataExtension.sol";
-import { IPerpetualMint } from "../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
-import { PerpetualMint } from "../../contracts/facets/PerpetualMint/PerpetualMint.sol";
+import { IERC1155MetadataExtension } from "../../../contracts/facets/PerpetualMint/IERC1155MetadataExtension.sol";
+import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
+import { PerpetualMint } from "../../../contracts/facets/PerpetualMint/PerpetualMint.sol";
 
 /// @title UpgradePerpetualMint
 /// @dev Deploys a new PerpetualMint facet and signs and submits a diamondCut of the PerpetualMint facet to the Core diamond

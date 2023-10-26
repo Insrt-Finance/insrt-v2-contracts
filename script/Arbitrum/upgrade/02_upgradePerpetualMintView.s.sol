@@ -7,8 +7,8 @@ import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidSt
 import { IDiamondWritable } from "@solidstate/contracts/proxy/diamond/writable/IDiamondWritable.sol";
 import { IDiamondWritableInternal } from "@solidstate/contracts/proxy/diamond/writable/IDiamondWritableInternal.sol";
 
-import { IPerpetualMintView } from "../../contracts/facets/PerpetualMint/IPerpetualMintView.sol";
-import { PerpetualMintView } from "../../contracts/facets/PerpetualMint/PerpetualMintView.sol";
+import { IPerpetualMintView } from "../../../contracts/facets/PerpetualMint/IPerpetualMintView.sol";
+import { PerpetualMintView } from "../../../contracts/facets/PerpetualMint/PerpetualMintView.sol";
 
 /// @title UpgradePerpetualMintView
 /// @dev Deploys a new PerpetualMintView facet and signs and submits a diamondCut of the PerpetualMintView facet to the Core diamond

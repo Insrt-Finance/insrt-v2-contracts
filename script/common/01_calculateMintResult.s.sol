@@ -4,8 +4,8 @@ pragma solidity 0.8.19;
 import "forge-std/Script.sol";
 import "forge-std/Test.sol";
 
-import { ICore } from "../contracts/diamonds/Core/ICore.sol";
-import { MintOutcome, MintResultData, TiersData } from "../contracts/facets/PerpetualMint/IPerpetualMint.sol";
+import { ICore } from "../../contracts/diamonds/Core/ICore.sol";
+import { MintOutcome, MintResultData, TiersData } from "../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 
 /// @title CalculateMintResult
 /// @dev Script for calculating the result of a batch mint attempt

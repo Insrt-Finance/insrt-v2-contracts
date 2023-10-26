@@ -241,8 +241,14 @@ make upgrade-perp-mint-view-arb
 
 ## On-chain calculations
 
-### Calculating mint results
+### Arbitrum
+
+Requires the following additional environment variables set:
+
+- `ARBITRUM_RPC_URL`: Arbitrum RPC URL
+
+#### Calculating mint results
 
 ```
-make calculate-mint-result <mint-collection-address> <number-of-mint-attempts> <randomness>
+make calculate-mint-result-arb <mint-collection-address> <number-of-mint-attempts> <randomness>
 ```

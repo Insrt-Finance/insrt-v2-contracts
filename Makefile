@@ -101,8 +101,11 @@ upgrade-perp-mint-view-arb:
 
 ### Calculations
 
-calculate-mint-result:
-	@./script/calculate-mint-result.sh $(filter-out $@,$(MAKECMDGOALS))
+#### Arbitrum
+
+##### Calculate mint results
+calculate-mint-result-arb:
+	@./script/Arbitrum/calculate-mint-result.sh $(filter-out $@,$(MAKECMDGOALS))
 
 %:      # Do nothing to silence "No rule to make target" error when calculating mint results
 	@:

@@ -133,7 +133,7 @@ We provide post-deployment configuration scripts for the following networks:
 
 1. **Arbitrum**
 2. **Arbitrum Goerli (Testnet)**
-3. **Localhost**
+3. **Localhost (Arbitrum Fork)**
 
 ### Bash Environment Variables
 
@@ -141,7 +141,7 @@ These are set in each of the post-deployment configuration bash scripts.
 
 Double-check that they are correct before running the script.
 
-#### [./script/post-deployment/configure-token-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/post-deployment/configure-token-arb.sh)
+#### [./script/Arbitrum/post-deployment/configure-token-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Arbitrum/post-deployment/configure-token-arb.sh)
 
 NOTE: For reference, currently the `BASIS` being used by `PerpetualMint` & `Token` is `1e9`.
 
@@ -152,7 +152,7 @@ export NEW_TOKEN_PROXY_OWNER="0x..." # Address to set as the new TokenProxy owne
 export TOKEN_DISTRIBUTION_FRACTION_BP=<1e7 percentage number> # Example: 1e7 = 1%
 ```
 
-#### [./script/post-deployment/configure-vrf-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/post-deployment/configure-vrf-arb.sh)
+#### [./script/Arbitrum/post-deployment/configure-vrf-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Arbitrum/post-deployment/configure-vrf-arb.sh)
 
 ```bash
 export LINK_FUND_AMOUNT=<base LINK unit amount> # Example: 1 = 1 LINK, can be 0 to fund subscription later
@@ -164,7 +164,7 @@ export NEW_VRF_OWNER="0x..." # Address to set and request as the new VRF subscri
 export VRF_SUBSCRIPTION_BALANCE_THRESHOLD=<base LINK unit amount> # Example: 1 = 1 LINK
 ```
 
-#### [./script/post-deployment/configure-perp-mint-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/post-deployment/configure-perp-mint-arb.sh)
+#### [./script/Arbitrum/post-deployment/configure-perp-mint-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Arbitrum/post-deployment/configure-perp-mint-arb.sh)
 
 ```bash
 # Mint fee for funding $MINT
@@ -192,16 +192,16 @@ export VRF_KEY_HASH="0x..." # Bytes32 gas lane key hash for the Chainlink VRF Co
 make configure-token-arb
 ```
 
-### Arbitrum Goerli (Testnet)
+#### Arbitrum Goerli (Testnet)
 
 ```bash
 make configure-token-arb-goerli
 ```
 
-### Locally (on a Fork)
+#### Locally (on an Arbitrum Fork)
 
 ```bash
-make configure-token-local
+make configure-token-local-arb
 ```
 
 ### Step 2: VRF Configuration
@@ -212,16 +212,16 @@ make configure-token-local
 make configure-vrf-arb
 ```
 
-### Arbitrum Goerli (Testnet)
+#### Arbitrum Goerli (Testnet)
 
 ```bash
 make configure-vrf-arb-goerli
 ```
 
-### Locally (on a Fork)
+#### Locally (on an Arbitrum Fork)
 
 ```bash
-make configure-vrf-local
+make configure-vrf-local-arb
 ```
 
 ### Step 3: PerpetualMint Configuration
@@ -234,16 +234,16 @@ NOTE: Once this step is complete, the protocol is activated.
 make configure-perp-mint-arb
 ```
 
-### Arbitrum Goerli (Testnet)
+#### Arbitrum Goerli (Testnet)
 
 ```bash
 make configure-perp-mint-arb-goerli
 ```
 
-### Locally (on a Fork)
+#### Locally (on an Arbitrum Fork)
 
 ```bash
-make configure-perp-mint-local
+make configure-perp-mint-local-arb
 ```
 
 ---

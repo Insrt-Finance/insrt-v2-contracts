@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
-CHAIN_ID=421613
-CONFIGURATION_SCRIPT="02_configureVRFSubscription.s.sol"
-RPC_URL=$ARBITRUM_GOERLI_RPC_URL
+CHAIN_ID=42161
+CONFIGURATION_SCRIPT="01_configureVRFSubscription.s.sol"
+RPC_URL=$ARBITRUM_RPC_URL
 export LINK_FUND_AMOUNT=20 # 20 LINK
-export LINK_TOKEN="0xd14838A68E8AFBAdE5efb411d5871ea0011AFd28"
-export NEW_VRF_OWNER="0x0000000000000000000000000000000000000000"
-export VRF_SUBSCRIPTION_BALANCE_THRESHOLD=300 # 300 LINK
+export LINK_TOKEN="0xf97f4df75117a78c1A5a0DBb814Af92458539FB4"
+export NEW_VRF_OWNER="0x536935E002b88412aC4e05Eb23a07272e7BdB033"
+export VRF_SUBSCRIPTION_BALANCE_THRESHOLD=50 # 50 LINK
 
 # Check if DEPLOYER_KEY is set
 if [[ -z $DEPLOYER_KEY ]]; then
@@ -42,4 +42,4 @@ echo -e "Deployer LINK balance is $DEPLOYER_BALANCE_LINK_DEC LINK.\n"
 mkdir -p ./broadcast/${CONFIGURATION_SCRIPT}/$CHAIN_ID
 
 # Run forge scripts
-forge script script/post-deployment/${CONFIGURATION_SCRIPT} --rpc-url $RPC_URL --broadcast
+forge script script/Arbitrum/post-deployment/${CONFIGURATION_SCRIPT} --rpc-url $RPC_URL --broadcast

@@ -50,7 +50,7 @@ contract ConfigureToken is Script {
     function readCoreAddress() internal view returns (address coreAddress) {
         string memory inputDir = string.concat(
             vm.projectRoot(),
-            "/broadcast/02_deployPerpetualMint.s.sol/"
+            "/broadcast/01_deployPerpetualMint.s.sol/"
         );
 
         string memory chainDir = string.concat(vm.toString(block.chainid), "/");

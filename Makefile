@@ -58,35 +58,37 @@ deploy-local-arb:
 
 ### Post-deployment configuration
 
-#### 1. Token configuration
+#### Arbitrum
+
+##### 1. Token configuration
 configure-token-arb:
-	@./script/post-deployment/configure-token-arb.sh
+	@./script/Arbitrum/post-deployment/configure-token-arb.sh
 
 configure-token-arb-goerli:
-	@./script/post-deployment/configure-token-arb-goerli.sh
+	@./script/Arbitrum/post-deployment/configure-token-arb-goerli.sh
 
-configure-token-local:
-	@./script/post-deployment/configure-token-local.sh
+configure-token-local-arb:
+	@./script/Arbitrum/post-deployment/configure-token-local.sh
 
-#### 2. VRF configuration
+##### 2. VRF configuration
 configure-vrf-arb:
-	@./script/post-deployment/configure-vrf-arb.sh
+	@./script/Arbitrum/post-deployment/configure-vrf-arb.sh
 
 configure-vrf-arb-goerli:
-	@./script/post-deployment/configure-vrf-arb-goerli.sh
+	@./script/Arbitrum/post-deployment/configure-vrf-arb-goerli.sh
 
-configure-vrf-local:
-	@./script/post-deployment/configure-vrf-local.sh
+configure-vrf-local-arb:
+	@./script/Arbitrum/post-deployment/configure-vrf-local.sh
 
-#### 3. PerpetualMint configuration
+##### 3. PerpetualMint configuration
 configure-perp-mint-arb:
-	@./script/post-deployment/configure-perp-mint-arb.sh
+	@./script/Arbitrum/post-deployment/configure-perp-mint-arb.sh
 
 configure-perp-mint-arb-goerli:
-	@./script/post-deployment/configure-perp-mint-arb-goerli.sh
+	@./script/Arbitrum/post-deployment/configure-perp-mint-arb-goerli.sh
 
-configure-perp-mint-local:
-	@./script/post-deployment/configure-perp-mint-local.sh
+configure-perp-mint-local-arb:
+	@./script/Arbitrum/post-deployment/configure-perp-mint-local.sh
 
 
 ### Upgrading contracts

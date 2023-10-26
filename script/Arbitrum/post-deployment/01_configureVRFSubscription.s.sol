@@ -5,7 +5,7 @@ import "forge-std/Script.sol";
 import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV2Interface.sol";
 import { LinkTokenInterface } from "@chainlink/shared/interfaces/LinkTokenInterface.sol";
 
-import { IPerpetualMint } from "../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
+import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 
 /// @title ConfigureVRFSubscription
 /// @dev configures the VRF subscription by creating a subscription, adding the PerpetualMint contract as a consumer,
@@ -101,7 +101,7 @@ contract ConfigureVRFSubscription is Script {
     function readCoreAddress() internal view returns (address coreAddress) {
         string memory inputDir = string.concat(
             vm.projectRoot(),
-            "/broadcast/02_deployPerpetualMint.s.sol/"
+            "/broadcast/01_deployPerpetualMint.s.sol/"
         );
 
         string memory chainDir = string.concat(vm.toString(block.chainid), "/");
@@ -123,7 +123,7 @@ contract ConfigureVRFSubscription is Script {
     {
         string memory inputDir = string.concat(
             vm.projectRoot(),
-            "/broadcast/02_deployPerpetualMint.s.sol/"
+            "/broadcast/01_deployPerpetualMint.s.sol/"
         );
 
         string memory chainDir = string.concat(vm.toString(block.chainid), "/");
@@ -144,7 +144,7 @@ contract ConfigureVRFSubscription is Script {
     function writeVRFSubscriptionId(uint64 subscriptionId) internal {
         string memory inputDir = string.concat(
             vm.projectRoot(),
-            "/broadcast/02_configureVRFSubscription.s.sol/"
+            "/broadcast/01_configureVRFSubscription.s.sol/"
         );
 
         string memory chainDir = string.concat(vm.toString(block.chainid), "/");

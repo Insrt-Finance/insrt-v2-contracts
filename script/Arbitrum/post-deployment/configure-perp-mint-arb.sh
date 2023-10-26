@@ -2,7 +2,7 @@
 set -e
 
 CHAIN_ID=42161
-CONFIGURATION_SCRIPT="03_configurePerpetualMint.s.sol"
+CONFIGURATION_SCRIPT="02_configurePerpetualMint.s.sol"
 RPC_URL=$ARBITRUM_RPC_URL
 export CONSOLATION_FEE_BP=850000000 # 1e7, 85%
 export MINT_FEE_BP=50000000 # 1e7, 5%
@@ -26,4 +26,4 @@ echo -e "Deployer Address: $DEPLOYER_ADDRESS\n"
 mkdir -p ./broadcast/${CONFIGURATION_SCRIPT}/$CHAIN_ID
 
 # Run forge scripts
-forge script script/post-deployment/${CONFIGURATION_SCRIPT} --rpc-url $RPC_URL --broadcast
+forge script script/Arbitrum/post-deployment/${CONFIGURATION_SCRIPT} --rpc-url $RPC_URL --broadcast

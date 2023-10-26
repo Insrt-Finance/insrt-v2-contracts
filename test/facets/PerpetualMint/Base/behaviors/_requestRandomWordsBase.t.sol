@@ -170,6 +170,7 @@ contract PerpetualMint_requestRandomWordsBase is
         );
     }
 
+    /// @dev Helper function to activate Supra VRF by adding the contract and client to the Supra VRF Deposit Contract whitelist and depositing funds.
     function _activateVRF() private {
         vm.prank(supraVRFDepositContractOwner);
         supraVRFDepositContract.addClientToWhitelist(address(this), true);

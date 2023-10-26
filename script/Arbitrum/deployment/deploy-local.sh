@@ -3,7 +3,7 @@ set -e
 
 CHAIN_ID=31337
 DEPLOYER_BALANCE=100 # 100 ETH
-DEPLOYMENT_SCRIPTS=("01_deployToken.s.sol" "02_deployPerpetualMint.s.sol")
+DEPLOYMENT_SCRIPTS=("01_deployToken.s.sol" "01_deployPerpetualMint.s.sol")
 export FORK_URL=$ARBITRUM_RPC_URL
 LOCALHOST="http://localhost:8545"
 export VRF_COORDINATOR="0x41034678D6C633D8a95c75e1138A360a28bA15d1"
@@ -45,7 +45,7 @@ mkdir -p ./broadcast/${DEPLOYMENT_SCRIPTS[1]}/$CHAIN_ID
 
 # Run forge scripts
 forge script script/deployment/${DEPLOYMENT_SCRIPTS[0]} --rpc-url $LOCALHOST --broadcast
-forge script script/deployment/${DEPLOYMENT_SCRIPTS[1]} --rpc-url $LOCALHOST --broadcast
+forge script script/Arbitrum/deployment/${DEPLOYMENT_SCRIPTS[1]} --rpc-url $LOCALHOST --broadcast
 
 # Read and output deployed contract data using Node.js
 node script/deployment/process-deployment.js ./broadcast/${DEPLOYMENT_SCRIPTS[0]}/$CHAIN_ID/run-latest.json

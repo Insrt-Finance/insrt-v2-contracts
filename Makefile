@@ -43,14 +43,17 @@ stop-anvil:
 
 
 ### Deployments
+
+#### Arbitrum
+
 deploy-arb:
-	@./script/deployment/deploy-arb.sh
+	@./script/Arbitrum/deployment/deploy-arb.sh
 
 deploy-arb-goerli:
-	@./script/deployment/deploy-arb-goerli.sh
+	@./script/Arbitrum/deployment/deploy-arb-goerli.sh
 
-deploy-local:
-	@./script/deployment/deploy-local.sh
+deploy-local-arb:
+	@./script/Arbitrum/deployment/deploy-local.sh
 
 
 ### Post-deployment configuration

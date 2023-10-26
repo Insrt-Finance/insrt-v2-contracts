@@ -75,7 +75,7 @@ We provide deployment scripts for the following networks:
 
 1. **Arbitrum**
 2. **Arbitrum Goerli (Testnet)**
-3. **Localhost**
+3. **Localhost (Arbitrum Fork)**
 
 ---
 
@@ -102,7 +102,7 @@ The following metadata is set on deployment in the Solidity deployment scripts:
 - `name`: Name of the mint consolation token
 - `symbol`: Symbol of the mint consolation token
 
-#### [./script/deployment/02_deployPerpetualMint.s.sol](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/deployment/02_deployPerpetualMint.s.sol)
+#### [./script/Arbitrum/deployment/01_deployPerpetualMint.s.sol](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Arbitrum/deployment/01_deployPerpetualMint.s.sol)
 
 - `receiptName`: Name of the receipt token received when winning mints
 - `receiptSymbol`: Symbol of the receipt token received when winning mints
@@ -119,10 +119,10 @@ make deploy-arb
 make deploy-arb-goerli
 ```
 
-### Deploying Locally (on a Fork)
+### Deploying Locally (on an Arbitrum Fork)
 
 ```bash
-make deploy-local
+make deploy-local-arb
 ```
 
 ---

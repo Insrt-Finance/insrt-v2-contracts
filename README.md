@@ -65,7 +65,7 @@ Requires the following additional environment variables set:
 make deploy-arb
 ```
 
-### Arbitrum Goerli
+#### Arbitrum Goerli
 
 Requires the following additional environment variables set:
 
@@ -76,14 +76,14 @@ Requires the following additional environment variables set:
 make deploy-arb-goerli
 ```
 
-### Localhost
+#### Localhost (Arbitrum Fork)
 
 Requires the following additional environment variables set:
 
 - `ARBITRUM_RPC_URL`: Arbitrum RPC URL for forking the initial local state
 
 ```
-make deploy-local
+make deploy-local-arb
 ```
 
 ## Post-deployment configuration

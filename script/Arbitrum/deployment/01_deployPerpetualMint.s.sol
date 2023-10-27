@@ -71,14 +71,15 @@ contract DeployPerpetualMintArb is Script {
             );
 
         ISolidStateDiamond.FacetCut[]
-            memory facetCuts = new ISolidStateDiamond.FacetCut[](6);
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](7);
 
         facetCuts[0] = perpetualMintFacetCuts[0];
         facetCuts[1] = perpetualMintFacetCuts[1];
         facetCuts[2] = perpetualMintFacetCuts[2];
         facetCuts[3] = perpetualMintFacetCuts[3];
         facetCuts[4] = perpetualMintFacetCuts[4];
-        facetCuts[5] = perpetualMintViewFacetCuts[0];
+        facetCuts[5] = perpetualMintFacetCuts[5];
+        facetCuts[6] = perpetualMintViewFacetCuts[0];
 
         // cut PerpetualMint into Core
         ISolidStateDiamond(core).diamondCut(facetCuts, address(0), "");

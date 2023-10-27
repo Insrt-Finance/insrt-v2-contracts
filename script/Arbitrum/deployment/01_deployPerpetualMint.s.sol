@@ -17,10 +17,10 @@ import { IPerpetualMintView } from "../../../contracts/facets/PerpetualMint/IPer
 import { PerpetualMint } from "../../../contracts/facets/PerpetualMint/PerpetualMint.sol";
 import { PerpetualMintView } from "../../../contracts/facets/PerpetualMint/PerpetualMintView.sol";
 
-/// @title DeployPerpetualMint
+/// @title DeployPerpetualMintArb
 /// @dev deploys the Core diamond contract, PerpetualMint facet and PerpetualMintView facet, and performs
 /// a diamondCut of the PerpetualMint and PerpetualMintView facets onto the Core diamond
-contract DeployPerpetualMint is Script {
+contract DeployPerpetualMintArb is Script {
     /// @dev runs the script logic
     function run() external {
         // read address of $MINT token contract

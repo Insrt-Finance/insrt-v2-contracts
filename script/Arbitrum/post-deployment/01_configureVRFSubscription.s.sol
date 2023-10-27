@@ -7,10 +7,10 @@ import { LinkTokenInterface } from "@chainlink/shared/interfaces/LinkTokenInterf
 
 import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 
-/// @title ConfigureVRFSubscription
+/// @title ConfigureVRFSubscriptionArb
 /// @dev configures the VRF subscription by creating a subscription, adding the PerpetualMint contract as a consumer,
 /// and optionally funding the subscription with LINK tokens
-contract ConfigureVRFSubscription is Script {
+contract ConfigureVRFSubscriptionArb is Script {
     /// @dev runs the script logic
     function run() external {
         // read $LINK token address

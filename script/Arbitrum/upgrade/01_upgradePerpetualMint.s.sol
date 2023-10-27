@@ -15,10 +15,10 @@ import { IERC1155MetadataExtension } from "../../../contracts/facets/PerpetualMi
 import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 import { PerpetualMint } from "../../../contracts/facets/PerpetualMint/PerpetualMint.sol";
 
-/// @title UpgradePerpetualMint
+/// @title UpgradePerpetualMintArb
 /// @dev Deploys a new PerpetualMint facet and signs and submits a diamondCut of the PerpetualMint facet to the Core diamond
 /// via the Gnosis Safe Transaction Service API
-contract UpgradePerpetualMint is BatchScript {
+contract UpgradePerpetualMintArb is BatchScript {
     /// @dev runs the script logic
     function run() external {
         // read deployer private key

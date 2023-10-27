@@ -10,10 +10,10 @@ import { IDiamondWritableInternal } from "@solidstate/contracts/proxy/diamond/wr
 import { IPerpetualMintView } from "../../../contracts/facets/PerpetualMint/IPerpetualMintView.sol";
 import { PerpetualMintView } from "../../../contracts/facets/PerpetualMint/PerpetualMintView.sol";
 
-/// @title UpgradePerpetualMintView
+/// @title UpgradePerpetualMintViewArb
 /// @dev Deploys a new PerpetualMintView facet and signs and submits a diamondCut of the PerpetualMintView facet to the Core diamond
 /// via the Gnosis Safe Transaction Service API
-contract UpgradePerpetualMintView is BatchScript {
+contract UpgradePerpetualMintViewArb is BatchScript {
     /// @dev runs the script logic
     function run() external {
         // read deployer private key

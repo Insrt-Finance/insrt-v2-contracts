@@ -101,6 +101,38 @@ configure-perp-mint-arb-goerli:
 configure-perp-mint-local-arb:
 	@./script/Arbitrum/post-deployment/configure-perp-mint-local.sh
 
+#### Base
+
+##### 1. Token configuration
+configure-token-base:
+	@./script/Base/post-deployment/configure-token-base.sh
+
+configure-token-base-goerli:
+	@./script/Base/post-deployment/configure-token-base-goerli.sh
+
+configure-token-local-base:
+	@./script/Base/post-deployment/configure-token-local.sh
+
+##### 2. VRF configuration
+configure-vrf-base:
+	@./script/Base/post-deployment/configure-vrf-base.sh
+
+configure-vrf-base-goerli:
+	@./script/Base/post-deployment/configure-vrf-base-goerli.sh
+
+configure-vrf-local-base:
+	@./script/Base/post-deployment/configure-vrf-local.sh
+
+##### 3. PerpetualMint configuration
+configure-perp-mint-base:
+	@./script/Base/post-deployment/configure-perp-mint-base.sh
+
+configure-perp-mint-base-goerli:
+	@./script/Base/post-deployment/configure-perp-mint-base-goerli.sh
+
+configure-perp-mint-local-base:
+	@./script/Base/post-deployment/configure-perp-mint-local.sh
+
 
 ### Upgrading contracts
 

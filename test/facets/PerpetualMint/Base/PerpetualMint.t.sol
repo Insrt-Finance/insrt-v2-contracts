@@ -8,9 +8,9 @@ import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidSt
 import { PerpetualMintHelperBase } from "./PerpetualMintHelper.t.sol";
 import { IPerpetualMintTest } from "../IPerpetualMintTest.sol";
 import { CoreTest } from "../../../diamonds/Core.t.sol";
-import { IDepositContract } from "../../../interfaces/IDepositContract.sol";
-import { PerpetualMintStorage as Storage, TiersData } from "../../../../contracts/facets/PerpetualMint/Storage.sol";
+import { IDepositContract } from "../../../../contracts/facets/PerpetualMint/Base/IDepositContract.sol";
 import { ISupraRouterContract } from "../../../../contracts/facets/PerpetualMint/Base/ISupraRouterContract.sol";
+import { PerpetualMintStorage as Storage, TiersData } from "../../../../contracts/facets/PerpetualMint/Storage.sol";
 
 /// @title PerpetualMintTestBase
 /// @dev PerpetualMintTest Base-specific helper contract. Configures PerpetualMint as facets of Core test.

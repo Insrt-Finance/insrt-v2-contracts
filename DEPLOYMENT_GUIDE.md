@@ -132,6 +132,11 @@ The following metadata is set on deployment in the Solidity deployment scripts:
 - `receiptName`: Name of the receipt token received when winning mints
 - `receiptSymbol`: Symbol of the receipt token received when winning mints
 
+#### [./script/Base/deployment/01_deployPerpetualMint.s.sol](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Base/deployment/01_deployPerpetualMint.s.sol)
+
+- `receiptName`: Name of the receipt token received when winning mints
+- `receiptSymbol`: Symbol of the receipt token received when winning mints
+
 ### Deploying on Arbitrum
 
 ```bash
@@ -176,7 +181,10 @@ We provide post-deployment configuration scripts for the following networks:
 
 1. **Arbitrum**
 2. **Arbitrum Goerli (Testnet)**
-3. **Localhost (Arbitrum Fork)**
+3. **Base**
+4. **Base Goerli (Testnet)**
+5. **Localhost (Arbitrum Fork)**
+6. **Localhost (Base Fork)**
 
 ### Bash Environment Variables
 
@@ -227,9 +235,44 @@ export TIER_RISKS=<1e7 number array aligned with TIER_MULTIPLIERS> # Example: 60
 export VRF_KEY_HASH="0x..." # Bytes32 gas lane key hash for the Chainlink VRF Coordinator
 ```
 
+#### [./script/Base/post-deployment/configure-token-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Base/post-deployment/configure-token-base.sh)
+
+NOTE: For reference, currently the `BASIS` being used by `PerpetualMint` & `Token` is `1e9`.
+
+```bash
+export NEW_TOKEN_PROXY_OWNER="0x..." # Address to set as the new TokenProxy owner
+
+# Determines the token emissions rate per mint
+export TOKEN_DISTRIBUTION_FRACTION_BP=<1e7 percentage number> # Example: 1e7 = 1%
+```
+
+#### [./script/Base/post-deployment/configure-vrf-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Base/post-deployment/configure-vrf-base.sh)
+
+```bash
+export ETH_FUND_AMOUNT=<base ETH unit amount> # Example: 1 = 1 ETH, can be 0 to fund subscription later
+```
+
+#### [./script/Base/post-deployment/configure-perp-mint-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Base/post-deployment/configure-perp-mint-base.sh)
+
+```bash
+# Mint fee for funding $MINT
+export CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
+# Protocol mint fee
+export MINT_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
+export NEW_PERP_MINT_OWNER="0x..." # Address to set as the new Core/PerpetualMint owner
+
+export REDEMPTION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
+export TIER_MULTIPLIERS=<1e9 number array aligned with TIER_RISKS> # Example: 1e9,2e9,4e9,8e9,16e9 = 1x, 2x, 4x, 8x, 16x
+
+export TIER_RISKS=<1e7 number array aligned with TIER_MULTIPLIERS> # Example: 60e7,25e7,10e7,4e7,1e7 = 60%, 25%, 10%, 4%, 1%
+```
+
 ### Step 1: Token Configuration
 
-#### Arbitrum
+### Arbitrum
 
 ```bash
 make configure-token-arb
@@ -247,9 +290,27 @@ make configure-token-arb-goerli
 make configure-token-local-arb
 ```
 
+### Base
+
+```bash
+make configure-token-base
+```
+
+#### Base Goerli (Testnet)
+
+```bash
+make configure-token-base-goerli
+```
+
+#### Locally (on a Base Fork)
+
+```bash
+make configure-token-local-base
+```
+
 ### Step 2: VRF Configuration
 
-#### Arbitrum
+### Arbitrum
 
 ```bash
 make configure-vrf-arb
@@ -267,11 +328,29 @@ make configure-vrf-arb-goerli
 make configure-vrf-local-arb
 ```
 
+### Base
+
+```bash
+make configure-vrf-base
+```
+
+#### Base Goerli (Testnet)
+
+```bash
+make configure-vrf-base-goerli
+```
+
+#### Locally (on a Base Fork)
+
+```bash
+make configure-vrf-local-base
+```
+
 ### Step 3: PerpetualMint Configuration
 
 NOTE: Once this step is complete, the protocol is activated.
 
-#### Arbitrum
+### Arbitrum
 
 ```bash
 make configure-perp-mint-arb
@@ -287,6 +366,24 @@ make configure-perp-mint-arb-goerli
 
 ```bash
 make configure-perp-mint-local-arb
+```
+
+### Base
+
+```bash
+make configure-perp-mint-base
+```
+
+#### Base Goerli (Testnet)
+
+```bash
+make configure-perp-mint-base-goerli
+```
+
+#### Locally (on a Base Fork)
+
+```bash
+make configure-perp-mint-local-base
 ```
 
 ---

@@ -84,6 +84,10 @@ contract DeployPerpetualMintBase is Script {
         // cut PerpetualMint into Core
         ISolidStateDiamond(core).diamondCut(facetCuts, address(0), "");
 
+        ICore(address(core)).pause();
+
+        console.log("PerpetualMint Paused");
+
         vm.stopBroadcast();
     }
 

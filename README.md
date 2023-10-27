@@ -246,6 +246,120 @@ Note: The following environment variables are modifiable in `./script/Arbitrum/p
 make configure-perp-mint-local-arb
 ```
 
+### Base
+
+1. Token configuration
+
+Note: The following environment variables are modifiable in `./script/Base/post-deployment/configure-token-base.sh`:
+
+- `NEW_TOKEN_PROXY_OWNER`
+- `TOKEN_DISTRIBUTION_FRACTION_BP`
+
+```
+make configure-token-base
+```
+
+2. VRF configuration
+
+Note: The following environment variables are modifiable in `./script/Base/post-deployment/configure-vrf-base.sh`:
+
+- `ETH_FUND_AMOUNT`
+
+```
+make configure-vrf-base
+```
+
+3. PerpetualMint configuration
+
+Note: The following environment variables are modifiable in `./script/Base/post-deployment/configure-perp-mint-base.sh`:
+
+- `CONSOLATION_FEE_BP`
+- `MINT_FEE_BP`
+- `NEW_PERP_MINT_OWNER`
+- `REDEMPTION_FEE_BP`
+- `TIER_MULTIPLIERS`
+- `TIER_RISKS`
+
+```
+make configure-perp-mint-base
+```
+
+#### Base Goerli
+
+1. Token configuration
+
+Note: The following environment variables are modifiable in `./script/Base/post-deployment/configure-token-base-goerli.sh`:
+
+- `NEW_TOKEN_PROXY_OWNER`
+- `TOKEN_DISTRIBUTION_FRACTION_BP`
+
+```
+make configure-token-base-goerli
+```
+
+2. VRF configuration
+
+Note: The following environment variables are modifiable in `./script/Base/post-deployment/configure-vrf-base-goerli.sh`:
+
+- `ETH_FUND_AMOUNT`
+
+```
+make configure-vrf-base-goerli
+```
+
+3. PerpetualMint configuration
+
+Note: The following environment variables are modifiable in `./script/Base/post-deployment/configure-perp-mint-base-goerli.sh`:
+
+- `CONSOLATION_FEE_BP`
+- `MINT_FEE_BP`
+- `NEW_PERP_MINT_OWNER`
+- `REDEMPTION_FEE_BP`
+- `TIER_MULTIPLIERS`
+- `TIER_RISKS`
+
+```
+make configure-perp-mint-base-goerli
+```
+
+#### Localhost (Base Fork)
+
+1. Token configuration
+
+Note: The following environment variables are modifiable in `./script/Base/post-deployment/configure-token-local.sh`:
+
+- `NEW_TOKEN_PROXY_OWNER`
+- `TOKEN_DISTRIBUTION_FRACTION_BP`
+
+```
+make configure-token-local-base
+```
+
+2. VRF configuration
+
+Note: The following environment variables are modifiable in `./script/Base/post-deployment/configure-vrf-local.sh`:
+
+- `ETH_FUND_AMOUNT`
+
+```
+make configure-vrf-local-base
+```
+
+3. PerpetualMint configuration
+
+Note: The following environment variables are modifiable in `./script/Base/post-deployment/configure-perp-mint-local.sh`:
+
+- `CONSOLATION_FEE_BP`
+- `MINT_FEE_BP`
+- `NEW_PERP_MINT_OWNER`
+- `REDEMPTION_FEE_BP`
+- `TIER_MULTIPLIERS`
+- `TIER_RISKS`
+
+```
+make configure-perp-mint-local-base
+```
+
 ## Upgrading contracts
 
 Note: All upgrades must have the following environment variables set:

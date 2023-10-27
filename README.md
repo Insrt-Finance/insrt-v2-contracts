@@ -208,7 +208,7 @@ make configure-perp-mint-arb-goerli
 
 1. Token configuration
 
-Note: The following environment variables are modifiable in `./script/Arbitrum/post-deployment/configure-token-local.sh`:
+Note: The following environment variables are modifiable in `./script/common/post-deployment/configure-token-local.sh`:
 
 - `NEW_TOKEN_PROXY_OWNER`
 - `TOKEN_DISTRIBUTION_FRACTION_BP`
@@ -326,7 +326,7 @@ make configure-perp-mint-base-goerli
 
 1. Token configuration
 
-Note: The following environment variables are modifiable in `./script/Base/post-deployment/configure-token-local.sh`:
+Note: The following environment variables are modifiable in `./script/common/post-deployment/configure-token-local.sh`:
 
 - `NEW_TOKEN_PROXY_OWNER`
 - `TOKEN_DISTRIBUTION_FRACTION_BP`

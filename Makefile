@@ -79,7 +79,7 @@ configure-token-arb-goerli:
 	@./script/Arbitrum/post-deployment/configure-token-arb-goerli.sh
 
 configure-token-local-arb:
-	@./script/Arbitrum/post-deployment/configure-token-local.sh
+	@./script/common/post-deployment/configure-token-local.sh
 
 ##### 2. VRF configuration
 configure-vrf-arb:
@@ -111,7 +111,7 @@ configure-token-base-goerli:
 	@./script/Base/post-deployment/configure-token-base-goerli.sh
 
 configure-token-local-base:
-	@./script/Base/post-deployment/configure-token-local.sh
+	@./script/common/post-deployment/configure-token-local.sh
 
 ##### 2. VRF configuration
 configure-vrf-base:

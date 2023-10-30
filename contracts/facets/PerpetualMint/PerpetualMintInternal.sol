@@ -748,7 +748,7 @@ abstract contract PerpetualMintInternal is
                 BASIS
             );
 
-            // if the first normalized value is less than the collection risk, the mint attempt is unsuccessful
+            // if the collection risk is less than the first normalized value, the mint attempt is unsuccessful
             // and the second normalized value is used to determine the consolation tier
             if (!(collectionRisk > firstNormalizedValue)) {
                 uint256 tierMintAmount;

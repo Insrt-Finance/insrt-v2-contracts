@@ -49,6 +49,15 @@ contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
     }
 
     /// @inheritdoc IPerpetualMintView
+    function collectionMintMultiplier(
+        address collection
+    ) external view returns (uint256 multiplier) {
+        multiplier = _collectionMintMultiplier(
+            Storage.layout().collections[collection]
+        );
+    }
+
+    /// @inheritdoc IPerpetualMintView
     function collectionMintPrice(
         address collection
     ) external view returns (uint256 mintPrice) {

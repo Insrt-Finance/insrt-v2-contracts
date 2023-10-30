@@ -431,6 +431,17 @@ abstract contract PerpetualMintInternal is
         payable(recipient).sendValue(protocolFees);
     }
 
+    /// @notice Returns the current collection multiplier for a given collection
+    /// @param collectionData the CollectionData struct for a given collection
+    /// @return multiplier current collection multiplier
+    function _collectionMintMultiplier(
+        CollectionData storage collectionData
+    ) internal view returns (uint256 multiplier) {
+        multiplier = collectionData.mintMultiplier;
+
+        multiplier = multiplier == 0 ? BASIS : multiplier; // default multiplier is 1x
+    }
+
     /// @notice Returns the current mint price for a given collection
     /// @param collectionData the CollectionData struct for a given collection
     /// @return mintPrice current collection mint price

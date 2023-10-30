@@ -39,6 +39,13 @@ interface IPerpetualMintView {
         uint256 randomness
     ) external view returns (MintResultData memory result);
 
+    /// @notice Returns the current mint multiplier for a collection
+    /// @param collection address of collection
+    /// @return multiplier current collection mint multiplier
+    function collectionMintMultiplier(
+        address collection
+    ) external view returns (uint256 multiplier);
+
     /// @notice Returns the current mint price for a collection
     /// @param collection address of collection
     /// @return mintPrice current collection mint price

@@ -100,6 +100,14 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function setCollectionMintMultiplier(
+        address collection,
+        uint256 multiplier
+    ) external onlyOwner {
+        _setCollectionMintMultiplier(collection, multiplier);
+    }
+
+    /// @inheritdoc IPerpetualMint
     function setCollectionMintPrice(
         address collection,
         uint256 price

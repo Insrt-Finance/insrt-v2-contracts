@@ -35,6 +35,11 @@ interface IPerpetualMintInternal {
     /// @param collection address of rejected claim collection
     event ClaimCancelled(address claimer, address indexed collection);
 
+    /// @notice emitted when the mint multiplier for a collection is set
+    /// @param collection address of collection
+    /// @param multiplier multiplier of collection
+    event CollectionMultiplierSet(address collection, uint256 multiplier);
+
     /// @notice emitted when the risk for a collection is set
     /// @param collection address of collection
     /// @param risk risk of collection

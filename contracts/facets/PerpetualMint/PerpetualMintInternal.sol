@@ -796,6 +796,24 @@ abstract contract PerpetualMintInternal is
         );
     }
 
+    /// @notice sets the mint multiplier for a given collection
+    /// @param collection address of collection
+    /// @param multiplier mint multiplier of the collection
+    function _setCollectionMintMultiplier(
+        address collection,
+        uint256 multiplier
+    ) internal {
+        CollectionData storage collectionData = Storage.layout().collections[
+            collection
+        ];
+
+        _enforceNoPendingMints(collectionData);
+
+        collectionData.mintMultiplier = multiplier;
+
+        emit CollectionMultiplierSet(collection, multiplier);
+    }
+
     /// @notice set the mint price for a given collection
     /// @param collection address of collection
     /// @param price mint price of the collection

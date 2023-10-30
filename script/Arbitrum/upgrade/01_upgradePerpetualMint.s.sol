@@ -50,6 +50,12 @@ contract UpgradePerpetualMintArb is BatchScript {
         console2.log("Core Address: ", core);
         console2.log("VRF Coordinator Address: ", VRF_COORDINATOR);
 
+        // get new PerpetualMint facet cuts
+        ISolidStateDiamond.FacetCut[]
+            memory newPerpetualMintFacetCuts = getNewPerpetualMintFacetCuts(
+                address(perpetualMint)
+            );
+
         // get replacement PerpetualMint facet cuts
         ISolidStateDiamond.FacetCut[]
             memory replacementPerpetualMintFacetCuts = getReplacementPerpetualMintFacetCuts(
@@ -57,14 +63,15 @@ contract UpgradePerpetualMintArb is BatchScript {
             );
 
         ISolidStateDiamond.FacetCut[]
-            memory facetCuts = new ISolidStateDiamond.FacetCut[](6);
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](7);
 
-        facetCuts[0] = replacementPerpetualMintFacetCuts[0];
-        facetCuts[1] = replacementPerpetualMintFacetCuts[1];
-        facetCuts[2] = replacementPerpetualMintFacetCuts[2];
-        facetCuts[3] = replacementPerpetualMintFacetCuts[3];
-        facetCuts[4] = replacementPerpetualMintFacetCuts[4];
-        facetCuts[5] = replacementPerpetualMintFacetCuts[5];
+        facetCuts[0] = newPerpetualMintFacetCuts[0];
+        facetCuts[1] = replacementPerpetualMintFacetCuts[0];
+        facetCuts[2] = replacementPerpetualMintFacetCuts[1];
+        facetCuts[3] = replacementPerpetualMintFacetCuts[2];
+        facetCuts[4] = replacementPerpetualMintFacetCuts[3];
+        facetCuts[5] = replacementPerpetualMintFacetCuts[4];
+        facetCuts[6] = replacementPerpetualMintFacetCuts[5];
 
         bytes memory diamondCutTx = abi.encodeWithSelector(
             IDiamondWritable.diamondCut.selector,
@@ -76,6 +83,33 @@ contract UpgradePerpetualMintArb is BatchScript {
         addToBatch(core, diamondCutTx);
 
         executeBatch(gnosisSafeAddress, true);
+    }
+
+    /// @dev provides the new facet cuts for cutting PerpetualMint facet into Core
+    /// @param facetAddress address of PerpetualMint facet
+    function getNewPerpetualMintFacetCuts(
+        address facetAddress
+    ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
+        // map the PerpetualMint related function selectors to their respective interfaces
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](1);
+
+        perpetualMintFunctionSelectors[0] = IPerpetualMint
+            .setCollectionMintMultiplier
+            .selector;
+
+        ISolidStateDiamond.FacetCut
+            memory perpetualMintFacetCut = IDiamondWritableInternal.FacetCut({
+                target: facetAddress,
+                action: IDiamondWritableInternal.FacetCutAction.ADD,
+                selectors: perpetualMintFunctionSelectors
+            });
+
+        ISolidStateDiamond.FacetCut[]
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](1);
+
+        facetCuts[0] = perpetualMintFacetCut;
+
+        return facetCuts;
     }
 
     /// @dev provides the replacement facet cuts for cutting PerpetualMint facet into Core

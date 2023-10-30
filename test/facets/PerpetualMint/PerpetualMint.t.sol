@@ -29,7 +29,7 @@ abstract contract PerpetualMintTest is CoreTest {
     uint64 internal constant TEST_VRF_SUBSCRIPTION_ID = 5;
 
     /// @dev first tier multiplier (lowest multiplier)
-    uint256 internal constant firstTierMultiplier = 1; // 1x multiplier
+    uint256 internal constant firstTierMultiplier = 1e9; // 1x multiplier
 
     // Ethereum mainnet Bored Ape Yacht Club contract address.
     address internal constant BORED_APE_YACHT_CLUB =

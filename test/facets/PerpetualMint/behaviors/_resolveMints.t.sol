@@ -36,6 +36,38 @@ contract PerpetualMint_resolveMints is
         token.addMintingContract(address(perpetualMint));
     }
 
+    /// @dev tests that _resolveMints applies collection mint multipliers correctly
+    function test_resolveMintsAppliesCollectionMintMultipliersCorrectly()
+        external
+    {
+        // expected losing mint resolution
+        randomWords.push(uint256(uint160(address(msg.sender))));
+        // expected lowest tier mint resolution
+        randomWords.push(2);
+
+        // assert that the minter currently has no $MINT tokens
+        assert(token.balanceOf(minter) == 0);
+
+        perpetualMint.setCollectionMintMultiplier(COLLECTION, 1e10); // 10x multiplier
+
+        vm.prank(address(perpetualMint));
+        perpetualMint.exposed_resolveMints(minter, COLLECTION, randomWords);
+
+        uint256 totalMintedAmount = ((testTiersData.tierMultipliers[0] *
+            perpetualMint.ethToMintRatio() *
+            perpetualMint.collectionMintPrice(COLLECTION) *
+            perpetualMint.collectionMintMultiplier(COLLECTION)) /
+            (uint256(perpetualMint.BASIS()) * perpetualMint.BASIS()));
+
+        uint256 distributionTokenAmount = (totalMintedAmount *
+            token.distributionFractionBP()) / perpetualMint.BASIS();
+
+        assert(
+            token.balanceOf(minter) ==
+                totalMintedAmount - distributionTokenAmount
+        );
+    }
+
     /// @dev tests that _resolveMints distributes a token receipt to the minter on successful mints
     function test_resolveMintsDistributesWinningReceipts() external {
         // expected winning mint resolutions

@@ -128,6 +128,7 @@ contract PerpetualMintHarness is
 
         _resolveMints(
             l.mintToken,
+            _collectionMintMultiplier(collectionData),
             _collectionMintPrice(collectionData),
             _collectionRisk(collectionData),
             tiersData,

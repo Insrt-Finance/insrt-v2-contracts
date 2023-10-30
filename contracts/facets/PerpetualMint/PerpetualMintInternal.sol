@@ -536,6 +536,7 @@ abstract contract PerpetualMintInternal is
 
         _resolveMints(
             l.mintToken,
+            _collectionMintMultiplier(collectionData),
             _collectionMintPrice(collectionData),
             _collectionRisk(collectionData),
             l.tiers,
@@ -706,6 +707,7 @@ abstract contract PerpetualMintInternal is
 
     /// @notice resolves the outcomes of attempted mints for a given collection
     /// @param mintToken address of $MINT token
+    /// @param collectionMintMultiplier mint multiplier of given collection
     /// @param collectionMintPrice mint price of given collection
     /// @param collectionRisk risk of given collection
     /// @param tiersData the TiersData struct for mint consolations
@@ -715,6 +717,7 @@ abstract contract PerpetualMintInternal is
     /// @param ethToMintRatio ratio of ETH to $MINT
     function _resolveMints(
         address mintToken,
+        uint256 collectionMintMultiplier,
         uint256 collectionMintPrice,
         uint32 collectionRisk,
         TiersData memory tiersData,
@@ -762,6 +765,7 @@ abstract contract PerpetualMintInternal is
                                 ethToMintRatio *
                                 collectionMintPrice) /
                             BASIS;
+
                         break;
                     }
                 }
@@ -775,6 +779,11 @@ abstract contract PerpetualMintInternal is
 
         // Mint the cumulative amounts at the end
         if (totalMintAmount > 0) {
+            // Apply collection-specific multiplier
+            totalMintAmount =
+                (totalMintAmount * collectionMintMultiplier) /
+                BASIS;
+
             IToken(mintToken).mint(minter, totalMintAmount);
         }
 

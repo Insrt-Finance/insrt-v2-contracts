@@ -318,7 +318,6 @@ abstract contract PerpetualMintInternal is
         CollectionData storage collectionData = l.collections[collection];
         TiersData storage tiers = l.tiers;
 
-        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
         uint32 collectionRisk = _collectionRisk(collectionData);
         uint256 ethToMintRatio = _ethToMintRatio(l);
 
@@ -356,8 +355,9 @@ abstract contract PerpetualMintInternal is
                         mintAmount =
                             (tiers.tierMultipliers[j] *
                                 ethToMintRatio *
-                                collectionMintPrice) /
-                            BASIS;
+                                _collectionMintPrice(collectionData) *
+                                _collectionMintMultiplier(collectionData)) /
+                            (uint256(BASIS) * BASIS);
 
                         outcome.tierIndex = j;
                         outcome.tierMultiplier = tiers.tierMultipliers[j];

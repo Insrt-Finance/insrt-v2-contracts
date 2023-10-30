@@ -32,12 +32,17 @@ contract CalculateMintResult is Script, Test {
         // get randomness
         uint256 randomness = vm.envUint("RANDOMNESS");
 
+        uint256 collectionMintMultiplier = core.collectionMintMultiplier(
+            collection
+        );
+
         uint256 collectionMintPrice = core.collectionMintPrice(collection);
 
         uint32 collectionRisk = core.collectionRisk(collection);
 
         console.log("BASIS: ", BASIS);
         console.log("Collection Address: ", collection);
+        console.log("Collection Mint Multiplier: ", collectionMintMultiplier);
         console.log("Collection Mint Price: ", collectionMintPrice);
         console.log("Collection Risk: ", collectionRisk);
         console.log("ETH to Mint Ratio: ", ethToMintRatio);

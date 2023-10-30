@@ -15,6 +15,10 @@ struct CollectionData {
     uint256 mintPrice;
     /// @dev risk of ruin for a collection
     uint32 risk;
+    /// @dev mint fee distribution ratio for a collection in basis points
+    uint32 mintFeeDistributionRatioBP;
+    /// @dev mint consolation multiplier for a collection
+    uint256 mintMultiplier;
 }
 
 /// @dev Represents the outcome of a single mint attempt.

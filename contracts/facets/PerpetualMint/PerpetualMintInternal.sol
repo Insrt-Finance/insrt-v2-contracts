@@ -89,42 +89,15 @@ abstract contract PerpetualMintInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        uint256 msgValue = msg.value;
-
-        if (numberOfMints == 0) {
-            revert InvalidNumberOfMints();
-        }
-
         CollectionData storage collectionData = l.collections[collection];
 
-        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
-
-        if (msgValue != collectionMintPrice * numberOfMints) {
-            revert IncorrectETHReceived();
-        }
-
-        // calculate the consolation fee
-        uint256 consolationFee = (msgValue * l.consolationFeeBP) / BASIS;
-
-        // apply the collection-specific mint fee ratio
-        uint256 additionalDepositorFee = (consolationFee *
-            collectionData.mintFeeDistributionRatioBP) / BASIS;
-
-        // calculate the protocol mint fee
-        uint256 mintFee = (msgValue * l.mintFeeBP) / BASIS;
-
-        // update the accrued consolation fees
-        l.consolationFees += consolationFee - additionalDepositorFee;
-
-        // update the accrued depositor mint earnings
-        l.mintEarnings +=
-            msgValue -
-            consolationFee -
-            mintFee +
-            additionalDepositorFee;
-
-        // update the accrued protocol fees
-        l.protocolFees += mintFee;
+        _attemptBatchMintWithEth_sharedLogic(
+            l,
+            msg.value,
+            _collectionMintPrice(collectionData),
+            numberOfMints,
+            collectionData.mintFeeDistributionRatioBP
+        );
 
         // if the number of words requested is greater than the max allowed by the VRF coordinator,
         // the request for random words will fail (max random words is currently 500 per request).
@@ -144,15 +117,39 @@ abstract contract PerpetualMintInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        uint256 msgValue = msg.value;
+        CollectionData storage collectionData = l.collections[collection];
 
+        _attemptBatchMintWithEth_sharedLogic(
+            l,
+            msg.value,
+            _collectionMintPrice(collectionData),
+            numberOfMints,
+            collectionData.mintFeeDistributionRatioBP
+        );
+
+        // if the number of words requested is greater than uint8, the function call will revert.
+        // the current max allowed by Supra VRF is 255 per request.
+        uint8 numWords = numberOfMints * 2; // 2 words per mint, current max of 127 mints per tx
+
+        _requestRandomWordsBase(
+            l,
+            collectionData,
+            minter,
+            collection,
+            numWords
+        );
+    }
+
+    function _attemptBatchMintWithEth_sharedLogic(
+        Storage.Layout storage l,
+        uint256 msgValue,
+        uint256 collectionMintPrice,
+        uint32 numberOfMints,
+        uint32 mintFeeDistributionRatioBP
+    ) private {
         if (numberOfMints == 0) {
             revert InvalidNumberOfMints();
         }
-
-        CollectionData storage collectionData = l.collections[collection];
-
-        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
 
         if (msgValue != collectionMintPrice * numberOfMints) {
             revert IncorrectETHReceived();
@@ -163,7 +160,7 @@ abstract contract PerpetualMintInternal is
 
         // apply the collection-specific mint fee ratio
         uint256 additionalDepositorFee = (consolationFee *
-            collectionData.mintFeeDistributionRatioBP) / BASIS;
+            mintFeeDistributionRatioBP) / BASIS;
 
         // calculate the protocol mint fee
         uint256 mintFee = (msgValue * l.mintFeeBP) / BASIS;
@@ -180,18 +177,6 @@ abstract contract PerpetualMintInternal is
 
         // update the accrued protocol fees
         l.protocolFees += mintFee;
-
-        // if the number of words requested is greater than uint8, the function call will revert.
-        // the current max allowed by Supra VRF is 255 per request.
-        uint8 numWords = numberOfMints * 2; // 2 words per mint, current max of 127 mints per tx
-
-        _requestRandomWordsBase(
-            l,
-            collectionData,
-            minter,
-            collection,
-            numWords
-        );
     }
 
     /// @notice Attempts a batch mint for the msg.sender for a single collection using $MINT tokens as payment.

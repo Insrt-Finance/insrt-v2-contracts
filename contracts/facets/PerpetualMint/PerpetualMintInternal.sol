@@ -228,15 +228,25 @@ abstract contract PerpetualMintInternal is
         // calculate the consolation fee
         uint256 consolationFee = (ethRequired * l.consolationFeeBP) / BASIS;
 
+        // apply the collection-specific mint fee ratio
+        uint256 additionalDepositorFee = (consolationFee *
+            collectionData.mintFeeDistributionRatioBP) / BASIS;
+
         // calculate the protocol mint fee
         uint256 mintFee = (ethRequired * l.mintFeeBP) / BASIS;
 
         // update the accrued consolation fees
         // ETH required for mint taken from consolationFees
-        l.consolationFees -= ethRequired - consolationFee;
+        l.consolationFees -= (ethRequired -
+            consolationFee +
+            additionalDepositorFee);
 
         // update the accrued depositor mint earnings
-        l.mintEarnings += ethRequired - consolationFee - mintFee;
+        l.mintEarnings +=
+            ethRequired -
+            consolationFee -
+            mintFee +
+            additionalDepositorFee;
 
         // update the accrued protocol fees
         l.protocolFees += mintFee;
@@ -282,15 +292,25 @@ abstract contract PerpetualMintInternal is
         // calculate the consolation fee
         uint256 consolationFee = (ethRequired * l.consolationFeeBP) / BASIS;
 
+        // apply the collection-specific mint fee ratio
+        uint256 additionalDepositorFee = (consolationFee *
+            collectionData.mintFeeDistributionRatioBP) / BASIS;
+
         // calculate the protocol mint fee
         uint256 mintFee = (ethRequired * l.mintFeeBP) / BASIS;
 
         // update the accrued consolation fees
         // ETH required for mint taken from consolationFees
-        l.consolationFees -= ethRequired - consolationFee;
+        l.consolationFees -= (ethRequired -
+            consolationFee +
+            additionalDepositorFee);
 
         // update the accrued depositor mint earnings
-        l.mintEarnings += ethRequired - consolationFee - mintFee;
+        l.mintEarnings +=
+            ethRequired -
+            consolationFee -
+            mintFee +
+            additionalDepositorFee;
 
         // update the accrued protocol fees
         l.protocolFees += mintFee;

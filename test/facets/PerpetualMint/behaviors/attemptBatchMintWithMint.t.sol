@@ -110,6 +110,85 @@ contract PerpetualMint_attemptBatchMintWithMint is
         );
     }
 
+    /// @dev Tests attemptBatchMintWithMint functionality when a collection mint fee distribution ratio is set.
+    function test_attemptBatchMintWithMintWithCollectionMintFeeDistributionRatio()
+        external
+    {
+        uint256 preMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        uint256 preMintAccruedMintEarnings = perpetualMint
+            .accruedMintEarnings();
+
+        assert(preMintAccruedMintEarnings == 0);
+
+        uint256 preMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
+
+        assert(preMintAccruedProtocolFees == 0);
+
+        uint256 preMintTokenBalance = token.balanceOf(minter);
+
+        perpetualMint.setCollectionMintFeeDistributionRatioBP(
+            COLLECTION,
+            TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP
+        );
+
+        vm.prank(minter);
+        perpetualMint.attemptBatchMintWithMint(COLLECTION, TEST_MINT_ATTEMPTS);
+
+        uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
+
+        emit log_uint(expectedEthRequired);
+
+        uint256 expectedConsolationFee = (expectedEthRequired *
+            perpetualMint.consolationFeeBP()) / perpetualMint.BASIS();
+
+        uint256 expectedAdditionalDepositorFee = (expectedConsolationFee *
+            TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP) /
+            perpetualMint.BASIS();
+
+        uint256 postMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        assert(
+            postMintAccruedConsolationFees ==
+                preMintAccruedConsolationFees -
+                    (expectedEthRequired -
+                        expectedConsolationFee +
+                        expectedAdditionalDepositorFee)
+        );
+
+        uint256 postMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
+
+        uint256 expectedMintFee = (expectedEthRequired *
+            perpetualMint.mintFeeBP()) / perpetualMint.BASIS();
+
+        assert(postMintAccruedProtocolFees == expectedMintFee);
+
+        uint256 postMintAccruedMintEarnings = perpetualMint
+            .accruedMintEarnings();
+
+        assert(
+            postMintAccruedMintEarnings ==
+                expectedEthRequired -
+                    expectedConsolationFee -
+                    expectedMintFee +
+                    expectedAdditionalDepositorFee
+        );
+
+        uint256 postMintTokenBalance = token.balanceOf(minter);
+
+        uint256 expectedMintTokenBurned = expectedEthRequired *
+            perpetualMint.ethToMintRatio();
+
+        assert(
+            postMintTokenBalance ==
+                preMintTokenBalance - expectedMintTokenBurned
+        );
+    }
+
     /// @dev Tests that attemptBatchMintWithMint functionality reverts when attempting zero mints.
     function test_attemptBatchMintWithMintRevertsWhen_AttemptingZeroMints()
         external

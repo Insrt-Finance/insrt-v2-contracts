@@ -190,51 +190,22 @@ abstract contract PerpetualMintInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        if (numberOfMints == 0) {
-            revert InvalidNumberOfMints();
-        }
-
         CollectionData storage collectionData = l.collections[collection];
 
         uint256 collectionMintPrice = _collectionMintPrice(collectionData);
-        uint256 ethToMintRatio = _ethToMintRatio(l);
 
         uint256 ethRequired = collectionMintPrice * numberOfMints;
 
-        if (ethRequired > l.consolationFees) {
-            revert InsufficientConsolationFees();
-        }
+        uint256 ethToMintRatio = _ethToMintRatio(l);
 
-        // calculate amount of $MINT required
-        uint256 mintRequired = ethRequired * ethToMintRatio;
-
-        IToken(l.mintToken).burn(minter, mintRequired);
-
-        // calculate the consolation fee
-        uint256 consolationFee = (ethRequired * l.consolationFeeBP) / BASIS;
-
-        // apply the collection-specific mint fee ratio
-        uint256 additionalDepositorFee = (consolationFee *
-            collectionData.mintFeeDistributionRatioBP) / BASIS;
-
-        // calculate the protocol mint fee
-        uint256 mintFee = (ethRequired * l.mintFeeBP) / BASIS;
-
-        // update the accrued consolation fees
-        // ETH required for mint taken from consolationFees
-        l.consolationFees -= (ethRequired -
-            consolationFee +
-            additionalDepositorFee);
-
-        // update the accrued depositor mint earnings
-        l.mintEarnings +=
-            ethRequired -
-            consolationFee -
-            mintFee +
-            additionalDepositorFee;
-
-        // update the accrued protocol fees
-        l.protocolFees += mintFee;
+        _attemptBatchMintWithMint_sharedLogic(
+            l,
+            ethRequired,
+            numberOfMints,
+            collectionData.mintFeeDistributionRatioBP,
+            ethToMintRatio,
+            minter
+        );
 
         // if the number of words requested is greater than the max allowed by the VRF coordinator,
         // the request for random words will fail (max random words is currently 500 per request).
@@ -254,16 +225,47 @@ abstract contract PerpetualMintInternal is
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
-        if (numberOfMints == 0) {
-            revert InvalidNumberOfMints();
-        }
-
         CollectionData storage collectionData = l.collections[collection];
 
         uint256 collectionMintPrice = _collectionMintPrice(collectionData);
-        uint256 ethToMintRatio = _ethToMintRatio(l);
 
         uint256 ethRequired = collectionMintPrice * numberOfMints;
+
+        uint256 ethToMintRatio = _ethToMintRatio(l);
+
+        _attemptBatchMintWithMint_sharedLogic(
+            l,
+            ethRequired,
+            numberOfMints,
+            collectionData.mintFeeDistributionRatioBP,
+            ethToMintRatio,
+            minter
+        );
+
+        // if the number of words requested is greater than uint8, the function call will revert.
+        // the current max allowed by Supra VRF is 255 per request.
+        uint8 numWords = numberOfMints * 2; // 2 words per mint, current max of 127 mints per tx
+
+        _requestRandomWordsBase(
+            l,
+            collectionData,
+            minter,
+            collection,
+            numWords
+        );
+    }
+
+    function _attemptBatchMintWithMint_sharedLogic(
+        Storage.Layout storage l,
+        uint256 ethRequired,
+        uint32 numberOfMints,
+        uint32 mintFeeDistributionRatioBP,
+        uint256 ethToMintRatio,
+        address minter
+    ) private {
+        if (numberOfMints == 0) {
+            revert InvalidNumberOfMints();
+        }
 
         if (ethRequired > l.consolationFees) {
             revert InsufficientConsolationFees();
@@ -279,7 +281,7 @@ abstract contract PerpetualMintInternal is
 
         // apply the collection-specific mint fee ratio
         uint256 additionalDepositorFee = (consolationFee *
-            collectionData.mintFeeDistributionRatioBP) / BASIS;
+            mintFeeDistributionRatioBP) / BASIS;
 
         // calculate the protocol mint fee
         uint256 mintFee = (ethRequired * l.mintFeeBP) / BASIS;
@@ -299,18 +301,6 @@ abstract contract PerpetualMintInternal is
 
         // update the accrued protocol fees
         l.protocolFees += mintFee;
-
-        // if the number of words requested is greater than uint8, the function call will revert.
-        // the current max allowed by Supra VRF is 255 per request.
-        uint8 numWords = numberOfMints * 2; // 2 words per mint, current max of 127 mints per tx
-
-        _requestRandomWordsBase(
-            l,
-            collectionData,
-            minter,
-            collection,
-            numWords
-        );
     }
 
     /// @notice returns the value of BASIS

@@ -58,7 +58,7 @@ contract PerpetualMint_setCollectionRisk is
         }
     }
 
-    /// @dev tests for the _enforceNonZeroRisk event emission after a new collection risk is set
+    /// @dev tests for the CollectionRiskSet event emission after a new collection risk is set
     function test_setCollectionRiskEmitsCollectionRiskSetEvent() external {
         vm.expectEmit();
         emit CollectionRiskSet(COLLECTION, newCollectionRisk);

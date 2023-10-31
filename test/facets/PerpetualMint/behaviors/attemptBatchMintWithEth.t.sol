@@ -91,6 +91,81 @@ contract PerpetualMint_attemptBatchMintWithEth is
         );
     }
 
+    /// @dev Tests attemptBatchMintWithEth functionality when a collection mint fee distribution ratio is set.
+    function test_attemptBatchMintWithEthWithCollectionMintFeeDistributionRatio()
+        external
+    {
+        uint256 preMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        assert(preMintAccruedConsolationFees == 0);
+
+        uint256 preMintAccruedMintEarnings = perpetualMint
+            .accruedMintEarnings();
+
+        assert(preMintAccruedMintEarnings == 0);
+
+        uint256 preMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
+
+        assert(preMintAccruedProtocolFees == 0);
+
+        assert(address(perpetualMint).balance == 0);
+
+        perpetualMint.setCollectionMintFeeDistributionRatioBP(
+            COLLECTION,
+            TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP
+        );
+
+        uint256 preCalculatedConsolationFee = ((MINT_PRICE *
+            TEST_MINT_ATTEMPTS) * perpetualMint.consolationFeeBP()) /
+            perpetualMint.BASIS();
+
+        uint256 expectedAdditionalDepositorFee = (preCalculatedConsolationFee *
+            TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP) /
+            perpetualMint.BASIS();
+
+        vm.prank(minter);
+        perpetualMint.attemptBatchMintWithEth{
+            value: MINT_PRICE * TEST_MINT_ATTEMPTS
+        }(COLLECTION, TEST_MINT_ATTEMPTS);
+
+        uint256 postMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        assert(
+            postMintAccruedConsolationFees ==
+                preCalculatedConsolationFee - expectedAdditionalDepositorFee
+        );
+
+        uint256 postMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
+
+        assert(
+            postMintAccruedProtocolFees ==
+                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
+                    perpetualMint.mintFeeBP()) / perpetualMint.BASIS())
+        );
+
+        uint256 postMintAccruedMintEarnings = perpetualMint
+            .accruedMintEarnings();
+
+        assert(
+            postMintAccruedMintEarnings ==
+                (MINT_PRICE * TEST_MINT_ATTEMPTS) -
+                    preCalculatedConsolationFee -
+                    postMintAccruedProtocolFees +
+                    expectedAdditionalDepositorFee
+        );
+
+        assert(
+            address(perpetualMint).balance ==
+                postMintAccruedConsolationFees +
+                    postMintAccruedMintEarnings +
+                    postMintAccruedProtocolFees
+        );
+    }
+
     /// @dev Tests that attemptBatchMintWithEth functionality reverts when attempting to mint with an incorrect msg value amount.
     function test_attemptBatchMintWithEthRevertsWhen_AttemptingToMintWithIncorrectMsgValue()
         external

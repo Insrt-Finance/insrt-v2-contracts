@@ -29,6 +29,9 @@ abstract contract PerpetualMintTestBase is CoreTest {
     /// @dev number of tiers
     uint8 internal constant testNumberOfTiers = 5;
 
+    uint32 internal constant TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP =
+        5e8; // 50%
+
     uint32 internal constant TEST_CONSOLATION_FEE_BP = 5000000; // 0.5% fee
 
     uint32 internal constant TEST_MINT_FEE_BP = 5000000; // 0.5% fee

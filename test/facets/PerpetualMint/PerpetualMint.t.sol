@@ -24,6 +24,9 @@ abstract contract PerpetualMintTest is CoreTest {
 
     uint32 internal constant TEST_CONSOLATION_FEE_BP = 5000000; // 0.5% fee
 
+    uint32 internal constant TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP =
+        5e8; // 50%
+
     uint32 internal constant TEST_MINT_FEE_BP = 5000000; // 0.5% fee
 
     uint64 internal constant TEST_VRF_SUBSCRIPTION_ID = 5;

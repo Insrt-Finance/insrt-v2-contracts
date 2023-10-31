@@ -106,14 +106,22 @@ abstract contract PerpetualMintInternal is
         // calculate the consolation fee
         uint256 consolationFee = (msgValue * l.consolationFeeBP) / BASIS;
 
+        // apply the collection-specific mint fee ratio
+        uint256 additionalDepositorFee = (consolationFee *
+            collectionData.mintFeeDistributionRatioBP) / BASIS;
+
         // calculate the protocol mint fee
         uint256 mintFee = (msgValue * l.mintFeeBP) / BASIS;
 
         // update the accrued consolation fees
-        l.consolationFees += consolationFee;
+        l.consolationFees += consolationFee - additionalDepositorFee;
 
         // update the accrued depositor mint earnings
-        l.mintEarnings += msgValue - consolationFee - mintFee;
+        l.mintEarnings +=
+            msgValue -
+            consolationFee -
+            mintFee +
+            additionalDepositorFee;
 
         // update the accrued protocol fees
         l.protocolFees += mintFee;
@@ -153,14 +161,22 @@ abstract contract PerpetualMintInternal is
         // calculate the consolation fee
         uint256 consolationFee = (msgValue * l.consolationFeeBP) / BASIS;
 
+        // apply the collection-specific mint fee ratio
+        uint256 additionalDepositorFee = (consolationFee *
+            collectionData.mintFeeDistributionRatioBP) / BASIS;
+
         // calculate the protocol mint fee
         uint256 mintFee = (msgValue * l.mintFeeBP) / BASIS;
 
         // update the accrued consolation fees
-        l.consolationFees += consolationFee;
+        l.consolationFees += consolationFee - additionalDepositorFee;
 
         // update the accrued depositor mint earnings
-        l.mintEarnings += msgValue - consolationFee - mintFee;
+        l.mintEarnings +=
+            msgValue -
+            consolationFee -
+            mintFee +
+            additionalDepositorFee;
 
         // update the accrued protocol fees
         l.protocolFees += mintFee;

@@ -35,6 +35,11 @@ interface IPerpetualMintInternal {
     /// @param collection address of rejected claim collection
     event ClaimCancelled(address claimer, address indexed collection);
 
+    /// @notice emitted when the mint fee distribution ratio for a collection is updated
+    /// @param collection address of collection
+    /// @param ratioBP new mint fee distribution ratio in basis points
+    event CollectionMintFeeRatioUpdated(address collection, uint32 ratioBP);
+
     /// @notice emitted when the mint multiplier for a collection is set
     /// @param collection address of collection
     /// @param multiplier multiplier of collection

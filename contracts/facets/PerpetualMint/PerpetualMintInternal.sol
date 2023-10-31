@@ -817,6 +817,24 @@ abstract contract PerpetualMintInternal is
         );
     }
 
+    /// @notice sets the collection mint fee distribution ratio in basis points
+    /// @param collection address of collection
+    /// @param ratioBP collection mint fee distribution ratio in basis points
+    function _setCollectionMintFeeDistributionRatioBP(
+        address collection,
+        uint32 ratioBP
+    ) internal {
+        _enforceBasis(ratioBP, BASIS);
+
+        CollectionData storage collectionData = Storage.layout().collections[
+            collection
+        ];
+
+        collectionData.mintFeeDistributionRatioBP = ratioBP;
+
+        emit CollectionMintFeeRatioUpdated(collection, ratioBP);
+    }
+
     /// @notice sets the mint multiplier for a given collection
     /// @param collection address of collection
     /// @param multiplier mint multiplier of the collection

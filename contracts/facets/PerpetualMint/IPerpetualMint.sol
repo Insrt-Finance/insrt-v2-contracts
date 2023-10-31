@@ -88,6 +88,14 @@ interface IPerpetualMint is
     /// @param amount amount of $MINT
     function redeem(uint256 amount) external;
 
+    /// @notice sets the mint fee distribution ratio in basis points for a given collection
+    /// @param collection address of collection
+    /// @param ratioBP new mint fee distribution ratio in basis points
+    function setCollectionMintFeeDistributionRatioBP(
+        address collection,
+        uint32 ratioBP
+    ) external;
+
     /// @notice sets the mint multiplier for a given collection
     /// @param collection address of collection
     /// @param multiplier mint multiplier of collection

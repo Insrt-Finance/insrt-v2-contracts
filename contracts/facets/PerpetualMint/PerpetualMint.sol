@@ -100,6 +100,14 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function setCollectionMintFeeDistributionRatioBP(
+        address collection,
+        uint32 ratioBP
+    ) external onlyOwner {
+        _setCollectionMintFeeDistributionRatioBP(collection, ratioBP);
+    }
+
+    /// @inheritdoc IPerpetualMint
     function setCollectionMintMultiplier(
         address collection,
         uint256 multiplier

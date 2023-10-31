@@ -83,9 +83,13 @@ contract UpgradePerpetualMintViewArb is BatchScript {
         address viewFacetAddress
     ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
         // map the PerpetualMintView related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](1);
+        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](2);
 
         perpetualMintViewFunctionSelectors[0] = IPerpetualMintView
+            .collectionMintFeeDistributionRatioBP
+            .selector;
+
+        perpetualMintViewFunctionSelectors[1] = IPerpetualMintView
             .collectionMintMultiplier
             .selector;
 

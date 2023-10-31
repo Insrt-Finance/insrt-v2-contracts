@@ -431,6 +431,18 @@ abstract contract PerpetualMintInternal is
         payable(recipient).sendValue(protocolFees);
     }
 
+    /// @notice Returns the current mint fee distribution ratio in basis points for a collection
+    /// @param collection address of collection
+    /// @return ratioBP current collection mint fee distribution ratio in basis points
+    function _collectionMintFeeDistributionRatioBP(
+        address collection
+    ) internal view returns (uint32 ratioBP) {
+        ratioBP = Storage
+            .layout()
+            .collections[collection]
+            .mintFeeDistributionRatioBP;
+    }
+
     /// @notice Returns the current collection multiplier for a given collection
     /// @param collectionData the CollectionData struct for a given collection
     /// @return multiplier current collection multiplier

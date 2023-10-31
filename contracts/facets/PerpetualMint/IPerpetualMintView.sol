@@ -39,6 +39,13 @@ interface IPerpetualMintView {
         uint256 randomness
     ) external view returns (MintResultData memory result);
 
+    /// @notice Returns the current mint fee distribution ratio in basis points for a collection
+    /// @param collection address of collection
+    /// @return ratioBP current collection mint fee distribution ratio in basis points
+    function collectionMintFeeDistributionRatioBP(
+        address collection
+    ) external view returns (uint32 ratioBP);
+
     /// @notice Returns the current mint multiplier for a collection
     /// @param collection address of collection
     /// @return multiplier current collection mint multiplier

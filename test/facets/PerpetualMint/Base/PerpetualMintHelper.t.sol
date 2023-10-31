@@ -178,7 +178,7 @@ contract PerpetualMintHelperBase {
             });
 
         // map the PerpetualMintView test related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](20);
+        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](21);
 
         perpetualMintViewFunctionSelectors[0] = IPerpetualMintView
             .accruedConsolationFees
@@ -201,62 +201,66 @@ contract PerpetualMintHelperBase {
             .selector;
 
         perpetualMintViewFunctionSelectors[5] = IPerpetualMintView
-            .collectionMintMultiplier
+            .collectionMintFeeDistributionRatioBP
             .selector;
 
         perpetualMintViewFunctionSelectors[6] = IPerpetualMintView
-            .collectionMintPrice
+            .collectionMintMultiplier
             .selector;
 
         perpetualMintViewFunctionSelectors[7] = IPerpetualMintView
-            .collectionRisk
+            .collectionMintPrice
             .selector;
 
         perpetualMintViewFunctionSelectors[8] = IPerpetualMintView
-            .consolationFeeBP
+            .collectionRisk
             .selector;
 
         perpetualMintViewFunctionSelectors[9] = IPerpetualMintView
-            .defaultCollectionMintPrice
+            .consolationFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[10] = IPerpetualMintView
-            .defaultCollectionRisk
+            .defaultCollectionMintPrice
             .selector;
 
         perpetualMintViewFunctionSelectors[11] = IPerpetualMintView
-            .defaultEthToMintRatio
+            .defaultCollectionRisk
             .selector;
 
         perpetualMintViewFunctionSelectors[12] = IPerpetualMintView
-            .ethToMintRatio
+            .defaultEthToMintRatio
             .selector;
 
         perpetualMintViewFunctionSelectors[13] = IPerpetualMintView
-            .mintFeeBP
+            .ethToMintRatio
             .selector;
 
         perpetualMintViewFunctionSelectors[14] = IPerpetualMintView
-            .mintToken
+            .mintFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[15] = IPerpetualMintView
-            .redemptionFeeBP
+            .mintToken
             .selector;
 
         perpetualMintViewFunctionSelectors[16] = IPerpetualMintView
-            .redeemPaused
+            .redemptionFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[17] = IPerpetualMintView
-            .tiers
+            .redeemPaused
             .selector;
 
         perpetualMintViewFunctionSelectors[18] = IPerpetualMintView
-            .vrfConfig
+            .tiers
             .selector;
 
         perpetualMintViewFunctionSelectors[19] = IPerpetualMintView
+            .vrfConfig
+            .selector;
+
+        perpetualMintViewFunctionSelectors[20] = IPerpetualMintView
             .vrfSubscriptionBalanceThreshold
             .selector;
 

@@ -49,6 +49,13 @@ contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
     }
 
     /// @inheritdoc IPerpetualMintView
+    function collectionMintFeeDistributionRatioBP(
+        address collection
+    ) external view returns (uint32 ratioBP) {
+        ratioBP = _collectionMintFeeDistributionRatioBP(collection);
+    }
+
+    /// @inheritdoc IPerpetualMintView
     function collectionMintMultiplier(
         address collection
     ) external view returns (uint256 multiplier) {

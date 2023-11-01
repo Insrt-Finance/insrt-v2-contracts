@@ -10,4 +10,4 @@ export NUMBER_OF_MINTS=$2
 export RANDOMNESS=$3
 
 # Run forge scripts
-forge script script/common/${CALCULATION_SCRIPT} --rpc-url $RPC_URL
+forge script script/Arbitrum/${CALCULATION_SCRIPT} --rpc-url $RPC_URL

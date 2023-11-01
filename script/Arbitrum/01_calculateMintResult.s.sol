@@ -7,9 +7,9 @@ import "forge-std/Test.sol";
 import { ICore } from "../../contracts/diamonds/Core/ICore.sol";
 import { MintOutcome, MintResultData, TiersData } from "../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 
-/// @title CalculateMintResult
+/// @title CalculateMintResultArb
 /// @dev Script for calculating the result of a batch mint attempt
-contract CalculateMintResult is Script, Test {
+contract CalculateMintResultArb is Script, Test {
     // get Core PerpetualMint diamond address
     address perpetualMintAddress = vm.envAddress("CORE_ADDRESS");
 

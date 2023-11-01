@@ -398,3 +398,15 @@ Requires the following additional environment variables set:
 ```
 make calculate-mint-result-arb <mint-collection-address> <number-of-mint-attempts> <randomness>
 ```
+
+### Base
+
+Requires the following additional environment variables set:
+
+- `BASE_RPC_URL`: Base RPC URL
+
+#### Calculating mint results
+
+```
+make calculate-mint-result-base <mint-collection-address> <number-of-mint-attempts> <randomness_signature_index_1> <randomness_signature_index_2>
+```

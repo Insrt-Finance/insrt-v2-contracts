@@ -327,12 +327,6 @@ abstract contract PerpetualMintInternal is
         Storage.Layout storage l = Storage.layout();
 
         CollectionData storage collectionData = l.collections[collection];
-        TiersData storage tiers = l.tiers;
-
-        uint32 collectionRisk = _collectionRisk(collectionData);
-        uint256 ethToMintRatio = _ethToMintRatio(l);
-
-        result.mintOutcomes = new MintOutcome[](numberOfMints);
 
         uint32 numberOfWords = numberOfMints * 2;
 
@@ -341,6 +335,58 @@ abstract contract PerpetualMintInternal is
         for (uint256 i = 0; i < numberOfWords; ++i) {
             randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
         }
+
+        result = _calculateMintResult_sharedLogic(
+            l,
+            numberOfMints,
+            randomWords,
+            collectionData
+        );
+    }
+
+    /// @notice calculates the Base-specific mint result of a given number of mint attempts for a given collection using given signature as randomness
+    /// @param collection address of collection for mint attempts
+    /// @param numberOfMints number of mints to attempt
+    /// @param signature signature value to use as randomness in calculation
+    function _calculateMintResultBase(
+        address collection,
+        uint8 numberOfMints,
+        uint256[2] calldata signature
+    ) internal view returns (MintResultData memory result) {
+        Storage.Layout storage l = Storage.layout();
+
+        CollectionData storage collectionData = l.collections[collection];
+
+        uint8 numberOfWords = numberOfMints * 2;
+
+        uint256[] memory randomWords = new uint256[](numberOfWords);
+
+        for (uint256 i = 0; i < numberOfWords; ++i) {
+            randomWords[i] = uint256(
+                keccak256(abi.encodePacked(signature, i + 1))
+            );
+        }
+
+        result = _calculateMintResult_sharedLogic(
+            l,
+            numberOfMints,
+            randomWords,
+            collectionData
+        );
+    }
+
+    function _calculateMintResult_sharedLogic(
+        Storage.Layout storage l,
+        uint32 numberOfMints,
+        uint256[] memory randomWords,
+        CollectionData storage collectionData
+    ) private view returns (MintResultData memory result) {
+        TiersData storage tiers = l.tiers;
+
+        uint32 collectionRisk = _collectionRisk(collectionData);
+        uint256 ethToMintRatio = _ethToMintRatio(l);
+
+        result.mintOutcomes = new MintOutcome[](numberOfMints);
 
         for (uint256 i = 0; i < randomWords.length; i += 2) {
             MintOutcome memory outcome;
@@ -386,8 +432,6 @@ abstract contract PerpetualMintInternal is
 
             result.mintOutcomes[i / 2] = outcome;
         }
-
-        return result;
     }
 
     /// @notice Cancels a claim for a given claimer for given token ID

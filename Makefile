@@ -146,6 +146,10 @@ upgrade-perp-mint-arb:
 upgrade-perp-mint-view-arb:
 	@./script/Arbitrum/upgrade/upgrade-perp-mint-view-arb.sh
 
+##### Upgrade Token facet
+upgrade-token-arb:
+	@./script/Arbitrum/upgrade/upgrade-token-arb.sh
+
 ##### Arbitrum Goerli
 
 ##### Upgrade PerpetualMint facet

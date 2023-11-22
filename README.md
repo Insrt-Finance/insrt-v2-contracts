@@ -385,6 +385,12 @@ make upgrade-perp-mint-arb
 make upgrade-perp-mint-view-arb
 ```
 
+#### Upgrade Token facet
+
+```
+make upgrade-token-arb
+```
+
 #### Arbitrum Goerli
 
 Requires the following additional environment variables set:

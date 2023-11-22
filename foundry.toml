@@ -23,7 +23,7 @@ verbosity = 4
 
 [rpc_endpoints]
 arb_fork_tenderly = "${PERP_MINT_ARB_URL}"
-arbitrum = "${ARBITRUM_RPC_URL}"
+arbitrum-one = "${ARBITRUM_RPC_URL}"
 arbitrum-goerli = "${ARBITRUM_GOERLI_RPC_URL}"
 base = "${BASE_RPC_URL}"
 base-goerli = "${BASE_GOERLI_RPC_URL}"

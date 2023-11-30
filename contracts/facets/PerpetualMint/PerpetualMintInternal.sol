@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.19;
 
-import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV2Interface.sol";
+import { VRFCoordinatorV2Interface } from "@chainlink/vrf/interfaces/VRFCoordinatorV2Interface.sol";
 import { VRFConsumerBaseV2 } from "@chainlink/vrf/VRFConsumerBaseV2.sol";
 import { OwnableInternal } from "@solidstate/contracts/access/ownable/OwnableInternal.sol";
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";

@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.19;
 
-import { VRFCoordinatorV2Mock } from "@chainlink/mocks/VRFCoordinatorV2Mock.sol";
+import { VRFCoordinatorV2Mock } from "@chainlink/vrf/mocks/VRFCoordinatorV2Mock.sol";
 
 import { VRFConsumerBaseV2Mock } from "./VRFConsumerBaseV2Mock.sol";
 

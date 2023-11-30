@@ -2,7 +2,7 @@
 pragma solidity 0.8.19;
 
 import "forge-std/Script.sol";
-import { VRFCoordinatorV2Interface } from "@chainlink/interfaces/VRFCoordinatorV2Interface.sol";
+import { VRFCoordinatorV2Interface } from "@chainlink/vrf/interfaces/VRFCoordinatorV2Interface.sol";
 import { LinkTokenInterface } from "@chainlink/shared/interfaces/LinkTokenInterface.sol";
 
 import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";

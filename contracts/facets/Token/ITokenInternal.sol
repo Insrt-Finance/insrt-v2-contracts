@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.19;
 
-/// @title ITokenMintInternal interface
-/// @dev contains all errors and events used in the Token facet contract
+/// @title ITokenMintInternal
+/// @dev Interface containing all errors and events used in the Token facet contract
 interface ITokenInternal {
     /// @notice thrown when attempting to transfer tokens and the from address is neither
     /// the zero-address, nor the contract address, or the to address is not the zero address

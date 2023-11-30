@@ -6,8 +6,8 @@ import { IPerpetualMintViewBase } from "./IPerpetualMintView.sol";
 import { PerpetualMintView } from "../PerpetualMintView.sol";
 import { MintResultData } from "../Storage.sol";
 
-/// @title PerpetualMintViewBase facet contract
-/// @dev Base-specific PerpetualMintView
+/// @title PerpetualMintViewBase
+/// @dev Base-specific PerpetualMintView facet contract
 contract PerpetualMintViewBase is IPerpetualMintViewBase, PerpetualMintView {
     constructor(address vrf) PerpetualMintView(vrf) {}
 

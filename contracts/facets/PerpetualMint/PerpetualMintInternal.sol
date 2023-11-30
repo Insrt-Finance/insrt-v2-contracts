@@ -16,7 +16,7 @@ import { CollectionData, MintOutcome, MintResultData, PerpetualMintStorage as St
 import { IToken } from "../Token/IToken.sol";
 import { GuardsInternal } from "../../common/GuardsInternal.sol";
 
-/// @title PerpetualMintInternal facet contract
+/// @title PerpetualMintInternal
 /// @dev defines modularly all logic for the PerpetualMint mechanism in internal functions
 abstract contract PerpetualMintInternal is
     ERC1155BaseInternal,

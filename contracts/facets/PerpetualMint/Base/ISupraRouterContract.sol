@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.19;
 
-/// @title ISupraRouterContract interface
-/// @dev contains the relevant functions used to request randomness from the Supra VRF Router
+/// @title ISupraRouterContract
+/// @dev Interface containing the relevant functions used to request randomness from the Supra VRF Router
 interface ISupraRouterContract {
     /// @notice Generates the random number request to generator contract with client's randomness added
     /// @dev It will forward the random number generation request by calling generator contracts function which takes seed value other than required parameter to add randomness

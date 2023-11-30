@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 
 import { MintResultData, TiersData, VRFConfig } from "./Storage.sol";
 
-/// @title IPerpetualMintView interface
+/// @title IPerpetualMintView
 /// @dev Interface of the PerpetualMintView facet
 interface IPerpetualMintView {
     /// @notice Returns the current accrued consolation fees

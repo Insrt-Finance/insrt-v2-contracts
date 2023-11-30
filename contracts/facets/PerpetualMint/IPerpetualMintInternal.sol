@@ -4,8 +4,8 @@ pragma solidity 0.8.19;
 
 import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
-/// @title IPerpetualMintInternal interface
-/// @dev contains all errors and events used in the PerpetualMint facet contract
+/// @title IPerpetualMintInternal
+/// @dev Interface containing all errors and events used in the PerpetualMint facet contract
 interface IPerpetualMintInternal {
     /// @notice thrown when an incorrect amount of ETH is received
     error IncorrectETHReceived();

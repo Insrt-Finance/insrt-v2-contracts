@@ -5,7 +5,7 @@ pragma solidity 0.8.19;
 import { IPerpetualMint } from "../IPerpetualMint.sol";
 import { PerpetualMint } from "../PerpetualMint.sol";
 
-/// @title PerpetualMintBase facet contract
+/// @title PerpetualMintBase
 /// @dev Base-specific overrides for PerpetualMint
 contract PerpetualMintBase is PerpetualMint {
     constructor(address vrf) PerpetualMint(vrf) {}

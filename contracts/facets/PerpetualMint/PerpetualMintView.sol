@@ -6,8 +6,8 @@ import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 import { IPerpetualMintView } from "./IPerpetualMintView.sol";
 import { MintResultData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
-/// @title PerpetualMintView facet contract
-/// @dev contains all externally called view functions
+/// @title PerpetualMintView
+/// @dev PerpetualMintView facet contract containing all externally called view functions
 contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
     constructor(address vrf) PerpetualMintInternal(vrf) {}
 

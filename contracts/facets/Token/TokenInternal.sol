@@ -11,8 +11,8 @@ import { TokenStorage as Storage } from "./Storage.sol";
 import { AccrualData } from "./types/DataTypes.sol";
 import { GuardsInternal } from "../../common/GuardsInternal.sol";
 
-/// @title $MINT Token contract
-/// @dev The internal functionality of $MINT token.
+/// @title TokenInternal
+/// @dev The internal functionality of the $MINT token contract.
 abstract contract TokenInternal is
     ERC20BaseInternal,
     GuardsInternal,

@@ -9,8 +9,8 @@ import { IToken } from "./IToken.sol";
 import { TokenInternal } from "./TokenInternal.sol";
 import { AccrualData } from "./types/DataTypes.sol";
 
-/// @title Token contract
-/// @dev contains all externally called functions and necessary override for the Token facet
+/// @title Token
+/// @dev contains all externally called functions and necessary override for the Token facet contract
 contract Token is TokenInternal, SolidStateERC20, IToken {
     /// @inheritdoc IToken
     function accrualData(

@@ -13,8 +13,8 @@ import { IPerpetualMint } from "./IPerpetualMint.sol";
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
-/// @title PerpetualMint facet contract
-/// @dev contains all externally called functions
+/// @title PerpetualMint
+/// @dev PerpetualMint facet containing all protocol-specific externally called functions
 contract PerpetualMint is
     ERC1155Base,
     ERC1155Metadata,

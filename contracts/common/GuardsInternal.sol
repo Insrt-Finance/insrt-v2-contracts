@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 
 import { IGuardsInternal } from "./IGuardsInternal.sol";
 
-/// @title GuardsInternal contract
+/// @title GuardsInternal
 /// @dev contains common internal guard functions
 abstract contract GuardsInternal is IGuardsInternal {
     /// @notice enforces that a value does not exceed the basis

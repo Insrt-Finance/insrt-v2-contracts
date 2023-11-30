@@ -12,16 +12,16 @@ import { IERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/I
 import { ICore } from "../../../contracts/diamonds/Core/ICore.sol";
 import { Core } from "../../../contracts/diamonds/Core/Core.sol";
 import { IPerpetualMintViewBase } from "../../../contracts/facets/PerpetualMint/Base/IPerpetualMintView.sol";
-import { PerpetualMintBase } from "../../../contracts/facets/PerpetualMint/Base/PerpetualMint.sol";
+import { PerpetualMint_Base } from "../../../contracts/facets/PerpetualMint/Base/PerpetualMint.sol";
 import { PerpetualMintViewBase } from "../../../contracts/facets/PerpetualMint/Base/PerpetualMintView.sol";
 import { IERC1155MetadataExtension } from "../../../contracts/facets/PerpetualMint/IERC1155MetadataExtension.sol";
 import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 import { IPerpetualMintView } from "../../../contracts/facets/PerpetualMint/IPerpetualMintView.sol";
 
-/// @title DeployPerpetualMintBase
-/// @dev deploys the Core diamond contract, PerpetualMintBase facet and PerpetualMintViewBase facet, and performs
-/// a diamondCut of the PerpetualMintBase and PerpetualMintViewBaase facets onto the Core diamond
-contract DeployPerpetualMintBase is Script {
+/// @title DeployPerpetualMint_Base
+/// @dev deploys the Core diamond contract, PerpetualMint_Base facet and PerpetualMintViewBase facet, and performs
+/// a diamondCut of the PerpetualMint_Base and PerpetualMintViewBaase facets onto the Core diamond
+contract DeployPerpetualMint_Base is Script {
     /// @dev runs the script logic
     function run() external {
         // read address of $MINT token contract
@@ -37,8 +37,10 @@ contract DeployPerpetualMintBase is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        // deploy PerpetualMintBase facet
-        PerpetualMintBase perpetualMintBase = new PerpetualMintBase(VRF_ROUTER);
+        // deploy PerpetualMint_Base facet
+        PerpetualMint_Base perpetualMint_Base = new PerpetualMint_Base(
+            VRF_ROUTER
+        );
 
         // deploy PerpetualMintViewBase facet
         PerpetualMintViewBase perpetualMintViewBase = new PerpetualMintViewBase(
@@ -49,8 +51,8 @@ contract DeployPerpetualMintBase is Script {
         Core core = new Core(mintToken, receiptName, receiptSymbol);
 
         console.log(
-            "PerpetualMintBase Facet Address: ",
-            address(perpetualMintBase)
+            "PerpetualMint_Base Facet Address: ",
+            address(perpetualMint_Base)
         );
         console.log(
             "PerpetualMintViewBase Facet Address: ",
@@ -65,7 +67,7 @@ contract DeployPerpetualMintBase is Script {
         // get PerpetualMint facet cuts
         ISolidStateDiamond.FacetCut[]
             memory perpetualMintFacetCuts = getPerpetualMintFacetCuts(
-                address(perpetualMintBase)
+                address(perpetualMint_Base)
             );
 
         // get PerpetualMintView & PerpetualMintViewBase facet cuts
@@ -97,7 +99,7 @@ contract DeployPerpetualMintBase is Script {
     }
 
     /// @dev provides the facet cuts for cutting PerpetualMint facet into Core
-    /// @param facetAddress address of PerpetualMintBase facet
+    /// @param facetAddress address of PerpetualMint_Base facet
     function getPerpetualMintFacetCuts(
         address facetAddress
     ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {

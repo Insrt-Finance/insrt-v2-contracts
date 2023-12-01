@@ -152,12 +152,29 @@ abstract contract PerpetualMintTest is CoreTest {
         assert(TEST_MINT_FEE_BP == perpetualMint.mintFeeBP());
     }
 
-    /// @dev initializes PerpetualMint as a facet by executing a diamond cut on coreDiamond.
+    /// @dev initializes PerpetualMint facets by executing a diamond cut on the Core Diamond.
     function initPerpetualMint() internal {
         perpetualMintHelper = new PerpetualMintHelper();
 
-        ISolidStateDiamond.FacetCut[] memory facetCuts = perpetualMintHelper
-            .getFacetCuts();
+        ISolidStateDiamond.FacetCut[]
+            memory perpetualMintBaseTestFacetCuts = perpetualMintHelper
+                .getPerpetualMintBaseTestFacetCuts();
+
+        ISolidStateDiamond.FacetCut[]
+            memory perpetualMintTestFacetCuts = perpetualMintHelper
+                .getPerpetualMintTestFacetCuts();
+
+        ISolidStateDiamond.FacetCut[]
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](8);
+
+        facetCuts[0] = perpetualMintBaseTestFacetCuts[0];
+        facetCuts[1] = perpetualMintBaseTestFacetCuts[1];
+        facetCuts[2] = perpetualMintTestFacetCuts[0];
+        facetCuts[3] = perpetualMintTestFacetCuts[1];
+        facetCuts[4] = perpetualMintTestFacetCuts[2];
+        facetCuts[5] = perpetualMintTestFacetCuts[3];
+        facetCuts[6] = perpetualMintTestFacetCuts[4];
+        facetCuts[7] = perpetualMintTestFacetCuts[5];
 
         coreDiamond.diamondCut(facetCuts, address(0), "");
     }

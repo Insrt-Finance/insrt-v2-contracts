@@ -3,12 +3,9 @@
 pragma solidity 0.8.19;
 
 import { Ownable } from "@solidstate/contracts/access/ownable/Ownable.sol";
-import { ERC165Base } from "@solidstate/contracts/introspection/ERC165/base/ERC165Base.sol";
 import { Pausable } from "@solidstate/contracts/security/pausable/Pausable.sol";
-import { ERC1155Base } from "@solidstate/contracts/token/ERC1155/base/ERC1155Base.sol";
 import { ERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/ERC1155Metadata.sol";
 
-import { ERC1155MetadataExtension } from "./ERC1155MetadataExtension.sol";
 import { IPerpetualMint } from "./IPerpetualMint.sol";
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
@@ -16,13 +13,10 @@ import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage
 /// @title PerpetualMint
 /// @dev PerpetualMint facet containing all protocol-specific externally called functions
 contract PerpetualMint is
-    ERC1155Base,
     ERC1155Metadata,
-    ERC165Base,
     IPerpetualMint,
     Ownable,
     Pausable,
-    ERC1155MetadataExtension,
     PerpetualMintInternal
 {
     constructor(address vrf) PerpetualMintInternal(vrf) {}
@@ -76,17 +70,6 @@ contract PerpetualMint is
     /// @inheritdoc IPerpetualMint
     function mintAirdrop(uint256 amount) external payable onlyOwner {
         _mintAirdrop(amount);
-    }
-
-    /// @inheritdoc IPerpetualMint
-    function onERC1155Received(
-        address,
-        address,
-        uint256,
-        uint256,
-        bytes calldata
-    ) external pure returns (bytes4) {
-        return this.onERC1155Received.selector;
     }
 
     /// @inheritdoc IPerpetualMint

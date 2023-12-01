@@ -12,13 +12,16 @@ import { IPerpetualMintHarness } from "./IPerpetualMintHarness.sol";
 import { PerpetualMintHarness } from "./PerpetualMintHarness.t.sol";
 import { VRFConsumerBaseV2Mock } from "../../mocks/VRFConsumerBaseV2Mock.sol";
 import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
+import { IPerpetualMintBase } from "../../../contracts/facets/PerpetualMint/IPerpetualMintBase.sol";
 import { IPerpetualMintView } from "../../../contracts/facets/PerpetualMint/IPerpetualMintView.sol";
+import { PerpetualMintBase } from "../../../contracts/facets/PerpetualMint/PerpetualMintBase.sol";
 import { PerpetualMintView } from "../../../contracts/facets/PerpetualMint/PerpetualMintView.sol";
 import { PerpetualMintStorage as Storage } from "../../../contracts/facets/PerpetualMint/Storage.sol";
 
 /// @title PerpetualMintHelper
-/// @dev Test helper contract for setting up PerpetualMint facet for diamond cutting and testing
+/// @dev Test helper contract for setting up PerpetualMint for diamond cutting and testing
 contract PerpetualMintHelper {
+    PerpetualMintBase public perpetualMintBaseImplementation;
     PerpetualMintHarness public perpetualMintHarnessImplementation;
     PerpetualMintView public perpetualMintViewImplementation;
 
@@ -26,18 +29,23 @@ contract PerpetualMintHelper {
     address public constant VRF_COORDINATOR =
         0x41034678D6C633D8a95c75e1138A360a28bA15d1;
 
-    /// @dev deploys PerpetualMintHarness implementation
+    /// @dev deploys PerpetualMintHarness implementation along with PerpetualMintBase and PerpetualMintView
     constructor() {
+        perpetualMintBaseImplementation = new PerpetualMintBase(
+            VRF_COORDINATOR
+        );
+
         perpetualMintHarnessImplementation = new PerpetualMintHarness(
             VRF_COORDINATOR
         );
+
         perpetualMintViewImplementation = new PerpetualMintView(
             VRF_COORDINATOR
         );
     }
 
-    /// @dev provides the facet cuts for setting up PerpetualMint in coreDiamond
-    function getFacetCuts()
+    /// @dev provides the facet cuts for setting up PerpetualMintBase in the Core Diamond for testing
+    function getPerpetualMintBaseTestFacetCuts()
         external
         view
         returns (ISolidStateDiamond.FacetCut[] memory)
@@ -49,11 +57,42 @@ contract PerpetualMintHelper {
 
         ISolidStateDiamond.FacetCut
             memory erc1155FacetCut = IDiamondWritableInternal.FacetCut({
-                target: address(perpetualMintHarnessImplementation),
+                target: address(perpetualMintBaseImplementation),
                 action: IDiamondWritableInternal.FacetCutAction.ADD,
                 selectors: erc1155FunctionSelectors
             });
 
+        // map the PerpetualMintBase test related function selectors to their respective interfaces
+        bytes4[] memory perpetualMintBaseFunctionSelectors = new bytes4[](1);
+
+        perpetualMintBaseFunctionSelectors[0] = IPerpetualMintBase
+            .onERC1155Received
+            .selector;
+
+        ISolidStateDiamond.FacetCut
+            memory perpetualMintBaseFacetCut = IDiamondWritableInternal
+                .FacetCut({
+                    target: address(perpetualMintBaseImplementation),
+                    action: IDiamondWritableInternal.FacetCutAction.ADD,
+                    selectors: perpetualMintBaseFunctionSelectors
+                });
+
+        ISolidStateDiamond.FacetCut[]
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](2);
+
+        facetCuts[0] = erc1155FacetCut;
+
+        facetCuts[1] = perpetualMintBaseFacetCut;
+
+        return facetCuts;
+    }
+
+    /// @dev provides the facet cuts for setting up PerpetualMint in the Core Diamond for testing
+    function getPerpetualMintTestFacetCuts()
+        external
+        view
+        returns (ISolidStateDiamond.FacetCut[] memory)
+    {
         // map the ERC1155Metadata test related function selectors to their respective interfaces
         bytes4[] memory erc1155MetadataFunctionSelectors = new bytes4[](1);
 
@@ -79,7 +118,7 @@ contract PerpetualMintHelper {
             });
 
         // map the PerpetualMint test related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](28);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](27);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
             .attemptBatchMintWithEth
@@ -109,73 +148,69 @@ contract PerpetualMintHelper {
 
         perpetualMintFunctionSelectors[8] = IPerpetualMint.mintAirdrop.selector;
 
-        perpetualMintFunctionSelectors[9] = IPerpetualMint
-            .onERC1155Received
-            .selector;
+        perpetualMintFunctionSelectors[9] = IPerpetualMint.pause.selector;
 
-        perpetualMintFunctionSelectors[10] = IPerpetualMint.pause.selector;
+        perpetualMintFunctionSelectors[10] = IPerpetualMint.redeem.selector;
 
-        perpetualMintFunctionSelectors[11] = IPerpetualMint.redeem.selector;
-
-        perpetualMintFunctionSelectors[12] = IPerpetualMint
+        perpetualMintFunctionSelectors[11] = IPerpetualMint
             .setCollectionMintFeeDistributionRatioBP
             .selector;
 
-        perpetualMintFunctionSelectors[13] = IPerpetualMint
+        perpetualMintFunctionSelectors[12] = IPerpetualMint
             .setCollectionMintMultiplier
             .selector;
 
-        perpetualMintFunctionSelectors[14] = IPerpetualMint
+        perpetualMintFunctionSelectors[13] = IPerpetualMint
             .setCollectionMintPrice
             .selector;
 
-        perpetualMintFunctionSelectors[15] = IPerpetualMint
+        perpetualMintFunctionSelectors[14] = IPerpetualMint
             .setCollectionRisk
             .selector;
 
-        perpetualMintFunctionSelectors[16] = IPerpetualMint
+        perpetualMintFunctionSelectors[15] = IPerpetualMint
             .setConsolationFeeBP
             .selector;
 
-        perpetualMintFunctionSelectors[17] = IPerpetualMint
+        perpetualMintFunctionSelectors[16] = IPerpetualMint
             .setEthToMintRatio
             .selector;
 
-        perpetualMintFunctionSelectors[18] = IPerpetualMint
+        perpetualMintFunctionSelectors[17] = IPerpetualMint
             .setMintFeeBP
             .selector;
 
-        perpetualMintFunctionSelectors[19] = IPerpetualMint
+        perpetualMintFunctionSelectors[18] = IPerpetualMint
             .setMintToken
             .selector;
 
-        perpetualMintFunctionSelectors[20] = IPerpetualMint
+        perpetualMintFunctionSelectors[19] = IPerpetualMint
             .setReceiptBaseURI
             .selector;
 
-        perpetualMintFunctionSelectors[21] = IPerpetualMint
+        perpetualMintFunctionSelectors[20] = IPerpetualMint
             .setReceiptTokenURI
             .selector;
 
-        perpetualMintFunctionSelectors[22] = IPerpetualMint
+        perpetualMintFunctionSelectors[21] = IPerpetualMint
             .setRedemptionFeeBP
             .selector;
 
-        perpetualMintFunctionSelectors[23] = IPerpetualMint
+        perpetualMintFunctionSelectors[22] = IPerpetualMint
             .setRedeemPaused
             .selector;
 
-        perpetualMintFunctionSelectors[24] = IPerpetualMint.setTiers.selector;
+        perpetualMintFunctionSelectors[23] = IPerpetualMint.setTiers.selector;
 
-        perpetualMintFunctionSelectors[25] = IPerpetualMint
+        perpetualMintFunctionSelectors[24] = IPerpetualMint
             .setVRFConfig
             .selector;
 
-        perpetualMintFunctionSelectors[26] = IPerpetualMint
+        perpetualMintFunctionSelectors[25] = IPerpetualMint
             .setVRFSubscriptionBalanceThreshold
             .selector;
 
-        perpetualMintFunctionSelectors[27] = IPerpetualMint.unpause.selector;
+        perpetualMintFunctionSelectors[26] = IPerpetualMint.unpause.selector;
 
         ISolidStateDiamond.FacetCut
             memory perpetualMintFacetCut = IDiamondWritableInternal.FacetCut({
@@ -366,21 +401,19 @@ contract PerpetualMintHelper {
                 });
 
         ISolidStateDiamond.FacetCut[]
-            memory facetCuts = new ISolidStateDiamond.FacetCut[](7);
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](6);
 
-        facetCuts[0] = erc1155FacetCut;
+        facetCuts[0] = erc1155MetadataFacetCut;
 
-        facetCuts[1] = erc1155MetadataFacetCut;
+        facetCuts[1] = pausableFacetCut;
 
-        facetCuts[2] = pausableFacetCut;
+        facetCuts[2] = perpetualMintFacetCut;
 
-        facetCuts[3] = perpetualMintFacetCut;
+        facetCuts[3] = perpetualMintViewFacetCut;
 
-        facetCuts[4] = perpetualMintViewFacetCut;
+        facetCuts[4] = perpetualMintHarnessFacetCut;
 
-        facetCuts[5] = perpetualMintHarnessFacetCut;
-
-        facetCuts[6] = vrfConsumerBaseV2MockFacetCut;
+        facetCuts[5] = vrfConsumerBaseV2MockFacetCut;
 
         return facetCuts;
     }

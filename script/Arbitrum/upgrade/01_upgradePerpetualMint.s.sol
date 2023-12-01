@@ -4,14 +4,12 @@ pragma solidity 0.8.19;
 import "forge-safe/BatchScript.sol";
 
 import { VRFConsumerBaseV2 } from "@chainlink/vrf/VRFConsumerBaseV2.sol";
-import { IERC1155 } from "@solidstate/contracts/interfaces/IERC1155.sol";
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 import { IDiamondWritable } from "@solidstate/contracts/proxy/diamond/writable/IDiamondWritable.sol";
 import { IDiamondWritableInternal } from "@solidstate/contracts/proxy/diamond/writable/IDiamondWritableInternal.sol";
 import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol";
 import { IERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/IERC1155Metadata.sol";
 
-import { IERC1155MetadataExtension } from "../../../contracts/facets/PerpetualMint/IERC1155MetadataExtension.sol";
 import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 import { PerpetualMint } from "../../../contracts/facets/PerpetualMint/PerpetualMint.sol";
 
@@ -63,15 +61,13 @@ contract UpgradePerpetualMintArb is BatchScript {
             );
 
         ISolidStateDiamond.FacetCut[]
-            memory facetCuts = new ISolidStateDiamond.FacetCut[](7);
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](5);
 
         facetCuts[0] = newPerpetualMintFacetCuts[0];
         facetCuts[1] = replacementPerpetualMintFacetCuts[0];
         facetCuts[2] = replacementPerpetualMintFacetCuts[1];
         facetCuts[3] = replacementPerpetualMintFacetCuts[2];
         facetCuts[4] = replacementPerpetualMintFacetCuts[3];
-        facetCuts[5] = replacementPerpetualMintFacetCuts[4];
-        facetCuts[6] = replacementPerpetualMintFacetCuts[5];
 
         bytes memory diamondCutTx = abi.encodeWithSelector(
             IDiamondWritable.diamondCut.selector,
@@ -121,23 +117,6 @@ contract UpgradePerpetualMintArb is BatchScript {
     function getReplacementPerpetualMintFacetCuts(
         address facetAddress
     ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
-        /// map the ERC1155 function selectors to their respective interfaces
-        bytes4[] memory erc1155FunctionSelectors = new bytes4[](6);
-
-        erc1155FunctionSelectors[0] = IERC1155.balanceOf.selector;
-        erc1155FunctionSelectors[1] = IERC1155.balanceOfBatch.selector;
-        erc1155FunctionSelectors[2] = IERC1155.isApprovedForAll.selector;
-        erc1155FunctionSelectors[3] = IERC1155.safeBatchTransferFrom.selector;
-        erc1155FunctionSelectors[4] = IERC1155.safeTransferFrom.selector;
-        erc1155FunctionSelectors[5] = IERC1155.setApprovalForAll.selector;
-
-        ISolidStateDiamond.FacetCut
-            memory erc1155FacetCut = IDiamondWritableInternal.FacetCut({
-                target: facetAddress,
-                action: IDiamondWritableInternal.FacetCutAction.REPLACE,
-                selectors: erc1155FunctionSelectors
-            });
-
         // map the ERC1155Metadata function selectors to their respective interfaces
         bytes4[] memory erc1155MetadataFunctionSelectors = new bytes4[](1);
 
@@ -149,25 +128,6 @@ contract UpgradePerpetualMintArb is BatchScript {
                 action: IDiamondWritableInternal.FacetCutAction.REPLACE,
                 selectors: erc1155MetadataFunctionSelectors
             });
-
-        // map the ERC1155Metadata function selectors to their respective interfaces
-        bytes4[]
-            memory erc1155MetadataExtensionFunctionSelectors = new bytes4[](2);
-
-        erc1155MetadataExtensionFunctionSelectors[0] = IERC1155MetadataExtension
-            .name
-            .selector;
-        erc1155MetadataExtensionFunctionSelectors[1] = IERC1155MetadataExtension
-            .symbol
-            .selector;
-
-        ISolidStateDiamond.FacetCut
-            memory erc1155MetadataExtensionFacetCut = IDiamondWritableInternal
-                .FacetCut({
-                    target: facetAddress,
-                    action: IDiamondWritableInternal.FacetCutAction.REPLACE,
-                    selectors: erc1155MetadataExtensionFunctionSelectors
-                });
 
         // map the Pausable function selectors to their respective interfaces
         bytes4[] memory pausableFunctionSelectors = new bytes4[](1);
@@ -182,7 +142,7 @@ contract UpgradePerpetualMintArb is BatchScript {
             });
 
         // map the PerpetualMint related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](26);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](25);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
             .attemptBatchMintWithEth
@@ -212,65 +172,61 @@ contract UpgradePerpetualMintArb is BatchScript {
 
         perpetualMintFunctionSelectors[8] = IPerpetualMint.mintAirdrop.selector;
 
-        perpetualMintFunctionSelectors[9] = IPerpetualMint
-            .onERC1155Received
-            .selector;
+        perpetualMintFunctionSelectors[9] = IPerpetualMint.pause.selector;
 
-        perpetualMintFunctionSelectors[10] = IPerpetualMint.pause.selector;
+        perpetualMintFunctionSelectors[10] = IPerpetualMint.redeem.selector;
 
-        perpetualMintFunctionSelectors[11] = IPerpetualMint.redeem.selector;
-
-        perpetualMintFunctionSelectors[12] = IPerpetualMint
+        perpetualMintFunctionSelectors[11] = IPerpetualMint
             .setCollectionMintPrice
             .selector;
 
-        perpetualMintFunctionSelectors[13] = IPerpetualMint
+        perpetualMintFunctionSelectors[12] = IPerpetualMint
             .setCollectionRisk
             .selector;
 
-        perpetualMintFunctionSelectors[14] = IPerpetualMint
+        perpetualMintFunctionSelectors[13] = IPerpetualMint
             .setConsolationFeeBP
             .selector;
 
-        perpetualMintFunctionSelectors[15] = IPerpetualMint
+        perpetualMintFunctionSelectors[14] = IPerpetualMint
             .setEthToMintRatio
             .selector;
 
-        perpetualMintFunctionSelectors[16] = IPerpetualMint
+        perpetualMintFunctionSelectors[15] = IPerpetualMint
             .setMintFeeBP
             .selector;
 
-        perpetualMintFunctionSelectors[17] = IPerpetualMint
+        perpetualMintFunctionSelectors[16] = IPerpetualMint
             .setMintToken
             .selector;
 
-        perpetualMintFunctionSelectors[18] = IPerpetualMint
+        perpetualMintFunctionSelectors[17] = IPerpetualMint
             .setReceiptBaseURI
             .selector;
 
-        perpetualMintFunctionSelectors[19] = IPerpetualMint
+        perpetualMintFunctionSelectors[18] = IPerpetualMint
             .setReceiptTokenURI
             .selector;
 
-        perpetualMintFunctionSelectors[20] = IPerpetualMint
+        perpetualMintFunctionSelectors[19] = IPerpetualMint
             .setRedemptionFeeBP
             .selector;
 
-        perpetualMintFunctionSelectors[21] = IPerpetualMint
+        perpetualMintFunctionSelectors[20] = IPerpetualMint
             .setRedeemPaused
             .selector;
 
-        perpetualMintFunctionSelectors[22] = IPerpetualMint.setTiers.selector;
+        perpetualMintFunctionSelectors[21] = IPerpetualMint.setTiers.selector;
 
-        perpetualMintFunctionSelectors[23] = IPerpetualMint
+        perpetualMintFunctionSelectors[22] = IPerpetualMint
             .setVRFConfig
             .selector;
 
-        perpetualMintFunctionSelectors[24] = IPerpetualMint
+        perpetualMintFunctionSelectors[23] = IPerpetualMint
             .setVRFSubscriptionBalanceThreshold
             .selector;
 
-        perpetualMintFunctionSelectors[25] = IPerpetualMint.unpause.selector;
+        perpetualMintFunctionSelectors[24] = IPerpetualMint.unpause.selector;
 
         ISolidStateDiamond.FacetCut
             memory perpetualMintFacetCut = IDiamondWritableInternal.FacetCut({
@@ -297,13 +253,11 @@ contract UpgradePerpetualMintArb is BatchScript {
         ISolidStateDiamond.FacetCut[]
             memory facetCuts = new ISolidStateDiamond.FacetCut[](6);
 
-        // omit Ownable and ERC165 since SolidStateDiamond includes those
-        facetCuts[0] = erc1155FacetCut;
-        facetCuts[1] = erc1155MetadataFacetCut;
-        facetCuts[2] = erc1155MetadataExtensionFacetCut;
-        facetCuts[3] = pausableFacetCut;
-        facetCuts[4] = perpetualMintFacetCut;
-        facetCuts[5] = vrfConsumerBaseV2FacetCut;
+        // omit Ownable since SolidStateDiamond includes those
+        facetCuts[0] = erc1155MetadataFacetCut;
+        facetCuts[1] = pausableFacetCut;
+        facetCuts[2] = perpetualMintFacetCut;
+        facetCuts[3] = vrfConsumerBaseV2FacetCut;
 
         return facetCuts;
     }

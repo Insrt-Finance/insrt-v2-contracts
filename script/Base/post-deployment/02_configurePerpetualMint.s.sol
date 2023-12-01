@@ -8,7 +8,7 @@ import { ICore } from "../../../contracts/diamonds/Core/ICore.sol";
 import { IPerpetualMint, TiersData } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 
 /// @title ConfigurePerpetualMint_Base
-/// @dev configures the PerpetualMint contract by setting the collection price to mint ratio BP,
+/// @dev configures the PerpetualMint_Base contract by setting the collection price to mint ratio BP,
 /// consolation fee BP, mint fee BP, redemption fee BP, tiers, and activates (unpauses) the protocol
 contract ConfigurePerpetualMint_Base is Script, Test {
     error Uint256ValueGreaterThanUint32Max(uint256 value);

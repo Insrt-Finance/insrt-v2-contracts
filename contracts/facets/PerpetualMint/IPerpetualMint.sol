@@ -3,25 +3,19 @@
 pragma solidity 0.8.19;
 
 import { IOwnable } from "@solidstate/contracts/access/ownable/IOwnable.sol";
-import { IERC165Base } from "@solidstate/contracts/introspection/ERC165/base/IERC165Base.sol";
 import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol";
-import { IERC1155Base } from "@solidstate/contracts/token/ERC1155/base/IERC1155Base.sol";
 import { IERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/IERC1155Metadata.sol";
 
-import { IERC1155MetadataExtension } from "./IERC1155MetadataExtension.sol";
 import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
 import { MintOutcome, MintResultData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title IPerpetualMint
 /// @dev Interface of the PerpetualMint facet
 interface IPerpetualMint is
-    IERC1155Base,
     IERC1155Metadata,
-    IERC165Base,
     IOwnable,
     IPerpetualMintInternal,
-    IPausable,
-    IERC1155MetadataExtension
+    IPausable
 {
     /// @notice Attempts a batch mint for the msg.sender for a single collection using ETH as payment.
     /// @param collection address of collection for mint attempts
@@ -65,21 +59,6 @@ interface IPerpetualMint is
     /// @notice mints an amount of mintToken tokens to the mintToken contract in exchange for ETH
     /// @param amount amount of mintToken tokens to mint
     function mintAirdrop(uint256 amount) external payable;
-
-    /// @notice Validates receipt of an ERC1155 transfer.
-    /// @param operator Executor of transfer.
-    /// @param from Sender of tokens.
-    /// @param id Token ID received.
-    /// @param value Quantity of tokens received.
-    /// @param data Data payload.
-    /// @return bytes4 Function's own selector if transfer is accepted.
-    function onERC1155Received(
-        address operator,
-        address from,
-        uint256 id,
-        uint256 value,
-        bytes calldata data
-    ) external pure returns (bytes4);
 
     /// @notice Triggers paused state, _ONLY FOR attemptBatchMint FUNCTIONS_ when contract is unpaused.
     function pause() external;

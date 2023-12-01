@@ -4,17 +4,17 @@ pragma solidity 0.8.19;
 
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
-import { PerpetualMintTestBase } from "../PerpetualMint.t.sol";
+import { PerpetualMintTest_Base } from "../PerpetualMint.t.sol";
 import { TokenTest } from "../../../Token/Token.t.sol";
 import { BaseForkTest } from "../../../../BaseForkTest.t.sol";
 import { CoreTest } from "../../../../diamonds/Core.t.sol";
 import { TokenProxyTest } from "../../../../diamonds/TokenProxy.t.sol";
 
 /// @title PerpetualMint_fulfillRandomWordsBase
-/// @dev PerpetualMint test contract for testing expected fulfillRandomWords behavior. Tested on a Base fork.
+/// @dev PerpetualMint_Base test contract for testing expected fulfillRandomWords behavior. Tested on a Base fork.
 contract PerpetualMint_fulfillRandomWordsBase is
     BaseForkTest,
-    PerpetualMintTestBase,
+    PerpetualMintTest_Base,
     TokenTest
 {
     uint32 internal constant TEST_MINT_ATTEMPTS = 3;
@@ -28,8 +28,8 @@ contract PerpetualMint_fulfillRandomWordsBase is
     receive() external payable override(CoreTest, TokenProxyTest) {}
 
     /// @dev Sets up the test case environment.
-    function setUp() public override(PerpetualMintTestBase, TokenTest) {
-        PerpetualMintTestBase.setUp();
+    function setUp() public override(PerpetualMintTest_Base, TokenTest) {
+        PerpetualMintTest_Base.setUp();
         TokenTest.setUp();
 
         perpetualMint.setMintToken(address(token));

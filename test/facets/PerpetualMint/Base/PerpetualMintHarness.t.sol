@@ -4,9 +4,9 @@ pragma solidity 0.8.19;
 
 import { PerpetualMintHarness } from "../PerpetualMintHarness.t.sol";
 
-/// @title PerpetualMintHarnessBase
+/// @title PerpetualMintHarness_Base
 /// @dev exposes PerpetualMint_Base external & internal functions for testing
-contract PerpetualMintHarnessBase is PerpetualMintHarness {
+contract PerpetualMintHarness_Base is PerpetualMintHarness {
     constructor(address vrf) PerpetualMintHarness(vrf) {}
 
     function attemptBatchMintWithEth(

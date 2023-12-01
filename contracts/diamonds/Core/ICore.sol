@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.19;
 
-import { IPerpetualMintViewBase } from "../../facets/PerpetualMint/Base/IPerpetualMintView.sol";
+import { IPerpetualMintView_Base } from "../../facets/PerpetualMint/Base/IPerpetualMintView.sol";
 import { IPerpetualMint } from "../../facets/PerpetualMint/IPerpetualMint.sol";
 import { IPerpetualMintBase } from "../../facets/PerpetualMint/IPerpetualMintBase.sol";
 import { IPerpetualMintView } from "../../facets/PerpetualMint/IPerpetualMintView.sol";
@@ -13,7 +13,7 @@ interface ICore is
     IPerpetualMint,
     IPerpetualMintBase,
     IPerpetualMintView,
-    IPerpetualMintViewBase
+    IPerpetualMintView_Base
 {
 
 }

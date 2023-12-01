@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 
 import { IPausableInternal } from "@solidstate/contracts/security/pausable/IPausableInternal.sol";
 
-import { PerpetualMintTestBase } from "../PerpetualMint.t.sol";
+import { PerpetualMintTest_Base } from "../PerpetualMint.t.sol";
 import { TokenTest } from "../../../Token/Token.t.sol";
 import { BaseForkTest } from "../../../../BaseForkTest.t.sol";
 import { CoreTest } from "../../../../diamonds/Core.t.sol";
@@ -12,11 +12,11 @@ import { TokenProxyTest } from "../../../../diamonds/TokenProxy.t.sol";
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 
 /// @title PerpetualMint_attemptBatchMintWithMintBase
-/// @dev PerpetualMint test contract for testing expected attemptBatchMintWithMint behavior. Tested on a Base fork.
+/// @dev PerpetualMint_Base test contract for testing expected attemptBatchMintWithMint behavior. Tested on a Base fork.
 contract PerpetualMint_attemptBatchMintWithMintBase is
     BaseForkTest,
     IPerpetualMintInternal,
-    PerpetualMintTestBase,
+    PerpetualMintTest_Base,
     TokenTest
 {
     uint32 internal constant TEST_MINT_ATTEMPTS = 3;
@@ -30,8 +30,8 @@ contract PerpetualMint_attemptBatchMintWithMintBase is
     receive() external payable override(CoreTest, TokenProxyTest) {}
 
     /// @dev sets up the context for the test cases
-    function setUp() public override(PerpetualMintTestBase, TokenTest) {
-        PerpetualMintTestBase.setUp();
+    function setUp() public override(PerpetualMintTest_Base, TokenTest) {
+        PerpetualMintTest_Base.setUp();
         TokenTest.setUp();
 
         perpetualMint.setMintToken(address(token));

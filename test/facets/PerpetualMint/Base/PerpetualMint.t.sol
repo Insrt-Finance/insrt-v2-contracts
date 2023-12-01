@@ -5,24 +5,24 @@ pragma solidity 0.8.19;
 import { IOwnable } from "@solidstate/contracts/access/ownable/IOwnable.sol";
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
-import { PerpetualMintHelperBase } from "./PerpetualMintHelper.t.sol";
+import { PerpetualMintHelper_Base } from "./PerpetualMintHelper.t.sol";
 import { IPerpetualMintTest } from "../IPerpetualMintTest.sol";
 import { CoreTest } from "../../../diamonds/Core.t.sol";
 import { IDepositContract } from "../../../../contracts/facets/PerpetualMint/Base/IDepositContract.sol";
 import { ISupraRouterContract } from "../../../../contracts/facets/PerpetualMint/Base/ISupraRouterContract.sol";
 import { PerpetualMintStorage as Storage, TiersData } from "../../../../contracts/facets/PerpetualMint/Storage.sol";
 
-/// @title PerpetualMintTestBase
-/// @dev PerpetualMintTest Base-specific helper contract. Configures PerpetualMint as facets of Core test.
+/// @title PerpetualMintTest_Base
+/// @dev PerpetualMintTest Base-specific helper contract. Configures PerpetualMint facets for Core test.
 /// @dev Should function identically across all forks.
-abstract contract PerpetualMintTestBase is CoreTest {
+abstract contract PerpetualMintTest_Base is CoreTest {
     IDepositContract internal supraVRFDepositContract;
 
     IPerpetualMintTest public perpetualMint;
 
     ISupraRouterContract internal supraRouterContract;
 
-    PerpetualMintHelperBase public perpetualMintHelper;
+    PerpetualMintHelper_Base public perpetualMintHelper;
 
     TiersData internal testTiersData;
 
@@ -164,9 +164,9 @@ abstract contract PerpetualMintTestBase is CoreTest {
         _activateVRF();
     }
 
-    /// @dev initializes PerpetualMint as a facet by executing a diamond cut on coreDiamond.
+    /// @dev initializes PerpetualMint facets by executing a diamond cut on the Core Diamond.
     function initPerpetualMint() internal {
-        perpetualMintHelper = new PerpetualMintHelperBase();
+        perpetualMintHelper = new PerpetualMintHelper_Base();
 
         ISolidStateDiamond.FacetCut[] memory facetCuts = perpetualMintHelper
             .getFacetCuts();

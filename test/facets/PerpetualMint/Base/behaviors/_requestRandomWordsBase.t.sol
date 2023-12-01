@@ -2,17 +2,17 @@
 
 pragma solidity 0.8.19;
 
-import { PerpetualMintTestBase } from "../PerpetualMint.t.sol";
+import { PerpetualMintTest_Base } from "../PerpetualMint.t.sol";
 import { BaseForkTest } from "../../../../BaseForkTest.t.sol";
 import { ISupraGeneratorContract } from "../../../../interfaces/ISupraGeneratorContract.sol";
 import { ISupraGeneratorContractEvents } from "../../../../interfaces/ISupraGeneratorContractEvents.sol";
 
 /// @title PerpetualMint_requestRandomWordsBase
-/// @dev PerpetualMint test contract for testing expected behavior of the _requestRandomWordsBase function
+/// @dev PerpetualMint_Base test contract for testing expected behavior of the _requestRandomWordsBase function
 contract PerpetualMint_requestRandomWordsBase is
     BaseForkTest,
     ISupraGeneratorContractEvents,
-    PerpetualMintTestBase
+    PerpetualMintTest_Base
 {
     /// @dev test number of random words to request, current ratio of random words to mint attempts is 2:1
     uint8 internal constant TEST_NUM_WORDS = 2;

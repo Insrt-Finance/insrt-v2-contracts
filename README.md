@@ -379,6 +379,12 @@ Requires the following additional environment variables set:
 make upgrade-remove-perp-mint-arb
 ```
 
+##### Upgrade & Remove PerpetualMintView facet
+
+```
+make upgrade-remove-perp-mint-view-arb
+```
+
 ##### Upgrade & Split PerpetualMint facet
 
 ```

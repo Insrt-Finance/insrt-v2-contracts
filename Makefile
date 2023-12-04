@@ -142,6 +142,10 @@ configure-perp-mint-local-base:
 upgrade-remove-perp-mint-arb:
 	@./script/Arbitrum/upgrade/upgrade-remove-perp-mint-arb.sh
 
+##### Upgrade & Remove PerpetualMintView facet
+upgrade-remove-perp-mint-view-arb:
+	@./script/Arbitrum/upgrade/upgrade-remove-perp-mint-view-arb.sh
+
 ##### Upgrade & Split PerpetualMint facet
 upgrade-split-perp-mint-arb:
 	@./script/Arbitrum/upgrade/upgrade-split-perp-mint-arb.sh

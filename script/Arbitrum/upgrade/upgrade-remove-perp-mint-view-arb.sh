@@ -3,7 +3,7 @@ set -e
 
 CHAIN_ID=42161
 RPC_URL=$ARBITRUM_RPC_URL
-UPGRADE_SCRIPT="05_upgradeAndRemovePerpetualMint.s.sol"
+UPGRADE_SCRIPT="05_upgradeAndRemovePerpetualMintView.s.sol"
 VERIFIER_URL="https://api.arbiscan.io/api"
 export CHAIN="arbitrum_one"
 export CORE_ADDRESS="0x791b648aa3bd21964417690c635040f40ce974a5"

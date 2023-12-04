@@ -115,8 +115,10 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
-    function setConsolationFeeBP(uint32 _consolationFeeBP) external onlyOwner {
-        _setConsolationFeeBP(_consolationFeeBP);
+    function setCollectionConsolationFeeBP(
+        uint32 _collectionConsolationFeeBP
+    ) external onlyOwner {
+        _setCollectionConsolationFeeBP(_collectionConsolationFeeBP);
     }
 
     /// @inheritdoc IPerpetualMint

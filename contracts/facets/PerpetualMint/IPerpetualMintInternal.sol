@@ -50,9 +50,9 @@ interface IPerpetualMintInternal {
     /// @param risk risk of collection
     event CollectionRiskSet(address collection, uint32 risk);
 
-    /// @notice emitted when the consolation fee is set
-    /// @param consolationFeeBP consolation fee in basis points
-    event ConsolationFeeSet(uint32 consolationFeeBP);
+    /// @notice emitted when the collection consolation fee is set
+    /// @param collectionConsolationFeeBP minting for collection consolation fee in basis points
+    event CollectionConsolationFeeSet(uint32 collectionConsolationFeeBP);
 
     /// @notice emitted when the consolation fees are funded
     /// @param funder address of funder

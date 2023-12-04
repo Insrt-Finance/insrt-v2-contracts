@@ -67,12 +67,12 @@ interface IPerpetualMintView {
         address collection
     ) external view returns (uint32 risk);
 
-    /// @notice Returns the consolation fee in basis points
-    /// @return consolationFeeBasisPoints consolation fee in basis points
-    function consolationFeeBP()
+    /// @notice Returns the collection consolation fee in basis points
+    /// @return collectionConsolationFeeBasisPoints minting for collection consolation fee in basis points
+    function collectionConsolationFeeBP()
         external
         view
-        returns (uint32 consolationFeeBasisPoints);
+        returns (uint32 collectionConsolationFeeBasisPoints);
 
     /// @notice Returns the default mint price for a collection
     /// @return mintPrice default collection mint price

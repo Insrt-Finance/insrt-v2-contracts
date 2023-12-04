@@ -155,23 +155,24 @@ abstract contract PerpetualMintInternal is
             revert IncorrectETHReceived();
         }
 
-        // calculate the consolation fee
-        uint256 consolationFee = (msgValue * l.consolationFeeBP) / BASIS;
+        // calculate the mint for collection consolation fee
+        uint256 collectionConsolationFee = (msgValue *
+            l.collectionConsolationFeeBP) / BASIS;
 
         // apply the collection-specific mint fee ratio
-        uint256 additionalDepositorFee = (consolationFee *
+        uint256 additionalDepositorFee = (collectionConsolationFee *
             mintFeeDistributionRatioBP) / BASIS;
 
         // calculate the protocol mint fee
         uint256 mintFee = (msgValue * l.mintFeeBP) / BASIS;
 
         // update the accrued consolation fees
-        l.consolationFees += consolationFee - additionalDepositorFee;
+        l.consolationFees += collectionConsolationFee - additionalDepositorFee;
 
         // update the accrued depositor mint earnings
         l.mintEarnings +=
             msgValue -
-            consolationFee -
+            collectionConsolationFee -
             mintFee +
             additionalDepositorFee;
 
@@ -276,26 +277,27 @@ abstract contract PerpetualMintInternal is
 
         IToken(l.mintToken).burn(minter, mintRequired);
 
-        // calculate the consolation fee
-        uint256 consolationFee = (ethRequired * l.consolationFeeBP) / BASIS;
+        // calculate the mint for collection consolation fee
+        uint256 collectionConsolationFee = (ethRequired *
+            l.collectionConsolationFeeBP) / BASIS;
 
         // apply the collection-specific mint fee ratio
-        uint256 additionalDepositorFee = (consolationFee *
+        uint256 additionalDepositorFee = (collectionConsolationFee *
             mintFeeDistributionRatioBP) / BASIS;
 
         // calculate the protocol mint fee
         uint256 mintFee = (ethRequired * l.mintFeeBP) / BASIS;
 
         // update the accrued consolation fees
-        // ETH required for mint taken from consolationFees
+        // ETH required for mint taken from collectionConsolationFee
         l.consolationFees -= (ethRequired -
-            consolationFee +
+            collectionConsolationFee +
             additionalDepositorFee);
 
         // update the accrued depositor mint earnings
         l.mintEarnings +=
             ethRequired -
-            consolationFee -
+            collectionConsolationFee -
             mintFee +
             additionalDepositorFee;
 
@@ -531,14 +533,16 @@ abstract contract PerpetualMintInternal is
         risk = risk == 0 ? DEFAULT_COLLECTION_RISK : risk;
     }
 
-    /// @notice Returns the current consolation fee in basis points
-    /// @return consolationFeeBasisPoints consolation fee in basis points
-    function _consolationFeeBP()
+    /// @notice Returns the current collection consolation fee in basis points
+    /// @return collectionConsolationFeeBasisPoints mint for collection consolation fee in basis points
+    function _collectionConsolationFeeBP()
         internal
         view
-        returns (uint32 consolationFeeBasisPoints)
+        returns (uint32 collectionConsolationFeeBasisPoints)
     {
-        consolationFeeBasisPoints = Storage.layout().consolationFeeBP;
+        collectionConsolationFeeBasisPoints = Storage
+            .layout()
+            .collectionConsolationFeeBP;
     }
 
     /// @notice Returns the default mint price for a collection
@@ -937,14 +941,18 @@ abstract contract PerpetualMintInternal is
         emit CollectionRiskSet(collection, risk);
     }
 
-    /// @notice sets the consolation fee in basis points
-    /// @param consolationFeeBP consolation fee in basis points
-    function _setConsolationFeeBP(uint32 consolationFeeBP) internal {
-        _enforceBasis(consolationFeeBP, BASIS);
+    /// @notice sets the mint for collection consolation fee in basis points
+    /// @param collectionConsolationFeeBP mint for collection consolation fee in basis points
+    function _setCollectionConsolationFeeBP(
+        uint32 collectionConsolationFeeBP
+    ) internal {
+        _enforceBasis(collectionConsolationFeeBP, BASIS);
 
-        Storage.layout().consolationFeeBP = consolationFeeBP;
+        Storage
+            .layout()
+            .collectionConsolationFeeBP = collectionConsolationFeeBP;
 
-        emit ConsolationFeeSet(consolationFeeBP);
+        emit CollectionConsolationFeeSet(collectionConsolationFeeBP);
     }
 
     /// @notice sets the ratio of ETH (native token) to $MINT for mint attempts using $MINT as payment

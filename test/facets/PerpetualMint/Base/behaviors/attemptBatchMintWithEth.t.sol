@@ -52,7 +52,8 @@ contract PerpetualMint_attemptBatchMintWithEthBase is
         assert(
             postMintAccruedConsolationFees ==
                 (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
-                    perpetualMint.consolationFeeBP()) / perpetualMint.BASIS())
+                    perpetualMint.collectionConsolationFeeBP()) /
+                    perpetualMint.BASIS())
         );
 
         uint256 postMintAccruedProtocolFees = perpetualMint
@@ -108,11 +109,11 @@ contract PerpetualMint_attemptBatchMintWithEthBase is
             TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP
         );
 
-        uint256 preCalculatedConsolationFee = ((MINT_PRICE *
-            TEST_MINT_ATTEMPTS) * perpetualMint.consolationFeeBP()) /
+        uint256 preCalculatedCollectionConsolationFee = ((MINT_PRICE *
+            TEST_MINT_ATTEMPTS) * perpetualMint.collectionConsolationFeeBP()) /
             perpetualMint.BASIS();
 
-        uint256 preCalculatedAdditionalDepositorFee = (preCalculatedConsolationFee *
+        uint256 preCalculatedAdditionalDepositorFee = (preCalculatedCollectionConsolationFee *
                 TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP) /
                 perpetualMint.BASIS();
 
@@ -126,7 +127,7 @@ contract PerpetualMint_attemptBatchMintWithEthBase is
 
         assert(
             postMintAccruedConsolationFees ==
-                preCalculatedConsolationFee -
+                preCalculatedCollectionConsolationFee -
                     preCalculatedAdditionalDepositorFee
         );
 
@@ -145,7 +146,7 @@ contract PerpetualMint_attemptBatchMintWithEthBase is
         assert(
             postMintAccruedMintEarnings ==
                 (MINT_PRICE * TEST_MINT_ATTEMPTS) -
-                    preCalculatedConsolationFee -
+                    preCalculatedCollectionConsolationFee -
                     postMintAccruedProtocolFees +
                     preCalculatedAdditionalDepositorFee
         );

@@ -61,7 +61,8 @@ contract PerpetualMint_attemptBatchMintWithEth is
         assert(
             postMintAccruedConsolationFees ==
                 (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
-                    perpetualMint.consolationFeeBP()) / perpetualMint.BASIS())
+                    perpetualMint.collectionConsolationFeeBP()) /
+                    perpetualMint.BASIS())
         );
 
         uint256 postMintAccruedProtocolFees = perpetualMint
@@ -117,13 +118,13 @@ contract PerpetualMint_attemptBatchMintWithEth is
             TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP
         );
 
-        uint256 preCalculatedConsolationFee = ((MINT_PRICE *
-            TEST_MINT_ATTEMPTS) * perpetualMint.consolationFeeBP()) /
+        uint256 preCalculatedCollectionConsolationFee = ((MINT_PRICE *
+            TEST_MINT_ATTEMPTS) * perpetualMint.collectionConsolationFeeBP()) /
             perpetualMint.BASIS();
 
-        uint256 expectedAdditionalDepositorFee = (preCalculatedConsolationFee *
-            TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP) /
-            perpetualMint.BASIS();
+        uint256 expectedAdditionalDepositorFee = (preCalculatedCollectionConsolationFee *
+                TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP) /
+                perpetualMint.BASIS();
 
         vm.prank(minter);
         perpetualMint.attemptBatchMintWithEth{
@@ -135,7 +136,8 @@ contract PerpetualMint_attemptBatchMintWithEth is
 
         assert(
             postMintAccruedConsolationFees ==
-                preCalculatedConsolationFee - expectedAdditionalDepositorFee
+                preCalculatedCollectionConsolationFee -
+                    expectedAdditionalDepositorFee
         );
 
         uint256 postMintAccruedProtocolFees = perpetualMint
@@ -153,7 +155,7 @@ contract PerpetualMint_attemptBatchMintWithEth is
         assert(
             postMintAccruedMintEarnings ==
                 (MINT_PRICE * TEST_MINT_ATTEMPTS) -
-                    preCalculatedConsolationFee -
+                    preCalculatedCollectionConsolationFee -
                     postMintAccruedProtocolFees +
                     expectedAdditionalDepositorFee
         );

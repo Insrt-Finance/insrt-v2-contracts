@@ -179,23 +179,23 @@ contract DeployPerpetualMint_Base is Script {
         perpetualMintFunctionSelectors[10] = IPerpetualMint.redeem.selector;
 
         perpetualMintFunctionSelectors[11] = IPerpetualMint
-            .setCollectionMintFeeDistributionRatioBP
+            .setCollectionConsolationFeeBP
             .selector;
 
         perpetualMintFunctionSelectors[12] = IPerpetualMint
-            .setCollectionMintMultiplier
+            .setCollectionMintFeeDistributionRatioBP
             .selector;
 
         perpetualMintFunctionSelectors[13] = IPerpetualMint
-            .setCollectionMintPrice
+            .setCollectionMintMultiplier
             .selector;
 
         perpetualMintFunctionSelectors[14] = IPerpetualMint
-            .setCollectionRisk
+            .setCollectionMintPrice
             .selector;
 
         perpetualMintFunctionSelectors[15] = IPerpetualMint
-            .setConsolationFeeBP
+            .setCollectionRisk
             .selector;
 
         perpetualMintFunctionSelectors[16] = IPerpetualMint
@@ -368,23 +368,23 @@ contract DeployPerpetualMint_Base is Script {
             .selector;
 
         perpetualMintViewFunctionSelectors[5] = IPerpetualMintView
-            .collectionMintFeeDistributionRatioBP
+            .collectionConsolationFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[6] = IPerpetualMintView
-            .collectionMintMultiplier
+            .collectionMintFeeDistributionRatioBP
             .selector;
 
         perpetualMintViewFunctionSelectors[7] = IPerpetualMintView
-            .collectionMintPrice
+            .collectionMintMultiplier
             .selector;
 
         perpetualMintViewFunctionSelectors[8] = IPerpetualMintView
-            .collectionRisk
+            .collectionMintPrice
             .selector;
 
         perpetualMintViewFunctionSelectors[9] = IPerpetualMintView
-            .consolationFeeBP
+            .collectionRisk
             .selector;
 
         perpetualMintViewFunctionSelectors[10] = IPerpetualMintView

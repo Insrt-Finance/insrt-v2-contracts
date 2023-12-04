@@ -24,7 +24,9 @@ contract ConfigurePerpetualMintArb is Script, Test {
         // read deployer private key
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_KEY");
 
-        uint32 consolationFeeBP = uint32(vm.envUint("CONSOLATION_FEE_BP"));
+        uint32 collectionConsolationFeeBP = uint32(
+            vm.envUint("COLLECTION_CONSOLATION_FEE_BP")
+        );
 
         uint32 mintFeeBP = uint32(vm.envUint("MINT_FEE_BP"));
 
@@ -48,7 +50,7 @@ contract ConfigurePerpetualMintArb is Script, Test {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        perpetualMint.setConsolationFeeBP(consolationFeeBP);
+        perpetualMint.setCollectionConsolationFeeBP(collectionConsolationFeeBP);
 
         perpetualMint.setMintFeeBP(mintFeeBP);
 
@@ -65,7 +67,10 @@ contract ConfigurePerpetualMintArb is Script, Test {
 
         ICore(perpetualMintAddress).transferOwnership(newOwner);
 
-        console.log("Consolation Fee BP Set: ", consolationFeeBP);
+        console.log(
+            "Collection Consolation Fee BP Set: ",
+            collectionConsolationFeeBP
+        );
         console.log("Core/PerpetualMint Ownership Transferred To: ", newOwner);
         console.log("Mint Fee BP Set: ", mintFeeBP);
         console.log("Redemption Fee BP Set: ", redemptionFeeBP);

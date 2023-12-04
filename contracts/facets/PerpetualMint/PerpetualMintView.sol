@@ -81,12 +81,12 @@ contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
     }
 
     /// @inheritdoc IPerpetualMintView
-    function consolationFeeBP()
+    function collectionConsolationFeeBP()
         external
         view
-        returns (uint32 consolationFeeBasisPoints)
+        returns (uint32 collectionConsolationFeeBasisPoints)
     {
-        consolationFeeBasisPoints = _consolationFeeBP();
+        collectionConsolationFeeBasisPoints = _collectionConsolationFeeBP();
     }
 
     /// @inheritdoc IPerpetualMintView

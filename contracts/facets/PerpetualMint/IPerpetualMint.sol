@@ -93,9 +93,11 @@ interface IPerpetualMint is
     /// @param risk new risk value for collection
     function setCollectionRisk(address collection, uint32 risk) external;
 
-    /// @notice sets the consolation fee in basis points
-    /// @param consolationFeeBP consolation fee in basis points
-    function setConsolationFeeBP(uint32 consolationFeeBP) external;
+    /// @notice sets the minting for a collection consolation fee in basis points
+    /// @param collectionConsolationFeeBP minting for a collection consolation fee in basis points
+    function setCollectionConsolationFeeBP(
+        uint32 collectionConsolationFeeBP
+    ) external;
 
     /// @notice sets the ratio of ETH (native token) to $MINT for mint attempts using $MINT as payment
     /// @param ratio ratio of ETH to $MINT

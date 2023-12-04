@@ -67,8 +67,8 @@ contract PerpetualMint_attemptBatchMintWithMintBase is
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
 
-        uint256 expectedConsolationFee = (expectedEthRequired *
-            perpetualMint.consolationFeeBP()) / perpetualMint.BASIS();
+        uint256 expectedCollectionConsolationFee = (expectedEthRequired *
+            perpetualMint.collectionConsolationFeeBP()) / perpetualMint.BASIS();
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -76,7 +76,7 @@ contract PerpetualMint_attemptBatchMintWithMintBase is
         assert(
             postMintAccruedConsolationFees ==
                 preMintAccruedConsolationFees -
-                    (expectedEthRequired - expectedConsolationFee)
+                    (expectedEthRequired - expectedCollectionConsolationFee)
         );
 
         uint256 postMintAccruedProtocolFees = perpetualMint
@@ -92,7 +92,9 @@ contract PerpetualMint_attemptBatchMintWithMintBase is
 
         assert(
             postMintAccruedMintEarnings ==
-                expectedEthRequired - expectedConsolationFee - expectedMintFee
+                expectedEthRequired -
+                    expectedCollectionConsolationFee -
+                    expectedMintFee
         );
 
         uint256 postMintTokenBalance = token.balanceOf(minter);
@@ -135,12 +137,12 @@ contract PerpetualMint_attemptBatchMintWithMintBase is
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
 
-        uint256 expectedConsolationFee = (expectedEthRequired *
-            perpetualMint.consolationFeeBP()) / perpetualMint.BASIS();
+        uint256 expectedCollectionConsolationFee = (expectedEthRequired *
+            perpetualMint.collectionConsolationFeeBP()) / perpetualMint.BASIS();
 
-        uint256 expectedAdditionalDepositorFee = (expectedConsolationFee *
-            TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP) /
-            perpetualMint.BASIS();
+        uint256 expectedAdditionalDepositorFee = (expectedCollectionConsolationFee *
+                TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP) /
+                perpetualMint.BASIS();
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -149,7 +151,7 @@ contract PerpetualMint_attemptBatchMintWithMintBase is
             postMintAccruedConsolationFees ==
                 preMintAccruedConsolationFees -
                     (expectedEthRequired -
-                        expectedConsolationFee +
+                        expectedCollectionConsolationFee +
                         expectedAdditionalDepositorFee)
         );
 
@@ -167,7 +169,7 @@ contract PerpetualMint_attemptBatchMintWithMintBase is
         assert(
             postMintAccruedMintEarnings ==
                 expectedEthRequired -
-                    expectedConsolationFee -
+                    expectedCollectionConsolationFee -
                     expectedMintFee +
                     expectedAdditionalDepositorFee
         );

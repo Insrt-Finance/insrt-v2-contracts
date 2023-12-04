@@ -32,7 +32,8 @@ abstract contract PerpetualMintTest_Base is CoreTest {
     uint32 internal constant TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP =
         5e8; // 50%
 
-    uint32 internal constant TEST_CONSOLATION_FEE_BP = 5000000; // 0.5% fee
+    /// @dev mint for collection consolation fee basis points to test
+    uint32 internal constant TEST_COLLECTION_CONSOLATION_FEE_BP = 5000000; // 0.5% fee
 
     uint32 internal constant TEST_MINT_FEE_BP = 5000000; // 0.5% fee
 
@@ -93,8 +94,10 @@ abstract contract PerpetualMintTest_Base is CoreTest {
 
         perpetualMint.setCollectionMintPrice(PARALLEL_ALPHA, MINT_PRICE);
 
-        // sets the consolation fee
-        perpetualMint.setConsolationFeeBP(TEST_CONSOLATION_FEE_BP);
+        // sets the mint for collection consolation fee
+        perpetualMint.setCollectionConsolationFeeBP(
+            TEST_COLLECTION_CONSOLATION_FEE_BP
+        );
 
         // sets the mint fee
         perpetualMint.setMintFeeBP(TEST_MINT_FEE_BP);
@@ -145,7 +148,10 @@ abstract contract PerpetualMintTest_Base is CoreTest {
                 perpetualMint.collectionRisk(PARALLEL_ALPHA)
         );
 
-        assert(TEST_CONSOLATION_FEE_BP == perpetualMint.consolationFeeBP());
+        assert(
+            TEST_COLLECTION_CONSOLATION_FEE_BP ==
+                perpetualMint.collectionConsolationFeeBP()
+        );
 
         assert(TEST_MINT_FEE_BP == perpetualMint.mintFeeBP());
 
@@ -175,7 +181,7 @@ abstract contract PerpetualMintTest_Base is CoreTest {
     }
 
     /// @dev mocks unsuccessful attemptBatchMintWithEth attempts to increase accrued
-    /// mint earnings, consolation fees, & protocol fees by the number of unsuccessful mints
+    /// mint earnings, collection consolation fees, & protocol fees by the number of unsuccessful mints
     /// @param collection address of collection
     /// @param numberOfMints number of unsuccessful mint attempts
     function mock_unsuccessfulMintWithEthAttempts(
@@ -185,20 +191,21 @@ abstract contract PerpetualMintTest_Base is CoreTest {
         uint256 mockMsgValue = perpetualMint.collectionMintPrice(collection) *
             numberOfMints;
 
-        uint256 mockConsolationFee = (mockMsgValue *
-            perpetualMint.consolationFeeBP()) / perpetualMint.BASIS();
+        uint256 mockCollectionConsolationFee = (mockMsgValue *
+            perpetualMint.collectionConsolationFeeBP()) / perpetualMint.BASIS();
 
         uint256 mockMintFee = (mockMsgValue * perpetualMint.mintFeeBP()) /
             perpetualMint.BASIS();
 
         perpetualMint.setConsolationFees(
-            perpetualMint.accruedConsolationFees() + mockConsolationFee
+            perpetualMint.accruedConsolationFees() +
+                mockCollectionConsolationFee
         );
 
         perpetualMint.setMintEarnings(
             perpetualMint.accruedMintEarnings() +
                 mockMsgValue -
-                mockConsolationFee -
+                mockCollectionConsolationFee -
                 mockMintFee
         );
 

@@ -218,8 +218,8 @@ export VRF_SUBSCRIPTION_BALANCE_THRESHOLD=<base LINK unit amount> # Example: 1 =
 #### [./script/Arbitrum/post-deployment/configure-perp-mint-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Arbitrum/post-deployment/configure-perp-mint-arb.sh)
 
 ```bash
-# Mint fee for funding $MINT
-export CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+# Mint for collection consolation fee used for funding $MINT
+export COLLECTION_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
 # Protocol mint fee
 export MINT_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
@@ -255,8 +255,8 @@ export ETH_FUND_AMOUNT=<base ETH unit amount> # Example: 1 = 1 ETH, can be 0 to 
 #### [./script/Base/post-deployment/configure-perp-mint-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Base/post-deployment/configure-perp-mint-base.sh)
 
 ```bash
-# Mint fee for funding $MINT
-export CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+# Mint for collection consolation fee used for funding $MINT
+export COLLECTION_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
 # Protocol mint fee
 export MINT_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%

@@ -164,6 +164,10 @@ upgrade-token-arb:
 upgrade-remove-perp-mint-arb-goerli:
 	@./script/Arbitrum/upgrade/upgrade-remove-perp-mint-arb-goerli.sh
 
+##### Upgrade & Remove PerpetualMintView facet
+upgrade-remove-perp-mint-view-arb-goerli:
+	@./script/Arbitrum/upgrade/upgrade-remove-perp-mint-view-arb-goerli.sh
+
 ##### Upgrade & Split PerpetualMint facet
 upgrade-split-perp-mint-arb-goerli:
 	@./script/Arbitrum/upgrade/upgrade-split-perp-mint-arb-goerli.sh

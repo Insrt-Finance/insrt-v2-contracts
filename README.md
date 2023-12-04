@@ -416,6 +416,12 @@ Requires the following additional environment variables set:
 make upgrade-remove-perp-mint-arb-goerli
 ```
 
+##### Upgrade & Remove PerpetualMintView facet
+
+```
+make upgrade-remove-perp-mint-view-arb-goerli
+```
+
 ##### Upgrade & Split PerpetualMint facet
 
 ```

@@ -177,15 +177,15 @@ contract UpgradePerpetualMintArb is BatchScript {
         perpetualMintFunctionSelectors[10] = IPerpetualMint.redeem.selector;
 
         perpetualMintFunctionSelectors[11] = IPerpetualMint
-            .setCollectionMintPrice
+            .setCollectionConsolationFeeBP
             .selector;
 
         perpetualMintFunctionSelectors[12] = IPerpetualMint
-            .setCollectionRisk
+            .setCollectionMintPrice
             .selector;
 
         perpetualMintFunctionSelectors[13] = IPerpetualMint
-            .setConsolationFeeBP
+            .setCollectionRisk
             .selector;
 
         perpetualMintFunctionSelectors[14] = IPerpetualMint

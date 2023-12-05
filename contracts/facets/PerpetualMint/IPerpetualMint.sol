@@ -111,6 +111,12 @@ interface IPerpetualMint is
     /// @param mintToken address of the mint consolation token
     function setMintToken(address mintToken) external;
 
+    /// @notice sets the minting for $MINT consolation fee in basis points
+    /// @param mintTokenConsolationFeeBP minting for $MINT consolation fee in basis points
+    function setMintTokenConsolationFeeBP(
+        uint32 mintTokenConsolationFeeBP
+    ) external;
+
     /// @notice sets the baseURI for the ERC1155 token receipts
     /// @param baseURI URI string
     function setReceiptBaseURI(string calldata baseURI) external;

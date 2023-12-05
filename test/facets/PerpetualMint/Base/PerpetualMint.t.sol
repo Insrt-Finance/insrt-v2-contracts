@@ -37,6 +37,9 @@ abstract contract PerpetualMintTest_Base is CoreTest {
 
     uint32 internal constant TEST_MINT_FEE_BP = 5000000; // 0.5% fee
 
+    /// @dev mint for $MINT consolation fee basis points to test
+    uint32 internal constant TEST_MINT_TOKEN_CONSOLATION_FEE_BP = 5000000; // 0.5% fee
+
     uint64 internal constant TEST_VRF_NUMBER_OF_CONFIRMATIONS = 1;
 
     /// @dev first tier multiplier (lowest multiplier)
@@ -102,6 +105,11 @@ abstract contract PerpetualMintTest_Base is CoreTest {
         // sets the mint fee
         perpetualMint.setMintFeeBP(TEST_MINT_FEE_BP);
 
+        // sets the mint for $MINT consolation fee
+        perpetualMint.setMintTokenConsolationFeeBP(
+            TEST_MINT_TOKEN_CONSOLATION_FEE_BP
+        );
+
         uint256[] memory tierMultipliers = new uint256[](testNumberOfTiers);
         uint32[] memory tierRisks = new uint32[](testNumberOfTiers);
 
@@ -154,6 +162,11 @@ abstract contract PerpetualMintTest_Base is CoreTest {
         );
 
         assert(TEST_MINT_FEE_BP == perpetualMint.mintFeeBP());
+
+        assert(
+            TEST_MINT_TOKEN_CONSOLATION_FEE_BP ==
+                perpetualMint.mintTokenConsolationFeeBP()
+        );
 
         supraRouterContract = ISupraRouterContract(
             this.perpetualMintHelper().VRF_ROUTER()

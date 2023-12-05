@@ -30,6 +30,9 @@ abstract contract PerpetualMintTest is CoreTest {
 
     uint32 internal constant TEST_MINT_FEE_BP = 5000000; // 0.5% fee
 
+    /// @dev mint for $MINT consolation fee basis points to test
+    uint32 internal constant TEST_MINT_TOKEN_CONSOLATION_FEE_BP = 5000000; // 0.5% fee
+
     uint64 internal constant TEST_VRF_SUBSCRIPTION_ID = 5;
 
     /// @dev first tier multiplier (lowest multiplier)
@@ -101,6 +104,11 @@ abstract contract PerpetualMintTest is CoreTest {
             TEST_COLLECTION_CONSOLATION_FEE_BP
         );
 
+        // sets the mint for $MINT consolation fee
+        perpetualMint.setMintTokenConsolationFeeBP(
+            TEST_MINT_TOKEN_CONSOLATION_FEE_BP
+        );
+
         // sets the mint fee
         perpetualMint.setMintFeeBP(TEST_MINT_FEE_BP);
 
@@ -156,6 +164,11 @@ abstract contract PerpetualMintTest is CoreTest {
         );
 
         assert(TEST_MINT_FEE_BP == perpetualMint.mintFeeBP());
+
+        assert(
+            TEST_MINT_TOKEN_CONSOLATION_FEE_BP ==
+                perpetualMint.mintTokenConsolationFeeBP()
+        );
     }
 
     /// @dev initializes PerpetualMint facets by executing a diamond cut on the Core Diamond.

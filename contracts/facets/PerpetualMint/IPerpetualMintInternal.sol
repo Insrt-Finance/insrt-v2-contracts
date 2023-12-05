@@ -72,6 +72,10 @@ interface IPerpetualMintInternal {
     /// @param price mint price of collection
     event MintPriceSet(address collection, uint256 price);
 
+    /// @notice emitted when the $MINT consolation fee is set
+    /// @param mintTokenConsolationFeeBP minting for $MINT consolation fee in basis points
+    event MintTokenConsolationFeeSet(uint32 mintTokenConsolationFeeBP);
+
     /// @notice emitted when the address of the $MINT token is set
     /// @param mintToken address of mint token
     event MintTokenSet(address mintToken);

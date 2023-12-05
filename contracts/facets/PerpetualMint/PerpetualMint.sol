@@ -137,6 +137,13 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function setMintTokenConsolationFeeBP(
+        uint32 _mintTokenConsolationFeeBP
+    ) external onlyOwner {
+        _setMintTokenConsolationFeeBP(_mintTokenConsolationFeeBP);
+    }
+
+    /// @inheritdoc IPerpetualMint
     function setReceiptBaseURI(string calldata baseURI) external onlyOwner {
         _setBaseURI(baseURI);
     }

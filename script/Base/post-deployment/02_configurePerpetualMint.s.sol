@@ -30,6 +30,10 @@ contract ConfigurePerpetualMint_Base is Script, Test {
 
         uint32 mintFeeBP = uint32(vm.envUint("MINT_FEE_BP"));
 
+        uint32 mintTokenConsolationFeeBP = uint32(
+            vm.envUint("MINT_TOKEN_CONSOLATION_FEE_BP")
+        );
+
         uint32 redemptionFeeBP = uint32(vm.envUint("REDEMPTION_FEE_BP"));
 
         uint256[] memory tierMultipliers = vm.envUint("TIER_MULTIPLIERS", ",");
@@ -45,6 +49,8 @@ contract ConfigurePerpetualMint_Base is Script, Test {
         perpetualMint.setCollectionConsolationFeeBP(collectionConsolationFeeBP);
 
         perpetualMint.setMintFeeBP(mintFeeBP);
+
+        perpetualMint.setMintTokenConsolationFeeBP(mintTokenConsolationFeeBP);
 
         perpetualMint.setRedemptionFeeBP(redemptionFeeBP);
 
@@ -65,6 +71,10 @@ contract ConfigurePerpetualMint_Base is Script, Test {
         );
         console.log("Core/PerpetualMint Ownership Transferred To: ", newOwner);
         console.log("Mint Fee BP Set: ", mintFeeBP);
+        console.log(
+            "Mint Token Consolation Fee BP Set: ",
+            mintTokenConsolationFeeBP
+        );
         console.log("Redemption Fee BP Set: ", redemptionFeeBP);
         console.log("Tiers Set: ");
         emit log_named_array("  Tier Multipliers: ", tierMultipliers);

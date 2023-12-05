@@ -993,6 +993,18 @@ abstract contract PerpetualMintInternal is
         emit MintTokenSet(mintToken);
     }
 
+    /// @notice sets the mint for $MINT consolation fee in basis points
+    /// @param mintTokenConsolationFeeBP mint for $MINT consolation fee in basis points
+    function _setMintTokenConsolationFeeBP(
+        uint32 mintTokenConsolationFeeBP
+    ) internal {
+        _enforceBasis(mintTokenConsolationFeeBP, BASIS);
+
+        Storage.layout().mintTokenConsolationFeeBP = mintTokenConsolationFeeBP;
+
+        emit MintTokenConsolationFeeSet(mintTokenConsolationFeeBP);
+    }
+
     /// @notice sets the status of the redeemPaused state
     /// @param status boolean indicating whether redeeming is paused
     function _setRedeemPaused(bool status) internal {

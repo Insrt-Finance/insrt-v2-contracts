@@ -224,6 +224,9 @@ export COLLECTION_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 # Protocol mint fee
 export MINT_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
+# Mint for $MINT consolation fee used for funding $MINT
+export MINT_TOKEN_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
 export NEW_PERP_MINT_OWNER="0x..." # Address to set as the new Core/PerpetualMint owner
 
 export REDEMPTION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
@@ -260,6 +263,9 @@ export COLLECTION_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
 # Protocol mint fee
 export MINT_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
+# Mint for $MINT consolation fee used for funding $MINT
+export MINT_TOKEN_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
 export NEW_PERP_MINT_OWNER="0x..." # Address to set as the new Core/PerpetualMint owner
 

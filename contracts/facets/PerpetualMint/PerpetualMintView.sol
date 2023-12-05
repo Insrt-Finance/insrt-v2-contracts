@@ -124,6 +124,15 @@ contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
     }
 
     /// @inheritdoc IPerpetualMintView
+    function mintTokenConsolationFeeBP()
+        external
+        view
+        returns (uint32 mintTokenConsolationFeeBasisPoints)
+    {
+        mintTokenConsolationFeeBasisPoints = _mintTokenConsolationFeeBP();
+    }
+
+    /// @inheritdoc IPerpetualMintView
     function redemptionFeeBP() external view returns (uint32 feeBP) {
         feeBP = _redemptionFeeBP();
     }

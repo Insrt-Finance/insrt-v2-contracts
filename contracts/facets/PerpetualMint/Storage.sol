@@ -36,6 +36,8 @@ library PerpetualMintStorage {
         address mintToken;
         /// @dev status of whether redeem is paused
         bool redeemPaused;
+        /// @dev mint for $MINT consolation fee in basis points
+        uint32 mintTokenConsolationFeeBP;
     }
 
     bytes32 internal constant STORAGE_SLOT =

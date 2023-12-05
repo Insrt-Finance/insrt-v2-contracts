@@ -412,22 +412,26 @@ contract DeployPerpetualMint_Base is Script {
             .selector;
 
         perpetualMintViewFunctionSelectors[16] = IPerpetualMintView
-            .redemptionFeeBP
+            .mintTokenConsolationFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[17] = IPerpetualMintView
-            .redeemPaused
+            .redemptionFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[18] = IPerpetualMintView
-            .tiers
+            .redeemPaused
             .selector;
 
         perpetualMintViewFunctionSelectors[19] = IPerpetualMintView
-            .vrfConfig
+            .tiers
             .selector;
 
         perpetualMintViewFunctionSelectors[20] = IPerpetualMintView
+            .vrfConfig
+            .selector;
+
+        perpetualMintViewFunctionSelectors[21] = IPerpetualMintView
             .vrfSubscriptionBalanceThreshold
             .selector;
 

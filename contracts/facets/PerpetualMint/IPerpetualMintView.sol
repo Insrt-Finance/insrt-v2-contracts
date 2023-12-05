@@ -101,6 +101,13 @@ interface IPerpetualMintView {
     /// @return token address of the current $MINT token
     function mintToken() external view returns (address token);
 
+    /// @notice Returns the $MINT consolation fee in basis points
+    /// @return mintTokenConsolationFeeBasisPoints minting for $MINT consolation fee in basis points
+    function mintTokenConsolationFeeBP()
+        external
+        view
+        returns (uint32 mintTokenConsolationFeeBasisPoints);
+
     /// @notice returns the current redemption fee in basis points
     /// @return feeBP redemptionFee in basis points
     function redemptionFeeBP() external view returns (uint32 feeBP);

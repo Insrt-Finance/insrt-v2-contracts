@@ -655,6 +655,18 @@ abstract contract PerpetualMintInternal is
         mintToken = Storage.layout().mintToken;
     }
 
+    /// @notice Returns the current $MINT consolation fee in basis points
+    /// @return mintTokenConsolationFeeBasisPoints mint for $MINT consolation fee in basis points
+    function _mintTokenConsolationFeeBP()
+        internal
+        view
+        returns (uint32 mintTokenConsolationFeeBasisPoints)
+    {
+        mintTokenConsolationFeeBasisPoints = Storage
+            .layout()
+            .mintTokenConsolationFeeBP;
+    }
+
     /// @notice ensures a value is within the BASIS range
     /// @param value value to normalize
     /// @return normalizedValue value after normalization

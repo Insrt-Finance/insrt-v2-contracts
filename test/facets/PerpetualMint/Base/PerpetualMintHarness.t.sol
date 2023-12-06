@@ -15,6 +15,12 @@ contract PerpetualMintHarness_Base is PerpetualMintHarness {
         _attemptBatchMintForMintWithEthBase(msg.sender, uint8(numberOfMints));
     }
 
+    function attemptBatchMintForMintWithMint(
+        uint32 numberOfMints
+    ) external override whenNotPaused {
+        _attemptBatchMintForMintWithMintBase(msg.sender, uint8(numberOfMints));
+    }
+
     function attemptBatchMintWithEth(
         address collection,
         uint32 numberOfMints

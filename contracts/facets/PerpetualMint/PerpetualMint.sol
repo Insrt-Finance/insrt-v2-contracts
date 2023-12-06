@@ -29,6 +29,13 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function attemptBatchMintForMintWithMint(
+        uint32 numberOfMints
+    ) external virtual whenNotPaused {
+        _attemptBatchMintForMintWithMint(msg.sender, numberOfMints);
+    }
+
+    /// @inheritdoc IPerpetualMint
     function attemptBatchMintWithEth(
         address collection,
         uint32 numberOfMints

@@ -23,6 +23,10 @@ interface IPerpetualMint is
         uint32 numberOfMints
     ) external payable;
 
+    /// @notice Attempts a batch mint for the msg.sender for $MINT using $MINT tokens as payment.
+    /// @param numberOfMints number of mints to attempt
+    function attemptBatchMintForMintWithMint(uint32 numberOfMints) external;
+
     /// @notice Attempts a batch mint for the msg.sender for a single collection using ETH as payment.
     /// @param collection address of collection for mint attempts
     /// @param numberOfMints number of mints to attempt

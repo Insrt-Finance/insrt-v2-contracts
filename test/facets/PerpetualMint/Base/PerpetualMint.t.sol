@@ -193,40 +193,6 @@ abstract contract PerpetualMintTest_Base is CoreTest {
         coreDiamond.diamondCut(facetCuts, address(0), "");
     }
 
-    /// @dev mocks unsuccessful attemptBatchMintWithEth attempts to increase accrued
-    /// mint earnings, collection consolation fees, & protocol fees by the number of unsuccessful mints
-    /// @param collection address of collection
-    /// @param numberOfMints number of unsuccessful mint attempts
-    function mock_unsuccessfulMintWithEthAttempts(
-        address collection,
-        uint32 numberOfMints
-    ) internal {
-        uint256 mockMsgValue = perpetualMint.collectionMintPrice(collection) *
-            numberOfMints;
-
-        uint256 mockCollectionConsolationFee = (mockMsgValue *
-            perpetualMint.collectionConsolationFeeBP()) / perpetualMint.BASIS();
-
-        uint256 mockMintFee = (mockMsgValue * perpetualMint.mintFeeBP()) /
-            perpetualMint.BASIS();
-
-        perpetualMint.setConsolationFees(
-            perpetualMint.accruedConsolationFees() +
-                mockCollectionConsolationFee
-        );
-
-        perpetualMint.setMintEarnings(
-            perpetualMint.accruedMintEarnings() +
-                mockMsgValue -
-                mockCollectionConsolationFee -
-                mockMintFee
-        );
-
-        perpetualMint.setProtocolFees(
-            perpetualMint.accruedProtocolFees() + mockMintFee
-        );
-    }
-
     /// @dev Helper function to activate Supra VRF by adding the contract and client to the Supra VRF Deposit Contract whitelist and depositing funds.
     function _activateVRF() private {
         vm.prank(supraVRFDepositContractOwner);

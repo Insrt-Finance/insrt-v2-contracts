@@ -101,7 +101,7 @@ contract UpgradeAndRemovePerpetualMintArb is BatchScript {
         bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](2);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
-            .setCollectionConsolationFeeBP
+            .attemptBatchMintForMintWithEth
             .selector;
 
         perpetualMintFunctionSelectors[1] = IPerpetualMint

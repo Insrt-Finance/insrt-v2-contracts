@@ -11,6 +11,13 @@ contract PerpetualMint_Base is PerpetualMint {
     constructor(address vrf) PerpetualMint(vrf) {}
 
     /// @inheritdoc IPerpetualMint
+    function attemptBatchMintForMintWithEth(
+        uint32 numberOfMints
+    ) external payable override whenNotPaused {
+        _attemptBatchMintForMintWithEthBase(msg.sender, uint8(numberOfMints));
+    }
+
+    /// @inheritdoc IPerpetualMint
     function attemptBatchMintWithEth(
         address collection,
         uint32 numberOfMints

@@ -78,6 +78,93 @@ abstract contract PerpetualMintInternal is
         accruedFees = Storage.layout().protocolFees;
     }
 
+    /// @notice Attempts a batch mint for the msg.sender for $MINT using ETH as payment.
+    /// @param minter address of minter
+    /// @param numberOfMints number of mints to attempt
+    function _attemptBatchMintForMintWithEth(
+        address minter,
+        uint32 numberOfMints
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        // for now, mints for $MINT are treated as address(0) collections
+        address collection = address(0);
+
+        CollectionData storage collectionData = l.collections[collection];
+
+        _attemptBatchMintForMintWithEth_sharedLogic(
+            l,
+            msg.value,
+            _collectionMintPrice(collectionData),
+            numberOfMints
+        );
+
+        // if the number of words requested is greater than the max allowed by the VRF coordinator,
+        // the request for random words will fail (max random words is currently 500 per request).
+        uint32 numWords = numberOfMints * 1; // 1 words per mint for $MINT, current max of 500 mints per tx
+
+        _requestRandomWords(l, collectionData, minter, collection, numWords);
+    }
+
+    /// @notice Attempts a Base-specific batch mint for the msg.sender for $MINT using ETH as payment.
+    /// @param minter address of minter
+    /// @param numberOfMints number of mints to attempt
+    function _attemptBatchMintForMintWithEthBase(
+        address minter,
+        uint8 numberOfMints
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        // for now, mints for $MINT are treated as address(0) collections
+        address collection = address(0);
+
+        CollectionData storage collectionData = l.collections[collection];
+
+        _attemptBatchMintForMintWithEth_sharedLogic(
+            l,
+            msg.value,
+            _collectionMintPrice(collectionData),
+            numberOfMints
+        );
+
+        // if the number of words requested is greater than uint8, the function call will revert.
+        // the current max allowed by Supra VRF is 255 per request.
+        uint8 numWords = numberOfMints * 1; // 1 words per mint for $MINT, current max of 255 mints per tx
+
+        _requestRandomWordsBase(
+            l,
+            collectionData,
+            minter,
+            collection,
+            numWords
+        );
+    }
+
+    function _attemptBatchMintForMintWithEth_sharedLogic(
+        Storage.Layout storage l,
+        uint256 msgValue,
+        uint256 mintForMintPrice,
+        uint32 numberOfMints
+    ) private {
+        if (numberOfMints == 0) {
+            revert InvalidNumberOfMints();
+        }
+
+        if (msgValue != mintForMintPrice * numberOfMints) {
+            revert IncorrectETHReceived();
+        }
+
+        // calculate the mint for $MINT consolation fee
+        uint256 mintTokenConsolationFee = (msgValue *
+            l.mintTokenConsolationFeeBP) / BASIS;
+
+        // update the accrued consolation fees
+        l.consolationFees += mintTokenConsolationFee;
+
+        // update the accrued protocol fees
+        l.protocolFees += msgValue - mintTokenConsolationFee;
+    }
+
     /// @notice Attempts a batch mint for the msg.sender for a single collection using ETH as payment.
     /// @param minter address of minter
     /// @param collection address of collection for mint attempts

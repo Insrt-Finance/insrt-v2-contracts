@@ -19,18 +19,43 @@ contract PerpetualMint_claimMintEarnings is ArbForkTest, PerpetualMintTest {
     function setUp() public override {
         super.setUp();
 
-        // mocks unsuccessful mint attempts as a method to increase fees & earnings
-        mock_unsuccessfulMintWithEthAttempts(
-            COLLECTION,
-            unsuccessfulMintAttempts
-        );
-
         // ensure contract has enough ETH to send to claimer
         vm.deal(address(perpetualMint), 50 ether);
     }
 
-    /// @dev Tests claimMintEarnings functionality.
-    function test_claimMintEarnings() external {
+    /// @dev Tests claimMintEarnings functionality with mints for collections.
+    function test_claimMintEarningsWithMintsForCollections() external {
+        // mocks unsuccessful mint for collection attempts as a method to increase fees & earnings
+        mock_unsuccessfulMintForCollectionWithEthAttempts(
+            COLLECTION,
+            unsuccessfulMintAttempts
+        );
+
+        uint256 preClaimedMintEarnings = perpetualMint.accruedMintEarnings();
+
+        uint256 preClaimedOwnerEthBalance = address(this).balance;
+
+        perpetualMint.claimMintEarnings();
+
+        uint256 postClaimedMintEarnings = perpetualMint.accruedMintEarnings();
+
+        // mintEarnings should be zero after claiming
+        assert(postClaimedMintEarnings == 0);
+
+        uint256 postClaimedOwnerEthBalance = address(this).balance;
+
+        // owner's ETH balance should increase by the amount of claimed mintEarnings
+        assert(
+            postClaimedOwnerEthBalance ==
+                preClaimedOwnerEthBalance + preClaimedMintEarnings
+        );
+    }
+
+    /// @dev Tests claimMintEarnings functionality with mints for $MINT.
+    function test_claimMintEarningsWithMintsForMint() external {
+        // mocks unsuccessful mint for $MINT attempts as a method to increase fees & earnings
+        mock_unsuccessfulMintForMintWithEthAttempts(unsuccessfulMintAttempts);
+
         uint256 preClaimedMintEarnings = perpetualMint.accruedMintEarnings();
 
         uint256 preClaimedOwnerEthBalance = address(this).balance;

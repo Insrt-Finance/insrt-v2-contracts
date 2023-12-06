@@ -19,18 +19,43 @@ contract PerpetualMint_claimProtocolFees is ArbForkTest, PerpetualMintTest {
     function setUp() public override {
         super.setUp();
 
-        // mocks unsuccessful mint attempts as a method to increase fees & earnings
-        mock_unsuccessfulMintWithEthAttempts(
-            COLLECTION,
-            unsuccessfulMintAttempts
-        );
-
         // ensure contract has enough ETH to send to claimer
         vm.deal(address(perpetualMint), 50 ether);
     }
 
-    /// @dev Tests claimProtocolFees functionality.
-    function test_claimProtocolFees() external {
+    /// @dev Tests claimProtocolFees functionality with mints for collections.
+    function test_claimProtocolFeesWithMintsForCollections() external {
+        // mocks unsuccessful mint for collection attempts as a method to increase fees & earnings
+        mock_unsuccessfulMintForCollectionWithEthAttempts(
+            COLLECTION,
+            unsuccessfulMintAttempts
+        );
+
+        uint256 preClaimedProtocolFees = perpetualMint.accruedProtocolFees();
+
+        uint256 preClaimedOwnerEthBalance = address(this).balance;
+
+        perpetualMint.claimProtocolFees();
+
+        uint256 postClaimedProtocolFees = perpetualMint.accruedProtocolFees();
+
+        // protocolFees should be zero after claiming
+        assert(postClaimedProtocolFees == 0);
+
+        uint256 postClaimedOwnerEthBalance = address(this).balance;
+
+        // owner's ETH balance should increase by the amount of claimed protocolFees
+        assert(
+            postClaimedOwnerEthBalance ==
+                preClaimedOwnerEthBalance + preClaimedProtocolFees
+        );
+    }
+
+    /// @dev Tests claimProtocolFees functionality with mints for $MINT.
+    function test_claimProtocolFeesWithMintsforMint() external {
+        // mocks unsuccessful mint for $MINT attempts as a method to increase fees & earnings
+        mock_unsuccessfulMintForMintWithEthAttempts(unsuccessfulMintAttempts);
+
         uint256 preClaimedProtocolFees = perpetualMint.accruedProtocolFees();
 
         uint256 preClaimedOwnerEthBalance = address(this).balance;

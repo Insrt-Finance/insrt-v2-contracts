@@ -198,11 +198,37 @@ abstract contract PerpetualMintTest is CoreTest {
         coreDiamond.diamondCut(facetCuts, address(0), "");
     }
 
+    /// @dev mocks unsuccessful attemptBatchMintForMintWithEth attempts to increase accrued
+    /// mint earnings, mint for $MINT consolation fees, & protocol fees by the number of unsuccessful mints
+    /// @param numberOfMints number of unsuccessful mint attempts
+    function mock_unsuccessfulMintForMintWithEthAttempts(
+        uint32 numberOfMints
+    ) internal {
+        // for now, mints for $MINT are treated as address(0) collections
+        address collection = address(0);
+
+        uint256 mockMsgValue = perpetualMint.collectionMintPrice(collection) *
+            numberOfMints;
+
+        uint256 mockMintTokenConsolationFee = (mockMsgValue *
+            perpetualMint.mintTokenConsolationFeeBP()) / perpetualMint.BASIS();
+
+        perpetualMint.setConsolationFees(
+            perpetualMint.accruedConsolationFees() + mockMintTokenConsolationFee
+        );
+
+        perpetualMint.setProtocolFees(
+            perpetualMint.accruedProtocolFees() +
+                mockMsgValue -
+                mockMintTokenConsolationFee
+        );
+    }
+
     /// @dev mocks unsuccessful attemptBatchMintWithEth attempts to increase accrued
     /// mint earnings, mint for collection consolation fees, & protocol fees by the number of unsuccessful mints
     /// @param collection address of collection
     /// @param numberOfMints number of unsuccessful mint attempts
-    function mock_unsuccessfulMintWithEthAttempts(
+    function mock_unsuccessfulMintForCollectionWithEthAttempts(
         address collection,
         uint32 numberOfMints
     ) internal {

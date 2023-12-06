@@ -485,18 +485,17 @@ abstract contract PerpetualMintInternal is
         // calculate the protocol mint fee
         uint256 mintFee = (ethRequired * l.mintFeeBP) / BASIS;
 
-        // update the accrued consolation fees
+        // calculate the net collection consolation fee
         // ETH required for mint taken from collectionConsolationFee
-        l.consolationFees -= (ethRequired -
+        uint256 netConsolationFee = ethRequired -
             collectionConsolationFee +
-            additionalDepositorFee);
+            additionalDepositorFee;
+
+        // update the accrued consolation fees
+        l.consolationFees -= netConsolationFee;
 
         // update the accrued depositor mint earnings
-        l.mintEarnings +=
-            ethRequired -
-            collectionConsolationFee -
-            mintFee +
-            additionalDepositorFee;
+        l.mintEarnings += netConsolationFee - mintFee;
 
         // update the accrued protocol fees
         l.protocolFees += mintFee;

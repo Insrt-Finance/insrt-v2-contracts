@@ -9,7 +9,7 @@ import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 /// @dev Represents data specific to a collection
 struct CollectionData {
     /// @dev keeps track of mint requests which have not yet been fulfilled
-    /// @dev used to implement the collection risk update "state-machine" check
+    /// @dev used to implement the collection risk & collection mint multiplier update "state-machine" check
     EnumerableSet.UintSet pendingRequests;
     /// @dev price of mint attempt in ETH (native token) for a collection
     uint256 mintPrice;
@@ -43,6 +43,14 @@ struct MintResultData {
     uint256 totalSuccessfulMints;
 }
 
+/// @dev Represents data specific to $MINT mint for $MINT consolation tiers
+struct MintTokenTiersData {
+    /// @dev assumed ordered array of risks for each tier
+    uint32[] tierRisks;
+    /// @dev assumed ordered array of $MINT consolation multipliers for each tier
+    uint256[] tierMultipliers;
+}
+
 /// @dev Represents data specific to mint requests
 /// @dev Updated as a new request is made and removed when the request is fulfilled
 struct RequestData {
@@ -52,7 +60,7 @@ struct RequestData {
     address minter;
 }
 
-/// @dev Represents data specific to $MINT consolation tiers
+/// @dev Represents data specific to $MINT mint for collection consolation tiers
 struct TiersData {
     /// @dev assumed ordered array of risks for each tier
     uint32[] tierRisks;

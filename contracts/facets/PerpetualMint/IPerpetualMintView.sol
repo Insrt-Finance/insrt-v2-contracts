@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.19;
 
-import { MintResultData, TiersData, VRFConfig } from "./Storage.sol";
+import { MintResultData, MintTokenTiersData, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title IPerpetualMintView
 /// @dev Interface of the PerpetualMintView facet
@@ -108,6 +108,12 @@ interface IPerpetualMintView {
         view
         returns (uint32 mintTokenConsolationFeeBasisPoints);
 
+    /// @notice Returns the current mint for $MINT tiers
+    function mintTokenTiers()
+        external
+        view
+        returns (MintTokenTiersData memory mintTokenTiersData);
+
     /// @notice returns the current redemption fee in basis points
     /// @return feeBP redemptionFee in basis points
     function redemptionFeeBP() external view returns (uint32 feeBP);
@@ -116,7 +122,7 @@ interface IPerpetualMintView {
     /// @return status boolean indicating whether redeeming is paused
     function redeemPaused() external view returns (bool status);
 
-    /// @notice Returns the current $MINT consolation tiers
+    /// @notice Returns the current mint for collection $MINT consolation tiers
     function tiers() external view returns (TiersData memory tiersData);
 
     /// @notice returns the current VRF config

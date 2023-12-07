@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 import { IPerpetualMintView } from "./IPerpetualMintView.sol";
-import { MintResultData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
+import { MintResultData, MintTokenTiersData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title PerpetualMintView
 /// @dev PerpetualMintView facet contract containing all externally called view functions
@@ -130,6 +130,15 @@ contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
         returns (uint32 mintTokenConsolationFeeBasisPoints)
     {
         mintTokenConsolationFeeBasisPoints = _mintTokenConsolationFeeBP();
+    }
+
+    /// @inheritdoc IPerpetualMintView
+    function mintTokenTiers()
+        external
+        view
+        returns (MintTokenTiersData memory mintTokenTiersData)
+    {
+        mintTokenTiersData = _mintTokenTiers();
     }
 
     /// @inheritdoc IPerpetualMintView

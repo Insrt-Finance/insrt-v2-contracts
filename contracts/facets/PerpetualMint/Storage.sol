@@ -8,7 +8,7 @@ import "./types/DataTypes.sol";
 /// @dev defines storage layout for the PerpetualMint facet
 library PerpetualMintStorage {
     struct Layout {
-        /// @dev $MINT consolation tiers data
+        /// @dev $MINT mint for collection consolation tiers data
         TiersData tiers;
         /// @dev all variables related to Chainlink VRF configuration
         VRFConfig vrfConfig;
@@ -38,6 +38,8 @@ library PerpetualMintStorage {
         bool redeemPaused;
         /// @dev mint for $MINT consolation fee in basis points
         uint32 mintTokenConsolationFeeBP;
+        /// @dev $MINT mint for $MINT consolation tiers data
+        MintTokenTiersData mintTokenTiers;
     }
 
     bytes32 internal constant STORAGE_SLOT =

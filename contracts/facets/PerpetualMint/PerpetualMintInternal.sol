@@ -12,7 +12,7 @@ import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 import { ISupraRouterContract } from "./Base/ISupraRouterContract.sol";
 import { ERC1155MetadataExtensionInternal } from "./ERC1155MetadataExtensionInternal.sol";
 import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
-import { CollectionData, MintOutcome, MintResultData, PerpetualMintStorage as Storage, RequestData, TiersData, VRFConfig } from "./Storage.sol";
+import { CollectionData, MintOutcome, MintResultData, MintTokenTiersData, PerpetualMintStorage as Storage, RequestData, TiersData, VRFConfig } from "./Storage.sol";
 import { IToken } from "../Token/IToken.sol";
 import { GuardsInternal } from "../../common/GuardsInternal.sol";
 
@@ -865,6 +865,15 @@ abstract contract PerpetualMintInternal is
             .mintTokenConsolationFeeBP;
     }
 
+    /// @notice Returns the current tier risks and multipliers for minting for $MINT
+    function _mintTokenTiers()
+        internal
+        view
+        returns (MintTokenTiersData memory mintTokenTiersData)
+    {
+        mintTokenTiersData = Storage.layout().mintTokenTiers;
+    }
+
     /// @notice ensures a value is within the BASIS range
     /// @param value value to normalize
     /// @return normalizedValue value after normalization
@@ -1251,6 +1260,7 @@ abstract contract PerpetualMintInternal is
         );
     }
 
+    /// @notice Returns the current tier risks and multipliers for minting for collection $MINT consolations
     function _tiers() internal view returns (TiersData memory tiersData) {
         tiersData = Storage.layout().tiers;
     }

@@ -5,11 +5,11 @@ import "forge-std/Script.sol";
 import "forge-std/Test.sol";
 
 import { ICore } from "../../../contracts/diamonds/Core/ICore.sol";
-import { IPerpetualMint, TiersData, VRFConfig } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
+import { IPerpetualMint, MintTokenTiersData, TiersData, VRFConfig } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 
 /// @title ConfigurePerpetualMintArb
 /// @dev configures the PerpetualMint contract by setting the collection price to mint ratio BP,
-/// consolation fee BP, mint fee BP, redemption fee BP, tiers, and VRF config
+/// consolation fee BP, mint fee BP, mint for $MINT tiers, redemption fee BP, mint for collection tiers, and VRF config
 contract ConfigurePerpetualMintArb is Script, Test {
     error Uint256ValueGreaterThanUint32Max(uint256 value);
 
@@ -32,6 +32,20 @@ contract ConfigurePerpetualMintArb is Script, Test {
 
         uint32 mintTokenConsolationFeeBP = uint32(
             vm.envUint("MINT_TOKEN_CONSOLATION_FEE_BP")
+        );
+
+        uint256[] memory mintTokenTierMultipliers = vm.envUint(
+            "MINT_TOKEN_TIER_MULTIPLIERS",
+            ","
+        );
+
+        uint256[] memory envMintTokenTierRisks = vm.envUint(
+            "MINT_TOKEN_TIER_RISKS",
+            ","
+        );
+
+        uint32[] memory mintTokenTierRisks = toUint32Array(
+            envMintTokenTierRisks
         );
 
         uint32 redemptionFeeBP = uint32(vm.envUint("REDEMPTION_FEE_BP"));
@@ -60,6 +74,13 @@ contract ConfigurePerpetualMintArb is Script, Test {
 
         perpetualMint.setMintTokenConsolationFeeBP(mintTokenConsolationFeeBP);
 
+        perpetualMint.setMintTokenTiers(
+            MintTokenTiersData({
+                tierMultipliers: mintTokenTierMultipliers,
+                tierRisks: mintTokenTierRisks
+            })
+        );
+
         perpetualMint.setRedemptionFeeBP(redemptionFeeBP);
 
         perpetualMint.setTiers(
@@ -83,6 +104,9 @@ contract ConfigurePerpetualMintArb is Script, Test {
             "Mint Token Consolation Fee BP Set: ",
             mintTokenConsolationFeeBP
         );
+        console.log("Mint Token Tiers Set: ");
+        emit log_named_array("  Tier Multipliers: ", mintTokenTierMultipliers);
+        emit log_named_array("  Tier Risks: ", envMintTokenTierRisks);
         console.log("Redemption Fee BP Set: ", redemptionFeeBP);
         console.log("Tiers Set: ");
         emit log_named_array("  Tier Multipliers: ", tierMultipliers);

@@ -153,6 +153,8 @@ Note: The following environment variables are modifiable in `./script/Arbitrum/p
 - `COLLECTION_CONSOLATION_FEE_BP`
 - `MINT_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
+- `MINT_TOKEN_TIER_MULTIPLIERS`
+- `MINT_TOKEN_TIER_RISKS`
 - `NEW_PERP_MINT_OWNER`
 - `REDEMPTION_FEE_BP`
 - `TIER_MULTIPLIERS`
@@ -196,6 +198,8 @@ Note: The following environment variables are modifiable in `./script/Arbitrum/p
 - `COLLECTION_CONSOLATION_FEE_BP`
 - `MINT_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
+- `MINT_TOKEN_TIER_MULTIPLIERS`
+- `MINT_TOKEN_TIER_RISKS`
 - `NEW_PERP_MINT_OWNER`
 - `REDEMPTION_FEE_BP`
 - `TIER_MULTIPLIERS`
@@ -239,6 +243,8 @@ Note: The following environment variables are modifiable in `./script/Arbitrum/p
 - `COLLECTION_CONSOLATION_FEE_BP`
 - `MINT_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
+- `MINT_TOKEN_TIER_MULTIPLIERS`
+- `MINT_TOKEN_TIER_RISKS`
 - `NEW_PERP_MINT_OWNER`
 - `REDEMPTION_FEE_BP`
 - `TIER_MULTIPLIERS`
@@ -279,6 +285,8 @@ Note: The following environment variables are modifiable in `./script/Base/post-
 - `COLLECTION_CONSOLATION_FEE_BP`
 - `MINT_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
+- `MINT_TOKEN_TIER_MULTIPLIERS`
+- `MINT_TOKEN_TIER_RISKS`
 - `NEW_PERP_MINT_OWNER`
 - `REDEMPTION_FEE_BP`
 - `TIER_MULTIPLIERS`
@@ -318,6 +326,8 @@ Note: The following environment variables are modifiable in `./script/Base/post-
 - `COLLECTION_CONSOLATION_FEE_BP`
 - `MINT_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
+- `MINT_TOKEN_TIER_MULTIPLIERS`
+- `MINT_TOKEN_TIER_RISKS`
 - `NEW_PERP_MINT_OWNER`
 - `REDEMPTION_FEE_BP`
 - `TIER_MULTIPLIERS`
@@ -357,6 +367,8 @@ Note: The following environment variables are modifiable in `./script/Base/post-
 - `COLLECTION_CONSOLATION_FEE_BP`
 - `MINT_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
+- `MINT_TOKEN_TIER_MULTIPLIERS`
+- `MINT_TOKEN_TIER_RISKS`
 - `NEW_PERP_MINT_OWNER`
 - `REDEMPTION_FEE_BP`
 - `TIER_MULTIPLIERS`

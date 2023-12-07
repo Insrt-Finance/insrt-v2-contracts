@@ -227,6 +227,10 @@ export MINT_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 # Mint for $MINT consolation fee used for funding $MINT
 export MINT_TOKEN_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
+export MINT_TOKEN_TIER_MULTIPLIERS=<1e9 number array aligned with MINT_TOKEN_TIER_RISKS> # Example: 1e9,2e9,4e9,8e9,16e9 = 1x, 2x, 4x, 8x, 16x
+
+export MINT_TOKEN_TIER_RISKS=<1e7 number array aligned with MINT_TOKEN_TIER_MULTIPLIERS> # Example: 60e7,25e7,10e7,4e7,1e7 = 60%, 25%, 10%, 4%, 1%
+
 export NEW_PERP_MINT_OWNER="0x..." # Address to set as the new Core/PerpetualMint owner
 
 export REDEMPTION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
@@ -266,6 +270,10 @@ export MINT_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
 # Mint for $MINT consolation fee used for funding $MINT
 export MINT_TOKEN_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
+export MINT_TOKEN_TIER_MULTIPLIERS=<1e9 number array aligned with MINT_TOKEN_TIER_RISKS> # Example: 1e9,2e9,4e9,8e9,16e9 = 1x, 2x, 4x, 8x, 16x
+
+export MINT_TOKEN_TIER_RISKS=<1e7 number array aligned with MINT_TOKEN_TIER_MULTIPLIERS> # Example: 60e7,25e7,10e7,4e7,1e7 = 60%, 25%, 10%, 4%, 1%
 
 export NEW_PERP_MINT_OWNER="0x..." # Address to set as the new Core/PerpetualMint owner
 

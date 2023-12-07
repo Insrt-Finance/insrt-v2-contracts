@@ -1212,6 +1212,16 @@ abstract contract PerpetualMintInternal is
         emit MintTokenConsolationFeeSet(mintTokenConsolationFeeBP);
     }
 
+    /// @notice sets the mint for $MINT tiers data
+    /// @param mintTokenTiersData MintTokenTiersData struct holding all related data to mint for $MINT consolations
+    function _setMintTokenTiers(
+        MintTokenTiersData calldata mintTokenTiersData
+    ) internal {
+        Storage.layout().mintTokenTiers = mintTokenTiersData;
+
+        emit MintTokenTiersSet(mintTokenTiersData);
+    }
+
     /// @notice sets the status of the redeemPaused state
     /// @param status boolean indicating whether redeeming is paused
     function _setRedeemPaused(bool status) internal {
@@ -1230,8 +1240,8 @@ abstract contract PerpetualMintInternal is
         emit RedemptionFeeSet(redemptionFeeBP);
     }
 
-    /// @notice sets the $MINT consolation tiers data
-    /// @param tiersData TiersData struct holding all related data to $MINT consolations
+    /// @notice sets the mint for collection $MINT consolation tiers data
+    /// @param tiersData TiersData struct holding all related data to mint for collection $MINT consolations
     function _setTiers(TiersData calldata tiersData) internal {
         Storage.layout().tiers = tiersData;
 

@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.19;
 
-import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
+import { MintTokenTiersData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title IPerpetualMintInternal
 /// @dev Interface containing all errors and events used in the PerpetualMint facet contract
@@ -97,6 +97,10 @@ interface IPerpetualMintInternal {
         uint256 totalMintAmount,
         uint256 totalReceiptAmount
     );
+
+    /// @notice emitted when the mint token tiers are set
+    /// @param mintTokenTiersData new tiers
+    event MintTokenTiersSet(MintTokenTiersData mintTokenTiersData);
 
     /// @notice emitted when a prize is claimed
     /// @param claimer address of claimer

@@ -5,11 +5,11 @@ import "forge-std/Script.sol";
 import "forge-std/Test.sol";
 
 import { ICore } from "../../../contracts/diamonds/Core/ICore.sol";
-import { IPerpetualMint, TiersData } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
+import { IPerpetualMint, MintTokenTiersData, TiersData } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 
 /// @title ConfigurePerpetualMint_Base
 /// @dev configures the PerpetualMint_Base contract by setting the collection price to mint ratio BP,
-/// consolation fee BP, mint fee BP, redemption fee BP, tiers, and activates (unpauses) the protocol
+/// consolation fee BP, mint fee BP, mint for $MINT tiers, redemption fee BP, mint for collection tiers, and activates (unpauses) the protocol
 contract ConfigurePerpetualMint_Base is Script, Test {
     error Uint256ValueGreaterThanUint32Max(uint256 value);
 
@@ -34,6 +34,20 @@ contract ConfigurePerpetualMint_Base is Script, Test {
             vm.envUint("MINT_TOKEN_CONSOLATION_FEE_BP")
         );
 
+        uint256[] memory mintTokenTierMultipliers = vm.envUint(
+            "MINT_TOKEN_TIER_MULTIPLIERS",
+            ","
+        );
+
+        uint256[] memory envMintTokenTierRisks = vm.envUint(
+            "MINT_TOKEN_TIER_RISKS",
+            ","
+        );
+
+        uint32[] memory mintTokenTierRisks = toUint32Array(
+            envMintTokenTierRisks
+        );
+
         uint32 redemptionFeeBP = uint32(vm.envUint("REDEMPTION_FEE_BP"));
 
         uint256[] memory tierMultipliers = vm.envUint("TIER_MULTIPLIERS", ",");
@@ -51,6 +65,13 @@ contract ConfigurePerpetualMint_Base is Script, Test {
         perpetualMint.setMintFeeBP(mintFeeBP);
 
         perpetualMint.setMintTokenConsolationFeeBP(mintTokenConsolationFeeBP);
+
+        perpetualMint.setMintTokenTiers(
+            MintTokenTiersData({
+                tierMultipliers: mintTokenTierMultipliers,
+                tierRisks: mintTokenTierRisks
+            })
+        );
 
         perpetualMint.setRedemptionFeeBP(redemptionFeeBP);
 
@@ -75,6 +96,9 @@ contract ConfigurePerpetualMint_Base is Script, Test {
             "Mint Token Consolation Fee BP Set: ",
             mintTokenConsolationFeeBP
         );
+        console.log("Mint Token Tiers Set: ");
+        emit log_named_array("  Tier Multipliers: ", mintTokenTierMultipliers);
+        emit log_named_array("  Tier Risks: ", envMintTokenTierRisks);
         console.log("Redemption Fee BP Set: ", redemptionFeeBP);
         console.log("Tiers Set: ");
         emit log_named_array("  Tier Multipliers: ", tierMultipliers);

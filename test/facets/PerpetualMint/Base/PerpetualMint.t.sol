@@ -10,7 +10,7 @@ import { IPerpetualMintTest } from "../IPerpetualMintTest.sol";
 import { CoreTest } from "../../../diamonds/Core.t.sol";
 import { IDepositContract } from "../../../../contracts/facets/PerpetualMint/Base/IDepositContract.sol";
 import { ISupraRouterContract } from "../../../../contracts/facets/PerpetualMint/Base/ISupraRouterContract.sol";
-import { PerpetualMintStorage as Storage, TiersData } from "../../../../contracts/facets/PerpetualMint/Storage.sol";
+import { MintTokenTiersData, PerpetualMintStorage as Storage, TiersData } from "../../../../contracts/facets/PerpetualMint/Storage.sol";
 
 /// @title PerpetualMintTest_Base
 /// @dev PerpetualMintTest Base-specific helper contract. Configures PerpetualMint facets for Core test.
@@ -23,6 +23,8 @@ abstract contract PerpetualMintTest_Base is CoreTest {
     ISupraRouterContract internal supraRouterContract;
 
     PerpetualMintHelper_Base public perpetualMintHelper;
+
+    MintTokenTiersData internal testMintTokenTiersData;
 
     TiersData internal testTiersData;
 
@@ -132,12 +134,18 @@ abstract contract PerpetualMintTest_Base is CoreTest {
             tierRisks[i] = testRisks[i];
         }
 
+        // for testing, use the same tiers for mint for $MINT and mint for collection consolation tiers
+        testMintTokenTiersData = MintTokenTiersData({
+            tierMultipliers: tierMultipliers,
+            tierRisks: tierRisks
+        });
+
         testTiersData = TiersData({
             tierMultipliers: tierMultipliers,
             tierRisks: tierRisks
         });
 
-        perpetualMint.setTiers(testTiersData);
+        perpetualMint.setMintTokenTiers(testMintTokenTiersData);
 
         assert(
             baycCollectionRisk ==

@@ -7,7 +7,7 @@ import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol
 import { IERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/IERC1155Metadata.sol";
 
 import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
-import { MintOutcome, MintResultData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
+import { MintOutcome, MintResultData, MintTokenTiersData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title IPerpetualMint
 /// @dev Interface of the PerpetualMint facet
@@ -127,6 +127,12 @@ interface IPerpetualMint is
         uint32 mintTokenConsolationFeeBP
     ) external;
 
+    /// @notice sets the mint for $MINT consolation tiers
+    /// @param mintTokenTiersData MintTokenTiersData struct holding all related data to mint for $MINT consolation tiers
+    function setMintTokenTiers(
+        MintTokenTiersData calldata mintTokenTiersData
+    ) external;
+
     /// @notice sets the baseURI for the ERC1155 token receipts
     /// @param baseURI URI string
     function setReceiptBaseURI(string calldata baseURI) external;
@@ -147,8 +153,8 @@ interface IPerpetualMint is
     /// @param _redemptionFeeBP redemption fee in basis points
     function setRedemptionFeeBP(uint32 _redemptionFeeBP) external;
 
-    /// @notice sets the $MINT consolation tiers
-    /// @param tiersData TiersData struct holding all related data to $MINT consolation tiers
+    /// @notice sets the mint for collection $MINT consolation tiers
+    /// @param tiersData TiersData struct holding all related data to mint for collection $MINT consolation tiers
     function setTiers(TiersData calldata tiersData) external;
 
     /// @notice sets the Chainlink VRF config

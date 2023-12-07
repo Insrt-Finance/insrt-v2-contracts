@@ -8,7 +8,7 @@ import { ERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/ER
 
 import { IPerpetualMint } from "./IPerpetualMint.sol";
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
-import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
+import { MintTokenTiersData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title PerpetualMint
 /// @dev PerpetualMint facet containing all protocol-specific externally called functions
@@ -155,6 +155,13 @@ contract PerpetualMint is
         uint32 _mintTokenConsolationFeeBP
     ) external onlyOwner {
         _setMintTokenConsolationFeeBP(_mintTokenConsolationFeeBP);
+    }
+
+    /// @inheritdoc IPerpetualMint
+    function setMintTokenTiers(
+        MintTokenTiersData calldata mintTokenTiers
+    ) external onlyOwner {
+        _setMintTokenTiers(mintTokenTiers);
     }
 
     /// @inheritdoc IPerpetualMint

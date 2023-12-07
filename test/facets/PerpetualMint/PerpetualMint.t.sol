@@ -7,7 +7,7 @@ import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidSt
 import { PerpetualMintHelper } from "./PerpetualMintHelper.t.sol";
 import { IPerpetualMintTest } from "./IPerpetualMintTest.sol";
 import { CoreTest } from "../../diamonds/Core.t.sol";
-import { PerpetualMintStorage as Storage, TiersData, VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
+import { MintTokenTiersData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
 
 /// @title PerpetualMintTest
 /// @dev PerpetualMintTest helper contract. Configures PerpetualMint as facets of Core test.
@@ -16,6 +16,8 @@ abstract contract PerpetualMintTest is CoreTest {
     IPerpetualMintTest public perpetualMint;
 
     PerpetualMintHelper public perpetualMintHelper;
+
+    MintTokenTiersData internal testMintTokenTiersData;
 
     TiersData internal testTiersData;
 
@@ -134,10 +136,18 @@ abstract contract PerpetualMintTest is CoreTest {
             tierRisks[i] = testRisks[i];
         }
 
+        // for testing, use the same tiers for mint for $MINT and mint for collection consolation tiers
+        testMintTokenTiersData = MintTokenTiersData({
+            tierMultipliers: tierMultipliers,
+            tierRisks: tierRisks
+        });
+
         testTiersData = TiersData({
             tierMultipliers: tierMultipliers,
             tierRisks: tierRisks
         });
+
+        perpetualMint.setMintTokenTiers(testMintTokenTiersData);
 
         perpetualMint.setTiers(testTiersData);
 

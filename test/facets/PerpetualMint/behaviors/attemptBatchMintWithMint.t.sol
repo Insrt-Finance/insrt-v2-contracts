@@ -191,6 +191,17 @@ contract PerpetualMint_attemptBatchMintWithMint is
         );
     }
 
+    /// @dev Tests that attemptBatchMintWithMint functionality reverts when attempting to mint for address(0) ($MINT).
+    function test_attemptBatchMintWithMintRevertsWhen_AttemptingToMintForAddressZero()
+        external
+    {
+        vm.expectRevert(
+            IPerpetualMintInternal.InvalidCollectionAddress.selector
+        );
+
+        perpetualMint.attemptBatchMintWithMint(address(0), ZERO_MINT_ATTEMPTS);
+    }
+
     /// @dev Tests that attemptBatchMintWithMint functionality reverts when attempting zero mints.
     function test_attemptBatchMintWithMintRevertsWhen_AttemptingZeroMints()
         external

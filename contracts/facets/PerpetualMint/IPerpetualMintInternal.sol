@@ -14,6 +14,10 @@ interface IPerpetualMintInternal {
     /// minting with $MINT
     error InsufficientConsolationFees();
 
+    /// @notice thrown when an invalid collection address is provided when minting for a collection
+    /// for now, this is only thrown when attempting to address(0) when minting for a collection
+    error InvalidCollectionAddress();
+
     /// @notice thrown when attempting to mint 0 tokens
     error InvalidNumberOfMints();
 

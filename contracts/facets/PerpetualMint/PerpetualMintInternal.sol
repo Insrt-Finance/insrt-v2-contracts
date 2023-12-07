@@ -290,10 +290,10 @@ abstract contract PerpetualMintInternal is
 
         _attemptBatchMintWithEth_sharedLogic(
             l,
+            collectionData,
             msg.value,
-            _collectionMintPrice(collectionData),
-            numberOfMints,
-            collectionData.mintFeeDistributionRatioBP
+            collection,
+            numberOfMints
         );
 
         // if the number of words requested is greater than the max allowed by the VRF coordinator,
@@ -318,10 +318,10 @@ abstract contract PerpetualMintInternal is
 
         _attemptBatchMintWithEth_sharedLogic(
             l,
+            collectionData,
             msg.value,
-            _collectionMintPrice(collectionData),
-            numberOfMints,
-            collectionData.mintFeeDistributionRatioBP
+            collection,
+            numberOfMints
         );
 
         // if the number of words requested is greater than uint8, the function call will revert.
@@ -339,14 +339,21 @@ abstract contract PerpetualMintInternal is
 
     function _attemptBatchMintWithEth_sharedLogic(
         Storage.Layout storage l,
+        CollectionData storage collectionData,
         uint256 msgValue,
-        uint256 collectionMintPrice,
-        uint32 numberOfMints,
-        uint32 mintFeeDistributionRatioBP
+        address collection,
+        uint32 numberOfMints
     ) private {
+        if (collection == address(0)) {
+            // throw if collection is $MINT
+            revert InvalidCollectionAddress();
+        }
+
         if (numberOfMints == 0) {
             revert InvalidNumberOfMints();
         }
+
+        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
 
         if (msgValue != collectionMintPrice * numberOfMints) {
             revert IncorrectETHReceived();
@@ -358,7 +365,7 @@ abstract contract PerpetualMintInternal is
 
         // apply the collection-specific mint fee ratio
         uint256 additionalDepositorFee = (collectionConsolationFee *
-            mintFeeDistributionRatioBP) / BASIS;
+            collectionData.mintFeeDistributionRatioBP) / BASIS;
 
         // calculate the protocol mint fee
         uint256 mintFee = (msgValue * l.mintFeeBP) / BASIS;
@@ -390,19 +397,12 @@ abstract contract PerpetualMintInternal is
 
         CollectionData storage collectionData = l.collections[collection];
 
-        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
-
-        uint256 ethRequired = collectionMintPrice * numberOfMints;
-
-        uint256 ethToMintRatio = _ethToMintRatio(l);
-
         _attemptBatchMintWithMint_sharedLogic(
             l,
-            ethRequired,
-            numberOfMints,
-            collectionData.mintFeeDistributionRatioBP,
-            ethToMintRatio,
-            minter
+            collectionData,
+            minter,
+            collection,
+            numberOfMints
         );
 
         // if the number of words requested is greater than the max allowed by the VRF coordinator,
@@ -425,19 +425,12 @@ abstract contract PerpetualMintInternal is
 
         CollectionData storage collectionData = l.collections[collection];
 
-        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
-
-        uint256 ethRequired = collectionMintPrice * numberOfMints;
-
-        uint256 ethToMintRatio = _ethToMintRatio(l);
-
         _attemptBatchMintWithMint_sharedLogic(
             l,
-            ethRequired,
-            numberOfMints,
-            collectionData.mintFeeDistributionRatioBP,
-            ethToMintRatio,
-            minter
+            collectionData,
+            minter,
+            collection,
+            numberOfMints
         );
 
         // if the number of words requested is greater than uint8, the function call will revert.
@@ -455,19 +448,28 @@ abstract contract PerpetualMintInternal is
 
     function _attemptBatchMintWithMint_sharedLogic(
         Storage.Layout storage l,
-        uint256 ethRequired,
-        uint32 numberOfMints,
-        uint32 mintFeeDistributionRatioBP,
-        uint256 ethToMintRatio,
-        address minter
+        CollectionData storage collectionData,
+        address minter,
+        address collection,
+        uint32 numberOfMints
     ) private {
+        if (collection == address(0)) {
+            revert InvalidCollectionAddress();
+        }
+
         if (numberOfMints == 0) {
             revert InvalidNumberOfMints();
         }
 
+        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
+
+        uint256 ethRequired = collectionMintPrice * numberOfMints;
+
         if (ethRequired > l.consolationFees) {
             revert InsufficientConsolationFees();
         }
+
+        uint256 ethToMintRatio = _ethToMintRatio(l);
 
         // calculate amount of $MINT required
         uint256 mintRequired = ethRequired * ethToMintRatio;
@@ -480,7 +482,7 @@ abstract contract PerpetualMintInternal is
 
         // apply the collection-specific mint fee ratio
         uint256 additionalDepositorFee = (collectionConsolationFee *
-            mintFeeDistributionRatioBP) / BASIS;
+            collectionData.mintFeeDistributionRatioBP) / BASIS;
 
         // calculate the protocol mint fee
         uint256 mintFee = (ethRequired * l.mintFeeBP) / BASIS;

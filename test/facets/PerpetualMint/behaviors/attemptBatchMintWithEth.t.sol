@@ -168,6 +168,17 @@ contract PerpetualMint_attemptBatchMintWithEth is
         );
     }
 
+    /// @dev Tests that attemptBatchMintWithEth functionality reverts when attempting to mint for address(0) ($MINT).
+    function test_attemptBatchMintWithEthRevertsWhen_AttemptingToMintForAddressZero()
+        external
+    {
+        vm.expectRevert(
+            IPerpetualMintInternal.InvalidCollectionAddress.selector
+        );
+
+        perpetualMint.attemptBatchMintWithEth(address(0), TEST_MINT_ATTEMPTS);
+    }
+
     /// @dev Tests that attemptBatchMintWithEth functionality reverts when attempting to mint with an incorrect msg value amount.
     function test_attemptBatchMintWithEthRevertsWhen_AttemptingToMintWithIncorrectMsgValue()
         external

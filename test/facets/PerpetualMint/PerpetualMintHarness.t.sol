@@ -9,7 +9,7 @@ import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { IPerpetualMintHarness } from "./IPerpetualMintHarness.sol";
 import { VRFConsumerBaseV2Mock } from "../../mocks/VRFConsumerBaseV2Mock.sol";
 import { PerpetualMint } from "../../../contracts/facets/PerpetualMint/PerpetualMint.sol";
-import { CollectionData, RequestData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
+import { CollectionData, MintTokenTiersData, RequestData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
 
 /// @title PerpetualMintHarness
 /// @dev exposes PerpetualMint external & internal functions for testing
@@ -134,6 +134,31 @@ contract PerpetualMintHarness is
             tiersData,
             minter,
             collection,
+            randomWords,
+            _ethToMintRatio(l)
+        );
+    }
+
+    /// @inheritdoc IPerpetualMintHarness
+    function exposed_resolveMintsForMint(
+        address minter,
+        uint256[] memory randomWords
+    ) external {
+        Storage.Layout storage l = Storage.layout();
+
+        // for now, mints for $MINT are treated as address(0) collections
+        address collection = address(0);
+
+        CollectionData storage collectionData = l.collections[collection];
+
+        MintTokenTiersData memory mintTokenTiersData = l.mintTokenTiers;
+
+        _resolveMintsForMint(
+            l.mintToken,
+            _collectionMintMultiplier(collectionData),
+            _collectionMintPrice(collectionData),
+            mintTokenTiersData,
+            minter,
             randomWords,
             _ethToMintRatio(l)
         );

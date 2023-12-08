@@ -62,6 +62,12 @@ interface IPerpetualMintHarness {
         uint256[] memory randomWords
     ) external;
 
+    /// @dev exposes _resolveMintsForMint
+    function exposed_resolveMintsForMint(
+        address minter,
+        uint256[] memory randomWords
+    ) external;
+
     /// @dev allows minting won collection receipts
     function mintReceipts(address collection, uint256 receiptAmount) external;
 

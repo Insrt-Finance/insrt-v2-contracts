@@ -342,7 +342,7 @@ contract PerpetualMintHelper {
 
         // map the PerpetualMintHarness test related function selectors to their respective interfaces
         bytes4[] memory perpetualMintHarnessFunctionSelectors = new bytes4[](
-            14
+            15
         );
 
         perpetualMintHarnessFunctionSelectors[0] = IPerpetualMintHarness
@@ -382,22 +382,26 @@ contract PerpetualMintHelper {
             .selector;
 
         perpetualMintHarnessFunctionSelectors[9] = IPerpetualMintHarness
-            .mintReceipts
+            .exposed_resolveMintsForMint
             .selector;
 
         perpetualMintHarnessFunctionSelectors[10] = IPerpetualMintHarness
-            .setConsolationFees
+            .mintReceipts
             .selector;
 
         perpetualMintHarnessFunctionSelectors[11] = IPerpetualMintHarness
-            .setMintEarnings
+            .setConsolationFees
             .selector;
 
         perpetualMintHarnessFunctionSelectors[12] = IPerpetualMintHarness
-            .setProtocolFees
+            .setMintEarnings
             .selector;
 
         perpetualMintHarnessFunctionSelectors[13] = IPerpetualMintHarness
+            .setProtocolFees
+            .selector;
+
+        perpetualMintHarnessFunctionSelectors[14] = IPerpetualMintHarness
             .setRequests
             .selector;
 

@@ -528,7 +528,9 @@ abstract contract PerpetualMintInternal is
 
         CollectionData storage collectionData = l.collections[collection];
 
-        uint32 numberOfWords = numberOfMints * 2;
+        bool mintForMint = collection == address(0);
+
+        uint32 numberOfWords = numberOfMints * (mintForMint ? 1 : 2);
 
         uint256[] memory randomWords = new uint256[](numberOfWords);
 
@@ -536,12 +538,21 @@ abstract contract PerpetualMintInternal is
             randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
         }
 
-        result = _calculateMintResult_sharedLogic(
-            l,
-            numberOfMints,
-            randomWords,
-            collectionData
-        );
+        if (mintForMint) {
+            result = _calculateMintForMintResult_sharedLogic(
+                l,
+                numberOfMints,
+                randomWords,
+                collectionData
+            );
+        } else {
+            result = _calculateMintForCollectionResult_sharedLogic(
+                l,
+                numberOfMints,
+                randomWords,
+                collectionData
+            );
+        }
     }
 
     /// @notice calculates the Base-specific mint result of a given number of mint attempts for a given collection using given signature as randomness
@@ -557,7 +568,9 @@ abstract contract PerpetualMintInternal is
 
         CollectionData storage collectionData = l.collections[collection];
 
-        uint8 numberOfWords = numberOfMints * 2;
+        bool mintForMint = collection == address(0);
+
+        uint8 numberOfWords = numberOfMints * (mintForMint ? 1 : 2);
 
         uint256[] memory randomWords = new uint256[](numberOfWords);
 
@@ -567,15 +580,24 @@ abstract contract PerpetualMintInternal is
             );
         }
 
-        result = _calculateMintResult_sharedLogic(
-            l,
-            numberOfMints,
-            randomWords,
-            collectionData
-        );
+        if (mintForMint) {
+            result = _calculateMintForMintResult_sharedLogic(
+                l,
+                numberOfMints,
+                randomWords,
+                collectionData
+            );
+        } else {
+            result = _calculateMintForCollectionResult_sharedLogic(
+                l,
+                numberOfMints,
+                randomWords,
+                collectionData
+            );
+        }
     }
 
-    function _calculateMintResult_sharedLogic(
+    function _calculateMintForCollectionResult_sharedLogic(
         Storage.Layout storage l,
         uint32 numberOfMints,
         uint256[] memory randomWords,
@@ -631,6 +653,52 @@ abstract contract PerpetualMintInternal is
             }
 
             result.mintOutcomes[i / 2] = outcome;
+        }
+    }
+
+    function _calculateMintForMintResult_sharedLogic(
+        Storage.Layout storage l,
+        uint32 numberOfMints,
+        uint256[] memory randomWords,
+        CollectionData storage collectionData
+    ) private view returns (MintResultData memory result) {
+        MintTokenTiersData storage mintTokenTiers = l.mintTokenTiers;
+
+        uint256 ethToMintRatio = _ethToMintRatio(l);
+
+        result.mintOutcomes = new MintOutcome[](numberOfMints);
+
+        for (uint256 i = 0; i < randomWords.length; ++i) {
+            MintOutcome memory outcome;
+
+            uint256 normalizedValue = _normalizeValue(randomWords[i], BASIS);
+
+            uint256 mintAmount;
+            uint256 cumulativeRisk;
+
+            for (uint256 j = 0; j < mintTokenTiers.tierRisks.length; ++j) {
+                cumulativeRisk += mintTokenTiers.tierRisks[j];
+
+                if (cumulativeRisk > normalizedValue) {
+                    mintAmount =
+                        (mintTokenTiers.tierMultipliers[j] *
+                            ethToMintRatio *
+                            _collectionMintPrice(collectionData) *
+                            _collectionMintMultiplier(collectionData)) /
+                        (uint256(BASIS) * BASIS);
+
+                    outcome.tierIndex = j;
+                    outcome.tierMultiplier = mintTokenTiers.tierMultipliers[j];
+                    outcome.tierRisk = mintTokenTiers.tierRisks[j];
+                    outcome.mintAmount = mintAmount;
+
+                    break;
+                }
+            }
+
+            result.totalMintAmount += mintAmount;
+
+            result.mintOutcomes[i] = outcome;
         }
     }
 

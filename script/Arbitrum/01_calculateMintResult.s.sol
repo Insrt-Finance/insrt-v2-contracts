@@ -5,7 +5,7 @@ import "forge-std/Script.sol";
 import "forge-std/Test.sol";
 
 import { ICore } from "../../contracts/diamonds/Core/ICore.sol";
-import { MintOutcome, MintResultData, TiersData } from "../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
+import { MintOutcome, MintResultData, MintTokenTiersData, TiersData } from "../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 
 /// @title CalculateMintResultArb
 /// @dev Script for calculating the result of a batch mint attempt
@@ -19,12 +19,17 @@ contract CalculateMintResultArb is Script, Test {
 
     uint256 ethToMintRatio = core.ethToMintRatio();
 
+    MintTokenTiersData mintTokenTiers = core.mintTokenTiers();
+
     TiersData tiers = core.tiers();
 
     /// @dev runs the script logic
     function run() external {
         // get collection address
         address collection = vm.envAddress("COLLECTION_ADDRESS");
+
+        // determine if minting for mint or collection
+        bool mintForMint = collection == address(0);
 
         // get number of mints
         uint32 numberOfMints = uint32(vm.envUint("NUMBER_OF_MINTS"));
@@ -42,15 +47,32 @@ contract CalculateMintResultArb is Script, Test {
 
         console.log("BASIS: ", BASIS);
         console.log("Collection Address: ", collection);
+        console.log("Mint for Mint?: ", mintForMint);
         console.log("Collection Mint Multiplier: ", collectionMintMultiplier);
         console.log("Collection Mint Price: ", collectionMintPrice);
-        console.log("Collection Risk: ", collectionRisk);
         console.log("ETH to Mint Ratio: ", ethToMintRatio);
         console.log("Number of Mints: ", numberOfMints);
         console.log("Randomness: ", randomness);
-        console.log("Tiers: ");
-        emit log_named_array("  Tier Multipliers: ", tiers.tierMultipliers);
-        emit log_named_array("  Tier Risks: ", toUint256Array(tiers.tierRisks));
+
+        if (mintForMint) {
+            console.log("Mint Token Tiers: ");
+            emit log_named_array(
+                "  Tier Multipliers: ",
+                mintTokenTiers.tierMultipliers
+            );
+            emit log_named_array(
+                "  Tier Risks: ",
+                toUint256Array(mintTokenTiers.tierRisks)
+            );
+        } else {
+            console.log("Collection Risk: ", collectionRisk);
+            console.log("Tiers: ");
+            emit log_named_array("  Tier Multipliers: ", tiers.tierMultipliers);
+            emit log_named_array(
+                "  Tier Risks: ",
+                toUint256Array(tiers.tierRisks)
+            );
+        }
 
         MintResultData memory result = core.calculateMintResult(
             collection,
@@ -72,11 +94,14 @@ contract CalculateMintResultArb is Script, Test {
         }
 
         console.log("\nTotal Mint Amount: ", result.totalMintAmount);
-        console.log(
-            "Total Receipt Amount: ",
-            result.totalSuccessfulMints,
-            "\n"
-        );
+
+        if (!mintForMint) {
+            console.log(
+                "Total Receipt Amount: ",
+                result.totalSuccessfulMints,
+                "\n"
+            );
+        }
     }
 
     /// @notice Converts a uint32 array to a uint256 array

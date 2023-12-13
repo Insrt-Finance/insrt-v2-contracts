@@ -791,6 +791,19 @@ abstract contract PerpetualMintInternal is
         mintPrice = mintPrice == 0 ? DEFAULT_COLLECTION_MINT_PRICE : mintPrice;
     }
 
+    /// @notice Returns the current mint referral percentage for a given collection
+    /// @param collectionData the CollectionData struct for a given collection
+    /// @return referralPercentage current mint collection referral percentage
+    function _collectionReferralPercentage(
+        CollectionData storage collectionData
+    ) internal view returns (uint32 referralPercentage) {
+        referralPercentage = collectionData.referralPercentage;
+
+        referralPercentage = referralPercentage == 0
+            ? DEFAULT_COLLECTION_REFERRAL_PERCENTAGE
+            : referralPercentage;
+    }
+
     /// @notice Returns the current collection-wide risk of a collection
     /// @param collectionData the CollectionData struct for a given collection
     /// @return risk value of collection-wide risk

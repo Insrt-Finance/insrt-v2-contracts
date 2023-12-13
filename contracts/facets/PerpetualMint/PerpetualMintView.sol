@@ -74,6 +74,15 @@ contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
     }
 
     /// @inheritdoc IPerpetualMintView
+    function collectionReferralPercentage(
+        address collection
+    ) external view returns (uint32 referralPercentage) {
+        referralPercentage = _collectionReferralPercentage(
+            Storage.layout().collections[collection]
+        );
+    }
+
+    /// @inheritdoc IPerpetualMintView
     function collectionRisk(
         address collection
     ) external view returns (uint32 risk) {

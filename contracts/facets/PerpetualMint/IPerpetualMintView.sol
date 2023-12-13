@@ -60,6 +60,13 @@ interface IPerpetualMintView {
         address collection
     ) external view returns (uint256 mintPrice);
 
+    /// @notice Returns the current mint referral percentage for a given collection
+    /// @param collection address of collection
+    /// @return referralPercentage current mint collection referral percentage
+    function collectionReferralPercentage(
+        address collection
+    ) external view returns (uint32 referralPercentage);
+
     /// @notice Returns the current collection-wide risk of a collection
     /// @param collection address of collection
     /// @return risk value of collection-wide risk

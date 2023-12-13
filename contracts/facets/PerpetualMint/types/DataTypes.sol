@@ -19,6 +19,8 @@ struct CollectionData {
     uint32 mintFeeDistributionRatioBP;
     /// @dev mint consolation multiplier for a collection
     uint256 mintMultiplier;
+    /// @dev collection-specific mint referral percentage
+    uint32 referralPercentage;
 }
 
 /// @dev Represents the outcome of a single mint attempt.

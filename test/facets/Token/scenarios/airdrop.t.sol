@@ -7,16 +7,10 @@ import { TokenTest } from "../../Token/Token.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 import { CoreTest } from "../../../diamonds/Core.t.sol";
 import { TokenProxyTest } from "../../../diamonds/TokenProxy.t.sol";
-import { IPerpetualMintInternal } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 
 /// @title PerpetualMint_airdrop
 /// @dev PerpetualMint test contract for testing expected behavior of the airdrop $MINT scenario
-contract PerpetualMint_airdrop is
-    ArbForkTest,
-    IPerpetualMintInternal,
-    PerpetualMintTest,
-    TokenTest
-{
+contract PerpetualMint_airdrop is ArbForkTest, PerpetualMintTest, TokenTest {
     uint256 internal constant AIRDROP_AMOUNT = 10000 ether;
     uint256 internal constant ETH_TO_MINT_RATIO = 100 ether;
     address internal constant RECEIVER_ONE = address(1001);

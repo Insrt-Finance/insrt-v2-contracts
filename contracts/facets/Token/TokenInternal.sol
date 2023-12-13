@@ -160,17 +160,8 @@ abstract contract TokenInternal is
         uint256 totalAmount;
 
         for (uint256 i = 0; i < recipients.length; ++i) {
-            AccrualData storage accountData = l.accrualData[recipients[i]];
-
-            uint256 accruedTokens = _scaleDown(
-                (l.globalRatio - accountData.offset) * _balanceOf(recipients[i])
-            );
-
-            // update claimable tokens
-            accountData.accruedTokens += accruedTokens;
-
-            // update account offset
-            accountData.offset = l.globalRatio;
+            // accrue tokens prior to disperse
+            _accrueTokens(l, recipients[i]);
 
             require(_transfer(address(this), recipients[i], amounts[i]));
 

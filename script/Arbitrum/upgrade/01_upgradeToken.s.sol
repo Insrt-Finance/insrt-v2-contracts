@@ -43,11 +43,23 @@ contract UpgradeTokenArb is BatchScript {
         console2.log("New Token Facet Address: ", address(tokenFacet));
         console2.log("TokenProxy Address: ", tokenProxy);
 
-        // get replacement Token facet cuts
+        // get new Token facet cuts
         ISolidStateDiamond.FacetCut[]
-            memory facetCuts = getReplacementTokenFacetCuts(
+            memory newTokenFacetCuts = getNewTokenFacetCuts(
                 address(tokenFacet)
             );
+
+        // get replacement Token facet cuts
+        ISolidStateDiamond.FacetCut[]
+            memory replacementTokenFacetCuts = getReplacementTokenFacetCuts(
+                address(tokenFacet)
+            );
+
+        ISolidStateDiamond.FacetCut[]
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](2);
+
+        facetCuts[0] = newTokenFacetCuts[0];
+        facetCuts[1] = replacementTokenFacetCuts[0];
 
         bytes memory diamondCutTx = abi.encodeWithSelector(
             IDiamondWritable.diamondCut.selector,
@@ -59,6 +71,31 @@ contract UpgradeTokenArb is BatchScript {
         addToBatch(tokenProxy, diamondCutTx);
 
         executeBatch(gnosisSafeAddress, true);
+    }
+
+    /// @dev provides the new facet cuts for cutting the Token facet into TokenProxy
+    /// @param facetAddress address of the Token facet
+    function getNewTokenFacetCuts(
+        address facetAddress
+    ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
+        // map the Token related function selectors to their respective interfaces
+        bytes4[] memory tokenFunctionSelectors = new bytes4[](1);
+
+        tokenFunctionSelectors[0] = IToken.mintReferral.selector;
+
+        ISolidStateDiamond.FacetCut
+            memory tokenFacetCut = IDiamondWritableInternal.FacetCut({
+                target: facetAddress,
+                action: IDiamondWritableInternal.FacetCutAction.ADD,
+                selectors: tokenFunctionSelectors
+            });
+
+        ISolidStateDiamond.FacetCut[]
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](1);
+
+        facetCuts[0] = tokenFacetCut;
+
+        return facetCuts;
     }
 
     /// @dev provides the replacement facet cuts for cutting the Token facet into TokenProxy

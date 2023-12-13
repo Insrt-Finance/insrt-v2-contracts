@@ -72,6 +72,11 @@ interface IToken is ISolidStateERC20 {
     /// @param amount airdrop token amount
     function mintAirdrop(uint256 amount) external;
 
+    /// @notice mints an amount of tokens as a mint referral bonus
+    /// @param referrer address of mint referrer
+    /// @param amount referral token amount
+    function mintReferral(address referrer, uint256 amount) external;
+
     /// @notice returns all addresses of contracts which are allowed to call mint/burn
     /// @return contracts array of addresses of contracts which are allowed to call mint/burn
     function mintingContracts()

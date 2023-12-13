@@ -278,6 +278,16 @@ abstract contract TokenInternal is
         Storage.layout().airdropSupply += amount;
     }
 
+    /// @notice mints an amount of tokens as a mint referral bonus
+    /// @param referrer address of mint referrer
+    /// @param amount airdrop token amount
+    function _mintReferral(address referrer, uint256 amount) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        _accrueTokens(l, referrer);
+        _mint(referrer, amount);
+    }
+
     /// @notice returns all addresses of contracts which are allowed to call mint/burn
     /// @return contracts array of addresses of contracts which are allowed to call mint/burn
     function _mintingContracts()

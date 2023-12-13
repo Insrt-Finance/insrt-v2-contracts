@@ -107,6 +107,14 @@ contract Token is TokenInternal, SolidStateERC20, IToken {
     }
 
     /// @inheritdoc IToken
+    function mintReferral(
+        address referrer,
+        uint256 amount
+    ) external onlyMintingContract {
+        _mintReferral(referrer, amount);
+    }
+
+    /// @inheritdoc IToken
     function mintingContracts()
         external
         view

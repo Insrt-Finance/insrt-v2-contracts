@@ -2,9 +2,6 @@
 
 pragma solidity 0.8.19;
 
-import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableInternal.sol";
-import { IERC20BaseInternal } from "@solidstate/contracts/token/ERC20/base/IERC20BaseInternal.sol";
-
 import { TokenTest } from "../Token.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
 import { ITokenInternal } from "../../../../contracts/facets/Token/ITokenInternal.sol";
@@ -54,7 +51,7 @@ contract Token_mintAirdrop is ArbForkTest, TokenTest {
         assert(newAirdropSupply - oldAirdropSupply == AIRDROP_MINT_AMOUNT);
     }
 
-    /// @dev tests that disepseTokens reverts when called by non-mintingContract
+    /// @dev tests that mintAirdrop reverts when called by non-mintingContract
     function test_mintAirdropRevertsWhen_CallerIsNotMintingContract() external {
         vm.expectRevert(ITokenInternal.NotMintingContract.selector);
 

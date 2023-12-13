@@ -121,6 +121,14 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function setCollectionReferralPercentage(
+        address collection,
+        uint32 referralPercentage
+    ) external onlyOwner {
+        _setCollectionReferralPercentage(collection, referralPercentage);
+    }
+
+    /// @inheritdoc IPerpetualMint
     function setCollectionRisk(
         address collection,
         uint32 risk

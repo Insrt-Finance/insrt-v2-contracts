@@ -98,6 +98,14 @@ interface IPerpetualMint is
     /// @param price mint price of the collection
     function setCollectionMintPrice(address collection, uint256 price) external;
 
+    /// @notice sets the mint referral percentage for a given collection
+    /// @param collection address of collection
+    /// @param referralPercentage new mint referral percentage for collection
+    function setCollectionReferralPercentage(
+        address collection,
+        uint32 referralPercentage
+    ) external;
+
     /// @notice sets the risk of a given collection
     /// @param collection address of collection
     /// @param risk new risk value for collection

@@ -1312,6 +1312,24 @@ abstract contract PerpetualMintInternal is
         emit MintPriceSet(collection, price);
     }
 
+    /// @notice sets the mint referral percentage for a given collection
+    /// @param collection address of collection
+    /// @param referralPercentage mint referral percentage of the collection
+    function _setCollectionReferralPercentage(
+        address collection,
+        uint32 referralPercentage
+    ) internal {
+        CollectionData storage collectionData = Storage.layout().collections[
+            collection
+        ];
+
+        _enforceBasis(referralPercentage, BASIS);
+
+        collectionData.referralPercentage = referralPercentage;
+
+        emit CollectionReferralPercentageSet(collection, referralPercentage);
+    }
+
     /// @notice sets the risk for a given collection
     /// @param collection address of collection
     /// @param risk risk of the collection

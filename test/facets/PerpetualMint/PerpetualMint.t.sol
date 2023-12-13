@@ -56,6 +56,9 @@ abstract contract PerpetualMintTest is CoreTest {
 
     address internal PERPETUAL_MINT_NON_OWNER = address(100);
 
+    // collection mint referral values
+    uint32 internal constant baycCollectionReferralPercentage = 1000000; // 0.10%
+
     // collection risk values
     uint32 internal constant baycCollectionRisk = 100000; // 0.01%
 
@@ -86,6 +89,11 @@ abstract contract PerpetualMintTest is CoreTest {
 
         // mints 100 ETH to minter
         vm.deal(minter, 100 ether);
+
+        perpetualMint.setCollectionReferralPercentage(
+            BORED_APE_YACHT_CLUB,
+            baycCollectionReferralPercentage
+        );
 
         perpetualMint.setCollectionRisk(
             BORED_APE_YACHT_CLUB,

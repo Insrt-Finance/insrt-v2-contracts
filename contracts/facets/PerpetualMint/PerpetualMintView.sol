@@ -99,6 +99,15 @@ contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
     }
 
     /// @inheritdoc IPerpetualMintView
+    function defaultCollectionReferralPercentage()
+        external
+        pure
+        returns (uint32 referralPercentage)
+    {
+        referralPercentage = _defaultCollectionReferralPercentage();
+    }
+
+    /// @inheritdoc IPerpetualMintView
     function defaultCollectionRisk() external pure returns (uint32 risk) {
         risk = _defaultCollectionRisk();
     }

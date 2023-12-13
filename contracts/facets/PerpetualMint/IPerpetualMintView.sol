@@ -81,6 +81,13 @@ interface IPerpetualMintView {
         pure
         returns (uint256 mintPrice);
 
+    /// @notice Returns the default mint referral percentage for a collection
+    /// @return referralPercentage default collection mint referral percentage
+    function defaultCollectionReferralPercentage()
+        external
+        pure
+        returns (uint32 referralPercentage);
+
     /// @notice Returns the default risk for a collection
     /// @return risk default collection risk
     function defaultCollectionRisk() external pure returns (uint32 risk);

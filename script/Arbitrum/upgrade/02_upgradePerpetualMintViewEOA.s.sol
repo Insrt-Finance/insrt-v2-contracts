@@ -69,13 +69,17 @@ contract UpgradePerpetualMintViewArbEOA is Script {
         address viewFacetAddress
     ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
         // map the PerpetualMintView related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](2);
+        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](3);
 
         perpetualMintViewFunctionSelectors[0] = IPerpetualMintView
-            .mintTokenConsolationFeeBP
+            .defaultCollectionReferralPercentage
             .selector;
 
         perpetualMintViewFunctionSelectors[1] = IPerpetualMintView
+            .mintTokenConsolationFeeBP
+            .selector;
+
+        perpetualMintViewFunctionSelectors[2] = IPerpetualMintView
             .mintTokenTiers
             .selector;
 

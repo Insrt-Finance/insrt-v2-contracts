@@ -35,6 +35,9 @@ abstract contract PerpetualMintInternal is
     /// @dev default mint price for a collection
     uint64 internal constant DEFAULT_COLLECTION_MINT_PRICE = 0.01 ether;
 
+    /// @dev default mint referral percentage for a collection
+    uint32 internal constant DEFAULT_COLLECTION_REFERRAL_PERCENTAGE = 5000000; // 0.5%
+
     /// @dev default risk for a collection
     uint32 internal constant DEFAULT_COLLECTION_RISK = 1000000; // 0.1%
 
@@ -819,6 +822,16 @@ abstract contract PerpetualMintInternal is
         returns (uint256 mintPrice)
     {
         mintPrice = DEFAULT_COLLECTION_MINT_PRICE;
+    }
+
+    /// @notice Returns the default mint referral percentage for a collection
+    /// @return referralPercentage default mint collection referral percentage
+    function _defaultCollectionReferralPercentage()
+        internal
+        pure
+        returns (uint32 referralPercentage)
+    {
+        referralPercentage = DEFAULT_COLLECTION_REFERRAL_PERCENTAGE;
     }
 
     /// @notice Returns the default risk for a collection

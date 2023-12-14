@@ -65,7 +65,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         vm.prank(minter);
         perpetualMint.attemptBatchMintWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(MINT_FOR_COLLECTION_ADDRESS, TEST_MINT_ATTEMPTS);
+        }(MINT_FOR_COLLECTION_ADDRESS, NO_REFERRER, TEST_MINT_ATTEMPTS);
 
         // calculate and store the mint fulfillment block number using the configured vrf min # of confirmations
         uint256 mintFulfillmentBlockNumber = mintBlockNumber +
@@ -185,6 +185,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         vm.prank(minter);
         perpetualMint.attemptBatchMintWithMint(
             MINT_FOR_COLLECTION_ADDRESS,
+            NO_REFERRER,
             TEST_MINT_ATTEMPTS
         );
 
@@ -309,13 +310,13 @@ contract PerpetualMint_fulfillRandomWordsBase is
         vm.prank(minter);
         perpetualMint.attemptBatchMintWithEth{
             value: MINT_PRICE * MAXIMUM_MINT_ATTEMPTS
-        }(MINT_FOR_COLLECTION_ADDRESS, MAXIMUM_MINT_ATTEMPTS);
+        }(MINT_FOR_COLLECTION_ADDRESS, NO_REFERRER, MAXIMUM_MINT_ATTEMPTS);
 
         vm.expectRevert();
 
         perpetualMint.attemptBatchMintWithEth{
             value: MINT_PRICE * (MAXIMUM_MINT_ATTEMPTS + 1)
-        }(MINT_FOR_COLLECTION_ADDRESS, MAXIMUM_MINT_ATTEMPTS + 1);
+        }(MINT_FOR_COLLECTION_ADDRESS, NO_REFERRER, MAXIMUM_MINT_ATTEMPTS + 1);
 
         uint8 numberOfRandomWordsRequested = uint8(MAXIMUM_MINT_ATTEMPTS * 2); // 2 words per mint for collection attempt
 
@@ -433,6 +434,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         vm.prank(minter);
         perpetualMint.attemptBatchMintWithMint(
             MINT_FOR_COLLECTION_ADDRESS,
+            NO_REFERRER,
             MAXIMUM_MINT_ATTEMPTS
         );
 
@@ -441,6 +443,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         vm.prank(minter);
         perpetualMint.attemptBatchMintWithMint(
             MINT_FOR_COLLECTION_ADDRESS,
+            NO_REFERRER,
             MAXIMUM_MINT_ATTEMPTS + 1
         );
 

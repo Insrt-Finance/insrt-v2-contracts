@@ -23,11 +23,13 @@ contract PerpetualMintHarness_Base is PerpetualMintHarness {
 
     function attemptBatchMintWithEth(
         address collection,
+        address referrer,
         uint32 numberOfMints
     ) external payable override whenNotPaused {
         _attemptBatchMintWithEthBase(
             msg.sender,
             collection,
+            referrer,
             uint8(numberOfMints)
         );
     }

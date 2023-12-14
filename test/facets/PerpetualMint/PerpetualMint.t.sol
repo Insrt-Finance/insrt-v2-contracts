@@ -54,7 +54,13 @@ abstract contract PerpetualMintTest is CoreTest {
     // minter
     address payable internal minter = payable(address(3));
 
+    /// @dev the no referrer address used during test mint attempts
+    address internal constant NO_REFERRER = address(0);
+
     address internal PERPETUAL_MINT_NON_OWNER = address(100);
+
+    /// @dev the referrer address used during test mint attempts
+    address payable internal constant REFERRER = payable(address(4567));
 
     // collection mint referral values
     uint32 internal constant baycCollectionReferralPercentage = 1000000; // 0.10%

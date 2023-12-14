@@ -41,9 +41,11 @@ interface IPerpetualMint is
 
     /// @notice Attempts a batch mint for the msg.sender for a single collection using $MINT tokens as payment.
     /// @param collection address of collection for mint attempts
+    /// @param referrer referrer address for mint attempts
     /// @param numberOfMints number of mints to attempt
     function attemptBatchMintWithMint(
         address collection,
+        address referrer,
         uint32 numberOfMints
     ) external;
 

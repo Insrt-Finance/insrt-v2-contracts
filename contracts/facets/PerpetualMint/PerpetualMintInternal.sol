@@ -437,10 +437,12 @@ abstract contract PerpetualMintInternal is
     /// @notice Attempts a batch mint for the msg.sender for a single collection using $MINT tokens as payment.
     /// @param minter address of minter
     /// @param collection address of collection for mint attempts
+    /// @param referrer address of referrer
     /// @param numberOfMints number of mints to attempt
     function _attemptBatchMintWithMint(
         address minter,
         address collection,
+        address referrer,
         uint32 numberOfMints
     ) internal {
         Storage.Layout storage l = Storage.layout();
@@ -452,6 +454,7 @@ abstract contract PerpetualMintInternal is
             collectionData,
             minter,
             collection,
+            referrer,
             numberOfMints
         );
 
@@ -465,10 +468,12 @@ abstract contract PerpetualMintInternal is
     /// @notice Attempts a Base-specific batch mint for the msg.sender for a single collection using $MINT tokens as payment.
     /// @param minter address of minter
     /// @param collection address of collection for mint attempts
+    /// @param referrer address of referrer
     /// @param numberOfMints number of mints to attempt
     function _attemptBatchMintWithMintBase(
         address minter,
         address collection,
+        address referrer,
         uint8 numberOfMints
     ) internal {
         Storage.Layout storage l = Storage.layout();
@@ -480,6 +485,7 @@ abstract contract PerpetualMintInternal is
             collectionData,
             minter,
             collection,
+            referrer,
             numberOfMints
         );
 
@@ -501,6 +507,7 @@ abstract contract PerpetualMintInternal is
         CollectionData storage collectionData,
         address minter,
         address collection,
+        address referrer,
         uint32 numberOfMints
     ) private {
         if (collection == address(0)) {
@@ -537,6 +544,24 @@ abstract contract PerpetualMintInternal is
         // calculate the protocol mint fee
         uint256 mintFee = (ethRequired * l.mintFeeBP) / BASIS;
 
+        uint256 referralFee;
+
+        // Calculate the referral fee if a referrer is provided
+        if (referrer != address(0)) {
+            uint256 referralPercentage = _collectionReferralPercentage(
+                collectionData
+            );
+
+            // Calculate referral fee based on the mintFee and referral percentage
+            referralFee = (mintFee * referralPercentage) / BASIS;
+
+            // Pay the referrer in $MINT
+            IToken(l.mintToken).mintReferral(
+                referrer,
+                referralFee * ethToMintRatio
+            );
+        }
+
         // calculate the net collection consolation fee
         // ETH required for mint taken from collectionConsolationFee
         uint256 netConsolationFee = ethRequired -
@@ -549,8 +574,8 @@ abstract contract PerpetualMintInternal is
         // update the accrued depositor mint earnings
         l.mintEarnings += netConsolationFee - mintFee;
 
-        // update the accrued protocol fees
-        l.protocolFees += mintFee;
+        // Update the accrued protocol fees, subtracting the referral fee
+        l.protocolFees += mintFee - referralFee;
     }
 
     /// @notice returns the value of BASIS

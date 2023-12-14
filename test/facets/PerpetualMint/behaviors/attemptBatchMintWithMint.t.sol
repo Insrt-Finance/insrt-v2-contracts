@@ -67,7 +67,11 @@ contract PerpetualMint_attemptBatchMintWithMint is
         uint256 preMintTokenBalance = token.balanceOf(minter);
 
         vm.prank(minter);
-        perpetualMint.attemptBatchMintWithMint(COLLECTION, TEST_MINT_ATTEMPTS);
+        perpetualMint.attemptBatchMintWithMint(
+            COLLECTION,
+            NO_REFERRER,
+            TEST_MINT_ATTEMPTS
+        );
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
 
@@ -112,6 +116,93 @@ contract PerpetualMint_attemptBatchMintWithMint is
         );
     }
 
+    /// @dev Tests attemptBatchMintWithMint functionality when a referrer address is passed.
+    function test_attemptBatchMintWithMintWithReferrer() external {
+        uint256 currentEthToMintRatio = perpetualMint.ethToMintRatio();
+
+        uint256 preMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        uint256 preMintAccruedMintEarnings = perpetualMint
+            .accruedMintEarnings();
+
+        assert(preMintAccruedMintEarnings == 0);
+
+        uint256 preMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
+
+        assert(preMintAccruedProtocolFees == 0);
+
+        uint256 preMintMinterTokenBalance = token.balanceOf(minter);
+
+        uint256 preMintReferrerTokenBalance = token.balanceOf(REFERRER);
+
+        assert(preMintReferrerTokenBalance == 0);
+
+        vm.prank(minter);
+        perpetualMint.attemptBatchMintWithMint(
+            COLLECTION,
+            REFERRER,
+            TEST_MINT_ATTEMPTS
+        );
+
+        uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
+
+        uint256 expectedCollectionConsolationFee = (expectedEthRequired *
+            perpetualMint.collectionConsolationFeeBP()) / perpetualMint.BASIS();
+
+        uint256 postMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        assert(
+            postMintAccruedConsolationFees ==
+                preMintAccruedConsolationFees -
+                    (expectedEthRequired - expectedCollectionConsolationFee)
+        );
+
+        uint256 postMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
+
+        uint256 expectedMintFee = (expectedEthRequired *
+            perpetualMint.mintFeeBP()) / perpetualMint.BASIS();
+
+        uint256 expectedMintReferralFee = (expectedMintFee *
+            perpetualMint.collectionReferralPercentage(COLLECTION)) /
+            perpetualMint.BASIS();
+
+        assert(
+            postMintAccruedProtocolFees ==
+                expectedMintFee - expectedMintReferralFee
+        );
+
+        uint256 postMintAccruedMintEarnings = perpetualMint
+            .accruedMintEarnings();
+
+        assert(
+            postMintAccruedMintEarnings ==
+                expectedEthRequired -
+                    expectedCollectionConsolationFee -
+                    expectedMintFee
+        );
+
+        uint256 postMintMinterTokenBalance = token.balanceOf(minter);
+
+        uint256 expectedMintTokenBurned = expectedEthRequired *
+            currentEthToMintRatio;
+
+        assert(
+            postMintMinterTokenBalance ==
+                preMintMinterTokenBalance - expectedMintTokenBurned
+        );
+
+        uint256 postMintReferrerTokenBalance = token.balanceOf(REFERRER);
+
+        assert(
+            postMintReferrerTokenBalance ==
+                expectedMintReferralFee * currentEthToMintRatio
+        );
+    }
+
     /// @dev Tests attemptBatchMintWithMint functionality when a collection mint fee distribution ratio is set.
     function test_attemptBatchMintWithMintWithCollectionMintFeeDistributionRatio()
         external
@@ -137,7 +228,11 @@ contract PerpetualMint_attemptBatchMintWithMint is
         );
 
         vm.prank(minter);
-        perpetualMint.attemptBatchMintWithMint(COLLECTION, TEST_MINT_ATTEMPTS);
+        perpetualMint.attemptBatchMintWithMint(
+            COLLECTION,
+            NO_REFERRER,
+            TEST_MINT_ATTEMPTS
+        );
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
 
@@ -199,7 +294,11 @@ contract PerpetualMint_attemptBatchMintWithMint is
             IPerpetualMintInternal.InvalidCollectionAddress.selector
         );
 
-        perpetualMint.attemptBatchMintWithMint(address(0), ZERO_MINT_ATTEMPTS);
+        perpetualMint.attemptBatchMintWithMint(
+            address(0),
+            NO_REFERRER,
+            ZERO_MINT_ATTEMPTS
+        );
     }
 
     /// @dev Tests that attemptBatchMintWithMint functionality reverts when attempting zero mints.
@@ -208,7 +307,11 @@ contract PerpetualMint_attemptBatchMintWithMint is
     {
         vm.expectRevert(IPerpetualMintInternal.InvalidNumberOfMints.selector);
 
-        perpetualMint.attemptBatchMintWithMint(COLLECTION, ZERO_MINT_ATTEMPTS);
+        perpetualMint.attemptBatchMintWithMint(
+            COLLECTION,
+            NO_REFERRER,
+            ZERO_MINT_ATTEMPTS
+        );
     }
 
     /// @dev Tests that attemptBatchMintWithMint functionality reverts when the contract is paused.
@@ -218,7 +321,11 @@ contract PerpetualMint_attemptBatchMintWithMint is
         perpetualMint.pause();
         vm.expectRevert(IPausableInternal.Pausable__Paused.selector);
 
-        perpetualMint.attemptBatchMintWithMint(COLLECTION, TEST_MINT_ATTEMPTS);
+        perpetualMint.attemptBatchMintWithMint(
+            COLLECTION,
+            NO_REFERRER,
+            TEST_MINT_ATTEMPTS
+        );
     }
 
     function _activateVRFConsumer() private {

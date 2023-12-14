@@ -282,6 +282,7 @@ contract PerpetualMint_fulfillRandomWords is
         vm.prank(minter);
         perpetualMint.attemptBatchMintWithMint(
             MINT_FOR_COLLECTION_ADDRESS,
+            NO_REFERRER,
             TEST_MINT_ATTEMPTS
         );
 
@@ -611,6 +612,7 @@ contract PerpetualMint_fulfillRandomWords is
         vm.prank(minter);
         perpetualMint.attemptBatchMintWithMint(
             MINT_FOR_COLLECTION_ADDRESS,
+            NO_REFERRER,
             MAXIMUM_MINT_ATTEMPTS
         );
 
@@ -625,6 +627,7 @@ contract PerpetualMint_fulfillRandomWords is
         vm.prank(minter);
         perpetualMint.attemptBatchMintWithMint(
             MINT_FOR_COLLECTION_ADDRESS,
+            NO_REFERRER,
             MAXIMUM_MINT_ATTEMPTS + 1
         );
 

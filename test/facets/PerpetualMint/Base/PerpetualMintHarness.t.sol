@@ -10,9 +10,14 @@ contract PerpetualMintHarness_Base is PerpetualMintHarness {
     constructor(address vrf) PerpetualMintHarness(vrf) {}
 
     function attemptBatchMintForMintWithEth(
+        address referrer,
         uint32 numberOfMints
     ) external payable override whenNotPaused {
-        _attemptBatchMintForMintWithEthBase(msg.sender, uint8(numberOfMints));
+        _attemptBatchMintForMintWithEthBase(
+            msg.sender,
+            referrer,
+            uint8(numberOfMints)
+        );
     }
 
     function attemptBatchMintForMintWithMint(

@@ -126,7 +126,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForMintWithEth{
             value: MINT_FOR_MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(TEST_MINT_ATTEMPTS);
+        }(NO_REFERRER, TEST_MINT_ATTEMPTS);
 
         // calculate and store the mint fulfillment block number using the configured vrf min # of confirmations
         uint256 mintFulfillmentBlockNumber = mintBlockNumber +
@@ -372,13 +372,13 @@ contract PerpetualMint_fulfillRandomWordsBase is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForMintWithEth{
             value: MINT_FOR_MINT_PRICE * MAXIMUM_MINT_ATTEMPTS
-        }(MAXIMUM_MINT_ATTEMPTS);
+        }(NO_REFERRER, MAXIMUM_MINT_ATTEMPTS);
 
         vm.expectRevert();
 
         perpetualMint.attemptBatchMintForMintWithEth{
             value: MINT_PRICE * (MAXIMUM_MINT_ATTEMPTS + 1)
-        }(MAXIMUM_MINT_ATTEMPTS + 1);
+        }(NO_REFERRER, MAXIMUM_MINT_ATTEMPTS + 1);
 
         uint8 numberOfRandomWordsRequested = uint8(MAXIMUM_MINT_ATTEMPTS * 1); // 1 word per mint for $MINT attempt
 

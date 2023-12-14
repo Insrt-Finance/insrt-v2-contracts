@@ -52,7 +52,7 @@ contract PerpetualMint_attemptBatchMintForMintWithEthBase is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForMintWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(TEST_MINT_ATTEMPTS);
+        }(NO_REFERRER, TEST_MINT_ATTEMPTS);
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -85,13 +85,81 @@ contract PerpetualMint_attemptBatchMintForMintWithEthBase is
         );
     }
 
+    /// @dev Tests attemptBatchMintForMintWithEth functionality when a referrer address is passed.
+    function test_attemptBatchMintForMintWithEthWithReferrer() external {
+        uint256 preMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        assert(preMintAccruedConsolationFees == 0);
+
+        uint256 preMintAccruedMintEarnings = perpetualMint
+            .accruedMintEarnings();
+
+        assert(preMintAccruedMintEarnings == 0);
+
+        uint256 preMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
+
+        assert(preMintAccruedProtocolFees == 0);
+
+        assert(address(perpetualMint).balance == 0);
+
+        assert(REFERRER.balance == 0);
+
+        vm.prank(minter);
+        perpetualMint.attemptBatchMintForMintWithEth{
+            value: MINT_PRICE * TEST_MINT_ATTEMPTS
+        }(REFERRER, TEST_MINT_ATTEMPTS);
+
+        uint256 postMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        assert(
+            postMintAccruedConsolationFees ==
+                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
+                    perpetualMint.mintTokenConsolationFeeBP()) /
+                    perpetualMint.BASIS())
+        );
+
+        uint256 postMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
+
+        uint256 expectedMintProtocolFee = (MINT_PRICE * TEST_MINT_ATTEMPTS) -
+            postMintAccruedConsolationFees;
+
+        uint256 expectedMintReferralFee = (expectedMintProtocolFee *
+            perpetualMint.collectionReferralPercentage(COLLECTION)) /
+            perpetualMint.BASIS();
+
+        assert(
+            postMintAccruedProtocolFees ==
+                expectedMintProtocolFee - expectedMintReferralFee
+        );
+
+        uint256 postMintAccruedMintEarnings = perpetualMint
+            .accruedMintEarnings();
+
+        // asert that depositor earnings have not been updated on mints for $MINT
+        assert(postMintAccruedMintEarnings == 0);
+
+        assert(
+            address(perpetualMint).balance ==
+                postMintAccruedConsolationFees + postMintAccruedProtocolFees
+        );
+
+        assert(REFERRER.balance == expectedMintReferralFee);
+    }
+
     /// @dev Tests that attemptBatchMintForMintWithEth functionality reverts when attempting to mint with an incorrect msg value amount.
     function test_attemptBatchMintForMintWithEthRevertsWhen_AttemptingToMintWithIncorrectMsgValue()
         external
     {
         vm.expectRevert(IPerpetualMintInternal.IncorrectETHReceived.selector);
 
-        perpetualMint.attemptBatchMintForMintWithEth(TEST_MINT_ATTEMPTS);
+        perpetualMint.attemptBatchMintForMintWithEth(
+            NO_REFERRER,
+            TEST_MINT_ATTEMPTS
+        );
     }
 
     /// @dev Tests that attemptBatchMintForMintWithEth functionality reverts when attempting zero mints.
@@ -100,7 +168,10 @@ contract PerpetualMint_attemptBatchMintForMintWithEthBase is
     {
         vm.expectRevert(IPerpetualMintInternal.InvalidNumberOfMints.selector);
 
-        perpetualMint.attemptBatchMintForMintWithEth(ZERO_MINT_ATTEMPTS);
+        perpetualMint.attemptBatchMintForMintWithEth(
+            NO_REFERRER,
+            ZERO_MINT_ATTEMPTS
+        );
     }
 
     /// @dev Tests that attemptBatchMintForMintWithEth functionality reverts when the contract is paused.
@@ -112,6 +183,6 @@ contract PerpetualMint_attemptBatchMintForMintWithEthBase is
 
         perpetualMint.attemptBatchMintForMintWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(TEST_MINT_ATTEMPTS);
+        }(NO_REFERRER, TEST_MINT_ATTEMPTS);
     }
 }

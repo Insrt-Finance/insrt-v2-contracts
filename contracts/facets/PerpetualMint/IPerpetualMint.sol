@@ -18,8 +18,10 @@ interface IPerpetualMint is
     IPausable
 {
     /// @notice Attempts a batch mint for the msg.sender for $MINT using ETH as payment.
+    /// @param referrer referrer address for mint attempts
     /// @param numberOfMints number of mints to attempt
     function attemptBatchMintForMintWithEth(
+        address referrer,
         uint32 numberOfMints
     ) external payable;
 

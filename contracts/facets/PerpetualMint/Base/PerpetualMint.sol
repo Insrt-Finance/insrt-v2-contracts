@@ -12,9 +12,14 @@ contract PerpetualMint_Base is PerpetualMint {
 
     /// @inheritdoc IPerpetualMint
     function attemptBatchMintForMintWithEth(
+        address referrer,
         uint32 numberOfMints
     ) external payable override whenNotPaused {
-        _attemptBatchMintForMintWithEthBase(msg.sender, uint8(numberOfMints));
+        _attemptBatchMintForMintWithEthBase(
+            msg.sender,
+            referrer,
+            uint8(numberOfMints)
+        );
     }
 
     /// @inheritdoc IPerpetualMint

@@ -76,7 +76,7 @@ contract UpgradePerpetualMintArbEOA is Script {
         bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](1);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
-            .setCollectionReferralPercentage
+            .setCollectionReferralFeeBP
             .selector;
 
         ISolidStateDiamond.FacetCut

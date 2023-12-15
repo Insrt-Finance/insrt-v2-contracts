@@ -117,7 +117,7 @@ contract UpgradeAndRemovePerpetualMintArb is BatchScript {
             .selector;
 
         perpetualMintFunctionSelectors[4] = IPerpetualMint
-            .setCollectionReferralPercentage
+            .setCollectionReferralFeeBP
             .selector;
 
         ISolidStateDiamond.FacetCut

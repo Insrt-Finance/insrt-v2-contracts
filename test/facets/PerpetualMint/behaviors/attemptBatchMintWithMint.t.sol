@@ -167,7 +167,7 @@ contract PerpetualMint_attemptBatchMintWithMint is
             perpetualMint.mintFeeBP()) / perpetualMint.BASIS();
 
         uint256 expectedMintReferralFee = (expectedMintFee *
-            perpetualMint.collectionReferralPercentage(COLLECTION)) /
+            perpetualMint.collectionReferralFeeBP(COLLECTION)) /
             perpetualMint.BASIS();
 
         assert(

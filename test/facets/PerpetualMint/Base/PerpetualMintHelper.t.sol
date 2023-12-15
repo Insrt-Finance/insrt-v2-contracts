@@ -137,7 +137,7 @@ contract PerpetualMintHelper_Base {
             .selector;
 
         perpetualMintFunctionSelectors[17] = IPerpetualMint
-            .setCollectionReferralPercentage
+            .setCollectionReferralFeeBP
             .selector;
 
         perpetualMintFunctionSelectors[18] = IPerpetualMint
@@ -239,7 +239,7 @@ contract PerpetualMintHelper_Base {
             .selector;
 
         perpetualMintViewFunctionSelectors[9] = IPerpetualMintView
-            .collectionReferralPercentage
+            .collectionReferralFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[10] = IPerpetualMintView
@@ -251,7 +251,7 @@ contract PerpetualMintHelper_Base {
             .selector;
 
         perpetualMintViewFunctionSelectors[12] = IPerpetualMintView
-            .defaultCollectionReferralPercentage
+            .defaultCollectionReferralFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[13] = IPerpetualMintView

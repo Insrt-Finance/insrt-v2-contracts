@@ -62,8 +62,8 @@ abstract contract PerpetualMintTest is CoreTest {
     /// @dev the referrer address used during test mint attempts
     address payable internal constant REFERRER = payable(address(4567));
 
-    // collection mint referral values
-    uint32 internal constant baycCollectionReferralPercentage = 1000000; // 0.10%
+    // collection mint referral fee in basis points
+    uint32 internal constant baycCollectionReferralFeeBP = 1000000; // 0.10%
 
     // collection risk values
     uint32 internal constant baycCollectionRisk = 100000; // 0.01%
@@ -96,9 +96,9 @@ abstract contract PerpetualMintTest is CoreTest {
         // mints 100 ETH to minter
         vm.deal(minter, 100 ether);
 
-        perpetualMint.setCollectionReferralPercentage(
+        perpetualMint.setCollectionReferralFeeBP(
             BORED_APE_YACHT_CLUB,
-            baycCollectionReferralPercentage
+            baycCollectionReferralFeeBP
         );
 
         perpetualMint.setCollectionRisk(

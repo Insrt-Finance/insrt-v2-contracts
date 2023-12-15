@@ -93,11 +93,11 @@ contract UpgradeAndRemovePerpetualMintViewArb is BatchScript {
         bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](2);
 
         perpetualMintViewFunctionSelectors[0] = IPerpetualMintView
-            .collectionReferralPercentage
+            .collectionReferralFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[1] = IPerpetualMintView
-            .defaultCollectionReferralPercentage
+            .defaultCollectionReferralFeeBP
             .selector;
 
         ISolidStateDiamond.FacetCut

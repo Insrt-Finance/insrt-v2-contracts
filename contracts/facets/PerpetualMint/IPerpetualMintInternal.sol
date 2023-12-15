@@ -49,13 +49,10 @@ interface IPerpetualMintInternal {
     /// @param multiplier multiplier of collection
     event CollectionMultiplierSet(address collection, uint256 multiplier);
 
-    /// @notice emitted when the mint refferal percentage for a collection is set
+    /// @notice emitted when the mint referral fee in basis points for a collection is set
     /// @param collection address of collection
-    /// @param referralPercentage mint referral percentage of collection
-    event CollectionReferralPercentageSet(
-        address collection,
-        uint32 referralPercentage
-    );
+    /// @param referralFeeBP mint referral fee of collection in basis points
+    event CollectionReferralFeeBPSet(address collection, uint32 referralFeeBP);
 
     /// @notice emitted when the risk for a collection is set
     /// @param collection address of collection

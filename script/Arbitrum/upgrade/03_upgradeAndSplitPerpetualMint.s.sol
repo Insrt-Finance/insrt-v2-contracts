@@ -254,7 +254,7 @@ contract UpgradeAndSplitPerpetualMintArb is BatchScript {
             .selector;
 
         perpetualMintFunctionSelectors[17] = IPerpetualMint
-            .setCollectionReferralPercentage
+            .setCollectionReferralFeeBP
             .selector;
 
         perpetualMintFunctionSelectors[18] = IPerpetualMint

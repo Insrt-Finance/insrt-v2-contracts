@@ -35,8 +35,8 @@ abstract contract PerpetualMintInternal is
     /// @dev default mint price for a collection
     uint64 internal constant DEFAULT_COLLECTION_MINT_PRICE = 0.01 ether;
 
-    /// @dev default mint referral percentage for a collection
-    uint32 internal constant DEFAULT_COLLECTION_REFERRAL_PERCENTAGE = 5000000; // 0.5%
+    /// @dev default mint referral fee for a collection in basis points
+    uint32 internal constant DEFAULT_COLLECTION_REFERRAL_FEE_BP = 5000000; // 0.5%
 
     /// @dev default risk for a collection
     uint32 internal constant DEFAULT_COLLECTION_RISK = 1000000; // 0.1%
@@ -178,12 +178,12 @@ abstract contract PerpetualMintInternal is
 
         // Calculate the referral fee if a referrer is provided
         if (referrer != address(0)) {
-            uint256 referralPercentage = _collectionReferralPercentage(
+            uint256 referralFeeBP = _collectionReferralFeeBP(
                 l.collections[address(0)] // $MINT
             );
 
-            // Calculate referral fee based on the mintFee and referral percentage
-            referralFee = (mintFee * referralPercentage) / BASIS;
+            // Calculate referral fee based on the mintFee and referral fee percentage
+            referralFee = (mintFee * referralFeeBP) / BASIS;
 
             // Pay the referrer
             payable(referrer).sendValue(referralFee);
@@ -307,12 +307,12 @@ abstract contract PerpetualMintInternal is
 
         // Calculate the referral fee if a referrer is provided
         if (referrer != address(0)) {
-            uint256 referralPercentage = _collectionReferralPercentage(
+            uint256 referralFeeBP = _collectionReferralFeeBP(
                 l.collections[address(0)] // $MINT
             );
 
-            // Calculate referral fee based on the netMintFee and referral percentage
-            referralFee = (netMintFee * referralPercentage) / BASIS;
+            // Calculate referral fee based on the netMintFee and referral fee percentage
+            referralFee = (netMintFee * referralFeeBP) / BASIS;
 
             // Pay the referrer in $MINT
             IToken(l.mintToken).mintReferral(
@@ -434,12 +434,10 @@ abstract contract PerpetualMintInternal is
 
         // Calculate the referral fee if a referrer is provided
         if (referrer != address(0)) {
-            uint256 referralPercentage = _collectionReferralPercentage(
-                collectionData
-            );
+            uint256 referralFeeBP = _collectionReferralFeeBP(collectionData);
 
-            // Calculate referral fee based on the mintFee and referral percentage
-            referralFee = (mintFee * referralPercentage) / BASIS;
+            // Calculate referral fee based on the mintFee and referral fee percentage
+            referralFee = (mintFee * referralFeeBP) / BASIS;
 
             // Pay the referrer
             payable(referrer).sendValue(referralFee);
@@ -573,12 +571,10 @@ abstract contract PerpetualMintInternal is
 
         // Calculate the referral fee if a referrer is provided
         if (referrer != address(0)) {
-            uint256 referralPercentage = _collectionReferralPercentage(
-                collectionData
-            );
+            uint256 referralFeeBP = _collectionReferralFeeBP(collectionData);
 
-            // Calculate referral fee based on the mintFee and referral percentage
-            referralFee = (mintFee * referralPercentage) / BASIS;
+            // Calculate referral fee based on the mintFee and referral fee percentage
+            referralFee = (mintFee * referralFeeBP) / BASIS;
 
             // Pay the referrer in $MINT
             IToken(l.mintToken).mintReferral(
@@ -888,17 +884,17 @@ abstract contract PerpetualMintInternal is
         mintPrice = mintPrice == 0 ? DEFAULT_COLLECTION_MINT_PRICE : mintPrice;
     }
 
-    /// @notice Returns the current mint referral percentage for a given collection
+    /// @notice Returns the current mint referral fee for a given collection in basis points
     /// @param collectionData the CollectionData struct for a given collection
-    /// @return referralPercentage current mint collection referral percentage
-    function _collectionReferralPercentage(
+    /// @return referralFeeBP current mint collection referral fee in basis
+    function _collectionReferralFeeBP(
         CollectionData storage collectionData
-    ) internal view returns (uint32 referralPercentage) {
-        referralPercentage = collectionData.referralPercentage;
+    ) internal view returns (uint32 referralFeeBP) {
+        referralFeeBP = collectionData.referralFeeBP;
 
-        referralPercentage = referralPercentage == 0
-            ? DEFAULT_COLLECTION_REFERRAL_PERCENTAGE
-            : referralPercentage;
+        referralFeeBP = referralFeeBP == 0
+            ? DEFAULT_COLLECTION_REFERRAL_FEE_BP
+            : referralFeeBP;
     }
 
     /// @notice Returns the current collection-wide risk of a collection
@@ -934,14 +930,14 @@ abstract contract PerpetualMintInternal is
         mintPrice = DEFAULT_COLLECTION_MINT_PRICE;
     }
 
-    /// @notice Returns the default mint referral percentage for a collection
-    /// @return referralPercentage default mint collection referral percentage
-    function _defaultCollectionReferralPercentage()
+    /// @notice Returns the default mint referral fee for a collection in basis points
+    /// @return referralFeeBP default mint collection referral fee in basis points
+    function _defaultCollectionReferralFeeBP()
         internal
         pure
-        returns (uint32 referralPercentage)
+        returns (uint32 referralFeeBP)
     {
-        referralPercentage = DEFAULT_COLLECTION_REFERRAL_PERCENTAGE;
+        referralFeeBP = DEFAULT_COLLECTION_REFERRAL_FEE_BP;
     }
 
     /// @notice Returns the default risk for a collection
@@ -1409,22 +1405,22 @@ abstract contract PerpetualMintInternal is
         emit MintPriceSet(collection, price);
     }
 
-    /// @notice sets the mint referral percentage for a given collection
+    /// @notice sets the mint referral fee for a given collection in basis points
     /// @param collection address of collection
-    /// @param referralPercentage mint referral percentage of the collection
-    function _setCollectionReferralPercentage(
+    /// @param referralFeeBP mint referral fdee of the collection in basis points
+    function _setCollectionReferralFeeBP(
         address collection,
-        uint32 referralPercentage
+        uint32 referralFeeBP
     ) internal {
         CollectionData storage collectionData = Storage.layout().collections[
             collection
         ];
 
-        _enforceBasis(referralPercentage, BASIS);
+        _enforceBasis(referralFeeBP, BASIS);
 
-        collectionData.referralPercentage = referralPercentage;
+        collectionData.referralFeeBP = referralFeeBP;
 
-        emit CollectionReferralPercentageSet(collection, referralPercentage);
+        emit CollectionReferralFeeBPSet(collection, referralFeeBP);
     }
 
     /// @notice sets the risk for a given collection

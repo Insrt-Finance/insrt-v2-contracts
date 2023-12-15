@@ -74,10 +74,10 @@ contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
     }
 
     /// @inheritdoc IPerpetualMintView
-    function collectionReferralPercentage(
+    function collectionReferralFeeBP(
         address collection
-    ) external view returns (uint32 referralPercentage) {
-        referralPercentage = _collectionReferralPercentage(
+    ) external view returns (uint32 referralFeeBP) {
+        referralFeeBP = _collectionReferralFeeBP(
             Storage.layout().collections[collection]
         );
     }
@@ -108,12 +108,12 @@ contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
     }
 
     /// @inheritdoc IPerpetualMintView
-    function defaultCollectionReferralPercentage()
+    function defaultCollectionReferralFeeBP()
         external
         pure
-        returns (uint32 referralPercentage)
+        returns (uint32 referralFeeBP)
     {
-        referralPercentage = _defaultCollectionReferralPercentage();
+        referralFeeBP = _defaultCollectionReferralFeeBP();
     }
 
     /// @inheritdoc IPerpetualMintView

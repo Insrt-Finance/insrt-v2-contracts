@@ -99,7 +99,7 @@ contract UpgradeAndRemovePerpetualMintArbEOA is Script {
             .selector;
 
         perpetualMintFunctionSelectors[4] = IPerpetualMint
-            .setCollectionReferralPercentage
+            .setCollectionReferralFeeBP
             .selector;
 
         ISolidStateDiamond.FacetCut

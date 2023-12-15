@@ -60,12 +60,12 @@ interface IPerpetualMintView {
         address collection
     ) external view returns (uint256 mintPrice);
 
-    /// @notice Returns the current mint referral percentage for a given collection
+    /// @notice Returns the current mint referral fee for a given collection in basis points
     /// @param collection address of collection
-    /// @return referralPercentage current mint collection referral percentage
-    function collectionReferralPercentage(
+    /// @return referralFeeBP current mint collection referral fee in basis points
+    function collectionReferralFeeBP(
         address collection
-    ) external view returns (uint32 referralPercentage);
+    ) external view returns (uint32 referralFeeBP);
 
     /// @notice Returns the current collection-wide risk of a collection
     /// @param collection address of collection
@@ -88,12 +88,12 @@ interface IPerpetualMintView {
         pure
         returns (uint256 mintPrice);
 
-    /// @notice Returns the default mint referral percentage for a collection
-    /// @return referralPercentage default collection mint referral percentage
-    function defaultCollectionReferralPercentage()
+    /// @notice Returns the default mint referral fee for a collection in basis points
+    /// @return referralFeeBP default collection mint referral fee in basis points
+    function defaultCollectionReferralFeeBP()
         external
         pure
-        returns (uint32 referralPercentage);
+        returns (uint32 referralFeeBP);
 
     /// @notice Returns the default risk for a collection
     /// @return risk default collection risk

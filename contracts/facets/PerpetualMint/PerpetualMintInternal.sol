@@ -195,9 +195,11 @@ abstract contract PerpetualMintInternal is
 
     /// @notice Attempts a batch mint for the msg.sender for $MINT using $MINT tokens as payment.
     /// @param minter address of minter
+    /// @param referrer address of referrer
     /// @param numberOfMints number of mints to attempt
     function _attemptBatchMintForMintWithMint(
         address minter,
+        address referrer,
         uint32 numberOfMints
     ) internal {
         Storage.Layout storage l = Storage.layout();
@@ -218,7 +220,8 @@ abstract contract PerpetualMintInternal is
             ethRequired,
             numberOfMints,
             ethToMintRatio,
-            minter
+            minter,
+            referrer
         );
 
         // if the number of words requested is greater than the max allowed by the VRF coordinator,
@@ -230,9 +233,11 @@ abstract contract PerpetualMintInternal is
 
     /// @notice Attempts a Base-specific batch mint for the msg.sender for $MINT using $MINT tokens as payment.
     /// @param minter address of minter
+    /// @param referrer address of referrer
     /// @param numberOfMints number of mints to attempt
     function _attemptBatchMintForMintWithMintBase(
         address minter,
+        address referrer,
         uint8 numberOfMints
     ) internal {
         Storage.Layout storage l = Storage.layout();
@@ -253,7 +258,8 @@ abstract contract PerpetualMintInternal is
             ethRequired,
             numberOfMints,
             ethToMintRatio,
-            minter
+            minter,
+            referrer
         );
 
         // if the number of words requested is greater than uint8, the function call will revert.
@@ -274,7 +280,8 @@ abstract contract PerpetualMintInternal is
         uint256 ethRequired,
         uint32 numberOfMints,
         uint256 ethToMintRatio,
-        address minter
+        address minter,
+        address referrer
     ) private {
         if (numberOfMints == 0) {
             revert InvalidNumberOfMints();
@@ -296,11 +303,29 @@ abstract contract PerpetualMintInternal is
         // Calculate the net mint fee
         uint256 netMintFee = ethRequired - mintTokenConsolationFee;
 
+        uint256 referralFee;
+
+        // Calculate the referral fee if a referrer is provided
+        if (referrer != address(0)) {
+            uint256 referralPercentage = _collectionReferralPercentage(
+                l.collections[address(0)] // $MINT
+            );
+
+            // Calculate referral fee based on the netMintFee and referral percentage
+            referralFee = (netMintFee * referralPercentage) / BASIS;
+
+            // Pay the referrer in $MINT
+            IToken(l.mintToken).mintReferral(
+                referrer,
+                referralFee * ethToMintRatio
+            );
+        }
+
         // Update the accrued consolation fees
         l.consolationFees -= netMintFee;
 
         // Update the accrued protocol fees
-        l.protocolFees += netMintFee;
+        l.protocolFees += netMintFee - referralFee;
     }
 
     /// @notice Attempts a batch mint for the msg.sender for a single collection using ETH as payment.

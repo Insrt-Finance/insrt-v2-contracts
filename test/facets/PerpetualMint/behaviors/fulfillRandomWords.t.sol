@@ -357,7 +357,10 @@ contract PerpetualMint_fulfillRandomWords is
 
         // attempt to mint for $MINT using $MINT
         vm.prank(minter);
-        perpetualMint.attemptBatchMintForMintWithMint(TEST_MINT_ATTEMPTS);
+        perpetualMint.attemptBatchMintForMintWithMint(
+            NO_REFERRER,
+            TEST_MINT_ATTEMPTS
+        );
 
         uint32 numberOfRandomWordsRequested = TEST_MINT_ATTEMPTS * 1; // 1 word per mint for $MINT attempt
 
@@ -702,7 +705,10 @@ contract PerpetualMint_fulfillRandomWords is
 
         // attempt to mint for $MINT with $MINT
         vm.prank(minter);
-        perpetualMint.attemptBatchMintForMintWithMint(MAXIMUM_MINT_ATTEMPTS);
+        perpetualMint.attemptBatchMintForMintWithMint(
+            NO_REFERRER,
+            MAXIMUM_MINT_ATTEMPTS
+        );
 
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -714,6 +720,7 @@ contract PerpetualMint_fulfillRandomWords is
 
         vm.prank(minter);
         perpetualMint.attemptBatchMintForMintWithMint(
+            NO_REFERRER,
             MAXIMUM_MINT_ATTEMPTS + 1
         );
 

@@ -246,7 +246,10 @@ contract PerpetualMint_fulfillRandomWordsBase is
 
         // attempt to mint for $MINT using $MINT
         vm.prank(minter);
-        perpetualMint.attemptBatchMintForMintWithMint(TEST_MINT_ATTEMPTS);
+        perpetualMint.attemptBatchMintForMintWithMint(
+            NO_REFERRER,
+            TEST_MINT_ATTEMPTS
+        );
 
         // calculate and store the mint fulfillment block number using the configured vrf min # of confirmations
         uint256 mintFulfillmentBlockNumber = mintBlockNumber +
@@ -499,12 +502,16 @@ contract PerpetualMint_fulfillRandomWordsBase is
 
         // attempt to mint for $MINT with $MINT
         vm.prank(minter);
-        perpetualMint.attemptBatchMintForMintWithMint(MAXIMUM_MINT_ATTEMPTS);
+        perpetualMint.attemptBatchMintForMintWithMint(
+            NO_REFERRER,
+            MAXIMUM_MINT_ATTEMPTS
+        );
 
         vm.expectRevert();
 
         vm.prank(minter);
         perpetualMint.attemptBatchMintForMintWithMint(
+            NO_REFERRER,
             MAXIMUM_MINT_ATTEMPTS + 1
         );
 

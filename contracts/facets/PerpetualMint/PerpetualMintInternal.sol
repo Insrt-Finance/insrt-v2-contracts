@@ -36,7 +36,7 @@ abstract contract PerpetualMintInternal is
     uint64 internal constant DEFAULT_COLLECTION_MINT_PRICE = 0.01 ether;
 
     /// @dev default mint referral fee for a collection in basis points
-    uint32 internal constant DEFAULT_COLLECTION_REFERRAL_FEE_BP = 5000000; // 0.5%
+    uint32 internal constant DEFAULT_COLLECTION_REFERRAL_FEE_BP = 250000000; // 25%
 
     /// @dev default risk for a collection
     uint32 internal constant DEFAULT_COLLECTION_RISK = 1000000; // 0.1%

@@ -212,54 +212,38 @@ abstract contract TokenInternal is
             accountBalance -
             l.distributionSupply -
             l.airdropSupply;
-        uint256 accruedTokens;
 
         AccrualData storage accountData = l.accrualData[account];
 
-        // if the supplyDelta is zero, it means there are no tokens in circulation
-        // so the receiving account is the first/only receiver therefore is owed the full
-        // distribution amount.
-        // to ensure the full distribution amount is given to an account in this instance,
-        // the account offset for said account should not be updated
-        if (supplyDelta > 0) {
-            // tokens are accrued for account prior to global ratio or offset being updated
-            accruedTokens = _scaleDown(
-                (l.globalRatio - accountData.offset) * accountBalance
-            );
+        // Always calculate and accrue previous token accruals
+        uint256 previousAccruals = _scaleDown(
+            (l.globalRatio - accountData.offset) * accountBalance
+        );
 
-            // update global ratio
-            l.globalRatio += _scaleUp(distributionAmount) / supplyDelta;
+        // Calculate the distribution ratio
+        uint256 distributionRatio = _scaleUp(distributionAmount) /
+            (supplyDelta > 0 ? supplyDelta : amount);
 
-            // update account offset
-            accountData.offset = l.globalRatio;
+        // Update globalRatio
+        l.globalRatio += distributionRatio;
 
-            // update claimable tokens
-            accountData.accruedTokens += accruedTokens;
-        } else {
-            // calculation ratio of distributionAmount to remaining amount
-            uint256 distributionRatio = _scaleUp(distributionAmount) / amount;
-
-            // check whether the sole holder is the first minter because if so
-            // the globalRatio will be a multiple of distributionRatio
+        // If supplyDelta is zero, adjust the account offset differently
+        if (supplyDelta == 0) {
+            // Handle the case where there are no tokens in circulation
+            // If this is the first minter, account offset should be one step behind globalRatio
             if (l.globalRatio % distributionRatio == 0) {
-                // update globalRatio
-                l.globalRatio += distributionRatio;
-                // update account offset
                 accountData.offset = l.globalRatio - distributionRatio;
             } else {
-                // sole holder due to all other minters burning tokens
-                // calculate and accrue previous token accrual
-                uint256 previousAccruals = _scaleDown(
-                    (l.globalRatio - accountData.offset) * accountBalance
-                );
+                // Sole holder due to all other minters burning tokens
                 accountData.accruedTokens +=
                     distributionAmount +
                     previousAccruals;
-                // update globalRatio
-                l.globalRatio += distributionRatio;
-                // update account offset
                 accountData.offset = l.globalRatio;
             }
+        } else {
+            // Normal case where there are other tokens in circulation
+            accountData.offset = l.globalRatio;
+            accountData.accruedTokens += previousAccruals;
         }
 
         l.distributionSupply += distributionAmount;

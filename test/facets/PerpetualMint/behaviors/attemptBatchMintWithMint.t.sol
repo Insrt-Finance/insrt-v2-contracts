@@ -236,8 +236,6 @@ contract PerpetualMint_attemptBatchMintWithMint is
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
 
-        emit log_uint(expectedEthRequired);
-
         uint256 expectedCollectionConsolationFee = (expectedEthRequired *
             perpetualMint.collectionConsolationFeeBP()) / perpetualMint.BASIS();
 

@@ -13,6 +13,14 @@ import { IPerpetualMint, MintTokenTiersData, TiersData, VRFConfig } from "../../
 contract ConfigurePerpetualMintArb is Script, Test {
     error Uint256ValueGreaterThanUint32Max(uint256 value);
 
+    struct FeesConfiguration {
+        uint32 collectionConsolationFeeBP;
+        uint32 defaultCollectionReferralFeeBP;
+        uint32 mintFeeBP;
+        uint32 mintTokenConsolationFeeBP;
+        uint32 redemptionFeeBP;
+    }
+
     /// @dev runs the script logic
     function run() external {
         // get PerpetualMint address
@@ -24,15 +32,19 @@ contract ConfigurePerpetualMintArb is Script, Test {
         // read deployer private key
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_KEY");
 
-        uint32 collectionConsolationFeeBP = uint32(
-            vm.envUint("COLLECTION_CONSOLATION_FEE_BP")
-        );
-
-        uint32 mintFeeBP = uint32(vm.envUint("MINT_FEE_BP"));
-
-        uint32 mintTokenConsolationFeeBP = uint32(
-            vm.envUint("MINT_TOKEN_CONSOLATION_FEE_BP")
-        );
+        FeesConfiguration memory feesConfig = FeesConfiguration({
+            collectionConsolationFeeBP: uint32(
+                vm.envUint("COLLECTION_CONSOLATION_FEE_BP")
+            ),
+            defaultCollectionReferralFeeBP: uint32(
+                vm.envUint("DEFAULT_COLLECTION_REFERRAL_FEE_BP")
+            ),
+            mintFeeBP: uint32(vm.envUint("MINT_FEE_BP")),
+            mintTokenConsolationFeeBP: uint32(
+                vm.envUint("MINT_TOKEN_CONSOLATION_FEE_BP")
+            ),
+            redemptionFeeBP: uint32(vm.envUint("REDEMPTION_FEE_BP"))
+        });
 
         uint256[] memory mintTokenTierMultipliers = vm.envUint(
             "MINT_TOKEN_TIER_MULTIPLIERS",
@@ -47,8 +59,6 @@ contract ConfigurePerpetualMintArb is Script, Test {
         uint32[] memory mintTokenTierRisks = toUint32Array(
             envMintTokenTierRisks
         );
-
-        uint32 redemptionFeeBP = uint32(vm.envUint("REDEMPTION_FEE_BP"));
 
         uint256[] memory tierMultipliers = vm.envUint("TIER_MULTIPLIERS", ",");
 
@@ -68,12 +78,6 @@ contract ConfigurePerpetualMintArb is Script, Test {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        perpetualMint.setCollectionConsolationFeeBP(collectionConsolationFeeBP);
-
-        perpetualMint.setMintFeeBP(mintFeeBP);
-
-        perpetualMint.setMintTokenConsolationFeeBP(mintTokenConsolationFeeBP);
-
         perpetualMint.setMintTokenTiers(
             MintTokenTiersData({
                 tierMultipliers: mintTokenTierMultipliers,
@@ -81,7 +85,7 @@ contract ConfigurePerpetualMintArb is Script, Test {
             })
         );
 
-        perpetualMint.setRedemptionFeeBP(redemptionFeeBP);
+        setFees(perpetualMint, feesConfig);
 
         perpetualMint.setTiers(
             TiersData({
@@ -96,18 +100,22 @@ contract ConfigurePerpetualMintArb is Script, Test {
 
         console.log(
             "Collection Consolation Fee BP Set: ",
-            collectionConsolationFeeBP
+            feesConfig.collectionConsolationFeeBP
         );
         console.log("Core/PerpetualMint Ownership Transferred To: ", newOwner);
-        console.log("Mint Fee BP Set: ", mintFeeBP);
+        console.log(
+            "Default Collection Referral Fee BP Set: ",
+            feesConfig.defaultCollectionReferralFeeBP
+        );
+        console.log("Mint Fee BP Set: ", feesConfig.mintFeeBP);
         console.log(
             "Mint Token Consolation Fee BP Set: ",
-            mintTokenConsolationFeeBP
+            feesConfig.mintTokenConsolationFeeBP
         );
         console.log("Mint Token Tiers Set: ");
         emit log_named_array("  Tier Multipliers: ", mintTokenTierMultipliers);
         emit log_named_array("  Tier Risks: ", envMintTokenTierRisks);
-        console.log("Redemption Fee BP Set: ", redemptionFeeBP);
+        console.log("Redemption Fee BP Set: ", feesConfig.redemptionFeeBP);
         console.log("Tiers Set: ");
         emit log_named_array("  Tier Multipliers: ", tierMultipliers);
         emit log_named_array("  Tier Risks: ", envTierRisks);
@@ -136,6 +144,27 @@ contract ConfigurePerpetualMintArb is Script, Test {
             vm.parseAddress(
                 vm.readFile(string.concat(inputDir, chainDir, file))
             );
+    }
+
+    function setFees(
+        IPerpetualMint perpetualMint,
+        FeesConfiguration memory config
+    ) private {
+        perpetualMint.setCollectionConsolationFeeBP(
+            config.collectionConsolationFeeBP
+        );
+
+        perpetualMint.setDefaultCollectionReferralFeeBP(
+            config.defaultCollectionReferralFeeBP
+        );
+
+        perpetualMint.setMintFeeBP(config.mintFeeBP);
+
+        perpetualMint.setMintTokenConsolationFeeBP(
+            config.mintTokenConsolationFeeBP
+        );
+
+        perpetualMint.setRedemptionFeeBP(config.redemptionFeeBP);
     }
 
     /// @notice attempts to read the saved address of the newly created VRF subscription ID, post-configuration

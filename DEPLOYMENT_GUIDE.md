@@ -221,6 +221,9 @@ export VRF_SUBSCRIPTION_BALANCE_THRESHOLD=<base LINK unit amount> # Example: 1 =
 # Mint for collection consolation fee used for funding $MINT
 export COLLECTION_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
+# Default collection mint referral fee in basis points
+export DEFAULT_COLLECTION_REFERRAL_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
 # Protocol mint fee
 export MINT_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
@@ -264,6 +267,9 @@ export ETH_FUND_AMOUNT=<base ETH unit amount> # Example: 1 = 1 ETH, can be 0 to 
 ```bash
 # Mint for collection consolation fee used for funding $MINT
 export COLLECTION_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
+# Default collection mint referral fee in basis points
+export DEFAULT_COLLECTION_REFERRAL_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
 # Protocol mint fee
 export MINT_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%

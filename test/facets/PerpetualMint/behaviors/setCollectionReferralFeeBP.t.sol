@@ -44,26 +44,18 @@ contract PerpetualMint_setCollectionReferralFeeBP is
             _newCollectionReferralFeeBP
         );
 
-        if (_newCollectionReferralFeeBP == 0) {
-            // if the new collection referral fee is 0, the collection referral fee BP should be set to the default collection referral fee BP
+        // if the new collection referral fee BP was greater than the basis, the function should have reverted
+        // and the collection mint referral fee BP should not have changed
+        if (_newCollectionReferralFeeBP > perpetualMint.BASIS()) {
             assert(
-                perpetualMint.defaultCollectionReferralFeeBP() ==
+                COLLECTION_REFERRAL_FEE_BP ==
                     perpetualMint.collectionReferralFeeBP(COLLECTION)
             );
         } else {
-            // if the new collection referral fee BP was greater than the basis, the function should have reverted
-            // and the collection mint referral fee BP should not have changed
-            if (_newCollectionReferralFeeBP > perpetualMint.BASIS()) {
-                assert(
-                    COLLECTION_REFERRAL_FEE_BP ==
-                        perpetualMint.collectionReferralFeeBP(COLLECTION)
-                );
-            } else {
-                assert(
-                    _newCollectionReferralFeeBP ==
-                        perpetualMint.collectionReferralFeeBP(COLLECTION)
-                );
-            }
+            assert(
+                _newCollectionReferralFeeBP ==
+                    perpetualMint.collectionReferralFeeBP(COLLECTION)
+            );
         }
     }
 
@@ -77,29 +69,6 @@ contract PerpetualMint_setCollectionReferralFeeBP is
         perpetualMint.setCollectionReferralFeeBP(
             COLLECTION,
             newCollectionReferralFeeBP
-        );
-    }
-
-    /// @dev tests that setCollectionReferralFeeBP updates the referral fee BP for a collection when there is no specific referral fee BP set (collection referral fee is the default referral fee BP)
-    function test_setCollectionReferralFeeBPUpdatesFeeBPFromDefaultFeeBP()
-        external
-    {
-        perpetualMint.setCollectionReferralFeeBP(COLLECTION, 0);
-
-        /// @dev if the new collection referral fee BP is 0, the collection referral fee BP should be set to the default collection referral fee BP
-        assert(
-            perpetualMint.defaultCollectionReferralFeeBP() ==
-                perpetualMint.collectionReferralFeeBP(COLLECTION)
-        );
-
-        perpetualMint.setCollectionReferralFeeBP(
-            COLLECTION,
-            newCollectionReferralFeeBP
-        );
-
-        assert(
-            newCollectionReferralFeeBP ==
-                perpetualMint.collectionReferralFeeBP(COLLECTION)
         );
     }
 

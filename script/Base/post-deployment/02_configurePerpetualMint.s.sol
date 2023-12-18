@@ -28,6 +28,10 @@ contract ConfigurePerpetualMint_Base is Script, Test {
             vm.envUint("COLLECTION_CONSOLATION_FEE_BP")
         );
 
+        uint32 defaultCollectionReferralFeeBP = uint32(
+            vm.envUint("DEFAULT_COLLECTION_REFERRAL_FEE_BP")
+        );
+
         uint32 mintFeeBP = uint32(vm.envUint("MINT_FEE_BP"));
 
         uint32 mintTokenConsolationFeeBP = uint32(
@@ -62,6 +66,10 @@ contract ConfigurePerpetualMint_Base is Script, Test {
 
         perpetualMint.setCollectionConsolationFeeBP(collectionConsolationFeeBP);
 
+        perpetualMint.setDefaultCollectionReferralFeeBP(
+            defaultCollectionReferralFeeBP
+        );
+
         perpetualMint.setMintFeeBP(mintFeeBP);
 
         perpetualMint.setMintTokenConsolationFeeBP(mintTokenConsolationFeeBP);
@@ -91,6 +99,10 @@ contract ConfigurePerpetualMint_Base is Script, Test {
             collectionConsolationFeeBP
         );
         console.log("Core/PerpetualMint Ownership Transferred To: ", newOwner);
+        console.log(
+            "Default Collection Referral Fee BP Set: ",
+            defaultCollectionReferralFeeBP
+        );
         console.log("Mint Fee BP Set: ", mintFeeBP);
         console.log(
             "Mint Token Consolation Fee BP Set: ",

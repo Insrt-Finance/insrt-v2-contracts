@@ -30,6 +30,8 @@ abstract contract PerpetualMintTest is CoreTest {
     uint32 internal constant TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP =
         5e8; // 50%
 
+    uint32 internal constant TEST_DEFAULT_COLLECTION_REFERRAL_FEE_BP = 25e7; // 25%
+
     uint32 internal constant TEST_MINT_FEE_BP = 5000000; // 0.5% fee
 
     /// @dev mint for $MINT consolation fee basis points to test
@@ -120,6 +122,11 @@ abstract contract PerpetualMintTest is CoreTest {
             TEST_COLLECTION_CONSOLATION_FEE_BP
         );
 
+        // sets the default mint referral fee for collections
+        perpetualMint.setDefaultCollectionReferralFeeBP(
+            TEST_DEFAULT_COLLECTION_REFERRAL_FEE_BP
+        );
+
         // sets the mint for $MINT consolation fee
         perpetualMint.setMintTokenConsolationFeeBP(
             TEST_MINT_TOKEN_CONSOLATION_FEE_BP
@@ -185,6 +192,11 @@ abstract contract PerpetualMintTest is CoreTest {
         assert(
             TEST_COLLECTION_CONSOLATION_FEE_BP ==
                 perpetualMint.collectionConsolationFeeBP()
+        );
+
+        assert(
+            TEST_DEFAULT_COLLECTION_REFERRAL_FEE_BP ==
+                perpetualMint.defaultCollectionReferralFeeBP()
         );
 
         assert(TEST_MINT_FEE_BP == perpetualMint.mintFeeBP());

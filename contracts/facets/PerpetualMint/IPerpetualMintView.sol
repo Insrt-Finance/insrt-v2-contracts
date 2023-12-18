@@ -92,7 +92,7 @@ interface IPerpetualMintView {
     /// @return referralFeeBP default collection mint referral fee in basis points
     function defaultCollectionReferralFeeBP()
         external
-        pure
+        view
         returns (uint32 referralFeeBP);
 
     /// @notice Returns the default risk for a collection

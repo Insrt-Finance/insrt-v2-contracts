@@ -110,7 +110,7 @@ contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
     /// @inheritdoc IPerpetualMintView
     function defaultCollectionReferralFeeBP()
         external
-        pure
+        view
         returns (uint32 referralFeeBP)
     {
         referralFeeBP = _defaultCollectionReferralFeeBP();

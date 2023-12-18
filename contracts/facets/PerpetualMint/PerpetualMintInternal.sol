@@ -35,9 +35,6 @@ abstract contract PerpetualMintInternal is
     /// @dev default mint price for a collection
     uint64 internal constant DEFAULT_COLLECTION_MINT_PRICE = 0.01 ether;
 
-    /// @dev default mint referral fee for a collection in basis points
-    uint32 internal constant DEFAULT_COLLECTION_REFERRAL_FEE_BP = 250000000; // 25%
-
     /// @dev default risk for a collection
     uint32 internal constant DEFAULT_COLLECTION_RISK = 1000000; // 0.1%
 
@@ -182,6 +179,10 @@ abstract contract PerpetualMintInternal is
                 l.collections[address(0)] // $MINT
             );
 
+            if (referralFeeBP == 0) {
+                referralFeeBP = l.defaultCollectionReferralFeeBP;
+            }
+
             // Calculate referral fee based on the mintFee and referral fee percentage
             referralFee = (mintFee * referralFeeBP) / BASIS;
 
@@ -311,6 +312,10 @@ abstract contract PerpetualMintInternal is
                 l.collections[address(0)] // $MINT
             );
 
+            if (referralFeeBP == 0) {
+                referralFeeBP = l.defaultCollectionReferralFeeBP;
+            }
+
             // Calculate referral fee based on the netMintFee and referral fee percentage
             referralFee = (netMintFee * referralFeeBP) / BASIS;
 
@@ -435,6 +440,10 @@ abstract contract PerpetualMintInternal is
         // Calculate the referral fee if a referrer is provided
         if (referrer != address(0)) {
             uint256 referralFeeBP = _collectionReferralFeeBP(collectionData);
+
+            if (referralFeeBP == 0) {
+                referralFeeBP = l.defaultCollectionReferralFeeBP;
+            }
 
             // Calculate referral fee based on the mintFee and referral fee percentage
             referralFee = (mintFee * referralFeeBP) / BASIS;
@@ -572,6 +581,10 @@ abstract contract PerpetualMintInternal is
         // Calculate the referral fee if a referrer is provided
         if (referrer != address(0)) {
             uint256 referralFeeBP = _collectionReferralFeeBP(collectionData);
+
+            if (referralFeeBP == 0) {
+                referralFeeBP = l.defaultCollectionReferralFeeBP;
+            }
 
             // Calculate referral fee based on the mintFee and referral fee percentage
             referralFee = (mintFee * referralFeeBP) / BASIS;
@@ -891,10 +904,6 @@ abstract contract PerpetualMintInternal is
         CollectionData storage collectionData
     ) internal view returns (uint32 referralFeeBP) {
         referralFeeBP = collectionData.referralFeeBP;
-
-        referralFeeBP = referralFeeBP == 0
-            ? DEFAULT_COLLECTION_REFERRAL_FEE_BP
-            : referralFeeBP;
     }
 
     /// @notice Returns the current collection-wide risk of a collection
@@ -934,10 +943,10 @@ abstract contract PerpetualMintInternal is
     /// @return referralFeeBP default mint collection referral fee in basis points
     function _defaultCollectionReferralFeeBP()
         internal
-        pure
+        view
         returns (uint32 referralFeeBP)
     {
-        referralFeeBP = DEFAULT_COLLECTION_REFERRAL_FEE_BP;
+        referralFeeBP = Storage.layout().defaultCollectionReferralFeeBP;
     }
 
     /// @notice Returns the default risk for a collection
@@ -1407,7 +1416,7 @@ abstract contract PerpetualMintInternal is
 
     /// @notice sets the mint referral fee for a given collection in basis points
     /// @param collection address of collection
-    /// @param referralFeeBP mint referral fdee of the collection in basis points
+    /// @param referralFeeBP mint referral fee of the collection in basis points
     function _setCollectionReferralFeeBP(
         address collection,
         uint32 referralFeeBP
@@ -1452,6 +1461,16 @@ abstract contract PerpetualMintInternal is
             .collectionConsolationFeeBP = collectionConsolationFeeBP;
 
         emit CollectionConsolationFeeSet(collectionConsolationFeeBP);
+    }
+
+    /// @notice sets the default mint referral fee for collections in basis points
+    /// @param referralFeeBP new default mint referral fee for collections in basis points
+    function _setDefaultCollectionReferralFeeBP(uint32 referralFeeBP) internal {
+        _enforceBasis(referralFeeBP, BASIS);
+
+        Storage.layout().defaultCollectionReferralFeeBP = referralFeeBP;
+
+        emit DefaultCollectionReferralFeeBPSet(referralFeeBP);
     }
 
     /// @notice sets the ratio of ETH (native token) to $MINT for mint attempts using $MINT as payment

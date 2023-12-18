@@ -127,6 +127,10 @@ interface IPerpetualMint is
         uint32 collectionConsolationFeeBP
     ) external;
 
+    /// @notice sets the default mint referral fee for collections in basis points
+    /// @param referralFeeBP new default mint referral fee for collections in basis points
+    function setDefaultCollectionReferralFeeBP(uint32 referralFeeBP) external;
+
     /// @notice sets the ratio of ETH (native token) to $MINT for mint attempts using $MINT as payment
     /// @param ratio ratio of ETH to $MINT
     function setEthToMintRatio(uint256 ratio) external;

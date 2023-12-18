@@ -162,7 +162,7 @@ contract PerpetualMint_attemptBatchMintForMintWithMintBase is
             expectedMintTokenConsolationFee;
 
         uint256 expectedMintReferralFee = (expectedMintFee *
-            perpetualMint.collectionReferralFeeBP(COLLECTION)) /
+            perpetualMint.defaultCollectionReferralFeeBP()) /
             perpetualMint.BASIS();
 
         assert(

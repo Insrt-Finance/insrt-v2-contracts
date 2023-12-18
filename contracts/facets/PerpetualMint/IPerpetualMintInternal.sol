@@ -68,6 +68,10 @@ interface IPerpetualMintInternal {
     /// @param amount amount of ETH funded
     event ConsolationFeesFunded(address indexed funder, uint256 amount);
 
+    /// @notice emitted when the default mint referral fee for collections is set
+    /// @param referralFeeBP new default mint referral fee for collections in basis points
+    event DefaultCollectionReferralFeeBPSet(uint32 referralFeeBP);
+
     /// @notice emitted when the ETH:MINT ratio is set
     /// @param ratio value of ETH:MINT ratio
     event EthToMintRatioSet(uint256 ratio);

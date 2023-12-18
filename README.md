@@ -151,6 +151,7 @@ make configure-vrf-arb
 Note: The following environment variables are modifiable in `./script/Arbitrum/post-deployment/configure-perp-mint-arb.sh`:
 
 - `COLLECTION_CONSOLATION_FEE_BP`
+- `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
 - `MINT_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_TIER_MULTIPLIERS`
@@ -196,6 +197,7 @@ make configure-vrf-arb-goerli
 Note: The following environment variables are modifiable in `./script/Arbitrum/post-deployment/configure-perp-mint-arb-goerli.sh`:
 
 - `COLLECTION_CONSOLATION_FEE_BP`
+- `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
 - `MINT_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_TIER_MULTIPLIERS`
@@ -241,6 +243,7 @@ make configure-vrf-local-arb
 Note: The following environment variables are modifiable in `./script/Arbitrum/post-deployment/configure-perp-mint-local.sh`:
 
 - `COLLECTION_CONSOLATION_FEE_BP`
+- `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
 - `MINT_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_TIER_MULTIPLIERS`
@@ -283,6 +286,7 @@ make configure-vrf-base
 Note: The following environment variables are modifiable in `./script/Base/post-deployment/configure-perp-mint-base.sh`:
 
 - `COLLECTION_CONSOLATION_FEE_BP`
+- `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
 - `MINT_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_TIER_MULTIPLIERS`
@@ -324,6 +328,7 @@ make configure-vrf-base-goerli
 Note: The following environment variables are modifiable in `./script/Base/post-deployment/configure-perp-mint-base-goerli.sh`:
 
 - `COLLECTION_CONSOLATION_FEE_BP`
+- `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
 - `MINT_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_TIER_MULTIPLIERS`
@@ -365,6 +370,7 @@ make configure-vrf-local-base
 Note: The following environment variables are modifiable in `./script/Base/post-deployment/configure-perp-mint-local.sh`:
 
 - `COLLECTION_CONSOLATION_FEE_BP`
+- `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
 - `MINT_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_TIER_MULTIPLIERS`

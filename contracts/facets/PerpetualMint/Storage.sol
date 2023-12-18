@@ -40,6 +40,8 @@ library PerpetualMintStorage {
         uint32 mintTokenConsolationFeeBP;
         /// @dev $MINT mint for $MINT consolation tiers data
         MintTokenTiersData mintTokenTiers;
+        /// @dev default mint referral fee for a collection in basis points
+        uint32 defaultCollectionReferralFeeBP;
     }
 
     bytes32 internal constant STORAGE_SLOT =

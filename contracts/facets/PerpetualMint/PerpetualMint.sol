@@ -158,6 +158,13 @@ contract PerpetualMint is
     }
 
     /// @inheritdoc IPerpetualMint
+    function setDefaultCollectionReferralFeeBP(
+        uint32 referralFeeBP
+    ) external onlyOwner {
+        _setDefaultCollectionReferralFeeBP(referralFeeBP);
+    }
+
+    /// @inheritdoc IPerpetualMint
     function setEthToMintRatio(uint256 ratio) external onlyOwner {
         _setEthToMintRatio(ratio);
     }

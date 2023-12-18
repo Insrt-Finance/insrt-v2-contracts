@@ -98,7 +98,7 @@ contract UpgradeAndRemovePerpetualMintArb is BatchScript {
         address facetAddress
     ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
         // map the PerpetualMint related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](5);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](6);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
             .attemptBatchMintForMintWithEth
@@ -118,6 +118,10 @@ contract UpgradeAndRemovePerpetualMintArb is BatchScript {
 
         perpetualMintFunctionSelectors[4] = IPerpetualMint
             .setCollectionReferralFeeBP
+            .selector;
+
+        perpetualMintFunctionSelectors[5] = IPerpetualMint
+            .setDefaultCollectionReferralFeeBP
             .selector;
 
         ISolidStateDiamond.FacetCut

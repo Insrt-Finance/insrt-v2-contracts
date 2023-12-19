@@ -65,15 +65,15 @@ Requires the following additional environment variables set:
 make deploy-arb
 ```
 
-#### Arbitrum Goerli
+#### Arbitrum Sepolia
 
 Requires the following additional environment variables set:
 
-- `ARBITRUM_GOERLI_RPC_URL`: Arbitrum Goerli RPC URL
+- `ARBITRUM_SEPOLIA_RPC_URL`: Arbitrum Sepolia RPC URL
 - `ARBISCAN_API_KEY`: Arbiscan API key for contract verification
 
 ```
-make deploy-arb-goerli
+make deploy-arb-sepolia
 ```
 
 #### Localhost (Arbitrum Fork)
@@ -166,22 +166,22 @@ Note: The following environment variables are modifiable in `./script/Arbitrum/p
 make configure-perp-mint-arb
 ```
 
-#### Arbitrum Goerli
+#### Arbitrum Sepolia
 
 1. Token configuration
 
-Note: The following environment variables are modifiable in `./script/Arbitrum/post-deployment/configure-token-arb-goerli.sh`:
+Note: The following environment variables are modifiable in `./script/Arbitrum/post-deployment/configure-token-arb-sepolia.sh`:
 
 - `NEW_TOKEN_PROXY_OWNER`
 - `TOKEN_DISTRIBUTION_FRACTION_BP`
 
 ```
-make configure-token-arb-goerli
+make configure-token-arb-sepolia
 ```
 
 2. VRF configuration
 
-Note: The following environment variables are modifiable in `./script/Arbitrum/post-deployment/configure-vrf-arb-goerli.sh`:
+Note: The following environment variables are modifiable in `./script/Arbitrum/post-deployment/configure-vrf-arb-sepolia.sh`:
 
 - `LINK_FUND_AMOUNT`
 - `LINK_TOKEN`
@@ -189,12 +189,12 @@ Note: The following environment variables are modifiable in `./script/Arbitrum/p
 - `VRF_SUBSCRIPTION_BALANCE_THRESHOLD`
 
 ```
-make configure-vrf-arb-goerli
+make configure-vrf-arb-sepolia
 ```
 
 3. PerpetualMint configuration
 
-Note: The following environment variables are modifiable in `./script/Arbitrum/post-deployment/configure-perp-mint-arb-goerli.sh`:
+Note: The following environment variables are modifiable in `./script/Arbitrum/post-deployment/configure-perp-mint-arb-sepolia.sh`:
 
 - `COLLECTION_CONSOLATION_FEE_BP`
 - `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
@@ -209,7 +209,7 @@ Note: The following environment variables are modifiable in `./script/Arbitrum/p
 - `VRF_KEY_HASH`
 
 ```
-make configure-perp-mint-arb-goerli
+make configure-perp-mint-arb-sepolia
 ```
 
 #### Localhost (Arbitrum Fork)
@@ -433,47 +433,47 @@ make upgrade-perp-mint-view-arb
 make upgrade-token-arb
 ```
 
-#### Arbitrum Goerli
+#### Arbitrum Sepolia
 
 Requires the following additional environment variables set:
 
-- `ARBITRUM_GOERLI_RPC_URL`: Arbitrum Goerli RPC URL
+- `ARBITRUM_SEPOLIA_RPC_URL`: Arbitrum Sepolia RPC URL
 - `ARBISCAN_API_KEY`: Arbiscan API key for contract verification
 
 ##### Upgrade & Remove PerpetualMint facet
 
 ```
-make upgrade-remove-perp-mint-arb-goerli
+make upgrade-remove-perp-mint-arb-sepolia
 ```
 
 ##### Upgrade & Remove PerpetualMintView facet
 
 ```
-make upgrade-remove-perp-mint-view-arb-goerli
+make upgrade-remove-perp-mint-view-arb-sepolia
 ```
 
 ##### Upgrade & Split PerpetualMint facet
 
 ```
-make upgrade-split-perp-mint-arb-goerli
+make upgrade-split-perp-mint-arb-sepolia
 ```
 
 ##### Upgrade PerpetualMint facet
 
 ```
-make upgrade-perp-mint-arb-goerli
+make upgrade-perp-mint-arb-sepolia
 ```
 
 ##### Upgrade PerpetualMintView facet
 
 ```
-make upgrade-perp-mint-view-arb-goerli
+make upgrade-perp-mint-view-arb-sepolia
 ```
 
 #### Upgrade Token facet
 
 ```
-make upgrade-token-arb-goerli
+make upgrade-token-arb-sepolia
 ```
 
 ## On-chain calculations

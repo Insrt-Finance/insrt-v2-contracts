@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
-CHAIN_ID=421613
-RPC_URL=$ARBITRUM_GOERLI_RPC_URL
-UPGRADE_SCRIPT="05_upgradeAndRemovePerpetualMintViewEOA.s.sol"
-VERIFIER_URL="https://api-goerli.arbiscan.io/api"
-export CORE_ADDRESS="0x1e364C5345b2e2Ca4306d1632b330ebC17578D55"
-export VRF_COORDINATOR="0x6D80646bEAdd07cE68cab36c27c626790bBcf17f"
+CHAIN_ID=421614
+RPC_URL=$ARBITRUM_SEPOLIA_RPC_URL
+UPGRADE_SCRIPT="01_upgradePerpetualMintEOA.s.sol"
+VERIFIER_URL="https://api-sepolia.arbiscan.io/api"
+export CORE_ADDRESS="0x97f936edd3a5841e87ef7284d1440b2136f1cd69"
+export VRF_COORDINATOR="0x50d47e4142598E3411aA864e08a44284e471AC6f"
 
 # Check if ARBISCAN_API_KEY is set
 if [[ -z $ARBISCAN_API_KEY ]]; then
@@ -14,9 +14,9 @@ if [[ -z $ARBISCAN_API_KEY ]]; then
   exit 1
 fi
 
-# Check if ARBITRUM_GOERLI_RPC_URL is set
-if [[ -z $ARBITRUM_GOERLI_RPC_URL ]]; then
-  echo -e "Error: ARBITRUM_GOERLI_RPC_URL is not set in .env.\n"
+# Check if ARBITRUM_SEPOLIA_RPC_URL is set
+if [[ -z $ARBITRUM_SEPOLIA_RPC_URL ]]; then
+  echo -e "Error: ARBITRUM_SEPOLIA_RPC_URL is not set in .env.\n"
   exit 1
 fi
 

@@ -36,9 +36,9 @@ This guide outlines the steps to deploy & configure the Insrt V2 protocol.
 - `ARBITRUM_RPC_URL`: Arbitrum RPC URL
 - `ARBISCAN_API_KEY`: Arbiscan API key for contract verification
 
-### Arbitrum Goerli Deployments
+### Arbitrum Sepolia Deployments
 
-- `ARBITRUM_GOERLI_RPC_URL`: Arbitrum Goerli RPC URL
+- `ARBITRUM_SEPOLIA_RPC_URL`: Arbitrum Sepolia RPC URL
 - `ARBISCAN_API_KEY`: Arbiscan API key for contract verification
 
 ### Base Deployments
@@ -88,7 +88,7 @@ make test
 We provide deployment scripts for the following networks:
 
 1. **Arbitrum**
-2. **Arbitrum Goerli (Testnet)**
+2. **Arbitrum Sepolia (Testnet)**
 3. **Base**
 4. **Base Goerli (Testnet)**
 5. **Localhost (Arbitrum Fork)**
@@ -143,10 +143,10 @@ The following metadata is set on deployment in the Solidity deployment scripts:
 make deploy-arb
 ```
 
-### Deploying on Arbitrum Goerli (Testnet)
+### Deploying on Arbitrum Sepolia (Testnet)
 
 ```bash
-make deploy-arb-goerli
+make deploy-arb-sepolia
 ```
 
 ### Deploying on Base
@@ -180,7 +180,7 @@ make deploy-local-base
 We provide post-deployment configuration scripts for the following networks:
 
 1. **Arbitrum**
-2. **Arbitrum Goerli (Testnet)**
+2. **Arbitrum Sepolia (Testnet)**
 3. **Base**
 4. **Base Goerli (Testnet)**
 5. **Localhost (Arbitrum Fork)**
@@ -298,10 +298,10 @@ export TIER_RISKS=<1e7 number array aligned with TIER_MULTIPLIERS> # Example: 60
 make configure-token-arb
 ```
 
-#### Arbitrum Goerli (Testnet)
+#### Arbitrum Sepolia (Testnet)
 
 ```bash
-make configure-token-arb-goerli
+make configure-token-arb-sepolia
 ```
 
 #### Locally (on an Arbitrum Fork)
@@ -336,10 +336,10 @@ make configure-token-local-base
 make configure-vrf-arb
 ```
 
-#### Arbitrum Goerli (Testnet)
+#### Arbitrum Sepolia (Testnet)
 
 ```bash
-make configure-vrf-arb-goerli
+make configure-vrf-arb-sepolia
 ```
 
 #### Locally (on an Arbitrum Fork)
@@ -376,10 +376,10 @@ NOTE: Once this step is complete, the protocol is activated.
 make configure-perp-mint-arb
 ```
 
-#### Arbitrum Goerli (Testnet)
+#### Arbitrum Sepolia (Testnet)
 
 ```bash
-make configure-perp-mint-arb-goerli
+make configure-perp-mint-arb-sepolia
 ```
 
 #### Locally (on an Arbitrum Fork)

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-CHAIN_ID=421613
-RPC_URL=$ARBITRUM_GOERLI_RPC_URL
+CHAIN_ID=421614
+RPC_URL=$ARBITRUM_SEPOLIA_RPC_URL
 UPGRADE_SCRIPT="01_upgradeTokenEOA.s.sol"
-VERIFIER_URL="https://api-goerli.arbiscan.io/api"
-export TOKEN_PROXY_ADDRESS="0x72cecbba2fd0c8c45204813896d6603cf4340cd8"
+VERIFIER_URL="https://api-sepolia.arbiscan.io/api"
+export TOKEN_PROXY_ADDRESS="0x9e7bbe3aea914b4460adc29e8d59194bbcb9c79a"
 
 # Check if ARBISCAN_API_KEY is set
 if [[ -z $ARBISCAN_API_KEY ]]; then
@@ -13,9 +13,9 @@ if [[ -z $ARBISCAN_API_KEY ]]; then
   exit 1
 fi
 
-# Check if ARBITRUM_GOERLI_RPC_URL is set
-if [[ -z $ARBITRUM_GOERLI_RPC_URL ]]; then
-  echo -e "Error: ARBITRUM_GOERLI_RPC_URL is not set in .env.\n"
+# Check if ARBITRUM_SEPOLIA_RPC_URL is set
+if [[ -z $ARBITRUM_SEPOLIA_RPC_URL ]]; then
+  echo -e "Error: ARBITRUM_SEPOLIA_RPC_URL is not set in .env.\n"
   exit 1
 fi
 

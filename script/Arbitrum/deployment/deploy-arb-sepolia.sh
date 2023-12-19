@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-CHAIN_ID=421613
+CHAIN_ID=421614
 DEPLOYMENT_SCRIPTS=("01_deployToken.s.sol" "01_deployPerpetualMint.s.sol")
-RPC_URL=$ARBITRUM_GOERLI_RPC_URL
-VERIFIER_URL="https://api-goerli.arbiscan.io/api"
-export VRF_COORDINATOR="0x6D80646bEAdd07cE68cab36c27c626790bBcf17f"
+RPC_URL=$ARBITRUM_SEPOLIA_RPC_URL
+VERIFIER_URL="https://api-sepolia.arbiscan.io/api"
+export VRF_COORDINATOR="0x50d47e4142598E3411aA864e08a44284e471AC6f"
 
 # Check if ARBISCAN_API_KEY is set
 if [[ -z $ARBISCAN_API_KEY ]]; then
@@ -13,9 +13,9 @@ if [[ -z $ARBISCAN_API_KEY ]]; then
   exit 1
 fi
 
-# Check if ARBITRUM_GOERLI_RPC_URL is set
-if [[ -z $ARBITRUM_GOERLI_RPC_URL ]]; then
-  echo -e "Error: ARBITRUM_GOERLI_RPC_URL is not set in .env.\n"
+# Check if ARBITRUM_SEPOLIA_RPC_URL is set
+if [[ -z $ARBITRUM_SEPOLIA_RPC_URL ]]; then
+  echo -e "Error: ARBITRUM_SEPOLIA_RPC_URL is not set in .env.\n"
   exit 1
 fi
 

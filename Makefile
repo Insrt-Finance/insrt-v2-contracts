@@ -49,8 +49,8 @@ stop-anvil:
 deploy-arb:
 	@./script/Arbitrum/deployment/deploy-arb.sh
 
-deploy-arb-goerli:
-	@./script/Arbitrum/deployment/deploy-arb-goerli.sh
+deploy-arb-sepolia:
+	@./script/Arbitrum/deployment/deploy-arb-sepolia.sh
 
 deploy-local-arb:
 	@./script/Arbitrum/deployment/deploy-local.sh
@@ -75,8 +75,8 @@ deploy-local-base:
 configure-token-arb:
 	@./script/Arbitrum/post-deployment/configure-token-arb.sh
 
-configure-token-arb-goerli:
-	@./script/Arbitrum/post-deployment/configure-token-arb-goerli.sh
+configure-token-arb-sepolia:
+	@./script/Arbitrum/post-deployment/configure-token-arb-sepolia.sh
 
 configure-token-local-arb:
 	@./script/common/post-deployment/configure-token-local.sh
@@ -85,8 +85,8 @@ configure-token-local-arb:
 configure-vrf-arb:
 	@./script/Arbitrum/post-deployment/configure-vrf-arb.sh
 
-configure-vrf-arb-goerli:
-	@./script/Arbitrum/post-deployment/configure-vrf-arb-goerli.sh
+configure-vrf-arb-sepolia:
+	@./script/Arbitrum/post-deployment/configure-vrf-arb-sepolia.sh
 
 configure-vrf-local-arb:
 	@./script/Arbitrum/post-deployment/configure-vrf-local.sh
@@ -95,8 +95,8 @@ configure-vrf-local-arb:
 configure-perp-mint-arb:
 	@./script/Arbitrum/post-deployment/configure-perp-mint-arb.sh
 
-configure-perp-mint-arb-goerli:
-	@./script/Arbitrum/post-deployment/configure-perp-mint-arb-goerli.sh
+configure-perp-mint-arb-sepolia:
+	@./script/Arbitrum/post-deployment/configure-perp-mint-arb-sepolia.sh
 
 configure-perp-mint-local-arb:
 	@./script/Arbitrum/post-deployment/configure-perp-mint-local.sh
@@ -162,31 +162,31 @@ upgrade-perp-mint-view-arb:
 upgrade-token-arb:
 	@./script/Arbitrum/upgrade/upgrade-token-arb.sh
 
-##### Arbitrum Goerli
+##### Arbitrum Sepolia
 
 ##### Upgrade & Remove PerpetualMint facet
-upgrade-remove-perp-mint-arb-goerli:
-	@./script/Arbitrum/upgrade/upgrade-remove-perp-mint-arb-goerli.sh
+upgrade-remove-perp-mint-arb-sepolia:
+	@./script/Arbitrum/upgrade/upgrade-remove-perp-mint-arb-sepolia.sh
 
 ##### Upgrade & Remove PerpetualMintView facet
-upgrade-remove-perp-mint-view-arb-goerli:
-	@./script/Arbitrum/upgrade/upgrade-remove-perp-mint-view-arb-goerli.sh
+upgrade-remove-perp-mint-view-arb-sepolia:
+	@./script/Arbitrum/upgrade/upgrade-remove-perp-mint-view-arb-sepolia.sh
 
 ##### Upgrade & Split PerpetualMint facet
-upgrade-split-perp-mint-arb-goerli:
-	@./script/Arbitrum/upgrade/upgrade-split-perp-mint-arb-goerli.sh
+upgrade-split-perp-mint-arb-sepolia:
+	@./script/Arbitrum/upgrade/upgrade-split-perp-mint-arb-sepolia.sh
 
 ##### Upgrade PerpetualMint facet
-upgrade-perp-mint-arb-goerli:
-	@./script/Arbitrum/upgrade/upgrade-perp-mint-arb-goerli.sh
+upgrade-perp-mint-arb-sepolia:
+	@./script/Arbitrum/upgrade/upgrade-perp-mint-arb-sepolia.sh
 
 ##### Upgrade PerpetualMintView facet
-upgrade-perp-mint-view-arb-goerli:
-	@./script/Arbitrum/upgrade/upgrade-perp-mint-view-arb-goerli.sh
+upgrade-perp-mint-view-arb-sepolia:
+	@./script/Arbitrum/upgrade/upgrade-perp-mint-view-arb-sepolia.sh
 
 ##### Upgrade Token facet
-upgrade-token-arb-goerli:
-	@./script/Arbitrum/upgrade/upgrade-token-arb-goerli.sh
+upgrade-token-arb-sepolia:
+	@./script/Arbitrum/upgrade/upgrade-token-arb-sepolia.sh
 
 
 ### Calculations

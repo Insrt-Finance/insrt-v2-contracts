@@ -29,6 +29,9 @@ abstract contract PerpetualMintInternal is
     using AddressUtils for address payable;
     using EnumerableSet for EnumerableSet.UintSet;
 
+    /// @dev used for floating point calculations
+    uint256 private constant SCALE = 1e36;
+
     /// @dev denominator used in percentage calculations
     uint32 private constant BASIS = 1e9;
 

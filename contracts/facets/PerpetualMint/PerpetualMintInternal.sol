@@ -44,6 +44,9 @@ abstract contract PerpetualMintInternal is
     /// @dev Starting default conversion ratio: 1 ETH = 1,000,000 $MINT
     uint32 internal constant DEFAULT_ETH_TO_MINT_RATIO = 1e6;
 
+    /// @dev minimum price per spin, 1000 gwei = 0.000001 ETH
+    uint256 internal constant MINIMUM_PRICE_PER_SPIN = 1000 gwei;
+
     /// @dev address of the configured VRF
     address private immutable VRF;
 

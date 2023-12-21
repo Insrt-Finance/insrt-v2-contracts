@@ -1012,7 +1012,6 @@ abstract contract PerpetualMintInternal is
             );
         } else {
             // if the collection is not address(0), the mint is for a collection
-
             _resolveMints(
                 l.mintToken,
                 _collectionMintMultiplier(collectionData),
@@ -1261,11 +1260,7 @@ abstract contract PerpetualMintInternal is
 
                     // if the cumulative risk is greater than the second normalized value, the tier has been found
                     if (cumulativeRisk > secondNormalizedValue) {
-                        tierMintAmount =
-                            (tiersData.tierMultipliers[j] *
-                                ethToMintRatio *
-                                collectionMintPrice) /
-                            BASIS;
+                        tierMintAmount = tiersData.tierMultipliers[j];
 
                         break;
                     }
@@ -1280,10 +1275,13 @@ abstract contract PerpetualMintInternal is
 
         // Mint the cumulative amounts at the end
         if (totalMintAmount > 0) {
-            // Apply collection-specific multiplier
+            // Adjust for ETH to $MINT ratio and collection mint price, and apply collection-specific multiplier
             totalMintAmount =
-                (totalMintAmount * collectionMintMultiplier) /
-                BASIS;
+                (totalMintAmount *
+                    ethToMintRatio *
+                    collectionMintPrice *
+                    collectionMintMultiplier) /
+                (uint256(BASIS) * BASIS);
 
             IToken(mintToken).mint(minter, totalMintAmount);
         }
@@ -1338,11 +1336,7 @@ abstract contract PerpetualMintInternal is
 
                 // if the cumulative risk is greater than the normalized value, the tier has been found
                 if (cumulativeRisk > normalizedValue) {
-                    tierMintAmount =
-                        (mintTokenTiersData.tierMultipliers[j] *
-                            ethToMintRatio *
-                            mintForMintPrice) /
-                        BASIS;
+                    tierMintAmount = mintTokenTiersData.tierMultipliers[j];
 
                     break;
                 }
@@ -1352,8 +1346,13 @@ abstract contract PerpetualMintInternal is
         }
 
         // Mint the cumulative amounts at the end
-        // Apply $MINT-specific multiplier
-        totalMintAmount = (totalMintAmount * mintForMintMultiplier) / BASIS;
+        // Adjust for ETH to $MINT ratio and mint for $MINT price, and apply $MINT-specific multiplier
+        totalMintAmount =
+            (totalMintAmount *
+                ethToMintRatio *
+                mintForMintPrice *
+                mintForMintMultiplier) /
+            (uint256(BASIS) * BASIS);
 
         IToken(mintToken).mint(minter, totalMintAmount);
 

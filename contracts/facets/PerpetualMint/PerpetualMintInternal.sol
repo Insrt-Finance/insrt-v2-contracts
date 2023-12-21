@@ -30,16 +30,16 @@ abstract contract PerpetualMintInternal is
     using EnumerableSet for EnumerableSet.UintSet;
 
     /// @dev denominator used in percentage calculations
-    uint32 private constant BASIS = 1000000000;
+    uint32 private constant BASIS = 1e9;
 
     /// @dev default mint price for a collection
     uint64 internal constant DEFAULT_COLLECTION_MINT_PRICE = 0.01 ether;
 
     /// @dev default risk for a collection
-    uint32 internal constant DEFAULT_COLLECTION_RISK = 1000000; // 0.1%
+    uint32 internal constant DEFAULT_COLLECTION_RISK = 1e6; // 0.1%
 
-    // Starting default conversion ratio: 1 ETH = 1,000,000 $MINT
-    uint32 internal constant DEFAULT_ETH_TO_MINT_RATIO = 1000000;
+    /// @dev Starting default conversion ratio: 1 ETH = 1,000,000 $MINT
+    uint32 internal constant DEFAULT_ETH_TO_MINT_RATIO = 1e6;
 
     /// @dev address of the configured VRF
     address private immutable VRF;

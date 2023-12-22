@@ -34,6 +34,8 @@ contract PerpetualMint_fulfillRandomWords is
 
     uint64 internal TEST_VRF_CONSUMER_NONCE = 1;
 
+    uint32 internal TEST_ADJUSTMENT_FACTOR;
+
     uint32 internal constant TEST_MINT_ATTEMPTS = 3;
 
     uint32 internal constant ZERO_MINT_ATTEMPTS = 0;
@@ -121,6 +123,8 @@ contract PerpetualMint_fulfillRandomWords is
         MINT_FOR_MINT_PRICE = perpetualMint.collectionMintPrice(
             MINT_FOR_MINT_ADDRESS
         );
+
+        TEST_ADJUSTMENT_FACTOR = perpetualMint.BASIS();
     }
 
     /// @dev Tests fulfillRandomWords functionality when mint for collection is paid in ETH.
@@ -158,7 +162,8 @@ contract PerpetualMint_fulfillRandomWords is
         perpetualMint.setRequests(
             mockMintRequestId,
             minter,
-            MINT_FOR_COLLECTION_ADDRESS
+            MINT_FOR_COLLECTION_ADDRESS,
+            TEST_ADJUSTMENT_FACTOR
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
@@ -478,7 +483,8 @@ contract PerpetualMint_fulfillRandomWords is
         perpetualMint.setRequests(
             mockMintRequestId,
             minter,
-            MINT_FOR_COLLECTION_ADDRESS
+            MINT_FOR_COLLECTION_ADDRESS,
+            TEST_ADJUSTMENT_FACTOR
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations

@@ -77,19 +77,28 @@ contract PerpetualMintHarness is
     function exposed_requestRandomWords(
         address minter,
         address collection,
+        uint256 mintPriceAdjustmentFactor,
         uint32 numWords
     ) external {
         Storage.Layout storage l = Storage.layout();
 
         CollectionData storage collectionData = l.collections[collection];
 
-        _requestRandomWords(l, collectionData, minter, collection, numWords);
+        _requestRandomWords(
+            l,
+            collectionData,
+            minter,
+            collection,
+            mintPriceAdjustmentFactor,
+            numWords
+        );
     }
 
     /// @inheritdoc IPerpetualMintHarness
     function exposed_requestRandomWordsBase(
         address minter,
         address collection,
+        uint256 mintPriceAdjustmentFactor,
         uint8 numWords
     ) external {
         Storage.Layout storage l = Storage.layout();
@@ -101,6 +110,7 @@ contract PerpetualMintHarness is
             collectionData,
             minter,
             collection,
+            mintPriceAdjustmentFactor,
             numWords
         );
     }
@@ -193,11 +203,13 @@ contract PerpetualMintHarness is
     function setRequests(
         uint256 requestId,
         address minter,
-        address collection
+        address collection,
+        uint256 mintPriceAdjustmentFactor
     ) external {
         Storage.layout().requests[requestId] = RequestData({
+            collection: collection,
             minter: minter,
-            collection: collection
+            mintPriceAdjustmentFactor: mintPriceAdjustmentFactor
         });
     }
 }

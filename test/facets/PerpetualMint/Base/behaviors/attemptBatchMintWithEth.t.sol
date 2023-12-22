@@ -22,8 +22,8 @@ contract PerpetualMint_attemptBatchMintWithEthBase is
     /// @dev collection to test
     address COLLECTION = BORED_APE_YACHT_CLUB;
 
-    /// @dev Tests attemptBatchMintWithEth functionality.
-    function test_attemptBatchMintWithEth() external {
+    /// @dev Tests attemptBatchMintWithEth functionality when paying the full set collection mint price.
+    function test_attemptBatchMintWithEthWithFullMintPrice() external {
         uint256 preMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
 
@@ -40,6 +40,136 @@ contract PerpetualMint_attemptBatchMintWithEthBase is
         assert(preMintAccruedProtocolFees == 0);
 
         assert(address(perpetualMint).balance == 0);
+
+        assert(MINT_PRICE == perpetualMint.collectionMintPrice(COLLECTION));
+
+        vm.prank(minter);
+        perpetualMint.attemptBatchMintWithEth{
+            value: MINT_PRICE * TEST_MINT_ATTEMPTS
+        }(COLLECTION, NO_REFERRER, TEST_MINT_ATTEMPTS);
+
+        uint256 postMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        assert(
+            postMintAccruedConsolationFees ==
+                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
+                    perpetualMint.collectionConsolationFeeBP()) /
+                    perpetualMint.BASIS())
+        );
+
+        uint256 postMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
+
+        assert(
+            postMintAccruedProtocolFees ==
+                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
+                    perpetualMint.mintFeeBP()) / perpetualMint.BASIS())
+        );
+
+        uint256 postMintAccruedMintEarnings = perpetualMint
+            .accruedMintEarnings();
+
+        assert(
+            postMintAccruedMintEarnings ==
+                (MINT_PRICE * TEST_MINT_ATTEMPTS) -
+                    postMintAccruedConsolationFees -
+                    postMintAccruedProtocolFees
+        );
+
+        assert(
+            address(perpetualMint).balance ==
+                postMintAccruedConsolationFees +
+                    postMintAccruedMintEarnings +
+                    postMintAccruedProtocolFees
+        );
+    }
+
+    /// @dev Tests attemptBatchMintWithEth functionality when paying a multiple of the set collection mint price.
+    function test_attemptBatchMintWithEthWithMoreThanMintPrice() external {
+        uint256 preMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        assert(preMintAccruedConsolationFees == 0);
+
+        uint256 preMintAccruedMintEarnings = perpetualMint
+            .accruedMintEarnings();
+
+        assert(preMintAccruedMintEarnings == 0);
+
+        uint256 preMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
+
+        assert(preMintAccruedProtocolFees == 0);
+
+        assert(address(perpetualMint).balance == 0);
+
+        // pay 10 times the collection mint price per spin
+        MINT_PRICE = MINT_PRICE * 10;
+
+        vm.prank(minter);
+        perpetualMint.attemptBatchMintWithEth{
+            value: MINT_PRICE * TEST_MINT_ATTEMPTS
+        }(COLLECTION, NO_REFERRER, TEST_MINT_ATTEMPTS);
+
+        uint256 postMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        assert(
+            postMintAccruedConsolationFees ==
+                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
+                    perpetualMint.collectionConsolationFeeBP()) /
+                    perpetualMint.BASIS())
+        );
+
+        uint256 postMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
+
+        assert(
+            postMintAccruedProtocolFees ==
+                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
+                    perpetualMint.mintFeeBP()) / perpetualMint.BASIS())
+        );
+
+        uint256 postMintAccruedMintEarnings = perpetualMint
+            .accruedMintEarnings();
+
+        assert(
+            postMintAccruedMintEarnings ==
+                (MINT_PRICE * TEST_MINT_ATTEMPTS) -
+                    postMintAccruedConsolationFees -
+                    postMintAccruedProtocolFees
+        );
+
+        assert(
+            address(perpetualMint).balance ==
+                postMintAccruedConsolationFees +
+                    postMintAccruedMintEarnings +
+                    postMintAccruedProtocolFees
+        );
+    }
+
+    /// @dev Tests attemptBatchMintWithEth functionality when paying a fraction of the set collection mint price.
+    function test_attemptBatchMintWithEthWithPartialMintPrice() external {
+        uint256 preMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        assert(preMintAccruedConsolationFees == 0);
+
+        uint256 preMintAccruedMintEarnings = perpetualMint
+            .accruedMintEarnings();
+
+        assert(preMintAccruedMintEarnings == 0);
+
+        uint256 preMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
+
+        assert(preMintAccruedProtocolFees == 0);
+
+        assert(address(perpetualMint).balance == 0);
+
+        // pay 1/10th of the collection mint price per spin
+        MINT_PRICE = MINT_PRICE / 10;
 
         vm.prank(minter);
         perpetualMint.attemptBatchMintWithEth{
@@ -236,6 +366,17 @@ contract PerpetualMint_attemptBatchMintWithEthBase is
         external
     {
         vm.expectRevert(IPerpetualMintInternal.IncorrectETHReceived.selector);
+
+        perpetualMint.attemptBatchMintWithEth{
+            value: MINT_PRICE * TEST_MINT_ATTEMPTS + 1
+        }(COLLECTION, NO_REFERRER, TEST_MINT_ATTEMPTS);
+    }
+
+    /// @dev Tests that attemptBatchMintWithEth functionality reverts when attempting to mint with less than MINIMUM_PRICE_PER_SPIN.
+    function test_attemptBatchMintWithEthRevertsWhen_AttemptingToMintWithLessThanMinimumPricePerSpin()
+        external
+    {
+        vm.expectRevert(IPerpetualMintInternal.PricePerSpinTooLow.selector);
 
         perpetualMint.attemptBatchMintWithEth(
             COLLECTION,

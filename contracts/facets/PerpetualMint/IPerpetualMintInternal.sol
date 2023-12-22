@@ -25,6 +25,9 @@ interface IPerpetualMintInternal {
     /// there are pending mint requests in a collection
     error PendingRequests();
 
+    /// @dev thrown when the mint price per spin is less than MINIMUM_PRICE_PER_SPIN
+    error PricePerSpinTooLow();
+
     /// @dev thrown when attempting to redeem when redeeming is paused
     error RedeemPaused();
 

@@ -40,6 +40,7 @@ interface IPerpetualMintHarness {
     function exposed_requestRandomWords(
         address minter,
         address collection,
+        uint256 mintPriceAdjustmentFactor,
         uint32 numWords
     ) external;
 
@@ -47,6 +48,7 @@ interface IPerpetualMintHarness {
     function exposed_requestRandomWordsBase(
         address minter,
         address collection,
+        uint256 mintPriceAdjustmentFactor,
         uint8 numWords
     ) external;
 
@@ -84,6 +86,7 @@ interface IPerpetualMintHarness {
     function setRequests(
         uint256 requestId,
         address minter,
-        address collection
+        address collection,
+        uint256 mintPriceAdjustmentFactor
     ) external;
 }

@@ -238,7 +238,8 @@ contract PerpetualMint_fulfillRandomWords is
         perpetualMint.setRequests(
             mockMintRequestId,
             minter,
-            MINT_FOR_MINT_ADDRESS
+            MINT_FOR_MINT_ADDRESS,
+            TEST_ADJUSTMENT_FACTOR
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
@@ -570,7 +571,8 @@ contract PerpetualMint_fulfillRandomWords is
         perpetualMint.setRequests(
             mockMintRequestId,
             minter,
-            MINT_FOR_MINT_ADDRESS
+            MINT_FOR_MINT_ADDRESS,
+            TEST_ADJUSTMENT_FACTOR
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations

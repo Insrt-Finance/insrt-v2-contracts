@@ -80,30 +80,10 @@ contract UpgradeAndRemovePerpetualMintArbEOA is Script {
         address facetAddress
     ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
         // map the PerpetualMint related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](6);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](1);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
-            .attemptBatchMintForMintWithEth
-            .selector;
-
-        perpetualMintFunctionSelectors[1] = IPerpetualMint
-            .attemptBatchMintForMintWithMint
-            .selector;
-
-        perpetualMintFunctionSelectors[2] = IPerpetualMint
-            .attemptBatchMintWithEth
-            .selector;
-
-        perpetualMintFunctionSelectors[3] = IPerpetualMint
             .attemptBatchMintWithMint
-            .selector;
-
-        perpetualMintFunctionSelectors[4] = IPerpetualMint
-            .setCollectionReferralFeeBP
-            .selector;
-
-        perpetualMintFunctionSelectors[5] = IPerpetualMint
-            .setDefaultCollectionReferralFeeBP
             .selector;
 
         ISolidStateDiamond.FacetCut
@@ -127,22 +107,10 @@ contract UpgradeAndRemovePerpetualMintArbEOA is Script {
         address facetAddress
     ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
         // map the PerpetualMint related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](4);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](1);
 
         perpetualMintFunctionSelectors[0] = bytes4(
-            keccak256("attemptBatchMintForMintWithEth(uint32)")
-        );
-
-        perpetualMintFunctionSelectors[1] = bytes4(
-            keccak256("attemptBatchMintForMintWithMint(uint32)")
-        );
-
-        perpetualMintFunctionSelectors[2] = bytes4(
-            keccak256("attemptBatchMintWithEth(address,uint32)")
-        );
-
-        perpetualMintFunctionSelectors[3] = bytes4(
-            keccak256("attemptBatchMintWithMint(address,uint32)")
+            keccak256("attemptBatchMintWithMint(address,address,uint32)")
         );
 
         ISolidStateDiamond.FacetCut

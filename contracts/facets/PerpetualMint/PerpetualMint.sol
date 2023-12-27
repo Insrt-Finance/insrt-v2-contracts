@@ -55,12 +55,14 @@ contract PerpetualMint is
     function attemptBatchMintWithMint(
         address collection,
         address referrer,
+        uint256 pricePerMint,
         uint32 numberOfMints
     ) external virtual whenNotPaused {
         _attemptBatchMintWithMint(
             msg.sender,
             collection,
             referrer,
+            pricePerMint,
             numberOfMints
         );
     }

@@ -21,6 +21,9 @@ interface IPerpetualMintInternal {
     /// @notice thrown when attempting to mint 0 tokens
     error InvalidNumberOfMints();
 
+    /// @notice thrown when the specified price per mint in $MINT is not a whole number
+    error InvalidPricePerMint();
+
     /// @dev thrown when attempting to update a collection risk and
     /// there are pending mint requests in a collection
     error PendingRequests();

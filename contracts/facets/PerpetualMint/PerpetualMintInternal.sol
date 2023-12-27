@@ -44,7 +44,7 @@ abstract contract PerpetualMintInternal is
     /// @dev Starting default conversion ratio: 1 ETH = 1,000,000 $MINT
     uint32 internal constant DEFAULT_ETH_TO_MINT_RATIO = 1e6;
 
-    /// @dev minimum price per spin, 1000 gwei = 0.000001 ETH
+    /// @dev minimum price per spin, 1000 gwei = 0.000001 ETH / 1 $MINT
     uint256 internal constant MINIMUM_PRICE_PER_SPIN = 1000 gwei;
 
     /// @dev address of the configured VRF
@@ -564,61 +564,144 @@ abstract contract PerpetualMintInternal is
         address minter,
         address collection,
         address referrer,
+        uint256 pricePerMint,
         uint32 numberOfMints
     ) internal {
+        if (collection == address(0)) {
+            // throw if collection is $MINT
+            revert InvalidCollectionAddress();
+        }
+
+        if (numberOfMints == 0) {
+            revert InvalidNumberOfMints();
+        }
+
         Storage.Layout storage l = Storage.layout();
 
+        uint256 ethToMintRatio = _ethToMintRatio(l);
+
+        uint256 pricePerSpinInWei = pricePerMint / ethToMintRatio;
+
+        // throw if the price per spin is less than the minimum price per spin
+        if (pricePerSpinInWei < MINIMUM_PRICE_PER_SPIN) {
+            revert PricePerSpinTooLow();
+        }
+
+        // throw if the price per mint specified is a fraction and not evenly divisible by the price per spin in wei
+        if (pricePerMint % pricePerSpinInWei != 0) {
+            revert InvalidPricePerMint();
+        }
+
         CollectionData storage collectionData = l.collections[collection];
+
+        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
+
+        if (ethRequired > l.consolationFees) {
+            revert InsufficientConsolationFees();
+        }
 
         _attemptBatchMintWithMint_sharedLogic(
             l,
             collectionData,
             minter,
-            collection,
             referrer,
-            numberOfMints
+            ethRequired,
+            ethToMintRatio
         );
 
         // if the number of words requested is greater than the max allowed by the VRF coordinator,
         // the request for random words will fail (max random words is currently 500 per request).
         uint32 numWords = numberOfMints * 2; // 2 words per mint, current max of 250 mints per tx
 
-        _requestRandomWords(l, collectionData, minter, collection, numWords);
+        // upscale pricePerSpinInWei before division to maintain precision
+        uint256 scaledPricePerSpinInWei = pricePerSpinInWei * SCALE;
+
+        // calculate the mint price adjustment factor & scale back down
+        uint256 mintPriceAdjustmentFactor = ((scaledPricePerSpinInWei /
+            _collectionMintPrice(collectionData)) * BASIS) / SCALE;
+
+        _requestRandomWords(
+            l,
+            collectionData,
+            minter,
+            collection,
+            mintPriceAdjustmentFactor,
+            numWords
+        );
     }
 
     /// @notice Attempts a Base-specific batch mint for the msg.sender for a single collection using $MINT tokens as payment.
     /// @param minter address of minter
     /// @param collection address of collection for mint attempts
     /// @param referrer address of referrer
+    /// @param pricePerMint price per mint for collection ($MINT denominated in units of wei)
     /// @param numberOfMints number of mints to attempt
     function _attemptBatchMintWithMintBase(
         address minter,
         address collection,
         address referrer,
+        uint256 pricePerMint,
         uint8 numberOfMints
     ) internal {
+        if (collection == address(0)) {
+            // throw if collection is $MINT
+            revert InvalidCollectionAddress();
+        }
+
+        if (numberOfMints == 0) {
+            revert InvalidNumberOfMints();
+        }
+
         Storage.Layout storage l = Storage.layout();
 
+        uint256 ethToMintRatio = _ethToMintRatio(l);
+
+        uint256 pricePerSpinInWei = pricePerMint / ethToMintRatio;
+
+        // throw if the price per spin is less than the minimum price per spin
+        if (pricePerSpinInWei < MINIMUM_PRICE_PER_SPIN) {
+            revert PricePerSpinTooLow();
+        }
+
+        // throw if the price per mint specified is a fraction and not evenly divisible by the price per spin in wei
+        if (pricePerMint % pricePerSpinInWei != 0) {
+            revert InvalidPricePerMint();
+        }
+
         CollectionData storage collectionData = l.collections[collection];
+
+        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
+
+        if (ethRequired > l.consolationFees) {
+            revert InsufficientConsolationFees();
+        }
 
         _attemptBatchMintWithMint_sharedLogic(
             l,
             collectionData,
             minter,
-            collection,
             referrer,
-            numberOfMints
+            ethRequired,
+            ethToMintRatio
         );
 
         // if the number of words requested is greater than uint8, the function call will revert.
         // the current max allowed by Supra VRF is 255 per request.
         uint8 numWords = numberOfMints * 2; // 2 words per mint, current max of 127 mints per tx
 
+        // upscale pricePerSpinInWei before division to maintain precision
+        uint256 scaledPricePerSpinInWei = pricePerSpinInWei * SCALE;
+
+        // calculate the mint price adjustment factor & scale back down
+        uint256 mintPriceAdjustmentFactor = ((scaledPricePerSpinInWei /
+            _collectionMintPrice(collectionData)) * BASIS) / SCALE;
+
         _requestRandomWordsBase(
             l,
             collectionData,
             minter,
             collection,
+            mintPriceAdjustmentFactor,
             numWords
         );
     }
@@ -627,28 +710,10 @@ abstract contract PerpetualMintInternal is
         Storage.Layout storage l,
         CollectionData storage collectionData,
         address minter,
-        address collection,
         address referrer,
-        uint32 numberOfMints
+        uint256 ethRequired,
+        uint256 ethToMintRatio
     ) private {
-        if (collection == address(0)) {
-            revert InvalidCollectionAddress();
-        }
-
-        if (numberOfMints == 0) {
-            revert InvalidNumberOfMints();
-        }
-
-        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
-
-        uint256 ethRequired = collectionMintPrice * numberOfMints;
-
-        if (ethRequired > l.consolationFees) {
-            revert InsufficientConsolationFees();
-        }
-
-        uint256 ethToMintRatio = _ethToMintRatio(l);
-
         // calculate amount of $MINT required
         uint256 mintRequired = ethRequired * ethToMintRatio;
 

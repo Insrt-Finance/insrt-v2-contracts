@@ -178,6 +178,8 @@ contract PerpetualMint_fulfillRandomWordsBase is
     function testFuzz_fulfillRandomWordsMintForCollectionWithMint(
         uint256 randomness
     ) external {
+        uint256 currentEthToMintRatio = perpetualMint.ethToMintRatio();
+
         // store current block number to use as the mint block number
         uint256 mintBlockNumber = block.number;
 
@@ -186,6 +188,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         perpetualMint.attemptBatchMintWithMint(
             MINT_FOR_COLLECTION_ADDRESS,
             NO_REFERRER,
+            MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS
         );
 
@@ -425,6 +428,8 @@ contract PerpetualMint_fulfillRandomWordsBase is
     function testFuzz_fulfillRandomWordsMintForCollectionWithMintCanHandleMaximum127MintAttempts(
         uint256 randomness
     ) external {
+        uint256 currentEthToMintRatio = perpetualMint.ethToMintRatio();
+
         // store current block number to use as the mint block number
         uint256 mintBlockNumber = block.number;
 
@@ -438,6 +443,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         perpetualMint.attemptBatchMintWithMint(
             MINT_FOR_COLLECTION_ADDRESS,
             NO_REFERRER,
+            MINT_PRICE * currentEthToMintRatio,
             MAXIMUM_MINT_ATTEMPTS
         );
 
@@ -447,6 +453,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         perpetualMint.attemptBatchMintWithMint(
             MINT_FOR_COLLECTION_ADDRESS,
             NO_REFERRER,
+            MINT_PRICE * currentEthToMintRatio,
             MAXIMUM_MINT_ATTEMPTS + 1
         );
 

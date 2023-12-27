@@ -362,6 +362,8 @@ contract PerpetualMint_fulfillRandomWords is
     function testFuzz_fulfillRandomWordsMintForMintWithMint(
         uint256 randomness
     ) external {
+        uint256 currentEthToMintRatio = perpetualMint.ethToMintRatio();
+
         // store current block number to use as the mint block number
         uint256 mintBlockNumber = block.number;
 
@@ -369,6 +371,7 @@ contract PerpetualMint_fulfillRandomWords is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForMintWithMint(
             NO_REFERRER,
+            MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS
         );
 
@@ -394,7 +397,8 @@ contract PerpetualMint_fulfillRandomWords is
         perpetualMint.setRequests(
             mockMintRequestId,
             minter,
-            MINT_FOR_MINT_ADDRESS
+            MINT_FOR_MINT_ADDRESS,
+            TEST_ADJUSTMENT_FACTOR
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
@@ -707,6 +711,8 @@ contract PerpetualMint_fulfillRandomWords is
     function testFuzz_fulfillRandomWordsMintForMintWithMintCanHandleMaximum500MintAttempts(
         uint256 randomness
     ) external {
+        uint256 currentEthToMintRatio = perpetualMint.ethToMintRatio();
+
         // store current block number to use as the mint block number
         uint256 mintBlockNumber = block.number;
 
@@ -724,6 +730,7 @@ contract PerpetualMint_fulfillRandomWords is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForMintWithMint(
             NO_REFERRER,
+            MINT_PRICE * currentEthToMintRatio,
             MAXIMUM_MINT_ATTEMPTS
         );
 
@@ -738,6 +745,7 @@ contract PerpetualMint_fulfillRandomWords is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForMintWithMint(
             NO_REFERRER,
+            MINT_PRICE * currentEthToMintRatio,
             MAXIMUM_MINT_ATTEMPTS + 1
         );
 
@@ -763,7 +771,8 @@ contract PerpetualMint_fulfillRandomWords is
         perpetualMint.setRequests(
             mockMintRequestId,
             minter,
-            MINT_FOR_MINT_ADDRESS
+            MINT_FOR_MINT_ADDRESS,
+            TEST_ADJUSTMENT_FACTOR
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations

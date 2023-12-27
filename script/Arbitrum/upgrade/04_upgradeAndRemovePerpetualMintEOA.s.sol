@@ -80,9 +80,13 @@ contract UpgradeAndRemovePerpetualMintArbEOA is Script {
         address facetAddress
     ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
         // map the PerpetualMint related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](1);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](2);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
+            .attemptBatchMintForMintWithMint
+            .selector;
+
+        perpetualMintFunctionSelectors[1] = IPerpetualMint
             .attemptBatchMintWithMint
             .selector;
 
@@ -107,9 +111,13 @@ contract UpgradeAndRemovePerpetualMintArbEOA is Script {
         address facetAddress
     ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
         // map the PerpetualMint related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](1);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](2);
 
         perpetualMintFunctionSelectors[0] = bytes4(
+            keccak256("attemptBatchMintForMintWithMint(address,uint32)")
+        );
+
+        perpetualMintFunctionSelectors[1] = bytes4(
             keccak256("attemptBatchMintWithMint(address,address,uint32)")
         );
 

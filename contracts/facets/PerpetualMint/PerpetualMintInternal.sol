@@ -84,23 +84,24 @@ abstract contract PerpetualMintInternal is
         accruedFees = Storage.layout().protocolFees;
     }
 
-    /// @notice Attempts a batch mint for the msg.sender for $MINT using ETH as payment.
-    /// @param minter address of minter
-    /// @param referrer address of referrer
-    /// @param numberOfMints number of mints to attempt
-    function _attemptBatchMintForMintWithEth(
-        address minter,
-        address referrer,
-        uint32 numberOfMints
-    ) internal {
-        if (numberOfMints == 0) {
-            revert InvalidNumberOfMints();
-        }
+    function _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+        CollectionData storage collectionData,
+        uint256 pricePerSpin
+    ) private view returns (uint256 mintPriceAdjustmentFactor) {
+        // upscale pricePerSpin before division to maintain precision
+        uint256 scaledPricePerSpin = pricePerSpin * SCALE;
 
-        uint256 msgValue = msg.value;
+        // calculate the mint price adjustment factor & scale back down
+        mintPriceAdjustmentFactor =
+            ((scaledPricePerSpin / _collectionMintPrice(collectionData)) *
+                BASIS) /
+            SCALE;
+    }
 
-        uint256 pricePerSpin = msgValue / numberOfMints;
-
+    function _attemptBatchMint_paidInEth_validateMintParameters(
+        uint256 msgValue,
+        uint256 pricePerSpin
+    ) private pure {
         // throw if the price per spin is less than the minimum price per spin
         if (pricePerSpin < MINIMUM_PRICE_PER_SPIN) {
             revert PricePerSpinTooLow();
@@ -110,6 +111,51 @@ abstract contract PerpetualMintInternal is
         if (msgValue % pricePerSpin != 0) {
             revert IncorrectETHReceived();
         }
+    }
+
+    function _attemptBatchMint_paidInMint_validateMintParameters(
+        uint32 numberOfMints,
+        uint256 consolationFees,
+        uint256 ethRequired,
+        uint256 pricePerSpinInWei,
+        uint256 pricePerMint
+    ) private pure {
+        if (numberOfMints == 0) {
+            revert InvalidNumberOfMints();
+        }
+
+        // throw if the price per spin is less than the minimum price per spin
+        if (pricePerSpinInWei < MINIMUM_PRICE_PER_SPIN) {
+            revert PricePerSpinTooLow();
+        }
+
+        // throw if the price per mint specified is a fraction and not evenly divisible by the price per spin in wei
+        if (pricePerMint % pricePerSpinInWei != 0) {
+            revert InvalidPricePerMint();
+        }
+
+        if (ethRequired > consolationFees) {
+            revert InsufficientConsolationFees();
+        }
+    }
+
+    /// @notice Attempts a batch mint for the msg.sender for $MINT using ETH as payment.
+    /// @param minter address of minter
+    /// @param referrer address of referrer
+    /// @param numberOfMints number of mints to attempt
+    function _attemptBatchMintForMintWithEth(
+        address minter,
+        address referrer,
+        uint32 numberOfMints
+    ) internal {
+        uint256 msgValue = msg.value;
+
+        uint256 pricePerSpin = msgValue / numberOfMints;
+
+        _attemptBatchMint_paidInEth_validateMintParameters(
+            msgValue,
+            pricePerSpin
+        );
 
         Storage.Layout storage l = Storage.layout();
 
@@ -118,18 +164,20 @@ abstract contract PerpetualMintInternal is
 
         CollectionData storage collectionData = l.collections[collection];
 
-        _attemptBatchMintForMintWithEth_sharedLogic(l, msgValue, referrer);
+        _attemptBatchMintForMintWithEth_calculateAndDistributeFees(
+            l,
+            msgValue,
+            referrer
+        );
 
         // if the number of words requested is greater than the max allowed by the VRF coordinator,
         // the request for random words will fail (max random words is currently 500 per request).
         uint32 numWords = numberOfMints * 1; // 1 words per mint for $MINT, current max of 500 mints per tx
 
-        // upscale pricePerSpin before division to maintain precision
-        uint256 scaledPricePerSpin = pricePerSpin * SCALE;
-
-        // calculate the mint price adjustment factor & scale back down
-        uint256 mintPriceAdjustmentFactor = ((scaledPricePerSpin /
-            _collectionMintPrice(collectionData)) * BASIS) / SCALE;
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpin
+            );
 
         _requestRandomWords(
             l,
@@ -150,23 +198,14 @@ abstract contract PerpetualMintInternal is
         address referrer,
         uint8 numberOfMints
     ) internal {
-        if (numberOfMints == 0) {
-            revert InvalidNumberOfMints();
-        }
-
         uint256 msgValue = msg.value;
 
         uint256 pricePerSpin = msgValue / numberOfMints;
 
-        // throw if the price per spin is less than the minimum price per spin
-        if (pricePerSpin < MINIMUM_PRICE_PER_SPIN) {
-            revert PricePerSpinTooLow();
-        }
-
-        // throw if the price per spin is not evenly divisible by the ETH sent, i.e. the ETH sent is not a multiple of the price per spin
-        if (msgValue % pricePerSpin != 0) {
-            revert IncorrectETHReceived();
-        }
+        _attemptBatchMint_paidInEth_validateMintParameters(
+            msgValue,
+            pricePerSpin
+        );
 
         Storage.Layout storage l = Storage.layout();
 
@@ -175,18 +214,20 @@ abstract contract PerpetualMintInternal is
 
         CollectionData storage collectionData = l.collections[collection];
 
-        _attemptBatchMintForMintWithEth_sharedLogic(l, msgValue, referrer);
+        _attemptBatchMintForMintWithEth_calculateAndDistributeFees(
+            l,
+            msgValue,
+            referrer
+        );
 
         // if the number of words requested is greater than uint8, the function call will revert.
         // the current max allowed by Supra VRF is 255 per request.
         uint8 numWords = numberOfMints * 1; // 1 words per mint for $MINT, current max of 255 mints per tx
 
-        // upscale pricePerSpin before division to maintain precision
-        uint256 scaledPricePerSpin = pricePerSpin * SCALE;
-
-        // calculate the mint price adjustment factor & scale back down
-        uint256 mintPriceAdjustmentFactor = ((scaledPricePerSpin /
-            _collectionMintPrice(collectionData)) * BASIS) / SCALE;
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpin
+            );
 
         _requestRandomWordsBase(
             l,
@@ -198,7 +239,7 @@ abstract contract PerpetualMintInternal is
         );
     }
 
-    function _attemptBatchMintForMintWithEth_sharedLogic(
+    function _attemptBatchMintForMintWithEth_calculateAndDistributeFees(
         Storage.Layout storage l,
         uint256 msgValue,
         address referrer
@@ -247,38 +288,28 @@ abstract contract PerpetualMintInternal is
         uint256 pricePerMint,
         uint32 numberOfMints
     ) internal {
-        if (numberOfMints == 0) {
-            revert InvalidNumberOfMints();
-        }
-
         Storage.Layout storage l = Storage.layout();
 
         uint256 ethToMintRatio = _ethToMintRatio(l);
 
         uint256 pricePerSpinInWei = pricePerMint / ethToMintRatio;
 
-        // throw if the price per spin is less than the minimum price per spin
-        if (pricePerSpinInWei < MINIMUM_PRICE_PER_SPIN) {
-            revert PricePerSpinTooLow();
-        }
+        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
 
-        // throw if the price per mint specified is a fraction and not evenly divisible by the price per spin in wei
-        if (pricePerMint % pricePerSpinInWei != 0) {
-            revert InvalidPricePerMint();
-        }
+        _attemptBatchMint_paidInMint_validateMintParameters(
+            numberOfMints,
+            l.consolationFees,
+            ethRequired,
+            pricePerSpinInWei,
+            pricePerMint
+        );
 
         // for now, mints for $MINT are treated as address(0) collections
         address collection = address(0);
 
         CollectionData storage collectionData = l.collections[collection];
 
-        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
-
-        if (ethRequired > l.consolationFees) {
-            revert InsufficientConsolationFees();
-        }
-
-        _attemptBatchMintForMintWithMint_sharedLogic(
+        _attemptBatchMintForMintWithMint_calculateAndDistributeFees(
             l,
             ethRequired,
             ethToMintRatio,
@@ -290,12 +321,10 @@ abstract contract PerpetualMintInternal is
         // the request for random words will fail (max random words is currently 500 per request).
         uint32 numWords = numberOfMints * 1; // 1 words per mint for $MINT, current max of 500 mints per tx
 
-        // upscale pricePerSpinInWei before division to maintain precision
-        uint256 scaledPricePerSpinInWei = pricePerSpinInWei * SCALE;
-
-        // calculate the mint price adjustment factor & scale back down
-        uint256 mintPriceAdjustmentFactor = ((scaledPricePerSpinInWei /
-            _collectionMintPrice(collectionData)) * BASIS) / SCALE;
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpinInWei
+            );
 
         _requestRandomWords(
             l,
@@ -318,38 +347,28 @@ abstract contract PerpetualMintInternal is
         uint256 pricePerMint,
         uint8 numberOfMints
     ) internal {
-        if (numberOfMints == 0) {
-            revert InvalidNumberOfMints();
-        }
-
         Storage.Layout storage l = Storage.layout();
 
         uint256 ethToMintRatio = _ethToMintRatio(l);
 
         uint256 pricePerSpinInWei = pricePerMint / ethToMintRatio;
 
-        // throw if the price per spin is less than the minimum price per spin
-        if (pricePerSpinInWei < MINIMUM_PRICE_PER_SPIN) {
-            revert PricePerSpinTooLow();
-        }
+        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
 
-        // throw if the price per mint specified is a fraction and not evenly divisible by the price per spin in wei
-        if (pricePerMint % pricePerSpinInWei != 0) {
-            revert InvalidPricePerMint();
-        }
+        _attemptBatchMint_paidInMint_validateMintParameters(
+            numberOfMints,
+            l.consolationFees,
+            ethRequired,
+            pricePerSpinInWei,
+            pricePerMint
+        );
 
         // for now, mints for $MINT are treated as address(0) collections
         address collection = address(0);
 
         CollectionData storage collectionData = l.collections[collection];
 
-        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
-
-        if (ethRequired > l.consolationFees) {
-            revert InsufficientConsolationFees();
-        }
-
-        _attemptBatchMintForMintWithMint_sharedLogic(
+        _attemptBatchMintForMintWithMint_calculateAndDistributeFees(
             l,
             ethRequired,
             ethToMintRatio,
@@ -361,12 +380,10 @@ abstract contract PerpetualMintInternal is
         // the current max allowed by Supra VRF is 255 per request.
         uint8 numWords = numberOfMints * 1; // 1 words per mint for $MINT, current max of 255 mints per tx
 
-        // upscale pricePerSpinInWei before division to maintain precision
-        uint256 scaledPricePerSpinInWei = pricePerSpinInWei * SCALE;
-
-        // calculate the mint price adjustment factor & scale back down
-        uint256 mintPriceAdjustmentFactor = ((scaledPricePerSpinInWei /
-            _collectionMintPrice(collectionData)) * BASIS) / SCALE;
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpinInWei
+            );
 
         _requestRandomWordsBase(
             l,
@@ -378,7 +395,7 @@ abstract contract PerpetualMintInternal is
         );
     }
 
-    function _attemptBatchMintForMintWithMint_sharedLogic(
+    function _attemptBatchMintForMintWithMint_calculateAndDistributeFees(
         Storage.Layout storage l,
         uint256 ethRequired,
         uint256 ethToMintRatio,
@@ -442,29 +459,20 @@ abstract contract PerpetualMintInternal is
             revert InvalidCollectionAddress();
         }
 
-        if (numberOfMints == 0) {
-            revert InvalidNumberOfMints();
-        }
-
         uint256 msgValue = msg.value;
 
         uint256 pricePerSpin = msgValue / numberOfMints;
 
-        // throw if the price per spin is less than the minimum price per spin
-        if (pricePerSpin < MINIMUM_PRICE_PER_SPIN) {
-            revert PricePerSpinTooLow();
-        }
-
-        // throw if the price per spin is not evenly divisible by the ETH sent, i.e. the ETH sent is not a multiple of the price per spin
-        if (msgValue % pricePerSpin != 0) {
-            revert IncorrectETHReceived();
-        }
+        _attemptBatchMint_paidInEth_validateMintParameters(
+            msgValue,
+            pricePerSpin
+        );
 
         Storage.Layout storage l = Storage.layout();
 
         CollectionData storage collectionData = l.collections[collection];
 
-        _attemptBatchMintWithEth_sharedLogic(
+        _attemptBatchMintWithEth_calculateAndDistributeFees(
             l,
             collectionData,
             msgValue,
@@ -475,12 +483,10 @@ abstract contract PerpetualMintInternal is
         // the request for random words will fail (max random words is currently 500 per request).
         uint32 numWords = numberOfMints * 2; // 2 words per mint, current max of 250 mints per tx
 
-        // upscale pricePerSpin before division to maintain precision
-        uint256 scaledPricePerSpin = pricePerSpin * SCALE;
-
-        // calculate the mint price adjustment factor & scale back down
-        uint256 mintPriceAdjustmentFactor = ((scaledPricePerSpin /
-            _collectionMintPrice(collectionData)) * BASIS) / SCALE;
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpin
+            );
 
         _requestRandomWords(
             l,
@@ -508,29 +514,20 @@ abstract contract PerpetualMintInternal is
             revert InvalidCollectionAddress();
         }
 
-        if (numberOfMints == 0) {
-            revert InvalidNumberOfMints();
-        }
-
         uint256 msgValue = msg.value;
 
         uint256 pricePerSpin = msgValue / numberOfMints;
 
-        // throw if the price per spin is less than the minimum price per spin
-        if (pricePerSpin < MINIMUM_PRICE_PER_SPIN) {
-            revert PricePerSpinTooLow();
-        }
-
-        // throw if the price per spin is not evenly divisible by the ETH sent, i.e. the ETH sent is not a multiple of the price per spin
-        if (msgValue % pricePerSpin != 0) {
-            revert IncorrectETHReceived();
-        }
+        _attemptBatchMint_paidInEth_validateMintParameters(
+            msgValue,
+            pricePerSpin
+        );
 
         Storage.Layout storage l = Storage.layout();
 
         CollectionData storage collectionData = l.collections[collection];
 
-        _attemptBatchMintWithEth_sharedLogic(
+        _attemptBatchMintWithEth_calculateAndDistributeFees(
             l,
             collectionData,
             msgValue,
@@ -541,12 +538,10 @@ abstract contract PerpetualMintInternal is
         // the current max allowed by Supra VRF is 255 per request.
         uint8 numWords = numberOfMints * 2; // 2 words per mint, current max of 127 mints per tx
 
-        // upscale pricePerSpin before division to maintain precision
-        uint256 scaledPricePerSpin = pricePerSpin * SCALE;
-
-        // calculate the mint price adjustment factor & scale back down
-        uint256 mintPriceAdjustmentFactor = ((scaledPricePerSpin /
-            _collectionMintPrice(collectionData)) * BASIS) / SCALE;
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpin
+            );
 
         _requestRandomWordsBase(
             l,
@@ -558,7 +553,7 @@ abstract contract PerpetualMintInternal is
         );
     }
 
-    function _attemptBatchMintWithEth_sharedLogic(
+    function _attemptBatchMintWithEth_calculateAndDistributeFees(
         Storage.Layout storage l,
         CollectionData storage collectionData,
         uint256 msgValue,
@@ -623,35 +618,25 @@ abstract contract PerpetualMintInternal is
             revert InvalidCollectionAddress();
         }
 
-        if (numberOfMints == 0) {
-            revert InvalidNumberOfMints();
-        }
-
         Storage.Layout storage l = Storage.layout();
 
         uint256 ethToMintRatio = _ethToMintRatio(l);
 
         uint256 pricePerSpinInWei = pricePerMint / ethToMintRatio;
 
-        // throw if the price per spin is less than the minimum price per spin
-        if (pricePerSpinInWei < MINIMUM_PRICE_PER_SPIN) {
-            revert PricePerSpinTooLow();
-        }
+        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
 
-        // throw if the price per mint specified is a fraction and not evenly divisible by the price per spin in wei
-        if (pricePerMint % pricePerSpinInWei != 0) {
-            revert InvalidPricePerMint();
-        }
+        _attemptBatchMint_paidInMint_validateMintParameters(
+            numberOfMints,
+            l.consolationFees,
+            ethRequired,
+            pricePerSpinInWei,
+            pricePerMint
+        );
 
         CollectionData storage collectionData = l.collections[collection];
 
-        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
-
-        if (ethRequired > l.consolationFees) {
-            revert InsufficientConsolationFees();
-        }
-
-        _attemptBatchMintWithMint_sharedLogic(
+        _attemptBatchMintWithMint_calculateAndDistributeFees(
             l,
             collectionData,
             minter,
@@ -664,12 +649,10 @@ abstract contract PerpetualMintInternal is
         // the request for random words will fail (max random words is currently 500 per request).
         uint32 numWords = numberOfMints * 2; // 2 words per mint, current max of 250 mints per tx
 
-        // upscale pricePerSpinInWei before division to maintain precision
-        uint256 scaledPricePerSpinInWei = pricePerSpinInWei * SCALE;
-
-        // calculate the mint price adjustment factor & scale back down
-        uint256 mintPriceAdjustmentFactor = ((scaledPricePerSpinInWei /
-            _collectionMintPrice(collectionData)) * BASIS) / SCALE;
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpinInWei
+            );
 
         _requestRandomWords(
             l,
@@ -699,35 +682,25 @@ abstract contract PerpetualMintInternal is
             revert InvalidCollectionAddress();
         }
 
-        if (numberOfMints == 0) {
-            revert InvalidNumberOfMints();
-        }
-
         Storage.Layout storage l = Storage.layout();
 
         uint256 ethToMintRatio = _ethToMintRatio(l);
 
         uint256 pricePerSpinInWei = pricePerMint / ethToMintRatio;
 
-        // throw if the price per spin is less than the minimum price per spin
-        if (pricePerSpinInWei < MINIMUM_PRICE_PER_SPIN) {
-            revert PricePerSpinTooLow();
-        }
+        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
 
-        // throw if the price per mint specified is a fraction and not evenly divisible by the price per spin in wei
-        if (pricePerMint % pricePerSpinInWei != 0) {
-            revert InvalidPricePerMint();
-        }
+        _attemptBatchMint_paidInMint_validateMintParameters(
+            numberOfMints,
+            l.consolationFees,
+            ethRequired,
+            pricePerSpinInWei,
+            pricePerMint
+        );
 
         CollectionData storage collectionData = l.collections[collection];
 
-        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
-
-        if (ethRequired > l.consolationFees) {
-            revert InsufficientConsolationFees();
-        }
-
-        _attemptBatchMintWithMint_sharedLogic(
+        _attemptBatchMintWithMint_calculateAndDistributeFees(
             l,
             collectionData,
             minter,
@@ -740,12 +713,10 @@ abstract contract PerpetualMintInternal is
         // the current max allowed by Supra VRF is 255 per request.
         uint8 numWords = numberOfMints * 2; // 2 words per mint, current max of 127 mints per tx
 
-        // upscale pricePerSpinInWei before division to maintain precision
-        uint256 scaledPricePerSpinInWei = pricePerSpinInWei * SCALE;
-
-        // calculate the mint price adjustment factor & scale back down
-        uint256 mintPriceAdjustmentFactor = ((scaledPricePerSpinInWei /
-            _collectionMintPrice(collectionData)) * BASIS) / SCALE;
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpinInWei
+            );
 
         _requestRandomWordsBase(
             l,
@@ -757,7 +728,7 @@ abstract contract PerpetualMintInternal is
         );
     }
 
-    function _attemptBatchMintWithMint_sharedLogic(
+    function _attemptBatchMintWithMint_calculateAndDistributeFees(
         Storage.Layout storage l,
         CollectionData storage collectionData,
         address minter,

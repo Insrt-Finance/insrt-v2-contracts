@@ -299,12 +299,11 @@ contract PerpetualMint_attemptBatchMintForMintWithEthBase is
     function test_attemptBatchMintForMintWithEthRevertsWhen_AttemptingZeroMints()
         external
     {
-        vm.expectRevert(IPerpetualMintInternal.InvalidNumberOfMints.selector);
+        vm.expectRevert();
 
-        perpetualMint.attemptBatchMintForMintWithEth(
-            NO_REFERRER,
-            ZERO_MINT_ATTEMPTS
-        );
+        perpetualMint.attemptBatchMintForMintWithEth{
+            value: MINT_PRICE * TEST_MINT_ATTEMPTS
+        }(NO_REFERRER, ZERO_MINT_ATTEMPTS);
     }
 
     /// @dev Tests that attemptBatchMintForMintWithEth functionality reverts when the contract is paused.

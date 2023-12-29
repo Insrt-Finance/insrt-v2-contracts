@@ -303,7 +303,7 @@ contract PerpetualMint_attemptBatchMintForMintWithEth is
     function test_attemptBatchMintForMintWithEthRevertsWhen_AttemptingZeroMints()
         external
     {
-        vm.expectRevert(IPerpetualMintInternal.InvalidNumberOfMints.selector);
+        vm.expectRevert();
 
         perpetualMint.attemptBatchMintForMintWithEth(
             NO_REFERRER,

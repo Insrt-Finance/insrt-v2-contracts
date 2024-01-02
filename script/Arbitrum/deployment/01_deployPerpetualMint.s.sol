@@ -362,7 +362,7 @@ contract DeployPerpetualMintArb is Script {
         address viewFacetAddress
     ) internal pure returns (ISolidStateDiamond.FacetCut[] memory) {
         // map the PerpetualMintView related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](25);
+        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](26);
 
         perpetualMintViewFunctionSelectors[0] = IPerpetualMintView
             .accruedConsolationFees
@@ -453,14 +453,18 @@ contract DeployPerpetualMintArb is Script {
             .selector;
 
         perpetualMintViewFunctionSelectors[22] = IPerpetualMintView
-            .tiers
+            .SCALE
             .selector;
 
         perpetualMintViewFunctionSelectors[23] = IPerpetualMintView
-            .vrfConfig
+            .tiers
             .selector;
 
         perpetualMintViewFunctionSelectors[24] = IPerpetualMintView
+            .vrfConfig
+            .selector;
+
+        perpetualMintViewFunctionSelectors[25] = IPerpetualMintView
             .vrfSubscriptionBalanceThreshold
             .selector;
 

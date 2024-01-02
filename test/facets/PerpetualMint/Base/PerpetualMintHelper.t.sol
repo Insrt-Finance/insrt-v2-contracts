@@ -204,7 +204,7 @@ contract PerpetualMintHelper_Base {
             });
 
         // map the PerpetualMintView test related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](25);
+        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](26);
 
         perpetualMintViewFunctionSelectors[0] = IPerpetualMintView
             .accruedConsolationFees
@@ -295,14 +295,18 @@ contract PerpetualMintHelper_Base {
             .selector;
 
         perpetualMintViewFunctionSelectors[22] = IPerpetualMintView
-            .tiers
+            .SCALE
             .selector;
 
         perpetualMintViewFunctionSelectors[23] = IPerpetualMintView
-            .vrfConfig
+            .tiers
             .selector;
 
         perpetualMintViewFunctionSelectors[24] = IPerpetualMintView
+            .vrfConfig
+            .selector;
+
+        perpetualMintViewFunctionSelectors[25] = IPerpetualMintView
             .vrfSubscriptionBalanceThreshold
             .selector;
 

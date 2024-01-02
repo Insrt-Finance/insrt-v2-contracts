@@ -170,6 +170,11 @@ contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
     }
 
     /// @inheritdoc IPerpetualMintView
+    function SCALE() external pure returns (uint256 value) {
+        value = _SCALE();
+    }
+
+    /// @inheritdoc IPerpetualMintView
     function tiers() external view returns (TiersData memory tiersData) {
         tiersData = _tiers();
     }

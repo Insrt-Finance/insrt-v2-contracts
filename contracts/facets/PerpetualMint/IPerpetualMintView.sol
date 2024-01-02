@@ -136,6 +136,10 @@ interface IPerpetualMintView {
     /// @return status boolean indicating whether redeeming is paused
     function redeemPaused() external view returns (bool status);
 
+    /// @notice returns the value of SCALE
+    /// @return value SCALE value
+    function SCALE() external pure returns (uint256 value);
+
     /// @notice Returns the current mint for collection $MINT consolation tiers
     function tiers() external view returns (TiersData memory tiersData);
 

@@ -1547,6 +1547,12 @@ abstract contract PerpetualMintInternal is
         );
     }
 
+    /// @notice returns the value of SCALE
+    /// @return value SCALE value
+    function _SCALE() internal pure returns (uint256 value) {
+        value = SCALE;
+    }
+
     /// @notice sets the collection mint fee distribution ratio in basis points
     /// @param collection address of collection
     /// @param ratioBP collection mint fee distribution ratio in basis points

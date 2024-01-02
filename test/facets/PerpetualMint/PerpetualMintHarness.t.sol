@@ -118,16 +118,29 @@ contract PerpetualMintHarness is
     /// @inheritdoc IPerpetualMintHarness
     function exposed_requests(
         uint256 requestId
-    ) external view returns (address minter, address collection) {
+    )
+        external
+        view
+        returns (
+            address minter,
+            address collection,
+            uint256 mintPriceAdjustmentFactor
+        )
+    {
         RequestData storage request = Storage.layout().requests[requestId];
 
-        (minter, collection) = (request.minter, request.collection);
+        (minter, collection, mintPriceAdjustmentFactor) = (
+            request.minter,
+            request.collection,
+            request.mintPriceAdjustmentFactor
+        );
     }
 
     /// @inheritdoc IPerpetualMintHarness
     function exposed_resolveMints(
         address minter,
         address collection,
+        uint256 mintPriceAdjustmentFactor,
         uint256[] memory randomWords
     ) external {
         Storage.Layout storage l = Storage.layout();
@@ -138,9 +151,8 @@ contract PerpetualMintHarness is
 
         _resolveMints(
             l.mintToken,
-            _collectionMintMultiplier(collectionData),
-            _collectionMintPrice(collectionData),
-            _collectionRisk(collectionData),
+            collectionData,
+            mintPriceAdjustmentFactor,
             tiersData,
             minter,
             collection,
@@ -152,6 +164,7 @@ contract PerpetualMintHarness is
     /// @inheritdoc IPerpetualMintHarness
     function exposed_resolveMintsForMint(
         address minter,
+        uint256 mintPriceAdjustmentFactor,
         uint256[] memory randomWords
     ) external {
         Storage.Layout storage l = Storage.layout();
@@ -167,6 +180,7 @@ contract PerpetualMintHarness is
             l.mintToken,
             _collectionMintMultiplier(collectionData),
             _collectionMintPrice(collectionData),
+            mintPriceAdjustmentFactor,
             mintTokenTiersData,
             minter,
             randomWords,

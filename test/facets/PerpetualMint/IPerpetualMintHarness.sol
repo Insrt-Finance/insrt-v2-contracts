@@ -55,18 +55,27 @@ interface IPerpetualMintHarness {
     /// @dev exposes requests
     function exposed_requests(
         uint256 requestId
-    ) external view returns (address minter, address collection);
+    )
+        external
+        view
+        returns (
+            address minter,
+            address collection,
+            uint256 mintPriceAdjustmentFactor
+        );
 
     /// @dev exposes _resolveMints
     function exposed_resolveMints(
         address minter,
         address collection,
+        uint256 mintPriceAdjustmentFactor,
         uint256[] memory randomWords
     ) external;
 
     /// @dev exposes _resolveMintsForMint
     function exposed_resolveMintsForMint(
         address minter,
+        uint256 mintPriceAdjustmentFactor,
         uint256[] memory randomWords
     ) external;
 

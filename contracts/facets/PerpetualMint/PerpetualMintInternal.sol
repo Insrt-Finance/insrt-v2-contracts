@@ -1172,6 +1172,7 @@ abstract contract PerpetualMintInternal is
 
         address collection = request.collection;
         address minter = request.minter;
+        uint256 mintPriceAdjustmentFactor = request.mintPriceAdjustmentFactor;
 
         CollectionData storage collectionData = l.collections[collection];
 
@@ -1181,6 +1182,7 @@ abstract contract PerpetualMintInternal is
                 l.mintToken,
                 _collectionMintMultiplier(collectionData),
                 _collectionMintPrice(collectionData),
+                mintPriceAdjustmentFactor,
                 l.mintTokenTiers,
                 minter,
                 randomWords,
@@ -1190,9 +1192,8 @@ abstract contract PerpetualMintInternal is
             // if the collection is not address(0), the mint is for a collection
             _resolveMints(
                 l.mintToken,
-                _collectionMintMultiplier(collectionData),
-                _collectionMintPrice(collectionData),
-                _collectionRisk(collectionData),
+                collectionData,
+                mintPriceAdjustmentFactor,
                 l.tiers,
                 minter,
                 collection,
@@ -1389,9 +1390,8 @@ abstract contract PerpetualMintInternal is
 
     /// @notice resolves the outcomes of attempted mints for a given collection
     /// @param mintToken address of $MINT token
-    /// @param collectionMintMultiplier mint multiplier of given collection
-    /// @param collectionMintPrice mint price of given collection
-    /// @param collectionRisk risk of given collection
+    /// @param collectionData the CollectionData struct for a given collection
+    /// @param mintPriceAdjustmentFactor adjustment factor for mint price
     /// @param tiersData the TiersData struct for mint consolations
     /// @param minter address of minter
     /// @param collection address of collection for mint attempts
@@ -1399,9 +1399,8 @@ abstract contract PerpetualMintInternal is
     /// @param ethToMintRatio ratio of ETH to $MINT
     function _resolveMints(
         address mintToken,
-        uint256 collectionMintMultiplier,
-        uint256 collectionMintPrice,
-        uint32 collectionRisk,
+        CollectionData storage collectionData,
+        uint256 mintPriceAdjustmentFactor,
         TiersData memory tiersData,
         address minter,
         address collection,
@@ -1414,7 +1413,15 @@ abstract contract PerpetualMintInternal is
             revert UnmatchedRandomWords();
         }
 
-        uint256 totalMintAmount;
+        uint256 collectionMintMultiplier = _collectionMintMultiplier(
+            collectionData
+        );
+
+        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
+
+        uint32 collectionRisk = _collectionRisk(collectionData);
+
+        uint256 cumulativeTierMultiplier;
         uint256 totalReceiptAmount;
 
         for (uint256 i = 0; i < randomWords.length; i += 2) {
@@ -1433,7 +1440,7 @@ abstract contract PerpetualMintInternal is
             // if the collection risk is less than the first normalized value, the mint attempt is unsuccessful
             // and the second normalized value is used to determine the consolation tier
             if (!(collectionRisk > firstNormalizedValue)) {
-                uint256 tierMintAmount;
+                uint256 tierMultiplier;
                 uint256 cumulativeRisk;
 
                 // iterate through tiers to find the tier that the random value falls into
@@ -1442,28 +1449,31 @@ abstract contract PerpetualMintInternal is
 
                     // if the cumulative risk is greater than the second normalized value, the tier has been found
                     if (cumulativeRisk > secondNormalizedValue) {
-                        tierMintAmount = tiersData.tierMultipliers[j];
+                        tierMultiplier = tiersData.tierMultipliers[j];
 
                         break;
                     }
                 }
 
-                totalMintAmount += tierMintAmount;
+                cumulativeTierMultiplier += tierMultiplier;
             } else {
                 // mint attempt is successful, so the total receipt amount is incremented
                 ++totalReceiptAmount;
             }
         }
 
+        uint256 totalMintAmount;
+
         // Mint the cumulative amounts at the end
-        if (totalMintAmount > 0) {
-            // Adjust for ETH to $MINT ratio and collection mint price, and apply collection-specific multiplier
+        if (cumulativeTierMultiplier > 0) {
+            // Adjust for the cumulative tier multiplier, ETH to $MINT ratio, collection mint price, and apply collection-specific multiplier & mint price adjustment factor
             totalMintAmount =
-                (totalMintAmount *
+                (cumulativeTierMultiplier *
                     ethToMintRatio *
                     collectionMintPrice *
-                    collectionMintMultiplier) /
-                (uint256(BASIS) * BASIS);
+                    collectionMintMultiplier *
+                    mintPriceAdjustmentFactor) /
+                (uint256(BASIS) * BASIS * BASIS);
 
             IToken(mintToken).mint(minter, totalMintAmount);
         }
@@ -1490,6 +1500,7 @@ abstract contract PerpetualMintInternal is
     /// @param mintToken address of $MINT token
     /// @param mintForMintMultiplier minting for $MINT multiplier
     /// @param mintForMintPrice mint for $MINT mint price
+    /// @param mintPriceAdjustmentFactor adjustment factor for mint price
     /// @param mintTokenTiersData the MintTokenTiersData struct for mint for $MINT consolations
     /// @param minter address of minter
     /// @param randomWords array of random values relating to number of attempts
@@ -1498,18 +1509,19 @@ abstract contract PerpetualMintInternal is
         address mintToken,
         uint256 mintForMintMultiplier,
         uint256 mintForMintPrice,
+        uint256 mintPriceAdjustmentFactor,
         MintTokenTiersData memory mintTokenTiersData,
         address minter,
         uint256[] memory randomWords,
         uint256 ethToMintRatio
     ) internal {
-        uint256 totalMintAmount;
+        uint256 cumulativeTierMultiplier;
 
         for (uint256 i = 0; i < randomWords.length; ++i) {
-            // random word is used to determine the consolation tier
+            // random word is used to determine the reward tier
             uint256 normalizedValue = _normalizeValue(randomWords[i], BASIS);
 
-            uint256 tierMintAmount;
+            uint256 tierMultiplier;
             uint256 cumulativeRisk;
 
             // iterate through tiers to find the tier that the random value falls into
@@ -1518,23 +1530,22 @@ abstract contract PerpetualMintInternal is
 
                 // if the cumulative risk is greater than the normalized value, the tier has been found
                 if (cumulativeRisk > normalizedValue) {
-                    tierMintAmount = mintTokenTiersData.tierMultipliers[j];
+                    tierMultiplier = mintTokenTiersData.tierMultipliers[j];
 
                     break;
                 }
             }
 
-            totalMintAmount += tierMintAmount;
+            cumulativeTierMultiplier += tierMultiplier;
         }
 
         // Mint the cumulative amounts at the end
-        // Adjust for ETH to $MINT ratio and mint for $MINT price, and apply $MINT-specific multiplier
-        totalMintAmount =
-            (totalMintAmount *
-                ethToMintRatio *
-                mintForMintPrice *
-                mintForMintMultiplier) /
-            (uint256(BASIS) * BASIS);
+        // Adjust for the cumulative tier multiplier, ETH to $MINT ratio, mint for $MINT price, and apply $MINT-specific multiplier & mint price adjustment factor
+        uint256 totalMintAmount = (cumulativeTierMultiplier *
+            ethToMintRatio *
+            mintForMintPrice *
+            mintForMintMultiplier *
+            mintPriceAdjustmentFactor) / (uint256(BASIS) * BASIS * BASIS);
 
         IToken(mintToken).mint(minter, totalMintAmount);
 

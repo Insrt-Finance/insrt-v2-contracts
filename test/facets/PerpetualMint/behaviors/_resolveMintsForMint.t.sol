@@ -36,6 +36,104 @@ contract PerpetualMint_resolveMintsForMint is
         token.addMintingContract(address(perpetualMint));
     }
 
+    /// @dev tests that _resolveMintsForMint applies mint adjustment factor correctly when paying a multiple of the set $MINT mint price.
+    function test_resolveMintsForMintAppliesMintAdjustmentFactorCorrectlyWhenPaidWithMoreThanMintPrice()
+        external
+    {
+        // expected lowest tier mint resolution
+        randomWords.push(2);
+
+        // assert that the minter currently has no $MINT tokens
+        assert(token.balanceOf(minter) == 0);
+
+        // pay 10 times the $MINT mint price per spin
+        MINT_PRICE = perpetualMint.collectionMintPrice(COLLECTION) * 10;
+
+        uint256 scaledPricePerSpin = MINT_PRICE * perpetualMint.SCALE();
+
+        // calculate the mint price adjustment factor & scale back down
+        TEST_ADJUSTMENT_FACTOR =
+            ((scaledPricePerSpin /
+                perpetualMint.collectionMintPrice(COLLECTION)) *
+                perpetualMint.BASIS()) /
+            perpetualMint.SCALE();
+
+        vm.prank(address(perpetualMint));
+        perpetualMint.exposed_resolveMintsForMint(
+            minter,
+            TEST_ADJUSTMENT_FACTOR,
+            randomWords
+        );
+
+        uint256 totalMintedAmount = ((testMintTokenTiersData.tierMultipliers[
+            0
+        ] *
+            perpetualMint.ethToMintRatio() *
+            perpetualMint.collectionMintPrice(COLLECTION) *
+            perpetualMint.collectionMintMultiplier(COLLECTION) *
+            TEST_ADJUSTMENT_FACTOR) /
+            (uint256(perpetualMint.BASIS()) *
+                perpetualMint.BASIS() *
+                perpetualMint.BASIS()));
+
+        uint256 distributionTokenAmount = (totalMintedAmount *
+            token.distributionFractionBP()) / perpetualMint.BASIS();
+
+        assert(
+            token.balanceOf(minter) ==
+                totalMintedAmount - distributionTokenAmount
+        );
+    }
+
+    /// @dev tests that _resolveMintsForMint applies mint adjustment factor correctly when paying a fraction of the set $MINT mint price.
+    function test_resolveMintsForMintAppliesMintAdjustmentFactorCorrectlyWhenPaidWithPartialMintPrice()
+        external
+    {
+        // expected lowest tier mint resolution
+        randomWords.push(2);
+
+        // assert that the minter currently has no $MINT tokens
+        assert(token.balanceOf(minter) == 0);
+
+        // pay 1/10th of the $MINT mint price per spin
+        MINT_PRICE = perpetualMint.collectionMintPrice(COLLECTION) / 10;
+
+        uint256 scaledPricePerSpin = MINT_PRICE * perpetualMint.SCALE();
+
+        // calculate the mint price adjustment factor & scale back down
+        TEST_ADJUSTMENT_FACTOR =
+            ((scaledPricePerSpin /
+                perpetualMint.collectionMintPrice(COLLECTION)) *
+                perpetualMint.BASIS()) /
+            perpetualMint.SCALE();
+
+        vm.prank(address(perpetualMint));
+        perpetualMint.exposed_resolveMintsForMint(
+            minter,
+            TEST_ADJUSTMENT_FACTOR,
+            randomWords
+        );
+
+        uint256 totalMintedAmount = ((testMintTokenTiersData.tierMultipliers[
+            0
+        ] *
+            perpetualMint.ethToMintRatio() *
+            perpetualMint.collectionMintPrice(COLLECTION) *
+            perpetualMint.collectionMintMultiplier(COLLECTION) *
+            TEST_ADJUSTMENT_FACTOR) /
+            (uint256(perpetualMint.BASIS()) *
+                perpetualMint.BASIS() *
+                perpetualMint.BASIS()));
+
+        uint256 distributionTokenAmount = (totalMintedAmount *
+            token.distributionFractionBP()) / perpetualMint.BASIS();
+
+        assert(
+            token.balanceOf(minter) ==
+                totalMintedAmount - distributionTokenAmount
+        );
+    }
+
     /// @dev tests that _resolveMintsForMint applies mint for $MINT multipliers correctly
     function test_resolveMintsForMintAppliesMintForMintMultipliersCorrectly()
         external
@@ -49,15 +147,22 @@ contract PerpetualMint_resolveMintsForMint is
         perpetualMint.setCollectionMintMultiplier(COLLECTION, 1e10); // 10x multiplier
 
         vm.prank(address(perpetualMint));
-        perpetualMint.exposed_resolveMintsForMint(minter, randomWords);
+        perpetualMint.exposed_resolveMintsForMint(
+            minter,
+            TEST_ADJUSTMENT_FACTOR,
+            randomWords
+        );
 
         uint256 totalMintedAmount = ((testMintTokenTiersData.tierMultipliers[
             0
         ] *
             perpetualMint.ethToMintRatio() *
             perpetualMint.collectionMintPrice(COLLECTION) *
-            perpetualMint.collectionMintMultiplier(COLLECTION)) /
-            (uint256(perpetualMint.BASIS()) * perpetualMint.BASIS()));
+            perpetualMint.collectionMintMultiplier(COLLECTION) *
+            TEST_ADJUSTMENT_FACTOR) /
+            (uint256(perpetualMint.BASIS()) *
+                perpetualMint.BASIS() *
+                perpetualMint.BASIS()));
 
         uint256 distributionTokenAmount = (totalMintedAmount *
             token.distributionFractionBP()) / perpetualMint.BASIS();
@@ -78,14 +183,21 @@ contract PerpetualMint_resolveMintsForMint is
         ] *
             perpetualMint.ethToMintRatio() *
             perpetualMint.collectionMintPrice(COLLECTION) *
-            perpetualMint.collectionMintMultiplier(COLLECTION)) /
-            (uint256(perpetualMint.BASIS()) * perpetualMint.BASIS()));
+            perpetualMint.collectionMintMultiplier(COLLECTION) *
+            TEST_ADJUSTMENT_FACTOR) /
+            (uint256(perpetualMint.BASIS()) *
+                perpetualMint.BASIS() *
+                perpetualMint.BASIS()));
 
         vm.expectEmit();
         emit MintResult(minter, COLLECTION, 1, totalMintedAmount, 0);
 
         vm.prank(address(perpetualMint));
-        perpetualMint.exposed_resolveMintsForMint(minter, randomWords);
+        perpetualMint.exposed_resolveMintsForMint(
+            minter,
+            TEST_ADJUSTMENT_FACTOR,
+            randomWords
+        );
     }
 
     /// @dev tests that _resolveMintsForMint works with many random values
@@ -93,6 +205,10 @@ contract PerpetualMint_resolveMintsForMint is
         randomWords.push(value);
 
         vm.prank(address(perpetualMint));
-        perpetualMint.exposed_resolveMintsForMint(minter, randomWords);
+        perpetualMint.exposed_resolveMintsForMint(
+            minter,
+            TEST_ADJUSTMENT_FACTOR,
+            randomWords
+        );
     }
 }

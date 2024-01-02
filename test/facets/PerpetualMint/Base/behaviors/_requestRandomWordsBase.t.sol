@@ -22,8 +22,6 @@ contract PerpetualMint_requestRandomWordsBase is
 
     /// @dev Tests that _requestRandomWordsBase functionality emits a RequestGenerated event when successfully requesting random words.
     function test_requestRandomWordsBaseEmitsRequestGenerated() external {
-        uint32 testAdjustmentFactor = perpetualMint.BASIS();
-
         // Supra VRF Router nonce storage slot
         bytes32 nonceStorageSlot = bytes32(uint256(3));
 
@@ -48,22 +46,20 @@ contract PerpetualMint_requestRandomWordsBase is
         perpetualMint.exposed_requestRandomWordsBase(
             minter,
             COLLECTION,
-            testAdjustmentFactor,
+            TEST_ADJUSTMENT_FACTOR,
             TEST_NUM_WORDS
         );
     }
 
     /// @dev Tests that _requestRandomWordsBase functionality updates pendingRequests appropriately.
     function test_requestRandomWordsBaseUpdatesPendingRequests() external {
-        uint32 testAdjustmentFactor = perpetualMint.BASIS();
-
         // assert that this will be the first request added to pendingRequests
         assert(perpetualMint.exposed_pendingRequestsLength(COLLECTION) == 0);
 
         perpetualMint.exposed_requestRandomWordsBase(
             minter,
             COLLECTION,
-            testAdjustmentFactor,
+            TEST_ADJUSTMENT_FACTOR,
             TEST_NUM_WORDS
         );
 
@@ -73,20 +69,23 @@ contract PerpetualMint_requestRandomWordsBase is
             0
         );
 
-        (address requestMinter, address requestCollection) = perpetualMint
-            .exposed_requests(requestId);
+        (
+            address requestMinter,
+            address requestCollection,
+            uint256 mintPriceAdjustmentFactor
+        ) = perpetualMint.exposed_requests(requestId);
 
         assert(requestCollection == COLLECTION);
 
         assert(requestMinter == minter);
+
+        assert(mintPriceAdjustmentFactor == TEST_ADJUSTMENT_FACTOR);
     }
 
     /// @dev Tests that _requestRandomWordsBase functionality reverts when more than the current max number of words (255) is requested.
     function test_requestRandomWordsBaseRevertsWhen_MoreThanMaxNumberOfWordsRequested()
         external
     {
-        uint32 testAdjustmentFactor = perpetualMint.BASIS();
-
         // specify the current max number of words
         uint8 currentMaxNumWords = type(uint8).max;
 
@@ -95,7 +94,7 @@ contract PerpetualMint_requestRandomWordsBase is
         perpetualMint.exposed_requestRandomWordsBase(
             minter,
             COLLECTION,
-            testAdjustmentFactor,
+            TEST_ADJUSTMENT_FACTOR,
             ++currentMaxNumWords
         );
     }
@@ -104,8 +103,6 @@ contract PerpetualMint_requestRandomWordsBase is
     function test_requestRandomWordsBaseRevertsWhen_ClientAddressRemovedFromWhitelist()
         external
     {
-        uint32 testAdjustmentFactor = perpetualMint.BASIS();
-
         vm.prank(supraVRFDepositContractOwner);
         supraVRFDepositContract.removeClientFromWhitelist(address(this));
 
@@ -114,7 +111,7 @@ contract PerpetualMint_requestRandomWordsBase is
         perpetualMint.exposed_requestRandomWordsBase(
             minter,
             COLLECTION,
-            testAdjustmentFactor,
+            TEST_ADJUSTMENT_FACTOR,
             TEST_NUM_WORDS
         );
     }
@@ -123,8 +120,6 @@ contract PerpetualMint_requestRandomWordsBase is
     function test_requestRandomWordsBaseRevertsWhen_ContractAddressRemovedFromWhitelist()
         external
     {
-        uint32 testAdjustmentFactor = perpetualMint.BASIS();
-
         supraVRFDepositContract.removeContractFromWhitelist(
             address(perpetualMint)
         );
@@ -134,7 +129,7 @@ contract PerpetualMint_requestRandomWordsBase is
         perpetualMint.exposed_requestRandomWordsBase(
             minter,
             COLLECTION,
-            testAdjustmentFactor,
+            TEST_ADJUSTMENT_FACTOR,
             TEST_NUM_WORDS
         );
     }
@@ -143,8 +138,6 @@ contract PerpetualMint_requestRandomWordsBase is
     function test_requestRandomWordsBaseRevertsWhen_MinimumSubscriptionBalanceReached()
         external
     {
-        uint32 testAdjustmentFactor = perpetualMint.BASIS();
-
         supraVRFDepositContract.withdrawFundClient(10 ether);
 
         vm.expectRevert(
@@ -154,7 +147,7 @@ contract PerpetualMint_requestRandomWordsBase is
         perpetualMint.exposed_requestRandomWordsBase(
             minter,
             COLLECTION,
-            testAdjustmentFactor,
+            TEST_ADJUSTMENT_FACTOR,
             TEST_NUM_WORDS
         );
     }

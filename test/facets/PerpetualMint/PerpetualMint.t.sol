@@ -53,6 +53,9 @@ abstract contract PerpetualMintTest is CoreTest {
     // realistic mint price in ETH given mint price of 50USD and ETH price 1850USD
     uint256 MINT_PRICE = 0.027 ether;
 
+    /// @dev mint adjustment factor to test
+    uint256 internal TEST_ADJUSTMENT_FACTOR;
+
     // minter
     address payable internal minter = payable(address(3));
 
@@ -171,6 +174,8 @@ abstract contract PerpetualMintTest is CoreTest {
         perpetualMint.setMintTokenTiers(testMintTokenTiersData);
 
         perpetualMint.setTiers(testTiersData);
+
+        TEST_ADJUSTMENT_FACTOR = perpetualMint.BASIS();
 
         assert(
             baycCollectionRisk ==

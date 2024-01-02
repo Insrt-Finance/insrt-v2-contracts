@@ -30,8 +30,6 @@ contract PerpetualMint_requestRandomWords is
 
     /// @dev Tests that _requestRandomWords functionality emits a RandomWordsRequested event when successfully requesting random words.
     function test_requestRandomWordsEmitsRandomWordsRequested() external {
-        uint32 testAdjustmentFactor = perpetualMint.BASIS();
-
         _activateVRFConsumer();
 
         VRFConfig memory vrfConfig = perpetualMint.vrfConfig();
@@ -68,15 +66,13 @@ contract PerpetualMint_requestRandomWords is
         perpetualMint.exposed_requestRandomWords(
             minter,
             COLLECTION,
-            testAdjustmentFactor,
+            TEST_ADJUSTMENT_FACTOR,
             TEST_NUM_WORDS
         );
     }
 
     /// @dev Tests that _requestRandomWords functionality updates pendingRequests appropriately.
     function test_requestRandomWordsUpdatesPendingRequests() external {
-        uint32 testAdjustmentFactor = perpetualMint.BASIS();
-
         _activateVRFConsumer();
 
         // assert that this will be the first request added to pendingRequests
@@ -85,7 +81,7 @@ contract PerpetualMint_requestRandomWords is
         perpetualMint.exposed_requestRandomWords(
             minter,
             COLLECTION,
-            testAdjustmentFactor,
+            TEST_ADJUSTMENT_FACTOR,
             TEST_NUM_WORDS
         );
 
@@ -95,20 +91,23 @@ contract PerpetualMint_requestRandomWords is
             0
         );
 
-        (address requestMinter, address requestCollection) = perpetualMint
-            .exposed_requests(requestId);
+        (
+            address requestMinter,
+            address requestCollection,
+            uint256 mintPriceAdjustmentFactor
+        ) = perpetualMint.exposed_requests(requestId);
 
         assert(requestCollection == COLLECTION);
 
         assert(requestMinter == minter);
+
+        assert(mintPriceAdjustmentFactor == TEST_ADJUSTMENT_FACTOR);
     }
 
     /// @dev Tests that _requestRandomWords functionality reverts when more than the current max number of words (500) is requested.
     function test_requestRandomWordsRevertsWhen_MoreThanMaxNumberOfWordsRequested()
         external
     {
-        uint32 testAdjustmentFactor = perpetualMint.BASIS();
-
         _activateVRFConsumer();
 
         // grab the current max number of words
@@ -130,15 +129,13 @@ contract PerpetualMint_requestRandomWords is
         perpetualMint.exposed_requestRandomWords(
             minter,
             COLLECTION,
-            testAdjustmentFactor,
+            TEST_ADJUSTMENT_FACTOR,
             ++currentMaxNumWords
         );
     }
 
     /// @dev Tests that _requestRandomWords functionality reverts when the VRF consumer is not set.
     function test_requestRandomWordsRevertsWhen_VRFConsumerIsNotSet() external {
-        uint32 testAdjustmentFactor = perpetualMint.BASIS();
-
         vm.expectRevert(
             abi.encodeWithSelector(
                 IVRFCoordinatorV2.InvalidConsumer.selector,
@@ -150,7 +147,7 @@ contract PerpetualMint_requestRandomWords is
         perpetualMint.exposed_requestRandomWords(
             minter,
             COLLECTION,
-            testAdjustmentFactor,
+            TEST_ADJUSTMENT_FACTOR,
             TEST_NUM_WORDS
         );
     }
@@ -159,8 +156,6 @@ contract PerpetualMint_requestRandomWords is
     function test_requestRandomWordsRevertsWhen_VRFSubscriptionBalanceBelowThreshold()
         external
     {
-        uint32 testAdjustmentFactor = perpetualMint.BASIS();
-
         _activateVRFConsumer();
 
         perpetualMint.setVRFSubscriptionBalanceThreshold(
@@ -174,7 +169,7 @@ contract PerpetualMint_requestRandomWords is
         perpetualMint.exposed_requestRandomWords(
             minter,
             COLLECTION,
-            testAdjustmentFactor,
+            TEST_ADJUSTMENT_FACTOR,
             TEST_NUM_WORDS
         );
     }

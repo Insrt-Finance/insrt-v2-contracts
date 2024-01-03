@@ -11,9 +11,11 @@ interface IPerpetualMintView_Base {
     /// @param collection address of collection for mint attempts
     /// @param numberOfMints number of mints to attempt
     /// @param signature signature value to use as randomness in calculation
+    /// @param pricePerMint price paid per mint for collection (denominated in units of wei)
     function calculateMintResultBase(
         address collection,
         uint8 numberOfMints,
-        uint256[2] calldata signature
+        uint256[2] calldata signature,
+        uint256 pricePerMint
     ) external view returns (MintResultData memory result);
 }

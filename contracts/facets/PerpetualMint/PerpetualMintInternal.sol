@@ -804,10 +804,12 @@ abstract contract PerpetualMintInternal is
     /// @param collection address of collection for mint attempts
     /// @param numberOfMints number of mints to attempt
     /// @param randomness random value to use in calculation
+    /// @param pricePerMint price paid per mint for collection (denominated in units of wei)
     function _calculateMintResult(
         address collection,
         uint32 numberOfMints,
-        uint256 randomness
+        uint256 randomness,
+        uint256 pricePerMint
     ) internal view returns (MintResultData memory result) {
         Storage.Layout storage l = Storage.layout();
 
@@ -816,6 +818,17 @@ abstract contract PerpetualMintInternal is
         bool mintForMint = collection == address(0);
 
         uint32 numberOfWords = numberOfMints * (mintForMint ? 1 : 2);
+
+        uint256 collectionMintMultiplier = _collectionMintMultiplier(
+            collectionData
+        );
+
+        uint256 ethToMintRatio = _ethToMintRatio(l);
+
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerMint
+            );
 
         uint256[] memory randomWords = new uint256[](numberOfWords);
 
@@ -828,13 +841,20 @@ abstract contract PerpetualMintInternal is
                 l,
                 numberOfMints,
                 randomWords,
+                collectionMintMultiplier,
+                ethToMintRatio,
+                mintPriceAdjustmentFactor,
                 collectionData
             );
         } else {
             result = _calculateMintForCollectionResult_sharedLogic(
                 l,
+                _collectionRisk(collectionData),
                 numberOfMints,
                 randomWords,
+                collectionMintMultiplier,
+                ethToMintRatio,
+                mintPriceAdjustmentFactor,
                 collectionData
             );
         }
@@ -844,10 +864,12 @@ abstract contract PerpetualMintInternal is
     /// @param collection address of collection for mint attempts
     /// @param numberOfMints number of mints to attempt
     /// @param signature signature value to use as randomness in calculation
+    /// @param pricePerMint price paid per mint for collection (denominated in units of wei)
     function _calculateMintResultBase(
         address collection,
         uint8 numberOfMints,
-        uint256[2] calldata signature
+        uint256[2] calldata signature,
+        uint256 pricePerMint
     ) internal view returns (MintResultData memory result) {
         Storage.Layout storage l = Storage.layout();
 
@@ -856,6 +878,17 @@ abstract contract PerpetualMintInternal is
         bool mintForMint = collection == address(0);
 
         uint8 numberOfWords = numberOfMints * (mintForMint ? 1 : 2);
+
+        uint256 collectionMintMultiplier = _collectionMintMultiplier(
+            collectionData
+        );
+
+        uint256 ethToMintRatio = _ethToMintRatio(l);
+
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerMint
+            );
 
         uint256[] memory randomWords = new uint256[](numberOfWords);
 
@@ -870,13 +903,20 @@ abstract contract PerpetualMintInternal is
                 l,
                 numberOfMints,
                 randomWords,
+                collectionMintMultiplier,
+                ethToMintRatio,
+                mintPriceAdjustmentFactor,
                 collectionData
             );
         } else {
             result = _calculateMintForCollectionResult_sharedLogic(
                 l,
+                _collectionRisk(collectionData),
                 numberOfMints,
                 randomWords,
+                collectionMintMultiplier,
+                ethToMintRatio,
+                mintPriceAdjustmentFactor,
                 collectionData
             );
         }
@@ -884,14 +924,17 @@ abstract contract PerpetualMintInternal is
 
     function _calculateMintForCollectionResult_sharedLogic(
         Storage.Layout storage l,
+        uint32 collectionRisk,
         uint32 numberOfMints,
         uint256[] memory randomWords,
+        uint256 collectionMintMultiplier,
+        uint256 ethToMintRatio,
+        uint256 mintAdjustmentFactor,
         CollectionData storage collectionData
     ) private view returns (MintResultData memory result) {
         TiersData storage tiers = l.tiers;
 
-        uint32 collectionRisk = _collectionRisk(collectionData);
-        uint256 ethToMintRatio = _ethToMintRatio(l);
+        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
 
         result.mintOutcomes = new MintOutcome[](numberOfMints);
 
@@ -918,10 +961,11 @@ abstract contract PerpetualMintInternal is
                     if (cumulativeRisk > secondNormalizedValue) {
                         mintAmount =
                             (tiers.tierMultipliers[j] *
+                                mintAdjustmentFactor *
                                 ethToMintRatio *
-                                _collectionMintPrice(collectionData) *
-                                _collectionMintMultiplier(collectionData)) /
-                            (uint256(BASIS) * BASIS);
+                                collectionMintPrice *
+                                collectionMintMultiplier) /
+                            (uint256(BASIS) * BASIS * BASIS);
 
                         outcome.tierIndex = j;
                         outcome.tierMultiplier = tiers.tierMultipliers[j];
@@ -945,11 +989,14 @@ abstract contract PerpetualMintInternal is
         Storage.Layout storage l,
         uint32 numberOfMints,
         uint256[] memory randomWords,
+        uint256 collectionMintMultiplier,
+        uint256 ethToMintRatio,
+        uint256 mintAdjustmentFactor,
         CollectionData storage collectionData
     ) private view returns (MintResultData memory result) {
         MintTokenTiersData storage mintTokenTiers = l.mintTokenTiers;
 
-        uint256 ethToMintRatio = _ethToMintRatio(l);
+        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
 
         result.mintOutcomes = new MintOutcome[](numberOfMints);
 
@@ -967,10 +1014,11 @@ abstract contract PerpetualMintInternal is
                 if (cumulativeRisk > normalizedValue) {
                     mintAmount =
                         (mintTokenTiers.tierMultipliers[j] *
+                            mintAdjustmentFactor *
                             ethToMintRatio *
-                            _collectionMintPrice(collectionData) *
-                            _collectionMintMultiplier(collectionData)) /
-                        (uint256(BASIS) * BASIS);
+                            collectionMintPrice *
+                            collectionMintMultiplier) /
+                        (uint256(BASIS) * BASIS * BASIS);
 
                     outcome.tierIndex = j;
                     outcome.tierMultiplier = mintTokenTiers.tierMultipliers[j];

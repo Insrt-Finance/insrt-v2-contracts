@@ -43,9 +43,15 @@ contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
     function calculateMintResult(
         address collection,
         uint32 numberOfMints,
-        uint256 randomness
+        uint256 randomness,
+        uint256 pricePerMint
     ) external view returns (MintResultData memory result) {
-        result = _calculateMintResult(collection, numberOfMints, randomness);
+        result = _calculateMintResult(
+            collection,
+            numberOfMints,
+            randomness,
+            pricePerMint
+        );
     }
 
     /// @inheritdoc IPerpetualMintView

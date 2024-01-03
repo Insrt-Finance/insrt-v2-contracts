@@ -8,6 +8,7 @@ export COLLECTION_ADDRESS=$1
 export CORE_ADDRESS="0x0000000000000000000000000000000000000000"
 export NUMBER_OF_MINTS=$2
 export RANDOMNESS="$3,$4"
+export PRICE_PER_MINT=$5
 
 # Run forge scripts
 forge script script/Base/${CALCULATION_SCRIPT} --rpc-url $RPC_URL

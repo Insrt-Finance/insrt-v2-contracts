@@ -37,6 +37,9 @@ contract CalculateMintResultBase is Script, Test {
         // get randomness signature
         uint256[] memory envRandomness = vm.envUint("RANDOMNESS", ",");
 
+        // get price per mint
+        uint256 pricePerMint = vm.envUint("PRICE_PER_MINT");
+
         // convert randomness signature to uint256[2]
         uint256[2] memory randomnessFixed;
 
@@ -59,6 +62,7 @@ contract CalculateMintResultBase is Script, Test {
         console.log("ETH to Mint Ratio: ", ethToMintRatio);
         console.log("Number of Mints: ", numberOfMints);
         emit log_named_array("Randomness Signature: ", envRandomness);
+        console.log("Price Per Mint: ", pricePerMint);
 
         if (mintForMint) {
             console.log("Mint Token Tiers: ");
@@ -83,7 +87,8 @@ contract CalculateMintResultBase is Script, Test {
         MintResultData memory result = core.calculateMintResultBase(
             collection,
             numberOfMints,
-            randomnessFixed
+            randomnessFixed,
+            pricePerMint
         );
 
         // Iterate over the mintOutcomes array in MintResultData

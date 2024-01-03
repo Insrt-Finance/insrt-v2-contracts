@@ -15,8 +15,14 @@ contract PerpetualMintView_Base is IPerpetualMintView_Base, PerpetualMintView {
     function calculateMintResultBase(
         address collection,
         uint8 numberOfMints,
-        uint256[2] calldata signature
+        uint256[2] calldata signature,
+        uint256 pricePerMint
     ) external view returns (MintResultData memory result) {
-        result = _calculateMintResultBase(collection, numberOfMints, signature);
+        result = _calculateMintResultBase(
+            collection,
+            numberOfMints,
+            signature,
+            pricePerMint
+        );
     }
 }

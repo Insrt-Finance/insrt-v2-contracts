@@ -37,6 +37,9 @@ contract CalculateMintResultArb is Script, Test {
         // get randomness
         uint256 randomness = vm.envUint("RANDOMNESS");
 
+        // get price per mint
+        uint256 pricePerMint = vm.envUint("PRICE_PER_MINT");
+
         uint256 collectionMintMultiplier = core.collectionMintMultiplier(
             collection
         );
@@ -53,6 +56,7 @@ contract CalculateMintResultArb is Script, Test {
         console.log("ETH to Mint Ratio: ", ethToMintRatio);
         console.log("Number of Mints: ", numberOfMints);
         console.log("Randomness: ", randomness);
+        console.log("Price Per Mint: ", pricePerMint);
 
         if (mintForMint) {
             console.log("Mint Token Tiers: ");
@@ -77,7 +81,8 @@ contract CalculateMintResultArb is Script, Test {
         MintResultData memory result = core.calculateMintResult(
             collection,
             numberOfMints,
-            randomness
+            randomness,
+            pricePerMint
         );
 
         // Iterate over the mintOutcomes array in MintResultData

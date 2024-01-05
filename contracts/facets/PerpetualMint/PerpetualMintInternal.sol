@@ -1467,7 +1467,9 @@ abstract contract PerpetualMintInternal is
 
         uint256 collectionMintPrice = _collectionMintPrice(collectionData);
 
-        uint32 collectionRisk = _collectionRisk(collectionData);
+        // adjust the collection risk by the mint price adjustment factor
+        uint256 collectionRisk = (_collectionRisk(collectionData) *
+            mintPriceAdjustmentFactor) / BASIS;
 
         uint256 cumulativeTierMultiplier;
         uint256 totalReceiptAmount;

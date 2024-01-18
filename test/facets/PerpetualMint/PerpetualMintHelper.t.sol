@@ -2,6 +2,7 @@
 
 pragma solidity 0.8.19;
 
+import { VRFConsumerBaseV2 } from "@chainlink/vrf/VRFConsumerBaseV2.sol";
 import { IERC1155 } from "@solidstate/contracts/interfaces/IERC1155.sol";
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 import { IDiamondWritableInternal } from "@solidstate/contracts/proxy/diamond/writable/IDiamondWritableInternal.sol";
@@ -26,6 +27,10 @@ contract PerpetualMintHelper {
     PerpetualMintHarness public perpetualMintHarnessImplementation;
     PerpetualMintView public perpetualMintViewImplementation;
 
+    // Arbitrum mainnet Chainlink VRF Coordinator address
+    address public constant CHAINLINK_VRF_COORDINATOR =
+        0x41034678D6C633D8a95c75e1138A360a28bA15d1;
+
     // The VRF Coordinator address used for testing
     address public immutable VRF_COORDINATOR;
 
@@ -34,7 +39,7 @@ contract PerpetualMintHelper {
     constructor(bool insrtVrfCoordinator) {
         VRF_COORDINATOR = insrtVrfCoordinator
             ? address(new InsrtVRFCoordinator())
-            : 0x41034678D6C633D8a95c75e1138A360a28bA15d1;
+            : CHAINLINK_VRF_COORDINATOR;
 
         perpetualMintBaseImplementation = new PerpetualMintBase(
             VRF_COORDINATOR
@@ -455,6 +460,40 @@ contract PerpetualMintHelper {
                     selectors: vrfConsumerBaseV2MockFunctionSelectors
                 });
 
+        if (VRF_COORDINATOR == CHAINLINK_VRF_COORDINATOR) {
+            ISolidStateDiamond.FacetCut[]
+                memory facetCuts = new ISolidStateDiamond.FacetCut[](6);
+
+            facetCuts[0] = erc1155MetadataFacetCut;
+
+            facetCuts[1] = pausableFacetCut;
+
+            facetCuts[2] = perpetualMintFacetCut;
+
+            facetCuts[3] = perpetualMintViewFacetCut;
+
+            facetCuts[4] = perpetualMintHarnessFacetCut;
+
+            facetCuts[5] = vrfConsumerBaseV2MockFacetCut;
+
+            return facetCuts;
+        }
+
+        // map the VRFConsumerBaseV2 function selectors to their respective interfaces
+        bytes4[] memory vrfConsumerBaseV2FunctionSelectors = new bytes4[](1);
+
+        vrfConsumerBaseV2FunctionSelectors[0] = VRFConsumerBaseV2
+            .rawFulfillRandomWords
+            .selector;
+
+        ISolidStateDiamond.FacetCut
+            memory vrfConsumerBaseV2FacetCut = IDiamondWritableInternal
+                .FacetCut({
+                    target: address(perpetualMintHarnessImplementation),
+                    action: IDiamondWritableInternal.FacetCutAction.ADD,
+                    selectors: vrfConsumerBaseV2FunctionSelectors
+                });
+
         ISolidStateDiamond.FacetCut[]
             memory facetCuts = new ISolidStateDiamond.FacetCut[](6);
 
@@ -468,7 +507,7 @@ contract PerpetualMintHelper {
 
         facetCuts[4] = perpetualMintHarnessFacetCut;
 
-        facetCuts[5] = vrfConsumerBaseV2MockFacetCut;
+        facetCuts[5] = vrfConsumerBaseV2FacetCut;
 
         return facetCuts;
     }

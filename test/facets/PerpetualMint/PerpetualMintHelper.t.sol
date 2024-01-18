@@ -17,6 +17,7 @@ import { IPerpetualMintView } from "../../../contracts/facets/PerpetualMint/IPer
 import { PerpetualMintBase } from "../../../contracts/facets/PerpetualMint/PerpetualMintBase.sol";
 import { PerpetualMintView } from "../../../contracts/facets/PerpetualMint/PerpetualMintView.sol";
 import { PerpetualMintStorage as Storage } from "../../../contracts/facets/PerpetualMint/Storage.sol";
+import { InsrtVRFCoordinator } from "../../../contracts/vrf/InsrtVRFCoordinator.sol";
 
 /// @title PerpetualMintHelper
 /// @dev Test helper contract for setting up PerpetualMint for diamond cutting and testing
@@ -25,12 +26,16 @@ contract PerpetualMintHelper {
     PerpetualMintHarness public perpetualMintHarnessImplementation;
     PerpetualMintView public perpetualMintViewImplementation;
 
-    // Arbitrum mainnet Chainlink VRF Coordinator address
-    address public constant VRF_COORDINATOR =
-        0x41034678D6C633D8a95c75e1138A360a28bA15d1;
+    // The VRF Coordinator address used for testing
+    address public immutable VRF_COORDINATOR;
 
     /// @dev deploys PerpetualMintHarness implementation along with PerpetualMintBase and PerpetualMintView
-    constructor() {
+    /// @param insrtVrfCoordinator boolean indicating whether to use our custom VRF Coordinator or Chainlink's VRF Coordinator on Arbitrum mainnet
+    constructor(bool insrtVrfCoordinator) {
+        VRF_COORDINATOR = insrtVrfCoordinator
+            ? address(new InsrtVRFCoordinator())
+            : 0x41034678D6C633D8a95c75e1138A360a28bA15d1;
+
         perpetualMintBaseImplementation = new PerpetualMintBase(
             VRF_COORDINATOR
         );

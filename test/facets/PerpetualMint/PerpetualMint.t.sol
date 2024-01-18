@@ -4,10 +4,11 @@ pragma solidity 0.8.19;
 
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
-import { PerpetualMintHelper } from "./PerpetualMintHelper.t.sol";
 import { IPerpetualMintTest } from "./IPerpetualMintTest.sol";
+import { PerpetualMintHelper } from "./PerpetualMintHelper.t.sol";
 import { CoreTest } from "../../diamonds/Core.t.sol";
 import { MintTokenTiersData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
+import { IInsrtVRFCoordinator } from "../../../contracts/vrf/IInsrtVRFCoordinator.sol";
 
 /// @title PerpetualMintTest
 /// @dev PerpetualMintTest helper contract. Configures PerpetualMint as facets of Core test.
@@ -214,7 +215,8 @@ abstract contract PerpetualMintTest is CoreTest {
 
     /// @dev initializes PerpetualMint facets by executing a diamond cut on the Core Diamond.
     function initPerpetualMint() internal {
-        perpetualMintHelper = new PerpetualMintHelper();
+        // use Chainlink VRF for base behavior tests targeting Arbitrum
+        perpetualMintHelper = new PerpetualMintHelper(false);
 
         ISolidStateDiamond.FacetCut[]
             memory perpetualMintBaseTestFacetCuts = perpetualMintHelper

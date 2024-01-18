@@ -27,6 +27,8 @@ abstract contract InsrtVRFCoordinatorInternal is IInsrtVRFCoordinatorInternal {
     /// @dev The number of requests made
     uint256 private requestCount;
 
+    uint32 private MAX_NUM_WORDS = type(uint16).max;
+
     /// @notice Adds a consumer to a VRF coordinator contract
     /// @param consumer The consumer to add to the coordinator
     function _addConsumer(address consumer) internal {
@@ -75,7 +77,7 @@ abstract contract InsrtVRFCoordinatorInternal is IInsrtVRFCoordinatorInternal {
 
         uint256[] memory randomWords = new uint256[](rc.numWords);
 
-        for (uint256 i = 0; i < rc.numWords; i++) {
+        for (uint256 i = 0; i < rc.numWords; ++i) {
             randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
         }
 
@@ -141,6 +143,10 @@ abstract contract InsrtVRFCoordinatorInternal is IInsrtVRFCoordinatorInternal {
         _consumers = new address[](0);
     }
 
+    function _MAX_NUM_WORDS() internal view returns (uint32 maxNumWords) {
+        maxNumWords = MAX_NUM_WORDS;
+    }
+
     /// @notice Reverts if the caller is not a fulfiller
     function _onlyFulfiller() private view {
         if (!fulfillers[msg.sender]) {
@@ -168,6 +174,10 @@ abstract contract InsrtVRFCoordinatorInternal is IInsrtVRFCoordinatorInternal {
         uint32 callbackGasLimit,
         uint32 numWords
     ) internal returns (uint256) {
+        if (numWords > MAX_NUM_WORDS) {
+            revert NumWordsTooBig(numWords, MAX_NUM_WORDS);
+        }
+
         address msgSender = msg.sender;
 
         uint64 currentNonce = consumers[msgSender];
@@ -212,5 +222,9 @@ abstract contract InsrtVRFCoordinatorInternal is IInsrtVRFCoordinatorInternal {
         requestCount++;
 
         return requestId;
+    }
+
+    function _setMaxNumWords(uint32 maxNumWords) internal {
+        MAX_NUM_WORDS = maxNumWords;
     }
 }

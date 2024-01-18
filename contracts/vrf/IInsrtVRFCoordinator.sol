@@ -55,6 +55,10 @@ interface IInsrtVRFCoordinator is IInsrtVRFCoordinatorInternal, ISafeOwnable {
             address[] memory consumers
         );
 
+    /// @notice Returns the current maximum number of words that can be requested in a single request
+    /// @return maxNumWords The current maximum number of words
+    function MAX_NUM_WORDS() external view returns (uint32 maxNumWords);
+
     /// @notice Removes a consumer from a VRF subscription
     /// @param subId The subscription ID to remove the consumer from
     /// @param consumer The consumer to remove from the subscription
@@ -74,4 +78,8 @@ interface IInsrtVRFCoordinator is IInsrtVRFCoordinatorInternal, ISafeOwnable {
         uint32 callbackGasLimit,
         uint32 numWords
     ) external returns (uint256 requestId);
+
+    /// @notice Updates the maximum number of words that can be requested in a single request
+    /// @param maxNumWords The new maximum number of words
+    function setMaxNumWords(uint32 maxNumWords) external;
 }

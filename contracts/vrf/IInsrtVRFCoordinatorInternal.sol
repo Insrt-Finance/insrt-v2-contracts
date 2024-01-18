@@ -16,6 +16,11 @@ interface IInsrtVRFCoordinatorInternal {
     /// @notice thrown when an invalid fulfiller is attempting to fulfill random words
     error InvalidFullfiller();
 
+    /// @notice thrown when the number of words requested is greater than MAX_NUM_WORDS
+    /// @param numWordsRequested the number of words requested
+    /// @param maxNumWords the maximum number of words allowed
+    error NumWordsTooBig(uint32 numWordsRequested, uint32 maxNumWords);
+
     /// @notice emitted when a request for random words is successfully fulfilled
     /// @param requestId id of fulfilled request
     /// @param outputSeed output seed of fulfilled request

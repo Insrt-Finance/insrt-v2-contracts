@@ -64,6 +64,11 @@ contract InsrtVRFCoordinator is
     }
 
     /// @inheritdoc IInsrtVRFCoordinator
+    function MAX_NUM_WORDS() external view returns (uint32 maxNumWords) {
+        maxNumWords = _MAX_NUM_WORDS();
+    }
+
+    /// @inheritdoc IInsrtVRFCoordinator
     function removeConsumer(uint64, address consumer) external onlyOwner {
         _removeConsumer(consumer);
     }
@@ -83,5 +88,10 @@ contract InsrtVRFCoordinator is
             callbackGasLimit,
             numWords
         );
+    }
+
+    /// @inheritdoc IInsrtVRFCoordinator
+    function setMaxNumWords(uint32 maxNumWords) external onlyOwner {
+        _setMaxNumWords(maxNumWords);
     }
 }

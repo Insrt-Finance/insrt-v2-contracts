@@ -52,6 +52,9 @@ deploy-arb:
 deploy-arb-sepolia:
 	@./script/Arbitrum/deployment/deploy-arb-sepolia.sh
 
+deploy-arb-sepolia-custom:
+	@./script/Arbitrum/deployment/deploy-arb-sepolia-custom.sh
+
 deploy-local-arb:
 	@./script/Arbitrum/deployment/deploy-local.sh
 
@@ -87,6 +90,9 @@ configure-vrf-arb:
 
 configure-vrf-arb-sepolia:
 	@./script/Arbitrum/post-deployment/configure-vrf-arb-sepolia.sh
+
+configure-vrf-arb-sepolia-custom:
+	@./script/Arbitrum/post-deployment/configure-vrf-arb-sepolia-custom.sh
 
 configure-vrf-local-arb:
 	@./script/Arbitrum/post-deployment/configure-vrf-local.sh

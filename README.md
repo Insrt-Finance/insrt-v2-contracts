@@ -76,6 +76,17 @@ Requires the following additional environment variables set:
 make deploy-arb-sepolia
 ```
 
+#### Arbitrum Sepolia w/ the Insrt VRF Coordinator
+
+Requires the following additional environment variables set:
+
+- `ARBITRUM_SEPOLIA_RPC_URL`: Arbitrum Sepolia RPC URL
+- `ARBISCAN_API_KEY`: Arbiscan API key for contract verification
+
+```
+make deploy-arb-sepolia-custom
+```
+
 #### Localhost (Arbitrum Fork)
 
 Requires the following additional environment variables set:
@@ -190,6 +201,15 @@ Note: The following environment variables are modifiable in `./script/Arbitrum/p
 
 ```
 make configure-vrf-arb-sepolia
+```
+
+Note: The following environment variables are modifiable in `./script/Arbitrum/post-deployment/configure-vrf-arb-sepolia-custom.sh`:
+
+- `NEW_VRF_OWNER`
+- `VRF_FULFILLER`
+
+```
+make configure-vrf-arb-sepolia-custom
 ```
 
 3. PerpetualMint configuration

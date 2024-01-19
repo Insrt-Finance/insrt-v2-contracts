@@ -27,8 +27,13 @@ contract DeployPerpetualMintArb is Script {
     function run() external {
         // read address of $MINT token contract
         address mintToken = readTokenProxyAddress();
-        // Chainlink VRF Coordinator address
-        address VRF_COORDINATOR = vm.envAddress("VRF_COORDINATOR");
+
+        address insrtVrfCoordinator = readInsrtVRFCoordinatorAddress();
+
+        // if InsrtVRFCoordinator has not been deployed, use the Chainlink VRF Coordinator
+        address VRF_COORDINATOR = insrtVrfCoordinator == address(0)
+            ? vm.envAddress("VRF_COORDINATOR")
+            : insrtVrfCoordinator;
 
         string memory receiptName = "Ticket";
         string memory receiptSymbol = "TICKET";
@@ -482,6 +487,34 @@ contract DeployPerpetualMintArb is Script {
         facetCuts[0] = perpetualMintViewFacetCut;
 
         return facetCuts;
+    }
+
+    /// @notice attempts to read the saved address of an Insrt VRF Coordinator contract, post-deployment
+    /// @return insrtVrfCoordinatorAddress address of the deployed Insrt VRF Coordinator contract
+    function readInsrtVRFCoordinatorAddress()
+        internal
+        view
+        returns (address insrtVrfCoordinatorAddress)
+    {
+        string memory inputDir = string.concat(
+            vm.projectRoot(),
+            "/broadcast/01_deployInsrtVRFCoordinator.s.sol/"
+        );
+
+        string memory chainDir = string.concat(vm.toString(block.chainid), "/");
+
+        string memory file = string.concat(
+            "run-latest-insrt-vrf-coordinator-address",
+            ".txt"
+        );
+
+        try vm.readFile(string.concat(inputDir, chainDir, file)) returns (
+            string memory fileData
+        ) {
+            return vm.parseAddress(fileData);
+        } catch {
+            return address(0);
+        }
     }
 
     function readTokenProxyAddress()

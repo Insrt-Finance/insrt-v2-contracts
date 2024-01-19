@@ -149,6 +149,12 @@ make deploy-arb
 make deploy-arb-sepolia
 ```
 
+### Deploying on Arbitrum Sepolia (Testnet) w/ the Insrt VRF Coordinator
+
+```bash
+make deploy-arb-sepolia-custom
+```
+
 ### Deploying on Base
 
 ```bash
@@ -340,6 +346,12 @@ make configure-vrf-arb
 
 ```bash
 make configure-vrf-arb-sepolia
+```
+
+#### Arbitrum Sepolia (Testnet) w/ the Insrt VRF Coordinator
+
+```bash
+make configure-vrf-arb-sepolia-custom
 ```
 
 #### Locally (on an Arbitrum Fork)

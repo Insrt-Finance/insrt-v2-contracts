@@ -32,6 +32,8 @@ contract ConfigurePerpetualMintArb is Script, Test {
         // read deployer private key
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_KEY");
 
+        uint64 insrtVRFSubscriptionId = readInsrtVRFSubscriptionId();
+
         FeesConfiguration memory feesConfig = FeesConfiguration({
             collectionConsolationFeeBP: uint32(
                 vm.envUint("COLLECTION_CONSOLATION_FEE_BP")
@@ -70,7 +72,10 @@ contract ConfigurePerpetualMintArb is Script, Test {
 
         VRFConfig memory vrfConfig = VRFConfig({
             keyHash: vm.envBytes32("VRF_KEY_HASH"),
-            subscriptionId: readVRFSubscriptionId(),
+            // if the Insrt VRF Coordinator is not being used, use the saved Chainlink VRF subscription ID
+            subscriptionId: insrtVRFSubscriptionId == 0
+                ? readVRFSubscriptionId()
+                : insrtVRFSubscriptionId,
             // Max Callback Gas Limit
             callbackGasLimit: uint32(2500000),
             minConfirmations: uint16(1)
@@ -165,6 +170,34 @@ contract ConfigurePerpetualMintArb is Script, Test {
         );
 
         perpetualMint.setRedemptionFeeBP(config.redemptionFeeBP);
+    }
+
+    /// @notice attempts to read the saved address of an Insrt VRF subscription ID, post-configuration
+    /// @return subscriptionId the Insrt VRF subscription ID
+    function readInsrtVRFSubscriptionId()
+        internal
+        view
+        returns (uint64 subscriptionId)
+    {
+        string memory inputDir = string.concat(
+            vm.projectRoot(),
+            "/broadcast/01_configureInsrtVRFSubscription.s.sol/"
+        );
+
+        string memory chainDir = string.concat(vm.toString(block.chainid), "/");
+
+        string memory file = string.concat(
+            "run-latest-insrt-vrf-subscription-id",
+            ".txt"
+        );
+
+        try vm.readFile(string.concat(inputDir, chainDir, file)) returns (
+            string memory fileData
+        ) {
+            return uint64(vm.parseUint(fileData));
+        } catch {
+            return 0;
+        }
     }
 
     /// @notice attempts to read the saved address of the newly created VRF subscription ID, post-configuration

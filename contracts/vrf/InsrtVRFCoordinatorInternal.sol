@@ -5,6 +5,7 @@ pragma solidity 0.8.19;
 import { VRFConsumerBaseV2 } from "@chainlink/vrf/VRFConsumerBaseV2.sol";
 import { SafeOwnableInternal } from "@solidstate/contracts/access/ownable/SafeOwnableInternal.sol";
 
+import { InsrtChainSpecificUtil } from "./InsrtChainSpecificUtil.sol";
 import { RequestCommitment } from "./DataTypes.sol";
 import { IInsrtVRFCoordinatorInternal } from "./IInsrtVRFCoordinatorInternal.sol";
 
@@ -198,7 +199,7 @@ abstract contract InsrtVRFCoordinatorInternal is IInsrtVRFCoordinatorInternal {
         requestCommitments[requestId] = keccak256(
             abi.encode(
                 requestId,
-                block.number,
+                InsrtChainSpecificUtil._getBlockNumber(),
                 subId,
                 callbackGasLimit,
                 numWords,

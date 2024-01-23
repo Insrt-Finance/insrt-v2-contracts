@@ -8,7 +8,7 @@ import { IPerpetualMintTest } from "./IPerpetualMintTest.sol";
 import { PerpetualMintHelper } from "./PerpetualMintHelper.t.sol";
 import { CoreTest } from "../../diamonds/Core.t.sol";
 import { MintTokenTiersData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
-import { IInsrtVRFCoordinator } from "../../../contracts/vrf/IInsrtVRFCoordinator.sol";
+import { IInsrtVRFCoordinator } from "../../../contracts/vrf/Insrt/IInsrtVRFCoordinator.sol";
 
 /// @title PerpetualMintTest
 /// @dev PerpetualMintTest helper contract. Configures PerpetualMint as facets of Core test.

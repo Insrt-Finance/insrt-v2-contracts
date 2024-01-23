@@ -3,7 +3,7 @@ pragma solidity 0.8.19;
 
 import "forge-std/Script.sol";
 
-import { InsrtVRFCoordinator } from "../../../contracts/vrf/InsrtVRFCoordinator.sol";
+import { InsrtVRFCoordinator } from "../../../contracts/vrf/Insrt/InsrtVRFCoordinator.sol";
 
 /// @title DeployInsrtVRFCoordinator
 /// @dev deploys the InsrtVRFCoordinator contract

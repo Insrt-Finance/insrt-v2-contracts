@@ -5,8 +5,8 @@ pragma solidity 0.8.19;
 import { PerpetualMintTest_InsrtVRFCoordinator } from "../PerpetualMint.t.sol";
 import { ArbForkTest } from "../../ArbForkTest.t.sol";
 import { VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
-import { IInsrtVRFCoordinator } from "../../../contracts/vrf/IInsrtVRFCoordinator.sol";
-import { IInsrtVRFCoordinatorInternal } from "../../../contracts/vrf/IInsrtVRFCoordinatorInternal.sol";
+import { IInsrtVRFCoordinator } from "../../../contracts/vrf/Insrt/IInsrtVRFCoordinator.sol";
+import { IInsrtVRFCoordinatorInternal } from "../../../contracts/vrf/Insrt/IInsrtVRFCoordinatorInternal.sol";
 
 /// @title PerpetualMint_requestRandomWords_InsrtVRFCoordinator
 /// @dev PerpetualMint test contract for testing expected behavior of the _requestRandomWords function when using the Insrt VRF Coordinator.

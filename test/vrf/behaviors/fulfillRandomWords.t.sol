@@ -13,9 +13,9 @@ import { TokenProxyTest } from "../../diamonds/TokenProxy.t.sol";
 import { TokenTest } from "../../facets/Token/Token.t.sol";
 import { IPerpetualMintInternal } from "../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 import { PerpetualMintStorage, VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
-import { RequestCommitment } from "../../../contracts/vrf/DataTypes.sol";
-import { IInsrtVRFCoordinator } from "../../../contracts/vrf/IInsrtVRFCoordinator.sol";
-import { IInsrtVRFCoordinatorInternal } from "../../../contracts/vrf/IInsrtVRFCoordinatorInternal.sol";
+import { RequestCommitment } from "../../../contracts/vrf/Insrt/DataTypes.sol";
+import { IInsrtVRFCoordinator } from "../../../contracts/vrf/Insrt/IInsrtVRFCoordinator.sol";
+import { IInsrtVRFCoordinatorInternal } from "../../../contracts/vrf/Insrt/IInsrtVRFCoordinatorInternal.sol";
 
 /// @title PerpetualMint_fulfillRandomWords_InsrtVRFCoordinator
 /// @dev PerpetualMint test contract for testing expected fulfillRandomWords behavior when using the Insrt VRF Coordinator. Tested on an Arbitrum fork.

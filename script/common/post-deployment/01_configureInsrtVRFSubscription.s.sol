@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 import "forge-std/Script.sol";
 
 import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
-import { IInsrtVRFCoordinator } from "../../../contracts/vrf/IInsrtVRFCoordinator.sol";
+import { IInsrtVRFCoordinator } from "../../../contracts/vrf/Insrt/IInsrtVRFCoordinator.sol";
 
 /// @title ConfigureInsrtVRFSubscription
 /// @dev configures the Insrt VRF subscription by adding the PerpetualMint contract as a consumer &

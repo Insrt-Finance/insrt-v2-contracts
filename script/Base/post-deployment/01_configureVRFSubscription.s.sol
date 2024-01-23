@@ -3,14 +3,14 @@ pragma solidity 0.8.19;
 
 import "forge-safe/BatchScript.sol";
 
-import { IDepositContract } from "../../../contracts/facets/PerpetualMint/Base/IDepositContract.sol";
-import { ISupraRouterContract } from "../../../contracts/facets/PerpetualMint/Base/ISupraRouterContract.sol";
+import { IDepositContract } from "../../../contracts/vrf/Supra/IDepositContract.sol";
+import { ISupraRouterContract } from "../../../contracts/vrf/Supra/ISupraRouterContract.sol";
 import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 
-/// @title ConfigureVRFSubscriptionBase
+/// @title ConfigureVRFSubscription_Base
 /// @dev Configures the Supra VRF subscription by adding the PerpetualMint contract as a consumer,
 /// and optionally funding the subscription in ETH via the Gnosis Safe Transaction Service API
-contract ConfigureVRFSubscriptionBase is BatchScript {
+contract ConfigureVRFSubscription_Base is BatchScript {
     /// @dev runs the script logic
     function run() external {
         // get PerpetualMint address

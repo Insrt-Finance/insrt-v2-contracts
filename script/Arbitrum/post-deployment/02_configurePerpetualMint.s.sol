@@ -24,7 +24,7 @@ contract ConfigurePerpetualMintArb is Script, Test {
     /// @dev runs the script logic
     function run() external {
         // get PerpetualMint address
-        address perpetualMintAddress = readCoreAddress();
+        address payable perpetualMintAddress = readCoreAddress();
 
         // read new Core/PerpetualMint owner address
         address newOwner = vm.envAddress("NEW_PERP_MINT_OWNER");
@@ -135,7 +135,11 @@ contract ConfigurePerpetualMintArb is Script, Test {
 
     /// @notice attempts to read the saved address of the Core diamond contract, post-deployment
     /// @return coreAddress address of the deployed Core diamond contract
-    function readCoreAddress() internal view returns (address coreAddress) {
+    function readCoreAddress()
+        internal
+        view
+        returns (address payable coreAddress)
+    {
         string memory inputDir = string.concat(
             vm.projectRoot(),
             "/broadcast/01_deployPerpetualMint.s.sol/"
@@ -146,8 +150,10 @@ contract ConfigurePerpetualMintArb is Script, Test {
         string memory file = string.concat("run-latest-core-address", ".txt");
 
         return
-            vm.parseAddress(
-                vm.readFile(string.concat(inputDir, chainDir, file))
+            payable(
+                vm.parseAddress(
+                    vm.readFile(string.concat(inputDir, chainDir, file))
+                )
             );
     }
 

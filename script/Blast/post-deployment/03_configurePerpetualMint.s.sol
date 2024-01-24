@@ -7,16 +7,16 @@ import "forge-std/Test.sol";
 import { ICore } from "../../../contracts/diamonds/Core/ICore.sol";
 import { IPerpetualMint, MintTokenTiersData, TiersData } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 
-/// @title ConfigurePerpetualMint_Base
-/// @dev configures the PerpetualMintSupra contract by setting the collection price to mint ratio BP,
+/// @title ConfigurePerpetualMint_Blast
+/// @dev configures the PerpetualMint_Blast contract by setting the collection price to mint ratio BP,
 /// consolation fee BP, mint fee BP, mint for $MINT tiers, redemption fee BP, mint for collection tiers, and activates (unpauses) the protocol
-contract ConfigurePerpetualMint_Base is Script, Test {
+contract ConfigurePerpetualMint_Blast is Script, Test {
     error Uint256ValueGreaterThanUint32Max(uint256 value);
 
     /// @dev runs the script logic
     function run() external {
         // get PerpetualMint address
-        address payable perpetualMintAddress = readCoreAddress();
+        address payable perpetualMintAddress = readCoreBlastAddress();
 
         // read new Core/PerpetualMint owner address
         address newOwner = vm.envAddress("NEW_PERP_MINT_OWNER");
@@ -120,21 +120,24 @@ contract ConfigurePerpetualMint_Base is Script, Test {
         vm.stopBroadcast();
     }
 
-    /// @notice attempts to read the saved address of the Core diamond contract, post-deployment
-    /// @return coreAddress address of the deployed Core diamond contract
-    function readCoreAddress()
+    /// @notice attempts to read the saved address of the CoreBlast diamond contract, post-deployment
+    /// @return coreBlastAddress address of the deployed CoreBlast diamond contract
+    function readCoreBlastAddress()
         internal
         view
-        returns (address payable coreAddress)
+        returns (address payable coreBlastAddress)
     {
         string memory inputDir = string.concat(
             vm.projectRoot(),
-            "/broadcast/01_deployPerpetualMint.s.sol/"
+            "/broadcast/02_deployPerpetualMint.s.sol/"
         );
 
         string memory chainDir = string.concat(vm.toString(block.chainid), "/");
 
-        string memory file = string.concat("run-latest-core-address", ".txt");
+        string memory file = string.concat(
+            "run-latest-core-blast-address",
+            ".txt"
+        );
 
         return
             payable(

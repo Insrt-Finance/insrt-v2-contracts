@@ -27,9 +27,11 @@ arbitrum-one = "${ARBITRUM_RPC_URL}"
 arbitrum-sepolia = "${ARBITRUM_SEPOLIA_RPC_URL}"
 base = "${BASE_RPC_URL}"
 base-sepolia = "${BASE_SEPOLIA_RPC_URL}"
+blast-sepolia = "${BLAST_SEPOLIA_RPC_URL}"
 
 [etherscan]
 arbitrum = { key = "${ARBISCAN_API_KEY}" }
 arbitrum-sepolia = { key = "${ARBISCAN_API_KEY}" }
 base = { key = "${BASESCAN_API_KEY}" }
 base-sepolia = { key = "${BASESCAN_API_KEY}" }
+blast-sepolia = { chain = "168587773", key = "${BLASTSCAN_API_KEY}", url = "${BLASTSCAN_VERIFIER_URL}" }

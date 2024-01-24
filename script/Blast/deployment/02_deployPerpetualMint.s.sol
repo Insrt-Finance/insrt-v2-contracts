@@ -9,7 +9,6 @@ import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol
 import { IERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/IERC1155Metadata.sol";
 
 import { ICore } from "../../../contracts/diamonds/Core/ICore.sol";
-import { Core } from "../../../contracts/diamonds/Core/Core.sol";
 import { IPerpetualMintViewSupra } from "../../../contracts/facets/PerpetualMint/Supra/IPerpetualMintView.sol";
 import { PerpetualMintSupra } from "../../../contracts/facets/PerpetualMint/Supra/PerpetualMint.sol";
 import { PerpetualMintViewSupra } from "../../../contracts/facets/PerpetualMint/Supra/PerpetualMintView.sol";
@@ -19,19 +18,17 @@ import { IPerpetualMintBase } from "../../../contracts/facets/PerpetualMint/IPer
 import { IPerpetualMintView } from "../../../contracts/facets/PerpetualMint/IPerpetualMintView.sol";
 import { PerpetualMintBase } from "../../../contracts/facets/PerpetualMint/PerpetualMintBase.sol";
 
-/// @title DeployPerpetualMint_Base
+/// @title DeployPerpetualMint_Blast
 /// @dev deploys the Core diamond contract, PerpetualMintSupra facet, PerpetualMintBase facet, and PerpetualMintViewSupra facet, and performs
 /// a diamondCut of the PerpetualMintSupra, PerpetualMintBase, and PerpetualMintViewSupra facets onto the Core diamond
-contract DeployPerpetualMint_Base is Script {
+contract DeployPerpetualMint_Blast is Script {
     /// @dev runs the script logic
     function run() external {
-        // read address of $MINT token contract
-        address mintToken = readTokenProxyAddress();
+        // get Core Blast diamond address
+        address payable coreBlastAddress = payable(vm.envAddress("CORE_BLAST"));
+
         // Supra VRF Router address
         address VRF_ROUTER = vm.envAddress("VRF_ROUTER");
-
-        string memory receiptName = "Ticket";
-        string memory receiptSymbol = "TICKET";
 
         // read deployer private key
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_KEY");
@@ -51,9 +48,6 @@ contract DeployPerpetualMint_Base is Script {
                 VRF_ROUTER
             );
 
-        // deploy Core
-        Core core = new Core(mintToken, receiptName, receiptSymbol);
-
         console.log(
             "PerpetualMintSupra Facet Address: ",
             address(perpetualMintSupra)
@@ -66,10 +60,10 @@ contract DeployPerpetualMint_Base is Script {
             "PerpetualMintViewSupra Facet Address: ",
             address(perpetualMintViewSupra)
         );
-        console.log("Core Address: ", address(core));
+        console.log("CoreBlast Address: ", coreBlastAddress);
         console.log("Supra VRF Router Address: ", VRF_ROUTER);
 
-        writeCoreAddress(address(core));
+        writeCoreBlastAddress(coreBlastAddress);
         writeVRFRouterAddress(VRF_ROUTER);
 
         // get PerpetualMint facet cuts
@@ -102,10 +96,12 @@ contract DeployPerpetualMint_Base is Script {
         facetCuts[7] = perpetualMintViewFacetCuts[0];
         facetCuts[8] = perpetualMintViewFacetCuts[1];
 
-        // cut PerpetualMint into Core
-        core.diamondCut(facetCuts, address(0), "");
+        ICore coreBlast = ICore(coreBlastAddress);
 
-        ICore(payable(core)).pause();
+        // cut PerpetualMint into CoreBlast
+        coreBlast.diamondCut(facetCuts, address(0), "");
+
+        coreBlast.pause();
 
         console.log("PerpetualMint Paused");
 
@@ -525,21 +521,24 @@ contract DeployPerpetualMint_Base is Script {
             );
     }
 
-    /// @notice writes the address of the deployed Core diamond to a file
-    /// @param coreAddress address of the deployed Core diamond
-    function writeCoreAddress(address coreAddress) internal {
+    /// @notice writes the address of the deployed CoreBlast diamond to a file
+    /// @param coreBlastAddress address of the deployed CoreBlast diamond
+    function writeCoreBlastAddress(address coreBlastAddress) internal {
         string memory inputDir = string.concat(
             vm.projectRoot(),
-            "/broadcast/01_deployPerpetualMint.s.sol/"
+            "/broadcast/02_deployPerpetualMint.s.sol/"
         );
 
         string memory chainDir = string.concat(vm.toString(block.chainid), "/");
 
-        string memory file = string.concat("run-latest-core-address", ".txt");
+        string memory file = string.concat(
+            "run-latest-core-blast-address",
+            ".txt"
+        );
 
         vm.writeFile(
             string.concat(inputDir, chainDir, file),
-            vm.toString(coreAddress)
+            vm.toString(coreBlastAddress)
         );
     }
 
@@ -548,7 +547,7 @@ contract DeployPerpetualMint_Base is Script {
     function writeVRFRouterAddress(address vrfRouterAddress) internal {
         string memory inputDir = string.concat(
             vm.projectRoot(),
-            "/broadcast/01_deployPerpetualMint.s.sol/"
+            "/broadcast/02_deployPerpetualMint.s.sol/"
         );
 
         string memory chainDir = string.concat(vm.toString(block.chainid), "/");

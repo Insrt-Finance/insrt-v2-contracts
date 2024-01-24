@@ -129,6 +129,19 @@ Requires the following additional environment variables set:
 make deploy-local-base
 ```
 
+### Blast
+
+#### Blast Sepolia
+
+Requires the following additional environment variables set:
+
+- `BLAST_SEPOLIA_RPC_URL`: Blast Sepolia RPC URL
+- `BLASTCAN_API_KEY`: Blastscan API key for contract verification
+
+```
+make deploy-blast-sepolia
+```
+
 ## Post-deployment configuration
 
 ### Arbitrum
@@ -402,6 +415,50 @@ Note: The following environment variables are modifiable in `./script/Base/post-
 
 ```
 make configure-perp-mint-local-base
+```
+
+### Blast
+
+#### Blast Sepolia
+
+1. Token configuration
+
+Note: The following environment variables are modifiable in `./script/Blast/post-deployment/configure-token-blast-sepolia.sh`:
+
+- `NEW_TOKEN_PROXY_OWNER`
+- `TOKEN_DISTRIBUTION_FRACTION_BP`
+
+```
+make configure-token-blast-sepolia
+```
+
+2. VRF configuration
+
+Note: The following environment variables are modifiable in `./script/Blast/post-deployment/configure-vrf-blast-sepolia.sh`:
+
+- `ETH_FUND_AMOUNT`
+
+```
+make configure-vrf-blast-sepolia
+```
+
+3. PerpetualMint configuration
+
+Note: The following environment variables are modifiable in `./script/Blast/post-deployment/configure-perp-mint-blast-sepolia.sh`:
+
+- `COLLECTION_CONSOLATION_FEE_BP`
+- `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
+- `MINT_FEE_BP`
+- `MINT_TOKEN_CONSOLATION_FEE_BP`
+- `MINT_TOKEN_TIER_MULTIPLIERS`
+- `MINT_TOKEN_TIER_RISKS`
+- `NEW_PERP_MINT_OWNER`
+- `REDEMPTION_FEE_BP`
+- `TIER_MULTIPLIERS`
+- `TIER_RISKS`
+
+```
+make configure-perp-mint-blast-sepolia
 ```
 
 ## Upgrading contracts

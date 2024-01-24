@@ -167,6 +167,12 @@ make deploy-base
 make deploy-base-sepolia
 ```
 
+### Deploying on Blast Sepolia (Testnet)
+
+```bash
+make deploy-blast-sepolia
+```
+
 ### Deploying Locally (on an Arbitrum Fork)
 
 ```bash
@@ -334,6 +340,12 @@ make configure-token-base-sepolia
 make configure-token-local-base
 ```
 
+#### Blast Sepolia (Testnet)
+
+```bash
+make configure-token-blast-sepolia
+```
+
 ### Step 2: VRF Configuration
 
 ### Arbitrum
@@ -378,6 +390,14 @@ make configure-vrf-base-sepolia
 make configure-vrf-local-base
 ```
 
+### Blast
+
+#### Blast Sepolia (Testnet)
+
+```bash
+make configure-vrf-blast-sepolia
+```
+
 ### Step 3: PerpetualMint Configuration
 
 NOTE: Once this step is complete, the protocol is activated.
@@ -416,6 +436,14 @@ make configure-perp-mint-base-sepolia
 
 ```bash
 make configure-perp-mint-local-base
+```
+
+### Blast
+
+#### Blast Sepolia (Testnet)
+
+```bash
+make configure-perp-mint-blast-sepolia
 ```
 
 ---

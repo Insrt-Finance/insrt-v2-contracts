@@ -69,6 +69,11 @@ deploy-base-sepolia:
 deploy-local-base:
 	@./script/Base/deployment/deploy-local.sh
 
+#### Blast
+
+deploy-blast-sepolia:
+	@./script/Blast/deployment/deploy-blast-sepolia.sh
+
 
 ### Post-deployment configuration
 
@@ -138,6 +143,20 @@ configure-perp-mint-base-sepolia:
 
 configure-perp-mint-local-base:
 	@./script/Base/post-deployment/configure-perp-mint-local.sh
+
+#### Blast
+
+##### 1. Token configuration
+configure-token-blast-sepolia:
+	@./script/Blast/post-deployment/configure-token-blast-sepolia.sh
+
+##### 2. VRF configuration
+configure-vrf-blast-sepolia:
+	@./script/Blast/post-deployment/configure-vrf-blast-sepolia.sh
+
+##### 3. PerpetualMint configuration
+configure-perp-mint-blast-sepolia:
+	@./script/Blast/post-deployment/configure-perp-mint-blast-sepolia.sh
 
 
 ### Upgrading contracts

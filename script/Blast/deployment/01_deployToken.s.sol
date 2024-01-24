@@ -13,15 +13,18 @@ import { TokenProxy } from "../../../contracts/diamonds/Token/TokenProxy.sol";
 import { IToken } from "../../../contracts/facets/Token/IToken.sol";
 import { Token } from "../../../contracts/facets/Token/Token.sol";
 
-/// @title DeployToken
+/// @title DeployToken_Blast
 /// @dev deploys the TokenProxy diamond contract and the Token facet, and performs
 /// a diamondCut of the Token facet onto the TokenProxy diamond
-contract DeployToken is Script {
+contract DeployToken_Blast is Script {
     /// @dev runs the script logic
     function run() external {
         //NOTE: CHANGE AS NEEDED FOR PRODUCTION
         string memory name = "MINT";
         string memory symbol = "$MINT";
+
+        string memory receiptName = "Ticket";
+        string memory receiptSymbol = "TICKET";
 
         // read deployer private key
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_KEY");
@@ -38,6 +41,7 @@ contract DeployToken is Script {
         console.log("Token Proxy Address: ", address(tokenProxy));
 
         writeTokenProxyAddress(address(tokenProxy));
+        writeTokenProxyInfo(address(tokenProxy), receiptName, receiptSymbol);
 
         // get Token facet cuts
         ITokenProxy.FacetCut[] memory facetCuts = getTokenFacetCuts(
@@ -157,6 +161,35 @@ contract DeployToken is Script {
         vm.writeFile(
             string.concat(inputDir, chainDir, file),
             vm.toString(tokenProxyAddress)
+        );
+    }
+
+    function writeTokenProxyInfo(
+        address tokenProxyAddress,
+        string memory receiptName,
+        string memory receiptSymbol
+    ) internal {
+        string memory inputDir = string.concat(
+            vm.projectRoot(),
+            "/broadcast/01_deployToken.s.sol/"
+        );
+
+        string memory chainDir = string.concat(vm.toString(block.chainid), "/");
+
+        string memory file = string.concat(
+            "run-latest-token-proxy-info",
+            ".txt"
+        );
+
+        vm.writeFile(
+            string.concat(inputDir, chainDir, file),
+            string.concat(
+                vm.toString(tokenProxyAddress),
+                " ",
+                receiptName,
+                " ",
+                receiptSymbol
+            )
         );
     }
 }

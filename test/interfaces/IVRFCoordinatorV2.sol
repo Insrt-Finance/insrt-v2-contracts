@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.19;
 
-import { AggregatorV3Interface } from "@chainlink/interfaces/AggregatorV3Interface.sol";
+import { AggregatorV3Interface } from "@chainlink/shared/interfaces/AggregatorV3Interface.sol";
 
 /// @title IVRFCoordinatorV2
 /// @notice Interface for the Chainlink V2 VRF Coordinator

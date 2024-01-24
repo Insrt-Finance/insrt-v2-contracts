@@ -460,10 +460,10 @@ contract PerpetualMintHelper {
                     selectors: vrfConsumerBaseV2MockFunctionSelectors
                 });
 
-        if (VRF_COORDINATOR == CHAINLINK_VRF_COORDINATOR) {
-            ISolidStateDiamond.FacetCut[]
-                memory facetCuts = new ISolidStateDiamond.FacetCut[](6);
+        ISolidStateDiamond.FacetCut[]
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](6);
 
+        if (VRF_COORDINATOR == CHAINLINK_VRF_COORDINATOR) {
             facetCuts[0] = erc1155MetadataFacetCut;
 
             facetCuts[1] = pausableFacetCut;
@@ -493,9 +493,6 @@ contract PerpetualMintHelper {
                     action: IDiamondWritableInternal.FacetCutAction.ADD,
                     selectors: vrfConsumerBaseV2FunctionSelectors
                 });
-
-        ISolidStateDiamond.FacetCut[]
-            memory facetCuts = new ISolidStateDiamond.FacetCut[](6);
 
         facetCuts[0] = erc1155MetadataFacetCut;
 

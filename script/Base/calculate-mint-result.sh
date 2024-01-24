@@ -11,4 +11,4 @@ export RANDOMNESS="$3,$4"
 export PRICE_PER_MINT=$5
 
 # Run forge scripts
-forge script script/Base/${CALCULATION_SCRIPT} --rpc-url $RPC_URL
+forge script script/Supra/${CALCULATION_SCRIPT} --rpc-url $RPC_URL

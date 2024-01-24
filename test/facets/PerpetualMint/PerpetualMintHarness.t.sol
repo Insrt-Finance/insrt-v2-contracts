@@ -95,7 +95,7 @@ contract PerpetualMintHarness is
     }
 
     /// @inheritdoc IPerpetualMintHarness
-    function exposed_requestRandomWordsBase(
+    function exposed_requestRandomWordsSupra(
         address minter,
         address collection,
         uint256 mintPriceAdjustmentFactor,
@@ -105,7 +105,7 @@ contract PerpetualMintHarness is
 
         CollectionData storage collectionData = l.collections[collection];
 
-        _requestRandomWordsBase(
+        _requestRandomWordsSupra(
             l,
             collectionData,
             minter,

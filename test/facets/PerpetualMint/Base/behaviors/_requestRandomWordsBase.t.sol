@@ -43,7 +43,7 @@ contract PerpetualMint_requestRandomWordsBase is
             address(this) // client wallet address
         );
 
-        perpetualMint.exposed_requestRandomWordsBase(
+        perpetualMint.exposed_requestRandomWordsSupra(
             minter,
             COLLECTION,
             TEST_ADJUSTMENT_FACTOR,
@@ -56,7 +56,7 @@ contract PerpetualMint_requestRandomWordsBase is
         // assert that this will be the first request added to pendingRequests
         assert(perpetualMint.exposed_pendingRequestsLength(COLLECTION) == 0);
 
-        perpetualMint.exposed_requestRandomWordsBase(
+        perpetualMint.exposed_requestRandomWordsSupra(
             minter,
             COLLECTION,
             TEST_ADJUSTMENT_FACTOR,
@@ -91,7 +91,7 @@ contract PerpetualMint_requestRandomWordsBase is
 
         vm.expectRevert();
 
-        perpetualMint.exposed_requestRandomWordsBase(
+        perpetualMint.exposed_requestRandomWordsSupra(
             minter,
             COLLECTION,
             TEST_ADJUSTMENT_FACTOR,
@@ -108,7 +108,7 @@ contract PerpetualMint_requestRandomWordsBase is
 
         vm.expectRevert("Client address not whitelisted");
 
-        perpetualMint.exposed_requestRandomWordsBase(
+        perpetualMint.exposed_requestRandomWordsSupra(
             minter,
             COLLECTION,
             TEST_ADJUSTMENT_FACTOR,
@@ -126,7 +126,7 @@ contract PerpetualMint_requestRandomWordsBase is
 
         vm.expectRevert("Contract not eligible to request");
 
-        perpetualMint.exposed_requestRandomWordsBase(
+        perpetualMint.exposed_requestRandomWordsSupra(
             minter,
             COLLECTION,
             TEST_ADJUSTMENT_FACTOR,
@@ -144,7 +144,7 @@ contract PerpetualMint_requestRandomWordsBase is
             "Insufficient Funds: Minimum balance reached for request"
         );
 
-        perpetualMint.exposed_requestRandomWordsBase(
+        perpetualMint.exposed_requestRandomWordsSupra(
             minter,
             COLLECTION,
             TEST_ADJUSTMENT_FACTOR,

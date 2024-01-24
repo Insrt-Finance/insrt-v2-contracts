@@ -189,11 +189,11 @@ abstract contract PerpetualMintInternal is
         );
     }
 
-    /// @notice Attempts a Base-specific batch mint for the msg.sender for $MINT using ETH as payment.
+    /// @notice Attempts a Supra VRF-specific batch mint for the msg.sender for $MINT using ETH as payment.
     /// @param minter address of minter
     /// @param referrer address of referrer
     /// @param numberOfMints number of mints to attempt
-    function _attemptBatchMintForMintWithEthBase(
+    function _attemptBatchMintForMintWithEthSupra(
         address minter,
         address referrer,
         uint8 numberOfMints
@@ -229,7 +229,7 @@ abstract contract PerpetualMintInternal is
                 pricePerSpin
             );
 
-        _requestRandomWordsBase(
+        _requestRandomWordsSupra(
             l,
             collectionData,
             minter,
@@ -336,12 +336,12 @@ abstract contract PerpetualMintInternal is
         );
     }
 
-    /// @notice Attempts a Base-specific batch mint for the msg.sender for $MINT using $MINT tokens as payment.
+    /// @notice Attempts a Supra VRF-specific batch mint for the msg.sender for $MINT using $MINT tokens as payment.
     /// @param minter address of minter
     /// @param referrer address of referrer
     /// @param pricePerMint price per mint for collection ($MINT denominated in units of wei)
     /// @param numberOfMints number of mints to attempt
-    function _attemptBatchMintForMintWithMintBase(
+    function _attemptBatchMintForMintWithMintSupra(
         address minter,
         address referrer,
         uint256 pricePerMint,
@@ -385,7 +385,7 @@ abstract contract PerpetualMintInternal is
                 pricePerSpinInWei
             );
 
-        _requestRandomWordsBase(
+        _requestRandomWordsSupra(
             l,
             collectionData,
             minter,
@@ -498,12 +498,12 @@ abstract contract PerpetualMintInternal is
         );
     }
 
-    /// @notice Attempts a Base-specific batch mint for the msg.sender for a single collection using ETH as payment.
+    /// @notice Attempts a Supra VRF-specific batch mint for the msg.sender for a single collection using ETH as payment.
     /// @param minter address of minter
     /// @param collection address of collection for mint attempts
     /// @param referrer address of referrer
     /// @param numberOfMints number of mints to attempt
-    function _attemptBatchMintWithEthBase(
+    function _attemptBatchMintWithEthSupra(
         address minter,
         address collection,
         address referrer,
@@ -543,7 +543,7 @@ abstract contract PerpetualMintInternal is
                 pricePerSpin
             );
 
-        _requestRandomWordsBase(
+        _requestRandomWordsSupra(
             l,
             collectionData,
             minter,
@@ -664,13 +664,13 @@ abstract contract PerpetualMintInternal is
         );
     }
 
-    /// @notice Attempts a Base-specific batch mint for the msg.sender for a single collection using $MINT tokens as payment.
+    /// @notice Attempts a Supra VRF-specific batch mint for the msg.sender for a single collection using $MINT tokens as payment.
     /// @param minter address of minter
     /// @param collection address of collection for mint attempts
     /// @param referrer address of referrer
     /// @param pricePerMint price per mint for collection ($MINT denominated in units of wei)
     /// @param numberOfMints number of mints to attempt
-    function _attemptBatchMintWithMintBase(
+    function _attemptBatchMintWithMintSupra(
         address minter,
         address collection,
         address referrer,
@@ -718,7 +718,7 @@ abstract contract PerpetualMintInternal is
                 pricePerSpinInWei
             );
 
-        _requestRandomWordsBase(
+        _requestRandomWordsSupra(
             l,
             collectionData,
             minter,
@@ -860,12 +860,12 @@ abstract contract PerpetualMintInternal is
         }
     }
 
-    /// @notice calculates the Base-specific mint result of a given number of mint attempts for a given collection using given signature as randomness
+    /// @notice calculates the Supra VRF-specific mint result of a given number of mint attempts for a given collection using given signature as randomness
     /// @param collection address of collection for mint attempts
     /// @param numberOfMints number of mints to attempt
     /// @param signature signature value to use as randomness in calculation
     /// @param pricePerMint price paid per mint for collection (denominated in units of wei)
-    function _calculateMintResultBase(
+    function _calculateMintResultSupra(
         address collection,
         uint8 numberOfMints,
         uint256[2] calldata signature,
@@ -1403,14 +1403,14 @@ abstract contract PerpetualMintInternal is
         request.mintPriceAdjustmentFactor = mintPriceAdjustmentFactor;
     }
 
-    /// @notice requests random values from Supra VRF, Base-specific
+    /// @notice requests random values from Supra VRF, Supra VRF-specific
     /// @param l the PerpetualMint storage layout
     /// @param collectionData the CollectionData struct for a given collection
     /// @param minter address calling this function
     /// @param collection address of collection to attempt mint for
     /// @param mintPriceAdjustmentFactor adjustment factor for mint price
     /// @param numWords amount of random values to request
-    function _requestRandomWordsBase(
+    function _requestRandomWordsSupra(
         Storage.Layout storage l,
         CollectionData storage collectionData,
         address minter,

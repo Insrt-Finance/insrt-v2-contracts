@@ -2,30 +2,33 @@
 
 pragma solidity 0.8.19;
 
-import { PerpetualMintHarness } from "../PerpetualMintHarness.t.sol";
+import { IPerpetualMint } from "../IPerpetualMint.sol";
+import { PerpetualMint } from "../PerpetualMint.sol";
 
-/// @title PerpetualMintHarness_Base
-/// @dev exposes PerpetualMint_Base external & internal functions for testing
-contract PerpetualMintHarness_Base is PerpetualMintHarness {
-    constructor(address vrf) PerpetualMintHarness(vrf) {}
+/// @title PerpetualMintSupra
+/// @dev Supra VRF-specific overrides for PerpetualMint
+contract PerpetualMintSupra is PerpetualMint {
+    constructor(address vrf) PerpetualMint(vrf) {}
 
+    /// @inheritdoc IPerpetualMint
     function attemptBatchMintForMintWithEth(
         address referrer,
         uint32 numberOfMints
     ) external payable override whenNotPaused {
-        _attemptBatchMintForMintWithEthBase(
+        _attemptBatchMintForMintWithEthSupra(
             msg.sender,
             referrer,
             uint8(numberOfMints)
         );
     }
 
+    /// @inheritdoc IPerpetualMint
     function attemptBatchMintForMintWithMint(
         address referrer,
         uint256 pricePerMint,
         uint32 numberOfMints
     ) external override whenNotPaused {
-        _attemptBatchMintForMintWithMintBase(
+        _attemptBatchMintForMintWithMintSupra(
             msg.sender,
             referrer,
             pricePerMint,
@@ -33,12 +36,13 @@ contract PerpetualMintHarness_Base is PerpetualMintHarness {
         );
     }
 
+    /// @inheritdoc IPerpetualMint
     function attemptBatchMintWithEth(
         address collection,
         address referrer,
         uint32 numberOfMints
     ) external payable override whenNotPaused {
-        _attemptBatchMintWithEthBase(
+        _attemptBatchMintWithEthSupra(
             msg.sender,
             collection,
             referrer,
@@ -46,13 +50,14 @@ contract PerpetualMintHarness_Base is PerpetualMintHarness {
         );
     }
 
+    /// @inheritdoc IPerpetualMint
     function attemptBatchMintWithMint(
         address collection,
         address referrer,
         uint256 pricePerMint,
         uint32 numberOfMints
     ) external override whenNotPaused {
-        _attemptBatchMintWithMintBase(
+        _attemptBatchMintWithMintSupra(
             msg.sender,
             collection,
             referrer,

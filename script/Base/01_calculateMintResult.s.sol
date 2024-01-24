@@ -84,7 +84,7 @@ contract CalculateMintResultBase is Script, Test {
             );
         }
 
-        MintResultData memory result = core.calculateMintResultBase(
+        MintResultData memory result = core.calculateMintResultSupra(
             collection,
             numberOfMints,
             randomnessFixed,

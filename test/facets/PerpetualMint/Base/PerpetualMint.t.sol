@@ -13,7 +13,7 @@ import { ISupraRouterContract } from "../../../../contracts/vrf/Supra/ISupraRout
 import { MintTokenTiersData, PerpetualMintStorage as Storage, TiersData } from "../../../../contracts/facets/PerpetualMint/Storage.sol";
 
 /// @title PerpetualMintTest_Base
-/// @dev PerpetualMintTest Base-specific helper contract. Configures PerpetualMint facets for Core test.
+/// @dev PerpetualMintTest Base-specific, Supra VRF-specific helper contract. Configures PerpetualMint facets for Core test.
 /// @dev Should function identically across all forks.
 abstract contract PerpetualMintTest_Base is CoreTest {
     IDepositContract internal supraVRFDepositContract;

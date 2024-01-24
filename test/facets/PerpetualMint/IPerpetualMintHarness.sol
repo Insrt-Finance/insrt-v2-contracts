@@ -44,8 +44,8 @@ interface IPerpetualMintHarness {
         uint32 numWords
     ) external;
 
-    /// @dev exposes _requestRandomWordsBase
-    function exposed_requestRandomWordsBase(
+    /// @dev exposes _requestRandomWordsSupra
+    function exposed_requestRandomWordsSupra(
         address minter,
         address collection,
         uint256 mintPriceAdjustmentFactor,

@@ -9,14 +9,14 @@ import { IDiamondWritableInternal } from "@solidstate/contracts/proxy/diamond/wr
 import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol";
 import { IERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/IERC1155Metadata.sol";
 
-import { PerpetualMintHarnessSupra } from "../Supra/PerpetualMintHarness.t.sol";
 import { IPerpetualMintHarness } from "../IPerpetualMintHarness.sol";
-import { IPerpetualMintViewSupra } from "../../../../contracts/facets/PerpetualMint/Supra/IPerpetualMintView.sol";
-import { PerpetualMintViewSupra } from "../../../../contracts/facets/PerpetualMint/Supra/PerpetualMintView.sol";
+import { PerpetualMintHarnessSupra } from "../Supra/PerpetualMintHarness.t.sol";
 import { IPerpetualMint } from "../../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 import { IPerpetualMintBase } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintBase.sol";
 import { IPerpetualMintView } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintView.sol";
 import { PerpetualMintBase } from "../../../../contracts/facets/PerpetualMint/PerpetualMintBase.sol";
+import { IPerpetualMintViewSupra } from "../../../../contracts/facets/PerpetualMint/Supra/IPerpetualMintView.sol";
+import { PerpetualMintViewSupra } from "../../../../contracts/facets/PerpetualMint/Supra/PerpetualMintView.sol";
 
 /// @title PerpetualMintHelper_Base
 /// @dev Test helper contract for setting up PerpetualMintSupra for diamond cutting and testing, Base-specific

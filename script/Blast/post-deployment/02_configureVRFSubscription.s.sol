@@ -3,9 +3,9 @@ pragma solidity 0.8.19;
 
 import "forge-safe/BatchScript.sol";
 
+import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 import { IDepositContract } from "../../../contracts/vrf/Supra/IDepositContract.sol";
 import { ISupraRouterContract } from "../../../contracts/vrf/Supra/ISupraRouterContract.sol";
-import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 
 /// @title ConfigureVRFSubscription_Blast
 /// @dev Configures the Supra VRF subscription by adding the PerpetualMint contract as a consumer,

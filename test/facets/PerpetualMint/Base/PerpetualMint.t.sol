@@ -8,9 +8,9 @@ import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidSt
 import { PerpetualMintHelper_Base } from "./PerpetualMintHelper.t.sol";
 import { IPerpetualMintTest } from "../IPerpetualMintTest.sol";
 import { CoreTest } from "../../../diamonds/Core.t.sol";
+import { MintTokenTiersData, PerpetualMintStorage as Storage, TiersData } from "../../../../contracts/facets/PerpetualMint/Storage.sol";
 import { IDepositContract } from "../../../../contracts/vrf/Supra/IDepositContract.sol";
 import { ISupraRouterContract } from "../../../../contracts/vrf/Supra/ISupraRouterContract.sol";
-import { MintTokenTiersData, PerpetualMintStorage as Storage, TiersData } from "../../../../contracts/facets/PerpetualMint/Storage.sol";
 
 /// @title PerpetualMintTest_Base
 /// @dev PerpetualMintTest Base-specific, Supra VRF-specific helper contract. Configures PerpetualMint facets for Core test.

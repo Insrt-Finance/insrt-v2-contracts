@@ -15,7 +15,7 @@ contract CoreBlast is Core {
     ) Core(mintToken, receiptName, receiptSymbol) {
         // Configure the yield & claimable gas settings for the Blast Core diamond
         IBlast(0x4300000000000000000000000000000000000002).configure(
-            YieldMode.AUTOMATIC,
+            YieldMode.CLAIMABLE,
             GasMode.CLAIMABLE,
             address(this)
         );

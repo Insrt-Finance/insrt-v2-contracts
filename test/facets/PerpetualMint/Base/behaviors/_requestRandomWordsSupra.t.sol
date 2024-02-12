@@ -7,9 +7,9 @@ import { BaseForkTest } from "../../../../BaseForkTest.t.sol";
 import { ISupraGeneratorContract } from "../../../../interfaces/ISupraGeneratorContract.sol";
 import { ISupraGeneratorContractEvents } from "../../../../interfaces/ISupraGeneratorContractEvents.sol";
 
-/// @title PerpetualMint_requestRandomWordsBase
-/// @dev PerpetualMint_Base test contract for testing expected behavior of the _requestRandomWordsBase function
-contract PerpetualMint_requestRandomWordsBase is
+/// @title PerpetualMint_requestRandomWordsSupra
+/// @dev PerpetualMint_Base test contract for testing expected behavior of the _requestRandomWordsSupra function
+contract PerpetualMint_requestRandomWordsSupra is
     BaseForkTest,
     ISupraGeneratorContractEvents,
     PerpetualMintTest_Base
@@ -20,8 +20,8 @@ contract PerpetualMint_requestRandomWordsBase is
     /// @dev collection to test
     address COLLECTION = BORED_APE_YACHT_CLUB;
 
-    /// @dev Tests that _requestRandomWordsBase functionality emits a RequestGenerated event when successfully requesting random words.
-    function test_requestRandomWordsBaseEmitsRequestGenerated() external {
+    /// @dev Tests that _requestRandomWordsSupra functionality emits a RequestGenerated event when successfully requesting random words.
+    function test_requestRandomWordsSupraEmitsRequestGenerated() external {
         // Supra VRF Router nonce storage slot
         bytes32 nonceStorageSlot = bytes32(uint256(3));
 
@@ -51,8 +51,8 @@ contract PerpetualMint_requestRandomWordsBase is
         );
     }
 
-    /// @dev Tests that _requestRandomWordsBase functionality updates pendingRequests appropriately.
-    function test_requestRandomWordsBaseUpdatesPendingRequests() external {
+    /// @dev Tests that _requestRandomWordsSupra functionality updates pendingRequests appropriately.
+    function test_requestRandomWordsSupraUpdatesPendingRequests() external {
         // assert that this will be the first request added to pendingRequests
         assert(perpetualMint.exposed_pendingRequestsLength(COLLECTION) == 0);
 
@@ -82,8 +82,8 @@ contract PerpetualMint_requestRandomWordsBase is
         assert(mintPriceAdjustmentFactor == TEST_ADJUSTMENT_FACTOR);
     }
 
-    /// @dev Tests that _requestRandomWordsBase functionality reverts when more than the current max number of words (255) is requested.
-    function test_requestRandomWordsBaseRevertsWhen_MoreThanMaxNumberOfWordsRequested()
+    /// @dev Tests that _requestRandomWordsSupra functionality reverts when more than the current max number of words (255) is requested.
+    function test_requestRandomWordsSupraRevertsWhen_MoreThanMaxNumberOfWordsRequested()
         external
     {
         // specify the current max number of words
@@ -99,8 +99,8 @@ contract PerpetualMint_requestRandomWordsBase is
         );
     }
 
-    /// @dev Tests that _requestRandomWordsBase functionality reverts when the configured VRF client has been removed from the Supra VRF Deposit Contract whitelist
-    function test_requestRandomWordsBaseRevertsWhen_ClientAddressRemovedFromWhitelist()
+    /// @dev Tests that _requestRandomWordsSupra functionality reverts when the configured VRF client has been removed from the Supra VRF Deposit Contract whitelist
+    function test_requestRandomWordsSupraRevertsWhen_ClientAddressRemovedFromWhitelist()
         external
     {
         vm.prank(supraVRFDepositContractOwner);
@@ -116,8 +116,8 @@ contract PerpetualMint_requestRandomWordsBase is
         );
     }
 
-    /// @dev Tests that _requestRandomWordsBase functionality reverts when the configured VRF contract has been removed from the Supra VRF Deposit Contract whitelist
-    function test_requestRandomWordsBaseRevertsWhen_ContractAddressRemovedFromWhitelist()
+    /// @dev Tests that _requestRandomWordsSupra functionality reverts when the configured VRF contract has been removed from the Supra VRF Deposit Contract whitelist
+    function test_requestRandomWordsSupraRevertsWhen_ContractAddressRemovedFromWhitelist()
         external
     {
         supraVRFDepositContract.removeContractFromWhitelist(
@@ -134,8 +134,8 @@ contract PerpetualMint_requestRandomWordsBase is
         );
     }
 
-    /// @dev Tests that _requestRandomWordsBase functionality reverts when the minimum subscription balance has been reached
-    function test_requestRandomWordsBaseRevertsWhen_MinimumSubscriptionBalanceReached()
+    /// @dev Tests that _requestRandomWordsSupra functionality reverts when the minimum subscription balance has been reached
+    function test_requestRandomWordsSupraRevertsWhen_MinimumSubscriptionBalanceReached()
         external
     {
         supraVRFDepositContract.withdrawFundClient(10 ether);

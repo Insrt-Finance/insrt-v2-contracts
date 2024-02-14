@@ -2,7 +2,6 @@
 
 pragma solidity 0.8.19;
 
-// import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
 import { MintOutcome, MintResultData, MintTokenTiersData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title IPerpetualMint

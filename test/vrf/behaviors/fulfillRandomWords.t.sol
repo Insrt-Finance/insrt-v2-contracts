@@ -8,7 +8,7 @@ import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
 import { PerpetualMintTest_InsrtVRFCoordinator } from "../PerpetualMint.t.sol";
 import { ArbForkTest } from "../../ArbForkTest.t.sol";
-import { CoreTest } from "../../diamonds/Core.t.sol";
+import { CoreTest } from "../../diamonds/Core/Core.t.sol";
 import { TokenProxyTest } from "../../diamonds/TokenProxy.t.sol";
 import { TokenTest } from "../../facets/Token/Token.t.sol";
 import { IPerpetualMintInternal } from "../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";

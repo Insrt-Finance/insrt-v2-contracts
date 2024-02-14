@@ -5,7 +5,7 @@ pragma solidity 0.8.19;
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { TokenTest } from "../../Token/Token.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
-import { CoreTest } from "../../../diamonds/Core.t.sol";
+import { CoreTest } from "../../../diamonds/Core/Core.t.sol";
 import { TokenProxyTest } from "../../../diamonds/TokenProxy.t.sol";
 import { IPerpetualMintInternal } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 
@@ -173,8 +173,8 @@ contract PerpetualMint_resolveMintsForMint is
         );
     }
 
-    /// @dev tests that the MintResolved event is emitted when successfully resolving a mint
-    function test_resolveMintsForMintEmitsMintResolved() external {
+    /// @dev tests that the MintResult event is emitted when successfully resolving a mint
+    function test_resolveMintsForMintEmitsMintResult() external {
         // expected lowest tier mint resolutions
         randomWords.push(2);
 

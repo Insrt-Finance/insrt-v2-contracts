@@ -4,23 +4,21 @@ pragma solidity 0.8.19;
 
 import { IPausableInternal } from "@solidstate/contracts/security/pausable/IPausableInternal.sol";
 
-import { PerpetualMintTest } from "../PerpetualMint.t.sol";
-import { TokenTest } from "../../Token/Token.t.sol";
-import { ArbForkTest } from "../../../ArbForkTest.t.sol";
-import { CoreTest } from "../../../diamonds/Core/Core.t.sol";
-import { TokenProxyTest } from "../../../diamonds/TokenProxy.t.sol";
-import { IPerpetualMintInternal } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
+import { PerpetualMintTest_BlastSupra } from "../PerpetualMint.t.sol";
+import { TokenTest } from "../../../../Token/Token.t.sol";
+import { BlastForkTest } from "../../../../../BlastForkTest.t.sol";
+import { CoreBlastTest } from "../../../../../diamonds/Core/Blast/Core.t.sol";
+import { TokenProxyTest } from "../../../../../diamonds/TokenProxy.t.sol";
+import { IPerpetualMintInternal } from "../../../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 
-/// @title PerpetualMint_attemptBatchMintWithMint
-/// @dev PerpetualMint test contract for testing expected attemptBatchMintWithMint behavior. Tested on an Arbitrum fork.
-contract PerpetualMint_attemptBatchMintWithMint is
-    ArbForkTest,
+/// @title PerpetualMint_attemptBatchMintWithMintBlastSupra
+/// @dev PerpetualMint_BlastSupra test contract for testing expected attemptBatchMintWithMint behavior. Tested on a Blast fork.
+contract PerpetualMint_attemptBatchMintWithMintBlastSupra is
+    BlastForkTest,
     IPerpetualMintInternal,
-    PerpetualMintTest,
+    PerpetualMintTest_BlastSupra,
     TokenTest
 {
-    uint64 internal TEST_VRF_CONSUMER_NONCE = 1;
-
     uint32 internal constant TEST_MINT_ATTEMPTS = 3;
 
     uint32 internal constant ZERO_MINT_ATTEMPTS = 0;
@@ -29,11 +27,11 @@ contract PerpetualMint_attemptBatchMintWithMint is
     address COLLECTION = BORED_APE_YACHT_CLUB;
 
     /// @dev overrides the receive function to accept ETH
-    receive() external payable override(CoreTest, TokenProxyTest) {}
+    receive() external payable override(CoreBlastTest, TokenProxyTest) {}
 
     /// @dev sets up the context for the test cases
-    function setUp() public override(PerpetualMintTest, TokenTest) {
-        PerpetualMintTest.setUp();
+    function setUp() public override(PerpetualMintTest_BlastSupra, TokenTest) {
+        PerpetualMintTest_BlastSupra.setUp();
         TokenTest.setUp();
 
         perpetualMint.setMintToken(address(token));
@@ -45,8 +43,6 @@ contract PerpetualMint_attemptBatchMintWithMint is
         // mint a bunch of tokens to minter
         vm.prank(MINTER);
         token.mint(minter, MINT_AMOUNT * 1e10);
-
-        _activateVRFConsumer();
     }
 
     /// @dev Tests attemptBatchMintWithMint functionality when paying the full set collection mint price.
@@ -469,24 +465,6 @@ contract PerpetualMint_attemptBatchMintWithMint is
         );
     }
 
-    /// @dev Tests that attemptBatchMintWithMint functionality reverts when attempting to mint for address(0) ($MINT).
-    function test_attemptBatchMintWithMintRevertsWhen_AttemptingToMintForAddressZero()
-        external
-    {
-        uint256 currentEthToMintRatio = perpetualMint.ethToMintRatio();
-
-        vm.expectRevert(
-            IPerpetualMintInternal.InvalidCollectionAddress.selector
-        );
-
-        perpetualMint.attemptBatchMintWithMint(
-            address(0),
-            NO_REFERRER,
-            MINT_PRICE * currentEthToMintRatio,
-            ZERO_MINT_ATTEMPTS
-        );
-    }
-
     /// @dev Tests that attemptBatchMintWithMint functionality reverts when attempting zero mints.
     function test_attemptBatchMintWithMintRevertsWhen_AttemptingZeroMints()
         external
@@ -517,27 +495,6 @@ contract PerpetualMint_attemptBatchMintWithMint is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS
-        );
-    }
-
-    function _activateVRFConsumer() private {
-        // grab the Chainlink VRF Coordinator's s_consumers storage slot
-        bytes32 s_consumersStorageSlot = keccak256(
-            abi.encode(
-                TEST_VRF_SUBSCRIPTION_ID, // the test VRF subscription ID
-                keccak256(
-                    abi.encode(
-                        address(perpetualMint), // the consumer contract address
-                        2 // the s_consumers storage slot
-                    )
-                )
-            )
-        );
-
-        vm.store(
-            this.perpetualMintHelper().VRF_COORDINATOR(),
-            s_consumersStorageSlot,
-            bytes32(uint256(TEST_VRF_CONSUMER_NONCE)) // set nonce to 1 to activate the consumer
         );
     }
 }

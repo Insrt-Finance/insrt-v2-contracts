@@ -5,7 +5,7 @@ pragma solidity 0.8.19;
 import { GasMode, YieldMode } from "./DataTypes.sol";
 
 /// @title IBlast
-/// @notice Interface for the Blast yield precompile contract
+/// @notice Interface for the Blast precompile contract
 interface IBlast {
     /// @notice Claims all gas for a specific contract. Called by an authorized user
     /// @param contractAddress The address of the contract for which all gas is to be claimed

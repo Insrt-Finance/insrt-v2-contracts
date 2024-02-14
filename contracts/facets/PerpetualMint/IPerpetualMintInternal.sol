@@ -40,6 +40,10 @@ interface IPerpetualMintInternal {
     /// @notice thrown when VRF subscription LINK balance falls below the required threshold
     error VRFSubscriptionBalanceBelowThreshold();
 
+    /// @notice emitted when the risk for Blast yield is set
+    /// @param risk risk of Blast yield
+    event BlastYieldRiskSet(uint32 risk);
+
     /// @notice emitted when a claim is cancelled
     /// @param claimer address of rejected claimer
     /// @param collection address of rejected claim collection
@@ -109,6 +113,22 @@ interface IPerpetualMintInternal {
         address indexed minter,
         address indexed collection,
         uint256 attempts,
+        uint256 totalMintAmount,
+        uint256 totalReceiptAmount
+    );
+
+    /// @notice emitted when the outcome of an attempted mint is resolved on Blast
+    /// @param minter address of account attempting the mint
+    /// @param collection address of collection that attempted mint is for
+    /// @param attempts number of mint attempts
+    /// @param totalBlastYieldAmount amount of Blast yield received, denominatined in wei
+    /// @param totalMintAmount amount of $MINT tokens minted
+    /// @param totalReceiptAmount amount of receipts (ERC1155 tokens) minted (successful mint attempts)
+    event MintResultBlast(
+        address indexed minter,
+        address indexed collection,
+        uint256 attempts,
+        uint256 totalBlastYieldAmount,
         uint256 totalMintAmount,
         uint256 totalReceiptAmount
     );

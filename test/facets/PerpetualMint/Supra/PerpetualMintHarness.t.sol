@@ -7,6 +7,12 @@ import { PerpetualMintHarness } from "../PerpetualMintHarness.t.sol";
 /// @title PerpetualMintHarnessSupra
 /// @dev exposes PerpetualMintSupra external & internal functions for testing
 contract PerpetualMintHarnessSupra is PerpetualMintHarness {
+    /// @dev number of words used in mints for $MINT
+    uint8 private constant ONE_WORD = 1;
+
+    /// @dev number of words used in mints for collections
+    uint8 private constant TWO_WORDS = 2;
+
     constructor(address vrf) PerpetualMintHarness(vrf) {}
 
     function attemptBatchMintForMintWithEth(
@@ -16,7 +22,8 @@ contract PerpetualMintHarnessSupra is PerpetualMintHarness {
         _attemptBatchMintForMintWithEthSupra(
             msg.sender,
             referrer,
-            uint8(numberOfMints)
+            uint8(numberOfMints),
+            ONE_WORD
         );
     }
 
@@ -29,7 +36,8 @@ contract PerpetualMintHarnessSupra is PerpetualMintHarness {
             msg.sender,
             referrer,
             pricePerMint,
-            uint8(numberOfMints)
+            uint8(numberOfMints),
+            ONE_WORD
         );
     }
 
@@ -42,7 +50,8 @@ contract PerpetualMintHarnessSupra is PerpetualMintHarness {
             msg.sender,
             collection,
             referrer,
-            uint8(numberOfMints)
+            uint8(numberOfMints),
+            TWO_WORDS
         );
     }
 
@@ -57,7 +66,8 @@ contract PerpetualMintHarnessSupra is PerpetualMintHarness {
             collection,
             referrer,
             pricePerMint,
-            uint8(numberOfMints)
+            uint8(numberOfMints),
+            TWO_WORDS
         );
     }
 }

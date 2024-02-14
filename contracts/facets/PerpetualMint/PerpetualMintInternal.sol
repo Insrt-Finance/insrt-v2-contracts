@@ -11,11 +11,13 @@ import { ERC1155BaseInternal } from "@solidstate/contracts/token/ERC1155/base/ER
 import { ERC1155MetadataInternal } from "@solidstate/contracts/token/ERC1155/metadata/ERC1155MetadataInternal.sol";
 import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 
+import { IGas } from "./Blast/IGas.sol";
 import { ERC1155MetadataExtensionInternal } from "./ERC1155MetadataExtensionInternal.sol";
 import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
-import { CollectionData, MintOutcome, MintResultData, MintTokenTiersData, PerpetualMintStorage as Storage, RequestData, TiersData, VRFConfig } from "./Storage.sol";
+import { CollectionData, MintOutcome, MintResultData, MintResultDataBlast, MintTokenTiersData, PerpetualMintStorage as Storage, RequestData, TiersData, VRFConfig } from "./Storage.sol";
 import { IToken } from "../Token/IToken.sol";
 import { GuardsInternal } from "../../common/GuardsInternal.sol";
+import { IBlast } from "../../diamonds/Core/Blast/IBlast.sol";
 import { ISupraRouterContract } from "../../vrf/Supra/ISupraRouterContract.sol";
 
 /// @title PerpetualMintInternal
@@ -50,6 +52,12 @@ abstract contract PerpetualMintInternal is
 
     /// @dev minimum price per spin, 1000 gwei = 0.000001 ETH / 1 $MINT
     uint256 internal constant MINIMUM_PRICE_PER_SPIN = 1000 gwei;
+
+    /// @dev address of the Blast precompile
+    address private constant BLAST = 0x4300000000000000000000000000000000000002;
+
+    /// @dev address of the Blast Gas precompile
+    address private constant GAS = 0x4300000000000000000000000000000000000001;
 
     /// @dev address of the configured VRF
     address private immutable VRF;
@@ -197,10 +205,12 @@ abstract contract PerpetualMintInternal is
     /// @param minter address of minter
     /// @param referrer address of referrer
     /// @param numberOfMints number of mints to attempt
+    /// @param wordsPerMint number of random words per mint (1 for PerpetualMintSupra, 2 for PerpetualMintBlastSupra)
     function _attemptBatchMintForMintWithEthSupra(
         address minter,
         address referrer,
-        uint8 numberOfMints
+        uint8 numberOfMints,
+        uint8 wordsPerMint
     ) internal {
         uint256 msgValue = msg.value;
 
@@ -224,9 +234,14 @@ abstract contract PerpetualMintInternal is
             referrer
         );
 
-        // if the number of words requested is greater than uint8, the function call will revert.
-        // the current max allowed by Supra VRF is 255 per request.
-        uint8 numWords = numberOfMints * 1; // 1 words per mint for $MINT, current max of 255 mints per tx
+        // Calculate the total number of random words required for the Supra VRF request.
+        // Constraints:
+        // 1. numWords = 0 results in a revert.
+        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
+        // If the number of words requested exceeds this limit, the function call will revert.
+        //    - For Blast Supra: 2 words per mint for $MINT (max 127 mints per transaction).
+        //    - For standard Supra: 1 word per mint for $MINT (max 255 mints per transaction).
+        uint8 numWords = numberOfMints * wordsPerMint;
 
         uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
                 collectionData,
@@ -345,11 +360,13 @@ abstract contract PerpetualMintInternal is
     /// @param referrer address of referrer
     /// @param pricePerMint price per mint for collection ($MINT denominated in units of wei)
     /// @param numberOfMints number of mints to attempt
+    /// @param wordsPerMint number of random words per mint (1 for PerpetualMintSupra, 2 for PerpetualMintBlastSupra)
     function _attemptBatchMintForMintWithMintSupra(
         address minter,
         address referrer,
         uint256 pricePerMint,
-        uint8 numberOfMints
+        uint8 numberOfMints,
+        uint8 wordsPerMint
     ) internal {
         Storage.Layout storage l = Storage.layout();
 
@@ -380,9 +397,14 @@ abstract contract PerpetualMintInternal is
             referrer
         );
 
-        // if the number of words requested is greater than uint8, the function call will revert.
-        // the current max allowed by Supra VRF is 255 per request.
-        uint8 numWords = numberOfMints * 1; // 1 words per mint for $MINT, current max of 255 mints per tx
+        // Calculate the total number of random words required for the Supra VRF request.
+        // Constraints:
+        // 1. numWords = 0 results in a revert.
+        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
+        // If the number of words requested exceeds this limit, the function call will revert.
+        //    - For Blast Supra: 2 words per mint for $MINT (max 127 mints per transaction).
+        //    - For standard Supra: 1 word per mint for $MINT (max 255 mints per transaction).
+        uint8 numWords = numberOfMints * wordsPerMint;
 
         uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
                 collectionData,
@@ -507,11 +529,13 @@ abstract contract PerpetualMintInternal is
     /// @param collection address of collection for mint attempts
     /// @param referrer address of referrer
     /// @param numberOfMints number of mints to attempt
+    /// @param wordsPerMint number of random words per mint (2 for PerpetualMintSupra, 3 for PerpetualMintBlastSupra)
     function _attemptBatchMintWithEthSupra(
         address minter,
         address collection,
         address referrer,
-        uint8 numberOfMints
+        uint8 numberOfMints,
+        uint8 wordsPerMint
     ) internal {
         if (collection == address(0)) {
             // throw if collection is $MINT
@@ -538,9 +562,14 @@ abstract contract PerpetualMintInternal is
             referrer
         );
 
-        // if the number of words requested is greater than uint8, the function call will revert.
-        // the current max allowed by Supra VRF is 255 per request.
-        uint8 numWords = numberOfMints * 2; // 2 words per mint, current max of 127 mints per tx
+        // Calculate the total number of random words required for the Supra VRF request.
+        // Constraints:
+        // 1. numWords = 0 results in a revert.
+        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
+        // If the number of words requested exceeds this limit, the function call will revert.
+        //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
+        //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
+        uint8 numWords = numberOfMints * wordsPerMint;
 
         uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
                 collectionData,
@@ -674,12 +703,14 @@ abstract contract PerpetualMintInternal is
     /// @param referrer address of referrer
     /// @param pricePerMint price per mint for collection ($MINT denominated in units of wei)
     /// @param numberOfMints number of mints to attempt
+    /// @param wordsPerMint number of random words per mint (2 for PerpetualMintSupra, 3 for PerpetualMintBlastSupra)
     function _attemptBatchMintWithMintSupra(
         address minter,
         address collection,
         address referrer,
         uint256 pricePerMint,
-        uint8 numberOfMints
+        uint8 numberOfMints,
+        uint8 wordsPerMint
     ) internal {
         if (collection == address(0)) {
             // throw if collection is $MINT
@@ -713,9 +744,14 @@ abstract contract PerpetualMintInternal is
             ethToMintRatio
         );
 
-        // if the number of words requested is greater than uint8, the function call will revert.
-        // the current max allowed by Supra VRF is 255 per request.
-        uint8 numWords = numberOfMints * 2; // 2 words per mint, current max of 127 mints per tx
+        // Calculate the total number of random words required for the Supra VRF request.
+        // Constraints:
+        // 1. numWords = 0 results in a revert.
+        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
+        // If the number of words requested exceeds this limit, the function call will revert.
+        //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
+        //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
+        uint8 numWords = numberOfMints * wordsPerMint;
 
         uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
                 collectionData,
@@ -798,6 +834,12 @@ abstract contract PerpetualMintInternal is
         value = BASIS;
     }
 
+    /// @notice returns the current blast yield risk
+    /// @return risk current blast yield risk
+    function _blastYieldRisk() internal view returns (uint32 risk) {
+        risk = Storage.layout().yieldRisk;
+    }
+
     /// @notice burns a receipt after a claim request is fulfilled
     /// @param tokenId id of receipt to burn
     function _burnReceipt(uint256 tokenId) internal {
@@ -853,7 +895,67 @@ abstract contract PerpetualMintInternal is
         } else {
             result = _calculateMintForCollectionResult_sharedLogic(
                 l,
-                _collectionRisk(collectionData),
+                numberOfMints,
+                randomWords,
+                collectionMintMultiplier,
+                ethToMintRatio,
+                mintPriceAdjustmentFactor,
+                collectionData
+            );
+        }
+    }
+
+    /// @notice calculates the Supra VRF-specific mint result on Blast of a given number of mint attempts for a given collection using given signature as randomness
+    /// @param collection address of collection for mint attempts
+    /// @param numberOfMints number of mints to attempt
+    /// @param signature signature value to use as randomness in calculation
+    /// @param pricePerMint price paid per mint for collection (denominated in units of wei)
+    function _calculateMintResultBlastSupra(
+        address collection,
+        uint8 numberOfMints,
+        uint256[2] calldata signature,
+        uint256 pricePerMint
+    ) internal view returns (MintResultDataBlast memory result) {
+        Storage.Layout storage l = Storage.layout();
+
+        CollectionData storage collectionData = l.collections[collection];
+
+        bool mintForMint = collection == address(0);
+
+        uint8 numberOfWords = numberOfMints * (mintForMint ? 2 : 3);
+
+        uint256 collectionMintMultiplier = _collectionMintMultiplier(
+            collectionData
+        );
+
+        uint256 ethToMintRatio = _ethToMintRatio(l);
+
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerMint
+            );
+
+        uint256[] memory randomWords = new uint256[](numberOfWords);
+
+        for (uint256 i = 0; i < numberOfWords; ++i) {
+            randomWords[i] = uint256(
+                keccak256(abi.encodePacked(signature, i + 1))
+            );
+        }
+
+        if (mintForMint) {
+            result = _calculateMintForMintResultBlast_sharedLogic(
+                l,
+                numberOfMints,
+                randomWords,
+                collectionMintMultiplier,
+                ethToMintRatio,
+                mintPriceAdjustmentFactor,
+                collectionData
+            );
+        } else {
+            result = _calculateMintForCollectionResultBlast_sharedLogic(
+                l,
                 numberOfMints,
                 randomWords,
                 collectionMintMultiplier,
@@ -915,7 +1017,6 @@ abstract contract PerpetualMintInternal is
         } else {
             result = _calculateMintForCollectionResult_sharedLogic(
                 l,
-                _collectionRisk(collectionData),
                 numberOfMints,
                 randomWords,
                 collectionMintMultiplier,
@@ -928,17 +1029,16 @@ abstract contract PerpetualMintInternal is
 
     function _calculateMintForCollectionResult_sharedLogic(
         Storage.Layout storage l,
-        uint32 collectionRisk,
         uint32 numberOfMints,
         uint256[] memory randomWords,
         uint256 collectionMintMultiplier,
         uint256 ethToMintRatio,
-        uint256 mintAdjustmentFactor,
+        uint256 mintPriceAdjustmentFactor,
         CollectionData storage collectionData
     ) private view returns (MintResultData memory result) {
-        TiersData storage tiers = l.tiers;
-
-        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
+        // adjust the collection risk by the mint price adjustment factor
+        uint256 collectionRisk = (_collectionRisk(collectionData) *
+            mintPriceAdjustmentFactor) / BASIS;
 
         result.mintOutcomes = new MintOutcome[](numberOfMints);
 
@@ -950,42 +1050,109 @@ abstract contract PerpetualMintInternal is
                 BASIS
             );
 
-            uint256 secondNormalizedValue = _normalizeValue(
-                randomWords[i + 1],
-                BASIS
-            );
-
             if (!(collectionRisk > firstNormalizedValue)) {
-                uint256 mintAmount;
-                uint256 cumulativeRisk;
+                outcome = _calculateMintForCollectionOutcome(
+                    _normalizeValue(randomWords[i + 1], BASIS), // secondNormalizedValue
+                    l.tiers,
+                    mintPriceAdjustmentFactor,
+                    ethToMintRatio,
+                    _collectionMintPrice(collectionData),
+                    collectionMintMultiplier
+                );
 
-                for (uint256 j = 0; j < tiers.tierRisks.length; ++j) {
-                    cumulativeRisk += tiers.tierRisks[j];
-
-                    if (cumulativeRisk > secondNormalizedValue) {
-                        mintAmount =
-                            (tiers.tierMultipliers[j] *
-                                mintAdjustmentFactor *
-                                ethToMintRatio *
-                                collectionMintPrice *
-                                collectionMintMultiplier) /
-                            (uint256(BASIS) * BASIS * BASIS);
-
-                        outcome.tierIndex = j;
-                        outcome.tierMultiplier = tiers.tierMultipliers[j];
-                        outcome.tierRisk = tiers.tierRisks[j];
-                        outcome.mintAmount = mintAmount;
-
-                        break;
-                    }
-                }
-
-                result.totalMintAmount += mintAmount;
+                result.totalMintAmount += outcome.mintAmount;
             } else {
                 ++result.totalSuccessfulMints;
             }
 
             result.mintOutcomes[i / 2] = outcome;
+        }
+    }
+
+    function _calculateMintForCollectionResultBlast_sharedLogic(
+        Storage.Layout storage l,
+        uint32 numberOfMints,
+        uint256[] memory randomWords,
+        uint256 collectionMintMultiplier,
+        uint256 ethToMintRatio,
+        uint256 mintPriceAdjustmentFactor,
+        CollectionData storage collectionData
+    ) private view returns (MintResultDataBlast memory result) {
+        uint32 blastYieldRisk = _blastYieldRisk();
+
+        // adjust the collection risk by the mint price adjustment factor
+        uint256 collectionRisk = (_collectionRisk(collectionData) *
+            mintPriceAdjustmentFactor) / BASIS;
+
+        result.mintOutcomes = new MintOutcome[](numberOfMints);
+
+        for (uint256 i = 0; i < randomWords.length; i += 3) {
+            MintOutcome memory outcome;
+
+            uint256 firstNormalizedValue = _normalizeValue(
+                randomWords[i],
+                BASIS
+            );
+
+            if (!(collectionRisk > firstNormalizedValue)) {
+                outcome = _calculateMintForCollectionOutcome(
+                    _normalizeValue(randomWords[i + 1], BASIS), // secondNormalizedValue
+                    l.tiers,
+                    mintPriceAdjustmentFactor,
+                    ethToMintRatio,
+                    _collectionMintPrice(collectionData),
+                    collectionMintMultiplier
+                );
+
+                result.totalMintAmount += outcome.mintAmount;
+            } else {
+                ++result.totalSuccessfulMints;
+            }
+
+            uint256 thirdNormalizedValue = _normalizeValue(
+                randomWords[i + 2],
+                BASIS
+            );
+
+            if (blastYieldRisk > thirdNormalizedValue) {
+                result.totalBlastYieldAmount += IBlast(BLAST)
+                    .readClaimableYield(address(this));
+
+                result.totalBlastYieldAmount += _calculateMaxClaimableGas();
+            }
+
+            result.mintOutcomes[i / 3] = outcome;
+        }
+    }
+
+    function _calculateMintForCollectionOutcome(
+        uint256 secondNormalizedValue,
+        TiersData storage tiers,
+        uint256 mintPriceAdjustmentFactor,
+        uint256 ethToMintRatio,
+        uint256 collectionMintPrice,
+        uint256 collectionMintMultiplier
+    ) private view returns (MintOutcome memory outcome) {
+        uint256 cumulativeRisk;
+
+        for (uint256 j = 0; j < tiers.tierRisks.length; ++j) {
+            cumulativeRisk += tiers.tierRisks[j];
+
+            if (cumulativeRisk > secondNormalizedValue) {
+                uint256 mintAmount = (tiers.tierMultipliers[j] *
+                    mintPriceAdjustmentFactor *
+                    ethToMintRatio *
+                    collectionMintPrice *
+                    collectionMintMultiplier) /
+                    (uint256(BASIS) * BASIS * BASIS);
+
+                outcome.tierIndex = j;
+                outcome.tierMultiplier = tiers.tierMultipliers[j];
+                outcome.tierRisk = tiers.tierRisks[j];
+                outcome.mintAmount = mintAmount;
+
+                break;
+            }
         }
     }
 
@@ -995,7 +1162,7 @@ abstract contract PerpetualMintInternal is
         uint256[] memory randomWords,
         uint256 collectionMintMultiplier,
         uint256 ethToMintRatio,
-        uint256 mintAdjustmentFactor,
+        uint256 mintPriceAdjustmentFactor,
         CollectionData storage collectionData
     ) private view returns (MintResultData memory result) {
         MintTokenTiersData storage mintTokenTiers = l.mintTokenTiers;
@@ -1018,7 +1185,7 @@ abstract contract PerpetualMintInternal is
                 if (cumulativeRisk > normalizedValue) {
                     mintAmount =
                         (mintTokenTiers.tierMultipliers[j] *
-                            mintAdjustmentFactor *
+                            mintPriceAdjustmentFactor *
                             ethToMintRatio *
                             collectionMintPrice *
                             collectionMintMultiplier) /
@@ -1037,6 +1204,91 @@ abstract contract PerpetualMintInternal is
 
             result.mintOutcomes[i] = outcome;
         }
+    }
+
+    function _calculateMintForMintResultBlast_sharedLogic(
+        Storage.Layout storage l,
+        uint32 numberOfMints,
+        uint256[] memory randomWords,
+        uint256 collectionMintMultiplier,
+        uint256 ethToMintRatio,
+        uint256 mintPriceAdjustmentFactor,
+        CollectionData storage collectionData
+    ) private view returns (MintResultDataBlast memory result) {
+        MintTokenTiersData storage mintTokenTiers = l.mintTokenTiers;
+
+        uint32 blastYieldRisk = _blastYieldRisk();
+
+        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
+
+        result.mintOutcomes = new MintOutcome[](numberOfMints);
+
+        for (uint256 i = 0; i < randomWords.length; i += 2) {
+            MintOutcome memory outcome;
+
+            uint256 firstNormalizedValue = _normalizeValue(
+                randomWords[i],
+                BASIS
+            );
+
+            uint256 mintAmount;
+            uint256 cumulativeRisk;
+
+            for (uint256 j = 0; j < mintTokenTiers.tierRisks.length; ++j) {
+                cumulativeRisk += mintTokenTiers.tierRisks[j];
+
+                if (cumulativeRisk > firstNormalizedValue) {
+                    mintAmount =
+                        (mintTokenTiers.tierMultipliers[j] *
+                            mintPriceAdjustmentFactor *
+                            ethToMintRatio *
+                            collectionMintPrice *
+                            collectionMintMultiplier) /
+                        (uint256(BASIS) * BASIS * BASIS);
+
+                    outcome.tierIndex = j;
+                    outcome.tierMultiplier = mintTokenTiers.tierMultipliers[j];
+                    outcome.tierRisk = mintTokenTiers.tierRisks[j];
+                    outcome.mintAmount = mintAmount;
+
+                    break;
+                }
+            }
+
+            uint256 secondNormalizedValue = _normalizeValue(
+                randomWords[i + 1],
+                BASIS
+            );
+
+            if (blastYieldRisk > secondNormalizedValue) {
+                result.totalBlastYieldAmount += IBlast(BLAST)
+                    .readClaimableYield(address(this));
+
+                result.totalBlastYieldAmount += _calculateMaxClaimableGas();
+            }
+
+            result.totalMintAmount += mintAmount;
+
+            result.mintOutcomes[i / 2] = outcome;
+        }
+    }
+
+    function _calculateMaxClaimableGas()
+        private
+        view
+        returns (uint256 maxClaimableGas)
+    {
+        (uint256 etherSeconds, uint256 etherBalance, , ) = IBlast(BLAST)
+            .readGasParams(address(this));
+
+        // Calculate the maximum ether that can be claimed based on accumulated ether seconds
+        uint256 maxEtherClaimableByTime = etherSeconds /
+            IGas(GAS).ceilGasSeconds();
+
+        // The actual claimable amount is the lesser of the ether balance and the amount based on time
+        maxClaimableGas = (maxEtherClaimableByTime < etherBalance)
+            ? maxEtherClaimableByTime
+            : etherBalance;
     }
 
     /// @notice Cancels a claim for a given claimer for given token ID
@@ -1243,6 +1495,55 @@ abstract contract PerpetualMintInternal is
         } else {
             // if the collection is not address(0), the mint is for a collection
             _resolveMints(
+                l.mintToken,
+                collectionData,
+                mintPriceAdjustmentFactor,
+                l.tiers,
+                minter,
+                collection,
+                randomWords,
+                _ethToMintRatio(l)
+            );
+        }
+
+        collectionData.pendingRequests.remove(requestId);
+
+        delete l.requests[requestId];
+    }
+
+    /// @notice Blast-specific internal VRF callback
+    /// @notice is executed by the configured VRF contract
+    /// @param requestId id of VRF request
+    /// @param randomWords random values return by the configured VRF contract
+    function _fulfillRandomWordsBlast(
+        uint256 requestId,
+        uint256[] memory randomWords
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        RequestData storage request = l.requests[requestId];
+
+        address collection = request.collection;
+        address minter = request.minter;
+        uint256 mintPriceAdjustmentFactor = request.mintPriceAdjustmentFactor;
+
+        CollectionData storage collectionData = l.collections[collection];
+
+        // if the collection is address(0), the mint is for $MINT
+        if (collection == address(0)) {
+            _resolveMintsForMintBlast(
+                l.mintToken,
+                _collectionMintMultiplier(collectionData),
+                _collectionMintPrice(collectionData),
+                mintPriceAdjustmentFactor,
+                l.mintTokenTiers,
+                minter,
+                randomWords,
+                _ethToMintRatio(l)
+            );
+        } else {
+            // if the collection is not address(0), the mint is for a collection
+            _resolveMintsBlast(
                 l.mintToken,
                 collectionData,
                 mintPriceAdjustmentFactor,
@@ -1485,31 +1786,19 @@ abstract contract PerpetualMintInternal is
                 BASIS
             );
 
-            // second random word is used to determine the consolation tier
-            uint256 secondNormalizedValue = _normalizeValue(
-                randomWords[i + 1],
-                BASIS
-            );
-
             // if the collection risk is less than the first normalized value, the mint attempt is unsuccessful
             // and the second normalized value is used to determine the consolation tier
             if (!(collectionRisk > firstNormalizedValue)) {
-                uint256 tierMultiplier;
-                uint256 cumulativeRisk;
+                // second random word is used to determine the consolation tier
+                uint256 secondNormalizedValue = _normalizeValue(
+                    randomWords[i + 1],
+                    BASIS
+                );
 
-                // iterate through tiers to find the tier that the random value falls into
-                for (uint256 j = 0; j < tiersData.tierRisks.length; ++j) {
-                    cumulativeRisk += tiersData.tierRisks[j];
-
-                    // if the cumulative risk is greater than the second normalized value, the tier has been found
-                    if (cumulativeRisk > secondNormalizedValue) {
-                        tierMultiplier = tiersData.tierMultipliers[j];
-
-                        break;
-                    }
-                }
-
-                cumulativeTierMultiplier += tierMultiplier;
+                cumulativeTierMultiplier += _calculateTierMultiplier(
+                    tiersData,
+                    secondNormalizedValue
+                );
             } else {
                 // mint attempt is successful, so the total receipt amount is incremented
                 ++totalReceiptAmount;
@@ -1550,6 +1839,121 @@ abstract contract PerpetualMintInternal is
         );
     }
 
+    /// @notice resolves the outcomes of attempted mints for a given collection on Blast
+    /// @param mintToken address of $MINT token
+    /// @param collectionData the CollectionData struct for a given collection
+    /// @param mintPriceAdjustmentFactor adjustment factor for mint price
+    /// @param tiersData the TiersData struct for mint consolations
+    /// @param minter address of minter
+    /// @param collection address of collection for mint attempts
+    /// @param randomWords array of random values relating to number of attempts
+    /// @param ethToMintRatio ratio of ETH to $MINT
+    function _resolveMintsBlast(
+        address mintToken,
+        CollectionData storage collectionData,
+        uint256 mintPriceAdjustmentFactor,
+        TiersData memory tiersData,
+        address minter,
+        address collection,
+        uint256[] memory randomWords,
+        uint256 ethToMintRatio
+    ) internal {
+        // ensure the number of random words is odd
+        // each valid mint attempt requires three random words
+        if (randomWords.length % 3 != 0) {
+            revert UnmatchedRandomWords();
+        }
+
+        uint32 blastYieldRisk = _blastYieldRisk();
+
+        uint256 collectionMintMultiplier = _collectionMintMultiplier(
+            collectionData
+        );
+
+        uint256 collectionMintPrice = _collectionMintPrice(collectionData);
+
+        // adjust the collection risk by the mint price adjustment factor
+        uint256 collectionRisk = (_collectionRisk(collectionData) *
+            mintPriceAdjustmentFactor) / BASIS;
+
+        uint256 cumulativeTierMultiplier;
+        uint256 totalBlastYieldAmount;
+        uint256 totalReceiptAmount;
+
+        for (uint256 i = 0; i < randomWords.length; i += 3) {
+            // first random word is used to determine whether the mint attempt was successful
+            uint256 firstNormalizedValue = _normalizeValue(
+                randomWords[i],
+                BASIS
+            );
+
+            // if the collection risk is less than the first normalized value, the mint attempt is unsuccessful
+            // and the second normalized value is used to determine the consolation tier
+            if (!(collectionRisk > firstNormalizedValue)) {
+                // second random word is used to determine the consolation tier
+                uint256 secondNormalizedValue = _normalizeValue(
+                    randomWords[i + 1],
+                    BASIS
+                );
+
+                cumulativeTierMultiplier += _calculateTierMultiplier(
+                    tiersData,
+                    secondNormalizedValue
+                );
+            } else {
+                // mint attempt is successful, so the total receipt amount is incremented
+                ++totalReceiptAmount;
+            }
+
+            // third random word is used to determine the Blast yield outcome
+            uint256 thirdNormalizedValue = _normalizeValue(
+                randomWords[i + 2],
+                BASIS
+            );
+
+            totalBlastYieldAmount += _processBlastYieldOutcome(
+                thirdNormalizedValue,
+                minter,
+                blastYieldRisk,
+                totalBlastYieldAmount
+            );
+        }
+
+        uint256 totalMintAmount;
+
+        // Mint the cumulative amounts at the end
+        if (cumulativeTierMultiplier > 0) {
+            // Adjust for the cumulative tier multiplier, ETH to $MINT ratio, collection mint price, and apply collection-specific multiplier & mint price adjustment factor
+            totalMintAmount =
+                (cumulativeTierMultiplier *
+                    ethToMintRatio *
+                    collectionMintPrice *
+                    collectionMintMultiplier *
+                    mintPriceAdjustmentFactor) /
+                (uint256(BASIS) * BASIS * BASIS);
+
+            IToken(mintToken).mint(minter, totalMintAmount);
+        }
+
+        if (totalReceiptAmount > 0) {
+            _safeMint(
+                minter,
+                uint256(bytes32(abi.encode(collection))), // encode collection address as tokenId
+                totalReceiptAmount,
+                ""
+            );
+        }
+
+        emit MintResultBlast(
+            minter,
+            collection,
+            randomWords.length / 3,
+            totalBlastYieldAmount,
+            totalMintAmount,
+            totalReceiptAmount
+        );
+    }
+
     /// @notice resolves the outcomes of attempted mints for $MINT
     /// @param mintToken address of $MINT token
     /// @param mintForMintMultiplier minting for $MINT multiplier
@@ -1575,22 +1979,10 @@ abstract contract PerpetualMintInternal is
             // random word is used to determine the reward tier
             uint256 normalizedValue = _normalizeValue(randomWords[i], BASIS);
 
-            uint256 tierMultiplier;
-            uint256 cumulativeRisk;
-
-            // iterate through tiers to find the tier that the random value falls into
-            for (uint256 j = 0; j < mintTokenTiersData.tierRisks.length; ++j) {
-                cumulativeRisk += mintTokenTiersData.tierRisks[j];
-
-                // if the cumulative risk is greater than the normalized value, the tier has been found
-                if (cumulativeRisk > normalizedValue) {
-                    tierMultiplier = mintTokenTiersData.tierMultipliers[j];
-
-                    break;
-                }
-            }
-
-            cumulativeTierMultiplier += tierMultiplier;
+            cumulativeTierMultiplier += _calculateMintTokenTierMultiplier(
+                mintTokenTiersData,
+                normalizedValue
+            );
         }
 
         // Mint the cumulative amounts at the end
@@ -1612,10 +2004,158 @@ abstract contract PerpetualMintInternal is
         );
     }
 
+    /// @notice resolves the outcomes of attempted mints for $MINT on Blast
+    /// @param mintToken address of $MINT token
+    /// @param mintForMintMultiplier minting for $MINT multiplier
+    /// @param mintForMintPrice mint for $MINT mint price
+    /// @param mintPriceAdjustmentFactor adjustment factor for mint price
+    /// @param mintTokenTiersData the MintTokenTiersData struct for mint for $MINT consolations
+    /// @param minter address of minter
+    /// @param randomWords array of random values relating to number of attempts
+    /// @param ethToMintRatio ratio of ETH to $MINT
+    function _resolveMintsForMintBlast(
+        address mintToken,
+        uint256 mintForMintMultiplier,
+        uint256 mintForMintPrice,
+        uint256 mintPriceAdjustmentFactor,
+        MintTokenTiersData memory mintTokenTiersData,
+        address minter,
+        uint256[] memory randomWords,
+        uint256 ethToMintRatio
+    ) internal {
+        // ensure the number of random words is even
+        // each valid mint for $MINT attempt on Blast requires two random words
+        if (randomWords.length % 2 != 0) {
+            revert UnmatchedRandomWords();
+        }
+
+        uint32 blastYieldRisk = _blastYieldRisk();
+
+        uint256 cumulativeTierMultiplier;
+        uint256 totalBlastYieldAmount;
+
+        for (uint256 i = 0; i < randomWords.length; i += 2) {
+            // random word is used to determine the reward tier
+            uint256 firstNormalizedValue = _normalizeValue(
+                randomWords[i],
+                BASIS
+            );
+
+            cumulativeTierMultiplier += _calculateMintTokenTierMultiplier(
+                mintTokenTiersData,
+                firstNormalizedValue
+            );
+
+            // second random word is used to determine the Blast yield outcome
+            uint256 secondNormalizedValue = _normalizeValue(
+                randomWords[i + 1],
+                BASIS
+            );
+
+            totalBlastYieldAmount += _processBlastYieldOutcome(
+                secondNormalizedValue,
+                minter,
+                blastYieldRisk,
+                totalBlastYieldAmount
+            );
+        }
+
+        // Mint the cumulative amounts at the end
+        // Adjust for the cumulative tier multiplier, ETH to $MINT ratio, mint for $MINT price, and apply $MINT-specific multiplier & mint price adjustment factor
+        uint256 totalMintAmount = (cumulativeTierMultiplier *
+            ethToMintRatio *
+            mintForMintPrice *
+            mintForMintMultiplier *
+            mintPriceAdjustmentFactor) / (uint256(BASIS) * BASIS * BASIS);
+
+        IToken(mintToken).mint(minter, totalMintAmount);
+
+        emit MintResultBlast(
+            minter,
+            address(0),
+            randomWords.length / 2,
+            totalBlastYieldAmount,
+            totalMintAmount,
+            0
+        );
+    }
+
+    function _calculateMintTokenTierMultiplier(
+        MintTokenTiersData memory mintTokenTiersData,
+        uint256 normalizedValue
+    ) private pure returns (uint256 tierMultiplier) {
+        uint256 cumulativeRisk;
+
+        // iterate through tiers to find the tier that the random value falls into
+        for (uint256 j = 0; j < mintTokenTiersData.tierRisks.length; ++j) {
+            cumulativeRisk += mintTokenTiersData.tierRisks[j];
+
+            // if the cumulative risk is greater than the second normalized value, the tier has been found
+            if (cumulativeRisk > normalizedValue) {
+                tierMultiplier = mintTokenTiersData.tierMultipliers[j];
+
+                break;
+            }
+        }
+    }
+
+    function _calculateTierMultiplier(
+        TiersData memory tiersData,
+        uint256 normalizedValue
+    ) private pure returns (uint256 tierMultiplier) {
+        uint256 cumulativeRisk;
+
+        // iterate through tiers to find the tier that the random value falls into
+        for (uint256 j = 0; j < tiersData.tierRisks.length; ++j) {
+            cumulativeRisk += tiersData.tierRisks[j];
+
+            // if the cumulative risk is greater than the second normalized value, the tier has been found
+            if (cumulativeRisk > normalizedValue) {
+                tierMultiplier = tiersData.tierMultipliers[j];
+
+                break;
+            }
+        }
+    }
+
+    function _processBlastYieldOutcome(
+        uint256 normalizedValue,
+        address minter,
+        uint32 blastYieldRisk,
+        uint256 _totalBlastYieldAmount
+    ) private returns (uint256 totalBlastYieldAmount) {
+        // if the Blast yield risk is greater than the normalized value, the minter receives all claimable, matured Blast yield
+        if (blastYieldRisk > normalizedValue) {
+            _totalBlastYieldAmount += IBlast(BLAST).claimAllYield(
+                address(this),
+                minter
+            );
+
+            if (_calculateMaxClaimableGas() > 0) {
+                _totalBlastYieldAmount += IBlast(BLAST).claimMaxGas(
+                    address(this),
+                    minter
+                );
+            }
+        }
+
+        totalBlastYieldAmount = _totalBlastYieldAmount;
+    }
+
     /// @notice returns the value of SCALE
     /// @return value SCALE value
     function _SCALE() internal pure returns (uint256 value) {
         value = SCALE;
+    }
+
+    /// @notice sets the risk for Blast yield
+    /// @param risk risk of Blast yield
+    function _setBlastYieldRisk(uint32 risk) internal {
+        _enforceBasis(risk, BASIS);
+
+        Storage.layout().yieldRisk = risk;
+
+        emit BlastYieldRiskSet(risk);
     }
 
     /// @notice sets the collection mint fee distribution ratio in basis points

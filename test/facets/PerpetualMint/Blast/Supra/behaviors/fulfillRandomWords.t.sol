@@ -4,17 +4,17 @@ pragma solidity 0.8.19;
 
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
-import { PerpetualMintTest_Base } from "../PerpetualMint.t.sol";
-import { TokenTest } from "../../../Token/Token.t.sol";
-import { BaseForkTest } from "../../../../BaseForkTest.t.sol";
-import { CoreTest } from "../../../../diamonds/Core/Core.t.sol";
-import { TokenProxyTest } from "../../../../diamonds/TokenProxy.t.sol";
+import { PerpetualMintTest_BlastSupra } from "../PerpetualMint.t.sol";
+import { TokenTest } from "../../../../Token/Token.t.sol";
+import { BlastForkTest } from "../../../../../BlastForkTest.t.sol";
+import { CoreBlastTest } from "../../../../../diamonds/Core/Blast/Core.t.sol";
+import { TokenProxyTest } from "../../../../../diamonds/TokenProxy.t.sol";
 
-/// @title PerpetualMint_fulfillRandomWordsBase
-/// @dev PerpetualMint_Base test contract for testing expected fulfillRandomWords behavior. Tested on a Base fork.
-contract PerpetualMint_fulfillRandomWordsBase is
-    BaseForkTest,
-    PerpetualMintTest_Base,
+/// @title PerpetualMint_fulfillRandomWordsBlastSupra
+/// @dev PerpetualMint_BlastSupra test contract for testing expected fulfillRandomWords behavior. Tested on a Blast fork.
+contract PerpetualMint_fulfillRandomWordsBlastSupra is
+    BlastForkTest,
+    PerpetualMintTest_BlastSupra,
     TokenTest
 {
     uint32 internal constant TEST_MINT_ATTEMPTS = 3;
@@ -31,11 +31,11 @@ contract PerpetualMint_fulfillRandomWordsBase is
     address internal constant MINT_FOR_MINT_ADDRESS = address(0);
 
     /// @dev overrides the receive function to accept ETH
-    receive() external payable override(CoreTest, TokenProxyTest) {}
+    receive() external payable override(CoreBlastTest, TokenProxyTest) {}
 
     /// @dev Sets up the test case environment.
-    function setUp() public override(PerpetualMintTest_Base, TokenTest) {
-        PerpetualMintTest_Base.setUp();
+    function setUp() public override(PerpetualMintTest_BlastSupra, TokenTest) {
+        PerpetualMintTest_BlastSupra.setUp();
         TokenTest.setUp();
 
         perpetualMint.setMintToken(address(token));
@@ -74,7 +74,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         // roll forward to the mint fulfillment block number
         vm.roll(mintFulfillmentBlockNumber);
 
-        uint8 numberOfRandomWordsRequested = uint8(TEST_MINT_ATTEMPTS * 2); // 2 words per mint for collection attempt
+        uint8 numberOfRandomWordsRequested = uint8(TEST_MINT_ATTEMPTS * 3); // 3 words per mint for collection attempt on Blast
 
         // Supra VRF Router nonce storage slot
         bytes32 nonceStorageSlot = bytes32(uint256(3));
@@ -135,7 +135,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         // roll forward to the mint fulfillment block number
         vm.roll(mintFulfillmentBlockNumber);
 
-        uint8 numberOfRandomWordsRequested = uint8(TEST_MINT_ATTEMPTS * 1); // 1 word per mint for $MINT attempt
+        uint8 numberOfRandomWordsRequested = uint8(TEST_MINT_ATTEMPTS * 2); // 2 words per mint for $MINT attempt on Blast
 
         // Supra VRF Router nonce storage slot
         bytes32 nonceStorageSlot = bytes32(uint256(3));
@@ -199,7 +199,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         // roll forward to the mint fulfillment block number
         vm.roll(mintFulfillmentBlockNumber);
 
-        uint8 numberOfRandomWordsRequested = uint8(TEST_MINT_ATTEMPTS * 2); // 2 words per mint for collection attempt
+        uint8 numberOfRandomWordsRequested = uint8(TEST_MINT_ATTEMPTS * 3); // 3 words per mint for collection attempt on Blast
 
         // Supra VRF Router nonce storage slot
         bytes32 nonceStorageSlot = bytes32(uint256(3));
@@ -264,7 +264,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         // roll forward to the mint fulfillment block number
         vm.roll(mintFulfillmentBlockNumber);
 
-        uint8 numberOfRandomWordsRequested = uint8(TEST_MINT_ATTEMPTS * 2); // 1 word per mint for $MINT attempt
+        uint8 numberOfRandomWordsRequested = uint8(TEST_MINT_ATTEMPTS * 2); // 2 words per mint for $MINT attempt on Blast
 
         // Supra VRF Router nonce storage slot
         bytes32 nonceStorageSlot = bytes32(uint256(3));
@@ -303,8 +303,8 @@ contract PerpetualMint_fulfillRandomWordsBase is
         perpetualMint.exposed_pendingRequestsAt(MINT_FOR_MINT_ADDRESS, 1);
     }
 
-    /// @dev Tests that fulfillRandomWords (when minting for a collection paid in ETH) can currently handle the max limit of 127 attempted mints per tx.
-    function testFuzz_fulfillRandomWordsMintForCollectionWithETHCanHandleMaximum127MintAttempts(
+    /// @dev Tests that fulfillRandomWords (when minting for a collection paid in ETH) can currently handle the max limit of 85 attempted mints per tx on Blast.
+    function testFuzz_fulfillRandomWordsMintForCollectionWithETHCanHandleMaximum85MintAttempts(
         uint256 randomness
     ) external {
         // store current block number to use as the mint block number
@@ -313,7 +313,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         // specify the current max number of words
         uint8 currentMaxNumWords = type(uint8).max;
 
-        uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords / 2;
+        uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords / 3;
 
         // attempt to mint for collection with ETH
         vm.prank(minter);
@@ -327,7 +327,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
             value: MINT_PRICE * (MAXIMUM_MINT_ATTEMPTS + 1)
         }(MINT_FOR_COLLECTION_ADDRESS, NO_REFERRER, MAXIMUM_MINT_ATTEMPTS + 1);
 
-        uint8 numberOfRandomWordsRequested = uint8(MAXIMUM_MINT_ATTEMPTS * 2); // 2 words per mint for collection attempt
+        uint8 numberOfRandomWordsRequested = uint8(MAXIMUM_MINT_ATTEMPTS * 3); // 3 words per mint for collection attempt on Blast
 
         // calculate and store the mint fulfillment block number using the configured vrf min # of confirmations
         uint256 mintFulfillmentBlockNumber = mintBlockNumber +
@@ -365,8 +365,8 @@ contract PerpetualMint_fulfillRandomWordsBase is
         assert(success == true);
     }
 
-    /// @dev Tests that fulfillRandomWords (when minting for $MINT paid in ETH) can currently handle the max limit of 255 attempted mints per tx.
-    function testFuzz_fulfillRandomWordsMintForMintWithETHCanHandleMaximum255MintAttempts(
+    /// @dev Tests that fulfillRandomWords (when minting for $MINT paid in ETH) can currently handle the max limit of 127 attempted mints per tx on Blast.
+    function testFuzz_fulfillRandomWordsMintForMintWithETHCanHandleMaximum127MintAttempts(
         uint256 randomness
     ) external {
         // store current block number to use as the mint block number
@@ -375,7 +375,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         // specify the current max number of words
         uint8 currentMaxNumWords = type(uint8).max;
 
-        uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords;
+        uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords / 2;
 
         // attempt to mint for $MINT with ETH
         vm.prank(minter);
@@ -389,7 +389,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
             value: MINT_PRICE * (MAXIMUM_MINT_ATTEMPTS + 1)
         }(NO_REFERRER, MAXIMUM_MINT_ATTEMPTS + 1);
 
-        uint8 numberOfRandomWordsRequested = uint8(MAXIMUM_MINT_ATTEMPTS * 1); // 1 word per mint for $MINT attempt
+        uint8 numberOfRandomWordsRequested = uint8(MAXIMUM_MINT_ATTEMPTS * 2); // 2 words per mint for $MINT attempt on Blast
 
         // calculate and store the mint fulfillment block number using the configured vrf min # of confirmations
         uint256 mintFulfillmentBlockNumber = mintBlockNumber +
@@ -427,8 +427,8 @@ contract PerpetualMint_fulfillRandomWordsBase is
         assert(success == true);
     }
 
-    /// @dev Tests that fulfillRandomWords (when minting for a collection paid in $MINT) can currently handle the max limit of 127 attempted mints per tx.
-    function testFuzz_fulfillRandomWordsMintForCollectionWithMintCanHandleMaximum127MintAttempts(
+    /// @dev Tests that fulfillRandomWords (when minting for a collection paid in $MINT) can currently handle the max limit of 85 attempted mints per tx on Blast.
+    function testFuzz_fulfillRandomWordsMintForCollectionWithMintCanHandleMaximum85MintAttempts(
         uint256 randomness
     ) external {
         uint256 currentEthToMintRatio = perpetualMint.ethToMintRatio();
@@ -439,7 +439,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         // specify the current max number of words
         uint8 currentMaxNumWords = type(uint8).max;
 
-        uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords / 2;
+        uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords / 3;
 
         // attempt to mint for collection with $MINT
         vm.prank(minter);
@@ -460,7 +460,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
             MAXIMUM_MINT_ATTEMPTS + 1
         );
 
-        uint8 numberOfRandomWordsRequested = uint8(MAXIMUM_MINT_ATTEMPTS * 2); // 2 words per mint for collection attempt
+        uint8 numberOfRandomWordsRequested = uint8(MAXIMUM_MINT_ATTEMPTS * 3); // 3 words per mint for collection attempt on Blast
 
         // calculate and store the mint fulfillment block number using the configured vrf min # of confirmations
         uint256 mintFulfillmentBlockNumber = mintBlockNumber +
@@ -498,8 +498,8 @@ contract PerpetualMint_fulfillRandomWordsBase is
         assert(success == true);
     }
 
-    /// @dev Tests that fulfillRandomWords (when minting for $MINT paid in $MINT) can currently handle the max limit of 255 attempted mints per tx.
-    function testFuzz_fulfillRandomWordsMintForMintWithMintCanHandleMaximum255MintAttempts(
+    /// @dev Tests that fulfillRandomWords (when minting for $MINT paid in $MINT) can currently handle the max limit of 127 attempted mints per tx on Blast.
+    function testFuzz_fulfillRandomWordsMintForMintWithMintCanHandleMaximum127MintAttempts(
         uint256 randomness
     ) external {
         uint256 currentEthToMintRatio = perpetualMint.ethToMintRatio();
@@ -510,7 +510,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         // specify the current max number of words
         uint8 currentMaxNumWords = type(uint8).max;
 
-        uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords;
+        uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords / 2;
 
         // attempt to mint for $MINT with $MINT
         vm.prank(minter);
@@ -529,7 +529,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
             MAXIMUM_MINT_ATTEMPTS + 1
         );
 
-        uint8 numberOfRandomWordsRequested = uint8(MAXIMUM_MINT_ATTEMPTS * 1); // 1 word per mint for $MINT attempt
+        uint8 numberOfRandomWordsRequested = uint8(MAXIMUM_MINT_ATTEMPTS * 2); // 2 word per mint for $MINT attempt on Blast
 
         // calculate and store the mint fulfillment block number using the configured vrf min # of confirmations
         uint256 mintFulfillmentBlockNumber = mintBlockNumber +

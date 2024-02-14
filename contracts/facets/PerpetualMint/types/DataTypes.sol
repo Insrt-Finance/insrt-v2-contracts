@@ -45,6 +45,18 @@ struct MintResultData {
     uint256 totalSuccessfulMints;
 }
 
+/// @dev Represents the total result of a batch mint attempt on Blast.
+struct MintResultDataBlast {
+    /// @dev An array containing the outcomes of each individual mint attempt
+    MintOutcome[] mintOutcomes;
+    /// @dev The total amount of Blast yield received, in units of wei
+    uint256 totalBlastYieldAmount;
+    /// @dev The total amount of $MINT to be issued based on all outcomes, in units of wei
+    uint256 totalMintAmount;
+    /// @dev The total number of successful mint attempts where a prize ticket was awarded
+    uint256 totalSuccessfulMints;
+}
+
 /// @dev Represents data specific to $MINT mint for $MINT consolation tiers
 struct MintTokenTiersData {
     /// @dev assumed ordered array of risks for each tier

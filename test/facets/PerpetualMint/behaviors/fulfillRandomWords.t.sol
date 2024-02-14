@@ -9,7 +9,7 @@ import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { TokenTest } from "../../Token/Token.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
-import { CoreTest } from "../../../diamonds/Core.t.sol";
+import { CoreTest } from "../../../diamonds/Core/Core.t.sol";
 import { TokenProxyTest } from "../../../diamonds/TokenProxy.t.sol";
 import { IVRFCoordinatorV2 } from "../../../interfaces/IVRFCoordinatorV2.sol";
 import { VRFCoordinatorV2MockPlus } from "../../../mocks/VRFCoordinatorV2MockPlus.sol";

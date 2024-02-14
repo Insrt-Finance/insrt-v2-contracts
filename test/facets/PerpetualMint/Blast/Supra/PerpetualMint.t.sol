@@ -4,24 +4,24 @@ pragma solidity 0.8.19;
 
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
-import { PerpetualMintHelper_Base } from "./PerpetualMintHelper.t.sol";
-import { IPerpetualMintTest } from "../IPerpetualMintTest.sol";
-import { CoreTest } from "../../../diamonds/Core/Core.t.sol";
-import { MintTokenTiersData, PerpetualMintStorage as Storage, TiersData } from "../../../../contracts/facets/PerpetualMint/Storage.sol";
-import { IDepositContract } from "../../../../contracts/vrf/Supra/IDepositContract.sol";
-import { ISupraRouterContract } from "../../../../contracts/vrf/Supra/ISupraRouterContract.sol";
+import { PerpetualMintHelper_BlastSupra } from "./PerpetualMintHelper.t.sol";
+import { IPerpetualMintTest } from "../../IPerpetualMintTest.sol";
+import { CoreBlastTest } from "../../../../diamonds/Core/Blast/Core.t.sol";
+import { MintTokenTiersData, PerpetualMintStorage as Storage, TiersData } from "../../../../../contracts/facets/PerpetualMint/Storage.sol";
+import { IDepositContract } from "../../../../../contracts/vrf/Supra/IDepositContract.sol";
+import { ISupraRouterContract } from "../../../../../contracts/vrf/Supra/ISupraRouterContract.sol";
 
-/// @title PerpetualMintTest_Base
-/// @dev PerpetualMintTest Base-specific, Supra VRF-specific helper contract. Configures PerpetualMint facets for Core test.
+/// @title PerpetualMintTest_BlastSupra
+/// @dev PerpetualMintTest Blast-specific, Supra VRF-specific helper contract. Configures PerpetualMint facets for CoreBlast test.
 /// @dev Should function identically across all forks.
-abstract contract PerpetualMintTest_Base is CoreTest {
+abstract contract PerpetualMintTest_BlastSupra is CoreBlastTest {
     IDepositContract internal supraVRFDepositContract;
 
     IPerpetualMintTest public perpetualMint;
 
     ISupraRouterContract internal supraRouterContract;
 
-    PerpetualMintHelper_Base public perpetualMintHelper;
+    PerpetualMintHelper_BlastSupra public perpetualMintHelper;
 
     MintTokenTiersData internal testMintTokenTiersData;
 
@@ -29,6 +29,8 @@ abstract contract PerpetualMintTest_Base is CoreTest {
 
     /// @dev number of tiers
     uint8 internal constant testNumberOfTiers = 5;
+
+    uint32 internal constant TEST_BLAST_YIELD_RISK = 1e6; // 0.1%
 
     uint32 internal constant TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP =
         5e8; // 50%
@@ -93,10 +95,12 @@ abstract contract PerpetualMintTest_Base is CoreTest {
 
         initPerpetualMint();
 
-        perpetualMint = IPerpetualMintTest(address(coreDiamond));
+        perpetualMint = IPerpetualMintTest(address(coreBlastDiamond));
 
         // mints 100 ETH to minter
         vm.deal(minter, 100 ether);
+
+        perpetualMint.setBlastYieldRisk(TEST_BLAST_YIELD_RISK);
 
         perpetualMint.setCollectionReferralFeeBP(
             BORED_APE_YACHT_CLUB,
@@ -170,7 +174,11 @@ abstract contract PerpetualMintTest_Base is CoreTest {
 
         perpetualMint.setMintTokenTiers(testMintTokenTiersData);
 
+        perpetualMint.setTiers(testTiersData);
+
         TEST_ADJUSTMENT_FACTOR = perpetualMint.BASIS();
+
+        assert(TEST_BLAST_YIELD_RISK == perpetualMint.blastYieldRisk());
 
         assert(
             baycCollectionRisk ==
@@ -218,12 +226,12 @@ abstract contract PerpetualMintTest_Base is CoreTest {
 
     /// @dev initializes PerpetualMint facets by executing a diamond cut on the Core Diamond.
     function initPerpetualMint() internal {
-        perpetualMintHelper = new PerpetualMintHelper_Base();
+        perpetualMintHelper = new PerpetualMintHelper_BlastSupra();
 
         ISolidStateDiamond.FacetCut[] memory facetCuts = perpetualMintHelper
             .getFacetCuts();
 
-        coreDiamond.diamondCut(facetCuts, address(0), "");
+        coreBlastDiamond.diamondCut(facetCuts, address(0), "");
     }
 
     /// @dev Helper function to activate Supra VRF by adding the contract and client to the Supra VRF Deposit Contract whitelist and depositing funds.

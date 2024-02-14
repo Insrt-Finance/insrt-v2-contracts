@@ -6,7 +6,7 @@ import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidSt
 
 import { IPerpetualMintTest } from "./IPerpetualMintTest.sol";
 import { PerpetualMintHelper } from "./PerpetualMintHelper.t.sol";
-import { CoreTest } from "../../diamonds/Core.t.sol";
+import { CoreTest } from "../../diamonds/Core/Core.t.sol";
 import { MintTokenTiersData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
 import { IInsrtVRFCoordinator } from "../../../contracts/vrf/Insrt/IInsrtVRFCoordinator.sol";
 

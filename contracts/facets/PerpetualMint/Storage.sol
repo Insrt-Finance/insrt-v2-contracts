@@ -42,6 +42,8 @@ library PerpetualMintStorage {
         MintTokenTiersData mintTokenTiers;
         /// @dev default mint referral fee for a collection in basis points
         uint32 defaultCollectionReferralFeeBP;
+        /// @dev the risk or probability of winning yield from a mint attempt, applicable only to Blast as of writing
+        uint32 yieldRisk;
     }
 
     bytes32 internal constant STORAGE_SLOT =

@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
-import { CoreTest } from "../diamonds/Core.t.sol";
+import { CoreTest } from "../diamonds/Core/Core.t.sol";
 import { IPerpetualMintTest } from "../facets/PerpetualMint/IPerpetualMintTest.sol";
 import { PerpetualMintHelper } from "../facets/PerpetualMint/PerpetualMintHelper.t.sol";
 import { MintTokenTiersData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "../../contracts/facets/PerpetualMint/Storage.sol";

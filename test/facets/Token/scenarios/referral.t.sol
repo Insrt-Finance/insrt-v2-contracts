@@ -5,7 +5,7 @@ pragma solidity 0.8.19;
 import { PerpetualMintTest } from "../../PerpetualMint/PerpetualMint.t.sol";
 import { TokenTest } from "../../Token/Token.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
-import { CoreTest } from "../../../diamonds/Core.t.sol";
+import { CoreTest } from "../../../diamonds/Core/Core.t.sol";
 import { TokenProxyTest } from "../../../diamonds/TokenProxy.t.sol";
 
 /// @title PerpetualMint_referral

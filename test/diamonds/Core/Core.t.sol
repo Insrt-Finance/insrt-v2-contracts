@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 
 import "forge-std/Test.sol";
 
-import { Core } from "../../contracts/diamonds/Core/Core.sol";
+import { Core } from "../../../contracts/diamonds/Core/Core.sol";
 
 /// @title CoreTest
 /// @dev Test helper contract for setting up and testing the Core diamond and its facets.

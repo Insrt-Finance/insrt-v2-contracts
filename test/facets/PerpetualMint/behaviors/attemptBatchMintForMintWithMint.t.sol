@@ -7,7 +7,7 @@ import { IPausableInternal } from "@solidstate/contracts/security/pausable/IPaus
 import { PerpetualMintTest } from "../PerpetualMint.t.sol";
 import { TokenTest } from "../../Token/Token.t.sol";
 import { ArbForkTest } from "../../../ArbForkTest.t.sol";
-import { CoreTest } from "../../../diamonds/Core.t.sol";
+import { CoreTest } from "../../../diamonds/Core/Core.t.sol";
 import { TokenProxyTest } from "../../../diamonds/TokenProxy.t.sol";
 import { IPerpetualMintInternal } from "../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 

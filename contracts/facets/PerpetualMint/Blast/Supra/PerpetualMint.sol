@@ -2,30 +2,34 @@
 
 pragma solidity 0.8.19;
 
-import { IPerpetualMint } from "../IPerpetualMint.sol";
-import { PerpetualMint } from "../PerpetualMint.sol";
+import { IPerpetualMintBlastSupra } from "./IPerpetualMint.sol";
+import { IPerpetualMint } from "../../IPerpetualMint.sol";
+import { PerpetualMintSupra } from "../../Supra/PerpetualMint.sol";
 
-/// @title PerpetualMintSupra
-/// @dev Supra VRF-specific overrides for PerpetualMint
-contract PerpetualMintSupra is PerpetualMint {
+/// @title PerpetualMintBlastSupra
+/// @dev Blast Supra VRF-specific overrides for PerpetualMint
+contract PerpetualMintBlastSupra is
+    IPerpetualMintBlastSupra,
+    PerpetualMintSupra
+{
     /// @dev number of words used in mints for $MINT
-    uint8 private constant ONE_WORD = 1;
-
-    /// @dev number of words used in mints for collections
     uint8 private constant TWO_WORDS = 2;
 
-    constructor(address vrf) PerpetualMint(vrf) {}
+    /// @dev number of words used in mints for collections
+    uint8 private constant THREE_WORDS = 3;
+
+    constructor(address vrf) PerpetualMintSupra(vrf) {}
 
     /// @inheritdoc IPerpetualMint
     function attemptBatchMintForMintWithEth(
         address referrer,
         uint32 numberOfMints
-    ) external payable virtual override whenNotPaused {
+    ) external payable override whenNotPaused {
         _attemptBatchMintForMintWithEthSupra(
             msg.sender,
             referrer,
             uint8(numberOfMints),
-            ONE_WORD
+            TWO_WORDS
         );
     }
 
@@ -34,13 +38,13 @@ contract PerpetualMintSupra is PerpetualMint {
         address referrer,
         uint256 pricePerMint,
         uint32 numberOfMints
-    ) external virtual override whenNotPaused {
+    ) external override whenNotPaused {
         _attemptBatchMintForMintWithMintSupra(
             msg.sender,
             referrer,
             pricePerMint,
             uint8(numberOfMints),
-            ONE_WORD
+            TWO_WORDS
         );
     }
 
@@ -49,13 +53,13 @@ contract PerpetualMintSupra is PerpetualMint {
         address collection,
         address referrer,
         uint32 numberOfMints
-    ) external payable virtual override whenNotPaused {
+    ) external payable override whenNotPaused {
         _attemptBatchMintWithEthSupra(
             msg.sender,
             collection,
             referrer,
             uint8(numberOfMints),
-            TWO_WORDS
+            THREE_WORDS
         );
     }
 
@@ -65,14 +69,29 @@ contract PerpetualMintSupra is PerpetualMint {
         address referrer,
         uint256 pricePerMint,
         uint32 numberOfMints
-    ) external virtual override whenNotPaused {
+    ) external override whenNotPaused {
         _attemptBatchMintWithMintSupra(
             msg.sender,
             collection,
             referrer,
             pricePerMint,
             uint8(numberOfMints),
-            TWO_WORDS
+            THREE_WORDS
         );
+    }
+
+    /// @inheritdoc IPerpetualMintBlastSupra
+    function setBlastYieldRisk(uint32 risk) external onlyOwner {
+        _setBlastYieldRisk(risk);
+    }
+
+    /// @notice VRF Coordinator callback
+    /// @param requestId id of request for random values
+    /// @param randomWords random values returned from VRF coordinator
+    function fulfillRandomWords(
+        uint256 requestId,
+        uint256[] memory randomWords
+    ) internal override {
+        _fulfillRandomWordsBlast(requestId, randomWords);
     }
 }

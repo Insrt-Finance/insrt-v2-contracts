@@ -2,23 +2,13 @@
 
 pragma solidity 0.8.19;
 
-import { Ownable } from "@solidstate/contracts/access/ownable/Ownable.sol";
-import { Pausable } from "@solidstate/contracts/security/pausable/Pausable.sol";
-import { ERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/ERC1155Metadata.sol";
-
 import { IPerpetualMint } from "./IPerpetualMint.sol";
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 import { MintTokenTiersData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title PerpetualMint
 /// @dev PerpetualMint facet containing all protocol-specific externally called functions
-contract PerpetualMint is
-    ERC1155Metadata,
-    IPerpetualMint,
-    Ownable,
-    Pausable,
-    PerpetualMintInternal
-{
+contract PerpetualMint is IPerpetualMint, PerpetualMintInternal {
     constructor(address vrf) PerpetualMintInternal(vrf) {}
 
     /// @inheritdoc IPerpetualMint
@@ -252,7 +242,7 @@ contract PerpetualMint is
     function fulfillRandomWords(
         uint256 requestId,
         uint256[] memory randomWords
-    ) internal override {
+    ) internal virtual override {
         _fulfillRandomWords(requestId, randomWords);
     }
 }

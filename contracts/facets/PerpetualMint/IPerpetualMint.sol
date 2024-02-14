@@ -2,21 +2,12 @@
 
 pragma solidity 0.8.19;
 
-import { IOwnable } from "@solidstate/contracts/access/ownable/IOwnable.sol";
-import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol";
-import { IERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/IERC1155Metadata.sol";
-
-import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
+// import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
 import { MintOutcome, MintResultData, MintTokenTiersData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title IPerpetualMint
 /// @dev Interface of the PerpetualMint facet
-interface IPerpetualMint is
-    IERC1155Metadata,
-    IOwnable,
-    IPerpetualMintInternal,
-    IPausable
-{
+interface IPerpetualMint {
     /// @notice Attempts a batch mint for the msg.sender for $MINT using ETH as payment.
     /// @param referrer referrer address for mint attempts
     /// @param numberOfMints number of mints to attempt

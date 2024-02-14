@@ -6,7 +6,9 @@ import { VRFCoordinatorV2Interface } from "@chainlink/vrf/interfaces/VRFCoordina
 import { VRFConsumerBaseV2 } from "@chainlink/vrf/VRFConsumerBaseV2.sol";
 import { OwnableInternal } from "@solidstate/contracts/access/ownable/OwnableInternal.sol";
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
+import { PausableInternal } from "@solidstate/contracts/security/pausable/PausableInternal.sol";
 import { ERC1155BaseInternal } from "@solidstate/contracts/token/ERC1155/base/ERC1155BaseInternal.sol";
+import { ERC1155MetadataInternal } from "@solidstate/contracts/token/ERC1155/metadata/ERC1155MetadataInternal.sol";
 import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 
 import { ERC1155MetadataExtensionInternal } from "./ERC1155MetadataExtensionInternal.sol";
@@ -21,8 +23,10 @@ import { ISupraRouterContract } from "../../vrf/Supra/ISupraRouterContract.sol";
 abstract contract PerpetualMintInternal is
     ERC1155BaseInternal,
     ERC1155MetadataExtensionInternal,
+    ERC1155MetadataInternal,
     GuardsInternal,
     OwnableInternal,
+    PausableInternal,
     IPerpetualMintInternal,
     VRFConsumerBaseV2
 {
@@ -1213,7 +1217,7 @@ abstract contract PerpetualMintInternal is
     function _fulfillRandomWords(
         uint256 requestId,
         uint256[] memory randomWords
-    ) internal virtual {
+    ) internal {
         Storage.Layout storage l = Storage.layout();
 
         RequestData storage request = l.requests[requestId];

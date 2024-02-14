@@ -72,6 +72,18 @@ contract PerpetualMintHelper {
                 selectors: erc1155FunctionSelectors
             });
 
+        // map the ERC1155Metadata test related function selectors to their respective interfaces
+        bytes4[] memory erc1155MetadataFunctionSelectors = new bytes4[](1);
+
+        erc1155MetadataFunctionSelectors[0] = IERC1155Metadata.uri.selector;
+
+        ISolidStateDiamond.FacetCut
+            memory erc1155MetadataFacetCut = IDiamondWritableInternal.FacetCut({
+                target: address(perpetualMintBaseImplementation),
+                action: IDiamondWritableInternal.FacetCutAction.ADD,
+                selectors: erc1155MetadataFunctionSelectors
+            });
+
         // map the PerpetualMintBase test related function selectors to their respective interfaces
         bytes4[] memory perpetualMintBaseFunctionSelectors = new bytes4[](1);
 
@@ -88,11 +100,13 @@ contract PerpetualMintHelper {
                 });
 
         ISolidStateDiamond.FacetCut[]
-            memory facetCuts = new ISolidStateDiamond.FacetCut[](2);
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](3);
 
         facetCuts[0] = erc1155FacetCut;
 
-        facetCuts[1] = perpetualMintBaseFacetCut;
+        facetCuts[1] = erc1155MetadataFacetCut;
+
+        facetCuts[2] = perpetualMintBaseFacetCut;
 
         return facetCuts;
     }
@@ -103,18 +117,6 @@ contract PerpetualMintHelper {
         view
         returns (ISolidStateDiamond.FacetCut[] memory)
     {
-        // map the ERC1155Metadata test related function selectors to their respective interfaces
-        bytes4[] memory erc1155MetadataFunctionSelectors = new bytes4[](1);
-
-        erc1155MetadataFunctionSelectors[0] = IERC1155Metadata.uri.selector;
-
-        ISolidStateDiamond.FacetCut
-            memory erc1155MetadataFacetCut = IDiamondWritableInternal.FacetCut({
-                target: address(perpetualMintHarnessImplementation),
-                action: IDiamondWritableInternal.FacetCutAction.ADD,
-                selectors: erc1155MetadataFunctionSelectors
-            });
-
         // map the Pausable test related function selectors to their respective interfaces
         bytes4[] memory pausableFunctionSelectors = new bytes4[](1);
 
@@ -122,7 +124,7 @@ contract PerpetualMintHelper {
 
         ISolidStateDiamond.FacetCut
             memory pausableFacetCut = IDiamondWritableInternal.FacetCut({
-                target: address(perpetualMintHarnessImplementation),
+                target: address(perpetualMintViewImplementation),
                 action: IDiamondWritableInternal.FacetCutAction.ADD,
                 selectors: pausableFunctionSelectors
             });
@@ -461,20 +463,18 @@ contract PerpetualMintHelper {
                 });
 
         ISolidStateDiamond.FacetCut[]
-            memory facetCuts = new ISolidStateDiamond.FacetCut[](6);
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](5);
 
         if (VRF_COORDINATOR == CHAINLINK_VRF_COORDINATOR) {
-            facetCuts[0] = erc1155MetadataFacetCut;
+            facetCuts[0] = pausableFacetCut;
 
-            facetCuts[1] = pausableFacetCut;
+            facetCuts[1] = perpetualMintFacetCut;
 
-            facetCuts[2] = perpetualMintFacetCut;
+            facetCuts[2] = perpetualMintViewFacetCut;
 
-            facetCuts[3] = perpetualMintViewFacetCut;
+            facetCuts[3] = perpetualMintHarnessFacetCut;
 
-            facetCuts[4] = perpetualMintHarnessFacetCut;
-
-            facetCuts[5] = vrfConsumerBaseV2MockFacetCut;
+            facetCuts[4] = vrfConsumerBaseV2MockFacetCut;
 
             return facetCuts;
         }
@@ -494,17 +494,15 @@ contract PerpetualMintHelper {
                     selectors: vrfConsumerBaseV2FunctionSelectors
                 });
 
-        facetCuts[0] = erc1155MetadataFacetCut;
+        facetCuts[0] = pausableFacetCut;
 
-        facetCuts[1] = pausableFacetCut;
+        facetCuts[1] = perpetualMintFacetCut;
 
-        facetCuts[2] = perpetualMintFacetCut;
+        facetCuts[2] = perpetualMintViewFacetCut;
 
-        facetCuts[3] = perpetualMintViewFacetCut;
+        facetCuts[3] = perpetualMintHarnessFacetCut;
 
-        facetCuts[4] = perpetualMintHarnessFacetCut;
-
-        facetCuts[5] = vrfConsumerBaseV2FacetCut;
+        facetCuts[4] = vrfConsumerBaseV2FacetCut;
 
         return facetCuts;
     }

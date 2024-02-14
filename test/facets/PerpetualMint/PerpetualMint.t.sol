@@ -231,12 +231,12 @@ abstract contract PerpetualMintTest is CoreTest {
 
         facetCuts[0] = perpetualMintBaseTestFacetCuts[0];
         facetCuts[1] = perpetualMintBaseTestFacetCuts[1];
-        facetCuts[2] = perpetualMintTestFacetCuts[0];
-        facetCuts[3] = perpetualMintTestFacetCuts[1];
-        facetCuts[4] = perpetualMintTestFacetCuts[2];
-        facetCuts[5] = perpetualMintTestFacetCuts[3];
-        facetCuts[6] = perpetualMintTestFacetCuts[4];
-        facetCuts[7] = perpetualMintTestFacetCuts[5];
+        facetCuts[2] = perpetualMintBaseTestFacetCuts[2];
+        facetCuts[3] = perpetualMintTestFacetCuts[0];
+        facetCuts[4] = perpetualMintTestFacetCuts[1];
+        facetCuts[5] = perpetualMintTestFacetCuts[2];
+        facetCuts[6] = perpetualMintTestFacetCuts[3];
+        facetCuts[7] = perpetualMintTestFacetCuts[4];
 
         coreDiamond.diamondCut(facetCuts, address(0), "");
     }

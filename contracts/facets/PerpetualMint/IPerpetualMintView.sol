@@ -2,11 +2,13 @@
 
 pragma solidity 0.8.19;
 
+import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol";
+
 import { MintResultData, MintTokenTiersData, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title IPerpetualMintView
 /// @dev Interface of the PerpetualMintView facet
-interface IPerpetualMintView {
+interface IPerpetualMintView is IPausable {
     /// @notice Returns the current accrued consolation fees
     /// @return accruedFees the current amount of accrued consolation fees
     function accruedConsolationFees()

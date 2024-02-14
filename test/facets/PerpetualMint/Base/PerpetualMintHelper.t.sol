@@ -55,7 +55,7 @@ contract PerpetualMintHelper_Base {
 
         ISolidStateDiamond.FacetCut
             memory pausableFacetCut = IDiamondWritableInternal.FacetCut({
-                target: address(perpetualMintHarnessSupraImplementation),
+                target: address(perpetualMintViewSupraImplementation),
                 action: IDiamondWritableInternal.FacetCutAction.ADD,
                 selectors: pausableFunctionSelectors
             });

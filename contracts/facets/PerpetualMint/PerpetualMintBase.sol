@@ -4,6 +4,7 @@ pragma solidity 0.8.19;
 
 import { ERC165Base } from "@solidstate/contracts/introspection/ERC165/base/ERC165Base.sol";
 import { ERC1155Base } from "@solidstate/contracts/token/ERC1155/base/ERC1155Base.sol";
+import { ERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/ERC1155Metadata.sol";
 
 import { ERC1155MetadataExtension } from "./ERC1155MetadataExtension.sol";
 import { IPerpetualMintBase } from "./IPerpetualMintBase.sol";
@@ -13,6 +14,7 @@ import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 /// @dev PerpetualMintBase facet containing all protocol-specific externally called functions
 contract PerpetualMintBase is
     ERC1155Base,
+    ERC1155Metadata,
     ERC1155MetadataExtension,
     ERC165Base,
     IPerpetualMintBase,

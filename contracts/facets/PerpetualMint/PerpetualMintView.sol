@@ -2,13 +2,19 @@
 
 pragma solidity 0.8.19;
 
+import { Pausable } from "@solidstate/contracts/security/pausable/Pausable.sol";
+
 import { PerpetualMintInternal } from "./PerpetualMintInternal.sol";
 import { IPerpetualMintView } from "./IPerpetualMintView.sol";
 import { MintResultData, MintTokenTiersData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title PerpetualMintView
 /// @dev PerpetualMintView facet contract containing all externally called view functions
-contract PerpetualMintView is PerpetualMintInternal, IPerpetualMintView {
+contract PerpetualMintView is
+    Pausable,
+    PerpetualMintInternal,
+    IPerpetualMintView
+{
     constructor(address vrf) PerpetualMintInternal(vrf) {}
 
     /// @inheritdoc IPerpetualMintView

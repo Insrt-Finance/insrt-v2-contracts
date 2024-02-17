@@ -24,7 +24,12 @@ contract PerpetualMintBlastSupra is
     function attemptBatchMintForMintWithEth(
         address referrer,
         uint32 numberOfMints
-    ) external payable override whenNotPaused {
+    )
+        external
+        payable
+        override(IPerpetualMint, PerpetualMintSupra)
+        whenNotPaused
+    {
         _attemptBatchMintForMintWithEthSupra(
             msg.sender,
             referrer,
@@ -38,7 +43,7 @@ contract PerpetualMintBlastSupra is
         address referrer,
         uint256 pricePerMint,
         uint32 numberOfMints
-    ) external override whenNotPaused {
+    ) external override(IPerpetualMint, PerpetualMintSupra) whenNotPaused {
         _attemptBatchMintForMintWithMintSupra(
             msg.sender,
             referrer,
@@ -53,7 +58,12 @@ contract PerpetualMintBlastSupra is
         address collection,
         address referrer,
         uint32 numberOfMints
-    ) external payable override whenNotPaused {
+    )
+        external
+        payable
+        override(IPerpetualMint, PerpetualMintSupra)
+        whenNotPaused
+    {
         _attemptBatchMintWithEthSupra(
             msg.sender,
             collection,
@@ -69,7 +79,7 @@ contract PerpetualMintBlastSupra is
         address referrer,
         uint256 pricePerMint,
         uint32 numberOfMints
-    ) external override whenNotPaused {
+    ) external override(IPerpetualMint, PerpetualMintSupra) whenNotPaused {
         _attemptBatchMintWithMintSupra(
             msg.sender,
             collection,

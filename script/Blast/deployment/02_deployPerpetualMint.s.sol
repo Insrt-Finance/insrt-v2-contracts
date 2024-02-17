@@ -9,6 +9,10 @@ import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol
 import { IERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/IERC1155Metadata.sol";
 
 import { ICore } from "../../../contracts/diamonds/Core/ICore.sol";
+import { IPerpetualMintBlastSupra } from "../../../contracts/facets/PerpetualMint/Blast/Supra/IPerpetualMint.sol";
+import { IPerpetualMintViewBlastSupra } from "../../../contracts/facets/PerpetualMint/Blast/Supra/IPerpetualMintView.sol";
+import { PerpetualMintBlastSupra } from "../../../contracts/facets/PerpetualMint/Blast/Supra/PerpetualMint.sol";
+import { PerpetualMintViewBlastSupra } from "../../../contracts/facets/PerpetualMint/Blast/Supra/PerpetualMintView.sol";
 import { IERC1155MetadataExtension } from "../../../contracts/facets/PerpetualMint/IERC1155MetadataExtension.sol";
 import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 import { IPerpetualMintBase } from "../../../contracts/facets/PerpetualMint/IPerpetualMintBase.sol";
@@ -16,13 +20,12 @@ import { IPerpetualMintView } from "../../../contracts/facets/PerpetualMint/IPer
 import { PerpetualMint } from "../../../contracts/facets/PerpetualMint/PerpetualMint.sol";
 import { PerpetualMintBase } from "../../../contracts/facets/PerpetualMint/PerpetualMintBase.sol";
 import { PerpetualMintView } from "../../../contracts/facets/PerpetualMint/PerpetualMintView.sol";
-import { IPerpetualMintViewSupra } from "../../../contracts/facets/PerpetualMint/Supra/IPerpetualMintView.sol";
 import { PerpetualMintSupra } from "../../../contracts/facets/PerpetualMint/Supra/PerpetualMint.sol";
-import { PerpetualMintViewSupra } from "../../../contracts/facets/PerpetualMint/Supra/PerpetualMintView.sol";
 
 /// @title DeployPerpetualMint_Blast
-/// @dev deploys the Core diamond contract, PerpetualMintSupra facet, PerpetualMintBase facet, and PerpetualMintViewSupra facet, and performs
-/// a diamondCut of the PerpetualMintSupra, PerpetualMintBase, and PerpetualMintViewSupra facets onto the Core diamond
+/// @dev deploys the CoreBlast diamond contract, PerpetualMintBlastSupra facet, PerpetualMintBase facet, and PerpetualMintViewBlastSupra facet, and performs
+/// a diamondCut of the PerpetualMintBlastSupra, PerpetualMintBase, and PerpetualMintViewBlastSupra facets onto the CoreBlast diamond
+/// NOTE: Blast Bounty not yet implemented for Insrt VRF functionality
 contract DeployPerpetualMint_Blast is Script {
     /// @dev runs the script logic
     function run() external {
@@ -70,45 +73,47 @@ contract DeployPerpetualMint_Blast is Script {
 
             // get PerpetualMint facet cuts
             perpetualMintFacetCuts = getPerpetualMintFacetCuts(
-                address(perpetualMint)
+                address(perpetualMint),
+                insrtVRF
             );
 
-            // get PerpetualMintView  facet cuts
+            // get PerpetualMintView facet cuts
             perpetualMintViewFacetCuts = getPerpetualMintViewFacetCuts(
                 address(perpetualMintView),
                 insrtVRF
             );
         } else {
-            // deploy PerpetualMintSupra facet
-            PerpetualMintSupra perpetualMintSupra = new PerpetualMintSupra(
-                VRF_ROUTER
-            );
+            // deploy PerpetualMintBlastSupra facet
+            PerpetualMintBlastSupra perpetualMintBlastSupra = new PerpetualMintBlastSupra(
+                    VRF_ROUTER
+                );
 
-            // deploy PerpetualMintViewSupra facet
-            PerpetualMintViewSupra perpetualMintViewSupra = new PerpetualMintViewSupra(
+            // deploy PerpetualMintViewBlastSupra facet
+            PerpetualMintViewBlastSupra perpetualMintViewBlastSupra = new PerpetualMintViewBlastSupra(
                     VRF_ROUTER
                 );
 
             console.log(
-                "PerpetualMintSupra Facet Address: ",
-                address(perpetualMintSupra)
+                "PerpetualMintBlastSupra Facet Address: ",
+                address(perpetualMintBlastSupra)
             );
 
             console.log(
-                "PerpetualMintViewSupra Facet Address: ",
-                address(perpetualMintViewSupra)
+                "PerpetualMintViewBlastSupra Facet Address: ",
+                address(perpetualMintViewBlastSupra)
             );
 
             console.log("Supra VRF Router Address: ", VRF_ROUTER);
 
-            // get PerpetualMint facet cuts
+            // get PerpetualMint + PerpetualMintBlastSupra facet cuts
             perpetualMintFacetCuts = getPerpetualMintFacetCuts(
-                address(perpetualMintSupra)
+                address(perpetualMintBlastSupra),
+                insrtVRF
             );
 
-            // get PerpetualMintViewSupra facet cuts
+            // get PerpetualMintView + PerpetualMintViewBlastSupra facet cuts
             perpetualMintViewFacetCuts = getPerpetualMintViewFacetCuts(
-                address(perpetualMintViewSupra),
+                address(perpetualMintViewBlastSupra),
                 insrtVRF
             );
         }
@@ -133,7 +138,7 @@ contract DeployPerpetualMint_Blast is Script {
             );
 
         ICore.FacetCut[] memory facetCuts = new ICore.FacetCut[](
-            insrtVRF ? 8 : 9
+            insrtVRF ? 8 : 10
         );
 
         facetCuts[0] = perpetualMintFacetCuts[0];
@@ -146,7 +151,8 @@ contract DeployPerpetualMint_Blast is Script {
         facetCuts[7] = perpetualMintViewFacetCuts[1];
 
         if (!insrtVRF) {
-            facetCuts[8] = perpetualMintViewFacetCuts[2];
+            facetCuts[8] = perpetualMintFacetCuts[2];
+            facetCuts[9] = perpetualMintViewFacetCuts[2];
         }
 
         ICore coreBlast = ICore(coreBlastAddress);
@@ -161,10 +167,12 @@ contract DeployPerpetualMint_Blast is Script {
         vm.stopBroadcast();
     }
 
-    /// @dev provides the facet cuts for cutting PerpetualMint facet into Core
+    /// @dev provides the facet cuts for cutting PerpetualMint & PerpetualMintBlastSupra facet into CoreBlast
     /// @param facetAddress address of PerpetualMint facet
+    /// @param insrtVRF boolean indicating whether Insrt VRF is being used
     function getPerpetualMintFacetCuts(
-        address facetAddress
+        address facetAddress,
+        bool insrtVRF
     ) internal pure returns (ICore.FacetCut[] memory) {
         // map the PerpetualMint related function selectors to their respective interfaces
         bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](33);
@@ -309,11 +317,43 @@ contract DeployPerpetualMint_Blast is Script {
                     selectors: vrfConsumerBaseV2FunctionSelectors
                 });
 
-        ICore.FacetCut[] memory facetCuts = new ICore.FacetCut[](2);
+        ICore.FacetCut[] memory facetCuts;
+
+        if (insrtVRF) {
+            facetCuts = new ICore.FacetCut[](2);
+
+            // omit Ownable since SolidStateDiamond includes those
+            facetCuts[0] = perpetualMintFacetCut;
+            facetCuts[1] = vrfConsumerBaseV2FacetCut;
+
+            return facetCuts;
+        }
+
+        // map the PerpetualMintBlastSupra related function selectors to their respective interfaces
+        bytes4[] memory perpetualMintBlastSupraFunctionSelectors = new bytes4[](
+            1
+        );
+
+        perpetualMintBlastSupraFunctionSelectors = new bytes4[](1);
+
+        perpetualMintBlastSupraFunctionSelectors[0] = IPerpetualMintBlastSupra
+            .setBlastYieldRisk
+            .selector;
+
+        ICore.FacetCut
+            memory perpetualMintBlastSupraFacetCut = IDiamondWritableInternal
+                .FacetCut({
+                    target: facetAddress,
+                    action: IDiamondWritableInternal.FacetCutAction.ADD,
+                    selectors: perpetualMintBlastSupraFunctionSelectors
+                });
+
+        facetCuts = new ICore.FacetCut[](3);
 
         // omit Ownable since SolidStateDiamond includes those
-        facetCuts[0] = perpetualMintFacetCut;
-        facetCuts[1] = vrfConsumerBaseV2FacetCut;
+        facetCuts[0] = perpetualMintBlastSupraFacetCut;
+        facetCuts[1] = perpetualMintFacetCut;
+        facetCuts[2] = vrfConsumerBaseV2FacetCut;
 
         return facetCuts;
     }
@@ -397,7 +437,7 @@ contract DeployPerpetualMint_Blast is Script {
         return facetCuts;
     }
 
-    /// @dev provides the facet cuts for cutting PerpetualMintView & PerpetualMintViewSupra facets into Core
+    /// @dev provides the facet cuts for cutting PerpetualMintView & PerpetualMintViewBlastSupra facets into Core
     /// @param viewFacetAddress address of PerpetualMintView facet
     /// @param insrtVRF boolean indicating whether Insrt VRF is being used
     function getPerpetualMintViewFacetCuts(
@@ -550,28 +590,33 @@ contract DeployPerpetualMint_Blast is Script {
             selectors: perpetualMintViewFunctionSelectors
         });
 
-        // map the PerpetualMintViewSupra related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintViewSupraFunctionSelectors = new bytes4[](
-            1
-        );
+        // map the PerpetualMintViewBlastSupra related function selectors to their respective interfaces
+        bytes4[]
+            memory perpetualMintViewBlastSupraFunctionSelectors = new bytes4[](
+                2
+            );
 
-        perpetualMintViewSupraFunctionSelectors[0] = IPerpetualMintViewSupra
-            .calculateMintResultSupra
-            .selector;
+        perpetualMintViewBlastSupraFunctionSelectors[
+            0
+        ] = IPerpetualMintViewBlastSupra.blastYieldRisk.selector;
+
+        perpetualMintViewBlastSupraFunctionSelectors[
+            1
+        ] = IPerpetualMintViewBlastSupra.calculateMintResultBlastSupra.selector;
 
         ICore.FacetCut
-            memory perpetualMintViewSupraFacetCut = IDiamondWritableInternal
+            memory perpetualMintViewBlastSupraFacetCut = IDiamondWritableInternal
                 .FacetCut({
                     target: viewFacetAddress,
                     action: IDiamondWritableInternal.FacetCutAction.ADD,
-                    selectors: perpetualMintViewSupraFunctionSelectors
+                    selectors: perpetualMintViewBlastSupraFunctionSelectors
                 });
 
         facetCuts = new ICore.FacetCut[](3);
 
         facetCuts[0] = pausableFacetCut;
         facetCuts[1] = perpetualMintViewFacetCut;
-        facetCuts[2] = perpetualMintViewSupraFacetCut;
+        facetCuts[2] = perpetualMintViewBlastSupraFacetCut;
 
         return facetCuts;
     }

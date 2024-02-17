@@ -122,17 +122,17 @@ export VRF_ROUTER="0x..." # Address of the Supra VRF Router
 
 The following metadata is set on deployment in the Solidity deployment scripts:
 
-### [./script/common/deployment/01_deployToken.s.sol](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/common/deployment/01_deployToken.s.sol)
+### [./script/common/deployment/01_deployToken.s.sol](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0/script/common/deployment/01_deployToken.s.sol)
 
 - `name`: Name of the mint consolation token
 - `symbol`: Symbol of the mint consolation token
 
-#### [./script/Arbitrum/deployment/01_deployPerpetualMint.s.sol](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Arbitrum/deployment/01_deployPerpetualMint.s.sol)
+#### [./script/Arbitrum/deployment/01_deployPerpetualMint.s.sol](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0/script/Arbitrum/deployment/01_deployPerpetualMint.s.sol)
 
 - `receiptName`: Name of the receipt token received when winning mints
 - `receiptSymbol`: Symbol of the receipt token received when winning mints
 
-#### [./script/Base/deployment/01_deployPerpetualMint.s.sol](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Base/deployment/01_deployPerpetualMint.s.sol)
+#### [./script/Base/deployment/01_deployPerpetualMint.s.sol](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0/script/Base/deployment/01_deployPerpetualMint.s.sol)
 
 - `receiptName`: Name of the receipt token received when winning mints
 - `receiptSymbol`: Symbol of the receipt token received when winning mints
@@ -165,6 +165,12 @@ make deploy-base
 
 ```bash
 make deploy-base-sepolia
+```
+
+### Deploying on Blast
+
+```bash
+make deploy-blast
 ```
 
 ### Deploying on Blast Sepolia (Testnet)
@@ -210,7 +216,7 @@ These are set in each of the post-deployment configuration bash scripts.
 
 Double-check that they are correct before running the script.
 
-#### [./script/Arbitrum/post-deployment/configure-token-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Arbitrum/post-deployment/configure-token-arb.sh)
+#### [./script/Arbitrum/post-deployment/configure-token-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0/script/Arbitrum/post-deployment/configure-token-arb.sh)
 
 NOTE: For reference, currently the `BASIS` being used by `PerpetualMint` & `Token` is `1e9`.
 
@@ -221,7 +227,7 @@ export NEW_TOKEN_PROXY_OWNER="0x..." # Address to set as the new TokenProxy owne
 export TOKEN_DISTRIBUTION_FRACTION_BP=<1e7 percentage number> # Example: 1e7 = 1%
 ```
 
-#### [./script/Arbitrum/post-deployment/configure-vrf-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Arbitrum/post-deployment/configure-vrf-arb.sh)
+#### [./script/Arbitrum/post-deployment/configure-vrf-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0/script/Arbitrum/post-deployment/configure-vrf-arb.sh)
 
 ```bash
 export LINK_FUND_AMOUNT=<base LINK unit amount> # Example: 1 = 1 LINK, can be 0 to fund subscription later
@@ -233,7 +239,7 @@ export NEW_VRF_OWNER="0x..." # Address to set and request as the new VRF subscri
 export VRF_SUBSCRIPTION_BALANCE_THRESHOLD=<base LINK unit amount> # Example: 1 = 1 LINK
 ```
 
-#### [./script/Arbitrum/post-deployment/configure-perp-mint-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Arbitrum/post-deployment/configure-perp-mint-arb.sh)
+#### [./script/Arbitrum/post-deployment/configure-perp-mint-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0/script/Arbitrum/post-deployment/configure-perp-mint-arb.sh)
 
 ```bash
 # Mint for collection consolation fee used for funding $MINT
@@ -263,7 +269,7 @@ export TIER_RISKS=<1e7 number array aligned with TIER_MULTIPLIERS> # Example: 60
 export VRF_KEY_HASH="0x..." # Bytes32 gas lane key hash for the Chainlink VRF Coordinator
 ```
 
-#### [./script/Base/post-deployment/configure-token-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Base/post-deployment/configure-token-base.sh)
+#### [./script/Base/post-deployment/configure-token-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0/script/Base/post-deployment/configure-token-base.sh)
 
 NOTE: For reference, currently the `BASIS` being used by `PerpetualMint` & `Token` is `1e9`.
 
@@ -274,15 +280,52 @@ export NEW_TOKEN_PROXY_OWNER="0x..." # Address to set as the new TokenProxy owne
 export TOKEN_DISTRIBUTION_FRACTION_BP=<1e7 percentage number> # Example: 1e7 = 1%
 ```
 
-#### [./script/Base/post-deployment/configure-vrf-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Base/post-deployment/configure-vrf-base.sh)
+#### [./script/Base/post-deployment/configure-vrf-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0/script/Base/post-deployment/configure-vrf-base.sh)
 
 ```bash
 export ETH_FUND_AMOUNT=<base ETH unit amount> # Example: 1 = 1 ETH, can be 0 to fund subscription later
 ```
 
-#### [./script/Base/post-deployment/configure-perp-mint-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0-alpha/script/Base/post-deployment/configure-perp-mint-base.sh)
+#### [./script/Base/post-deployment/configure-perp-mint-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0/script/Base/post-deployment/configure-perp-mint-base.sh)
 
 ```bash
+# Mint for collection consolation fee used for funding $MINT
+export COLLECTION_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
+# Default collection mint referral fee in basis points
+export DEFAULT_COLLECTION_REFERRAL_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
+# Protocol mint fee
+export MINT_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
+# Mint for $MINT consolation fee used for funding $MINT
+export MINT_TOKEN_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
+export MINT_TOKEN_TIER_MULTIPLIERS=<1e9 number array aligned with MINT_TOKEN_TIER_RISKS> # Example: 1e9,2e9,4e9,8e9,16e9 = 1x, 2x, 4x, 8x, 16x
+
+export MINT_TOKEN_TIER_RISKS=<1e7 number array aligned with MINT_TOKEN_TIER_MULTIPLIERS> # Example: 60e7,25e7,10e7,4e7,1e7 = 60%, 25%, 10%, 4%, 1%
+
+export NEW_PERP_MINT_OWNER="0x..." # Address to set as the new Core/PerpetualMint owner
+
+export REDEMPTION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
+export TIER_MULTIPLIERS=<1e9 number array aligned with TIER_RISKS> # Example: 1e9,2e9,4e9,8e9,16e9 = 1x, 2x, 4x, 8x, 16x
+
+export TIER_RISKS=<1e7 number array aligned with TIER_MULTIPLIERS> # Example: 60e7,25e7,10e7,4e7,1e7 = 60%, 25%, 10%, 4%, 1%
+```
+
+#### [./script/Base/post-deployment/configure-vrf-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0/script/Base/post-deployment/configure-vrf-base.sh)
+
+```bash
+export ETH_FUND_AMOUNT=<base ETH unit amount> # Example: 1 = 1 ETH, can be 0 to fund subscription later
+```
+
+#### [./script/Blast/post-deployment/configure-perp-mint-\*.sh](https://github.com/Insrt-Finance/insrt-v2-contracts/blob/v0.1.0/script/Blast/post-deployment/configure-perp-mint-blast.sh)
+
+```bash
+# Odds of winning the Blast Yield Bounty (Claimable Blast Yield + Blast Gas)
+export BLAST_YIELD_RISK=<1e7 percentage number> # Example: 1e7 = 1%
+
 # Mint for collection consolation fee used for funding $MINT
 export COLLECTION_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
@@ -346,6 +389,12 @@ make configure-token-base-sepolia
 make configure-token-local-base
 ```
 
+### Blast
+
+```bash
+make configure-token-blast
+```
+
 #### Blast Sepolia (Testnet)
 
 ```bash
@@ -397,6 +446,10 @@ make configure-vrf-local-base
 ```
 
 ### Blast
+
+```bash
+make configure-vrf-blast
+```
 
 #### Blast Sepolia (Testnet)
 
@@ -451,6 +504,10 @@ make configure-perp-mint-local-base
 ```
 
 ### Blast
+
+```bash
+make configure-perp-mint-blast
+```
 
 #### Blast Sepolia (Testnet)
 

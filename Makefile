@@ -237,11 +237,19 @@ upgrade-token-arb-sepolia:
 remove-failed-vrf-fulfillments-blast:
 	@./script/Blast/upgrade/remove-failed-vrf-fulfillments-blast.sh
 
+##### Upgrade PerpetualMintView + PerpetualMintViewBlastSupra facet
+upgrade-perp-mint-view-blast:
+	@./script/Blast/upgrade/upgrade-perp-mint-view-blast.sh
+
 ##### Blast Sepolia
 
 ##### Configure Blast Points Operator using ConfigurePointsOperator facet
 configure-blast-points-operator-blast-sepolia:
 	@./script/Blast/upgrade/configure-points-operator-blast-sepolia.sh
+
+##### Upgrade PerpetualMintView + PerpetualMintViewBlastSupra facet
+upgrade-perp-mint-view-blast-sepolia:
+	@./script/Blast/upgrade/upgrade-perp-mint-view-blast-sepolia.sh
 
 ##### Upgrade & Split PerpetualMintBlastSupra facet
 upgrade-split-perp-mint-blast-sepolia:

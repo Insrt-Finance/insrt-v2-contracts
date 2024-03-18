@@ -20,6 +20,15 @@ contract PerpetualMintViewBlastSupra is
         risk = _blastYieldRisk();
     }
 
+    /// @inheritdoc IPerpetualMintViewBlast
+    function calculateMaxClaimableGas()
+        external
+        view
+        returns (uint256 maxClaimableGas)
+    {
+        maxClaimableGas = _calculateMaxClaimableGas();
+    }
+
     /// @inheritdoc IPerpetualMintViewBlastSupra
     function calculateMintResultBlastSupra(
         address collection,

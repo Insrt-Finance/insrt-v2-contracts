@@ -1273,8 +1273,10 @@ abstract contract PerpetualMintInternal is
         }
     }
 
+    /// @notice calculates & returns the maximum claimable blast gas yield for the current block
+    /// @return maxClaimableGas maximum claimable gas yield
     function _calculateMaxClaimableGas()
-        private
+        internal
         view
         returns (uint256 maxClaimableGas)
     {

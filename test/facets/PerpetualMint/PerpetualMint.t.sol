@@ -222,24 +222,29 @@ abstract contract PerpetualMintTest is CoreTest {
         perpetualMintHelper = new PerpetualMintHelper(false);
 
         ISolidStateDiamond.FacetCut[]
-            memory perpetualMintBaseTestFacetCuts = perpetualMintHelper
-                .getPerpetualMintBaseTestFacetCuts();
-
-        ISolidStateDiamond.FacetCut[]
             memory perpetualMintTestFacetCuts = perpetualMintHelper
                 .getPerpetualMintTestFacetCuts();
 
         ISolidStateDiamond.FacetCut[]
-            memory facetCuts = new ISolidStateDiamond.FacetCut[](8);
+            memory perpetualMintAdminTestFacetCuts = perpetualMintHelper
+                .getPerpetualMintAdminTestFacetCuts();
 
-        facetCuts[0] = perpetualMintBaseTestFacetCuts[0];
-        facetCuts[1] = perpetualMintBaseTestFacetCuts[1];
-        facetCuts[2] = perpetualMintBaseTestFacetCuts[2];
-        facetCuts[3] = perpetualMintTestFacetCuts[0];
-        facetCuts[4] = perpetualMintTestFacetCuts[1];
-        facetCuts[5] = perpetualMintTestFacetCuts[2];
-        facetCuts[6] = perpetualMintTestFacetCuts[3];
-        facetCuts[7] = perpetualMintTestFacetCuts[4];
+        ISolidStateDiamond.FacetCut[]
+            memory perpetualMintBaseTestFacetCuts = perpetualMintHelper
+                .getPerpetualMintBaseTestFacetCuts();
+
+        ISolidStateDiamond.FacetCut[]
+            memory facetCuts = new ISolidStateDiamond.FacetCut[](9);
+
+        facetCuts[0] = perpetualMintTestFacetCuts[0];
+        facetCuts[1] = perpetualMintTestFacetCuts[1];
+        facetCuts[2] = perpetualMintTestFacetCuts[2];
+        facetCuts[3] = perpetualMintTestFacetCuts[3];
+        facetCuts[4] = perpetualMintAdminTestFacetCuts[0];
+        facetCuts[5] = perpetualMintBaseTestFacetCuts[0];
+        facetCuts[6] = perpetualMintBaseTestFacetCuts[1];
+        facetCuts[7] = perpetualMintBaseTestFacetCuts[2];
+        facetCuts[8] = perpetualMintBaseTestFacetCuts[3];
 
         coreDiamond.diamondCut(facetCuts, address(0), "");
     }

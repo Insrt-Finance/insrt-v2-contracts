@@ -138,7 +138,7 @@ contract UpgradePerpetualMintArb is BatchScript {
             });
 
         // map the PerpetualMint related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](33);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](7);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
             .attemptBatchMintForMintWithEth
@@ -156,107 +156,13 @@ contract UpgradePerpetualMintArb is BatchScript {
             .attemptBatchMintWithMint
             .selector;
 
-        perpetualMintFunctionSelectors[4] = IPerpetualMint.burnReceipt.selector;
+        perpetualMintFunctionSelectors[4] = IPerpetualMint.claimPrize.selector;
 
-        perpetualMintFunctionSelectors[5] = IPerpetualMint.cancelClaim.selector;
-
-        perpetualMintFunctionSelectors[6] = bytes4(
-            keccak256("claimMintEarnings()")
-        );
-
-        perpetualMintFunctionSelectors[7] = IPerpetualMint.claimPrize.selector;
-
-        perpetualMintFunctionSelectors[8] = IPerpetualMint
-            .claimProtocolFees
-            .selector;
-
-        perpetualMintFunctionSelectors[9] = IPerpetualMint
+        perpetualMintFunctionSelectors[5] = IPerpetualMint
             .fundConsolationFees
             .selector;
 
-        perpetualMintFunctionSelectors[10] = IPerpetualMint
-            .mintAirdrop
-            .selector;
-
-        perpetualMintFunctionSelectors[11] = IPerpetualMint.pause.selector;
-
-        perpetualMintFunctionSelectors[12] = IPerpetualMint.redeem.selector;
-
-        perpetualMintFunctionSelectors[13] = IPerpetualMint
-            .setCollectionConsolationFeeBP
-            .selector;
-
-        perpetualMintFunctionSelectors[14] = IPerpetualMint
-            .setCollectionMintFeeDistributionRatioBP
-            .selector;
-
-        perpetualMintFunctionSelectors[15] = IPerpetualMint
-            .setCollectionMintMultiplier
-            .selector;
-
-        perpetualMintFunctionSelectors[16] = IPerpetualMint
-            .setCollectionMintPrice
-            .selector;
-
-        perpetualMintFunctionSelectors[17] = IPerpetualMint
-            .setCollectionReferralFeeBP
-            .selector;
-
-        perpetualMintFunctionSelectors[18] = IPerpetualMint
-            .setCollectionRisk
-            .selector;
-
-        perpetualMintFunctionSelectors[19] = IPerpetualMint
-            .setDefaultCollectionReferralFeeBP
-            .selector;
-
-        perpetualMintFunctionSelectors[20] = IPerpetualMint
-            .setEthToMintRatio
-            .selector;
-
-        perpetualMintFunctionSelectors[21] = IPerpetualMint
-            .setMintFeeBP
-            .selector;
-
-        perpetualMintFunctionSelectors[22] = IPerpetualMint
-            .setMintToken
-            .selector;
-
-        perpetualMintFunctionSelectors[23] = IPerpetualMint
-            .setMintTokenConsolationFeeBP
-            .selector;
-
-        perpetualMintFunctionSelectors[24] = IPerpetualMint
-            .setMintTokenTiers
-            .selector;
-
-        perpetualMintFunctionSelectors[25] = IPerpetualMint
-            .setReceiptBaseURI
-            .selector;
-
-        perpetualMintFunctionSelectors[26] = IPerpetualMint
-            .setReceiptTokenURI
-            .selector;
-
-        perpetualMintFunctionSelectors[27] = IPerpetualMint
-            .setRedemptionFeeBP
-            .selector;
-
-        perpetualMintFunctionSelectors[28] = IPerpetualMint
-            .setRedeemPaused
-            .selector;
-
-        perpetualMintFunctionSelectors[29] = IPerpetualMint.setTiers.selector;
-
-        perpetualMintFunctionSelectors[30] = IPerpetualMint
-            .setVRFConfig
-            .selector;
-
-        perpetualMintFunctionSelectors[31] = IPerpetualMint
-            .setVRFSubscriptionBalanceThreshold
-            .selector;
-
-        perpetualMintFunctionSelectors[32] = IPerpetualMint.unpause.selector;
+        perpetualMintFunctionSelectors[6] = IPerpetualMint.redeem.selector;
 
         ISolidStateDiamond.FacetCut
             memory perpetualMintFacetCut = IDiamondWritableInternal.FacetCut({

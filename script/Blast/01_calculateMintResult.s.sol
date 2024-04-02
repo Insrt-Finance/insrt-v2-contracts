@@ -5,7 +5,7 @@ import "forge-std/Script.sol";
 import "forge-std/Test.sol";
 
 import { ICore } from "../../contracts/diamonds/Core/ICore.sol";
-import { MintOutcome, MintResultDataBlast, MintTokenTiersData, TiersData } from "../../contracts/facets/PerpetualMint/Blast/IPerpetualMint.sol";
+import { MintOutcome, MintResultDataBlast, MintTokenTiersData, TiersData } from "../../contracts/facets/PerpetualMint/Storage.sol";
 
 /// @title CalculateMintResultBlastSupra
 /// @dev Script for calculating the result of a batch mint attempt on Blast, Supra-specific

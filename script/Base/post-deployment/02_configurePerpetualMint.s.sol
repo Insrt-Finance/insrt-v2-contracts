@@ -5,7 +5,8 @@ import "forge-std/Script.sol";
 import "forge-std/Test.sol";
 
 import { ICore } from "../../../contracts/diamonds/Core/ICore.sol";
-import { IPerpetualMint, MintTokenTiersData, TiersData } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
+import { IPerpetualMintAdmin } from "../../../contracts/facets/PerpetualMint/IPerpetualMintAdmin.sol";
+import { MintTokenTiersData, TiersData } from "../../../contracts/facets/PerpetualMint/Storage.sol";
 
 /// @title ConfigurePerpetualMint_Base
 /// @dev configures the PerpetualMintSupra contract by setting the collection price to mint ratio BP,
@@ -60,7 +61,9 @@ contract ConfigurePerpetualMint_Base is Script, Test {
 
         uint32[] memory tierRisks = toUint32Array(envTierRisks);
 
-        IPerpetualMint perpetualMint = IPerpetualMint(perpetualMintAddress);
+        IPerpetualMintAdmin perpetualMint = IPerpetualMintAdmin(
+            perpetualMintAddress
+        );
 
         vm.startBroadcast(deployerPrivateKey);
 

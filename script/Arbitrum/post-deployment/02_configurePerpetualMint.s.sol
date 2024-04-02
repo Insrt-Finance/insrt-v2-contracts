@@ -5,7 +5,8 @@ import "forge-std/Script.sol";
 import "forge-std/Test.sol";
 
 import { ICore } from "../../../contracts/diamonds/Core/ICore.sol";
-import { IPerpetualMint, MintTokenTiersData, TiersData, VRFConfig } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
+import { IPerpetualMintAdmin } from "../../../contracts/facets/PerpetualMint/IPerpetualMintAdmin.sol";
+import { MintTokenTiersData, TiersData, VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
 
 /// @title ConfigurePerpetualMintArb
 /// @dev configures the PerpetualMint contract by setting the collection price to mint ratio BP,
@@ -68,7 +69,9 @@ contract ConfigurePerpetualMintArb is Script, Test {
 
         uint32[] memory tierRisks = toUint32Array(envTierRisks);
 
-        IPerpetualMint perpetualMint = IPerpetualMint(perpetualMintAddress);
+        IPerpetualMintAdmin perpetualMint = IPerpetualMintAdmin(
+            perpetualMintAddress
+        );
 
         VRFConfig memory vrfConfig = VRFConfig({
             keyHash: vm.envBytes32("VRF_KEY_HASH"),
@@ -158,7 +161,7 @@ contract ConfigurePerpetualMintArb is Script, Test {
     }
 
     function setFees(
-        IPerpetualMint perpetualMint,
+        IPerpetualMintAdmin perpetualMint,
         FeesConfiguration memory config
     ) private {
         perpetualMint.setCollectionConsolationFeeBP(

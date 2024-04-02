@@ -5,7 +5,7 @@ import "forge-std/Script.sol";
 import { VRFCoordinatorV2Interface } from "@chainlink/vrf/interfaces/VRFCoordinatorV2Interface.sol";
 import { LinkTokenInterface } from "@chainlink/shared/interfaces/LinkTokenInterface.sol";
 
-import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
+import { IPerpetualMintAdmin } from "../../../contracts/facets/PerpetualMint/IPerpetualMintAdmin.sol";
 
 /// @title ConfigureVRFSubscriptionArb
 /// @dev configures the VRF subscription by creating a subscription, adding the PerpetualMint contract as a consumer,
@@ -64,7 +64,7 @@ contract ConfigureVRFSubscriptionArb is Script {
             );
         }
 
-        IPerpetualMint(perpetualMint).setVRFSubscriptionBalanceThreshold(
+        IPerpetualMintAdmin(perpetualMint).setVRFSubscriptionBalanceThreshold(
             vrfSubscriptionBalanceThreshold
         );
 

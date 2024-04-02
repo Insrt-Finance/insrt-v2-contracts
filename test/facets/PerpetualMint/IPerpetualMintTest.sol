@@ -2,12 +2,13 @@
 
 pragma solidity 0.8.19;
 
-import { IPerpetualMintHarnessBlast } from "./Blast/IPerpetualMintHarness.sol";
 import { IPerpetualMintHarness } from "./IPerpetualMintHarness.sol";
+import { IPerpetualMintHarnessBlast } from "./Blast/IPerpetualMintHarness.sol";
 import { IVRFConsumerBaseV2 } from "../../interfaces/IVRFConsumerBaseV2.sol";
-import { IPerpetualMintBlast } from "../../../contracts/facets/PerpetualMint/Blast/IPerpetualMint.sol";
 import { IPerpetualMintViewBlastSupra } from "../../../contracts/facets/PerpetualMint/Blast/Supra/IPerpetualMintView.sol";
+import { IPerpetualMintAdminBlast } from "../../../contracts/facets/PerpetualMint/Blast/IPerpetualMintAdmin.sol";
 import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
+import { IPerpetualMintAdmin } from "../../../contracts/facets/PerpetualMint/IPerpetualMintAdmin.sol";
 import { IPerpetualMintBase } from "../../../contracts/facets/PerpetualMint/IPerpetualMintBase.sol";
 import { IPerpetualMintView } from "../../../contracts/facets/PerpetualMint/IPerpetualMintView.sol";
 
@@ -15,8 +16,9 @@ import { IPerpetualMintView } from "../../../contracts/facets/PerpetualMint/IPer
 /// @dev aggregates all interfaces for ease of function selector mapping
 interface IPerpetualMintTest is
     IPerpetualMint,
+    IPerpetualMintAdmin,
+    IPerpetualMintAdminBlast,
     IPerpetualMintBase,
-    IPerpetualMintBlast,
     IPerpetualMintView,
     IPerpetualMintViewBlastSupra,
     IPerpetualMintHarness,

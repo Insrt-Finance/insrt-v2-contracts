@@ -4,16 +4,16 @@ pragma solidity 0.8.19;
 
 import { IPausableInternal } from "@solidstate/contracts/security/pausable/IPausableInternal.sol";
 
-import { PerpetualMintTest_BlastSupra } from "../PerpetualMint.t.sol";
+import { PerpetualMintTest_SupraBlast } from "../PerpetualMint.t.sol";
 import { BlastForkTest } from "../../../../../BlastForkTest.t.sol";
 import { IPerpetualMintInternal } from "../../../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 
-/// @title PerpetualMint_attemptBatchMintForMintWithEthBlastSupra
-/// @dev PerpetualMint_BlastSupra test contract for testing expected attemptBatchMintForMintWithEth behavior. Tested on a Blast fork.
-contract PerpetualMint_attemptBatchMintForMintWithEthBlastSupra is
+/// @title PerpetualMint_attemptBatchMintForMintWithEthSupraBlast
+/// @dev PerpetualMint_SupraBlast test contract for testing expected attemptBatchMintForMintWithEth behavior. Tested on a Blast fork.
+contract PerpetualMint_attemptBatchMintForMintWithEthSupraBlast is
     BlastForkTest,
     IPerpetualMintInternal,
-    PerpetualMintTest_BlastSupra
+    PerpetualMintTest_SupraBlast
 {
     uint32 internal constant TEST_MINT_ATTEMPTS = 3;
 

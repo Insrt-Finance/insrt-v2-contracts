@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 
 import { ISolidStateDiamond } from "@solidstate/contracts/proxy/diamond/ISolidStateDiamond.sol";
 
-import { PerpetualMintHelper_BlastSupra } from "./PerpetualMintHelper.t.sol";
+import { PerpetualMintHelper_SupraBlast } from "./PerpetualMintHelper.t.sol";
 import { IPerpetualMintTest } from "../../IPerpetualMintTest.sol";
 import { PerpetualMintTest } from "../../PerpetualMint.t.sol";
 import { CoreBlastTest } from "../../../../diamonds/Core/Blast/Core.t.sol";
@@ -12,10 +12,10 @@ import { MintTokenTiersData, TiersData } from "../../../../../contracts/facets/P
 import { IDepositContract } from "../../../../../contracts/vrf/Supra/IDepositContract.sol";
 import { ISupraRouterContract } from "../../../../../contracts/vrf/Supra/ISupraRouterContract.sol";
 
-/// @title PerpetualMintTest_BlastSupra
+/// @title PerpetualMintTest_SupraBlast
 /// @dev PerpetualMintTest Blast-specific, Supra VRF-specific helper contract. Configures PerpetualMint facets for CoreBlast test.
 /// @dev Should function identically across all forks.
-abstract contract PerpetualMintTest_BlastSupra is
+abstract contract PerpetualMintTest_SupraBlast is
     CoreBlastTest,
     PerpetualMintTest
 {
@@ -23,7 +23,7 @@ abstract contract PerpetualMintTest_BlastSupra is
 
     ISupraRouterContract internal supraRouterContract;
 
-    PerpetualMintHelper_BlastSupra public perpetualMintHelper_BlastSupra;
+    PerpetualMintHelper_SupraBlast public perpetualMintHelper_SupraBlast;
 
     uint32 internal constant TEST_BLAST_YIELD_RISK = 1e6; // 0.1%
 
@@ -156,7 +156,7 @@ abstract contract PerpetualMintTest_BlastSupra is
         );
 
         supraRouterContract = ISupraRouterContract(
-            this.perpetualMintHelper_BlastSupra().VRF_ROUTER()
+            this.perpetualMintHelper_SupraBlast().VRF_ROUTER()
         );
 
         supraVRFDepositContract = IDepositContract(
@@ -172,10 +172,10 @@ abstract contract PerpetualMintTest_BlastSupra is
 
     /// @dev initializes PerpetualMint facets by executing a diamond cut on the Core Diamond.
     function initPerpetualMint() internal override {
-        perpetualMintHelper_BlastSupra = new PerpetualMintHelper_BlastSupra();
+        perpetualMintHelper_SupraBlast = new PerpetualMintHelper_SupraBlast();
 
         ISolidStateDiamond.FacetCut[]
-            memory facetCuts = perpetualMintHelper_BlastSupra.getFacetCuts();
+            memory facetCuts = perpetualMintHelper_SupraBlast.getFacetCuts();
 
         coreBlastDiamond.diamondCut(facetCuts, address(0), "");
     }

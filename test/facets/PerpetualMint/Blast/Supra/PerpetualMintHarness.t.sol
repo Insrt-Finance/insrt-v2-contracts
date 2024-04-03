@@ -9,20 +9,20 @@ import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 import { IPerpetualMintHarnessBlast } from "../IPerpetualMintHarness.sol";
 import { IPerpetualMintHarness } from "../../IPerpetualMintHarness.sol";
 import { VRFConsumerBaseV2Mock } from "../../../../mocks/VRFConsumerBaseV2Mock.sol";
-import { PerpetualMintBlastSupra } from "../../../../../contracts/facets/PerpetualMint/Blast/Supra/PerpetualMint.sol";
+import { PerpetualMintSupraBlast } from "../../../../../contracts/facets/PerpetualMint/Blast/Supra/PerpetualMint.sol";
 import { CollectionData, MintTokenTiersData, RequestData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "../../../../../contracts/facets/PerpetualMint/Storage.sol";
 
-/// @title PerpetualMintHarnessBlastSupra
-/// @dev exposes PerpetualMintBlastSupra external & internal functions for testing
-contract PerpetualMintHarnessBlastSupra is
+/// @title PerpetualMintHarnessSupraBlast
+/// @dev exposes PerpetualMintSupraBlast external & internal functions for testing
+contract PerpetualMintHarnessSupraBlast is
     IPerpetualMintHarnessBlast,
-    PerpetualMintBlastSupra,
+    PerpetualMintSupraBlast,
     Test,
     VRFConsumerBaseV2Mock
 {
     using EnumerableSet for EnumerableSet.UintSet;
 
-    constructor(address vrf) PerpetualMintBlastSupra(vrf) {}
+    constructor(address vrf) PerpetualMintSupraBlast(vrf) {}
 
     /// @inheritdoc IPerpetualMintHarness
     function exposed_enforceBasis(uint32 value) external pure {

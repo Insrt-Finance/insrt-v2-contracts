@@ -7,9 +7,9 @@ import "forge-std/Test.sol";
 import { ICore } from "../../contracts/diamonds/Core/ICore.sol";
 import { MintOutcome, MintResultDataBlast, MintTokenTiersData, TiersData } from "../../contracts/facets/PerpetualMint/Storage.sol";
 
-/// @title CalculateMintResultBlastSupra
+/// @title CalculateMintResultSupraBlast
 /// @dev Script for calculating the result of a batch mint attempt on Blast, Supra-specific
-contract CalculateMintResultBlastSupra is Script, Test {
+contract CalculateMintResultSupraBlast is Script, Test {
     // get CoreBlast PerpetualMint diamond address
     address payable perpetualMintAddress =
         payable(vm.envAddress("CORE_BLAST_ADDRESS"));
@@ -85,7 +85,7 @@ contract CalculateMintResultBlastSupra is Script, Test {
             );
         }
 
-        MintResultDataBlast memory result = core.calculateMintResultBlastSupra(
+        MintResultDataBlast memory result = core.calculateMintResultSupraBlast(
             collection,
             numberOfMints,
             randomnessFixed,

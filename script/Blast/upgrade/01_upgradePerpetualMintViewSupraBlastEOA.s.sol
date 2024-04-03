@@ -9,13 +9,13 @@ import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol
 
 import { IPerpetualMintView } from "../../../contracts/facets/PerpetualMint/IPerpetualMintView.sol";
 import { IPerpetualMintViewBlast } from "../../../contracts/facets/PerpetualMint/Blast/IPerpetualMintView.sol";
-import { IPerpetualMintViewBlastSupra } from "../../../contracts/facets/PerpetualMint/Blast/Supra/IPerpetualMintView.sol";
-import { PerpetualMintViewBlastSupra } from "../../../contracts/facets/PerpetualMint/Blast/Supra/PerpetualMintView.sol";
+import { IPerpetualMintViewSupraBlast } from "../../../contracts/facets/PerpetualMint/Blast/Supra/IPerpetualMintView.sol";
+import { PerpetualMintViewSupraBlast } from "../../../contracts/facets/PerpetualMint/Blast/Supra/PerpetualMintView.sol";
 
-/// @title UpgradePerpetualMintViewBlastSupraEOA
-/// @dev Deploys a new PerpetualMintViewBlastSupra facet and signs and submits a diamondCut of the PerpetualMintViewBlastSupra facet to the Core diamond
+/// @title UpgradePerpetualMintViewSupraBlastEOA
+/// @dev Deploys a new PerpetualMintViewSupraBlast facet and signs and submits a diamondCut of the PerpetualMintViewSupraBlast facet to the Core diamond
 /// using an externally owned account
-contract UpgradePerpetualMintViewBlastSupraEOA is Script {
+contract UpgradePerpetualMintViewSupraBlastEOA is Script {
     /// @dev runs the script logic
     function run() external {
         // read deployer private key
@@ -29,28 +29,28 @@ contract UpgradePerpetualMintViewBlastSupraEOA is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        // deploy PerpetualMintViewBlastSupra facet
-        PerpetualMintViewBlastSupra perpetualMintViewBlastSupra = new PerpetualMintViewBlastSupra(
+        // deploy PerpetualMintViewSupraBlast facet
+        PerpetualMintViewSupraBlast perpetualMintViewSupraBlast = new PerpetualMintViewSupraBlast(
                 VRF_ROUTER
             );
 
         console.log(
-            "New PerpetualMintViewBlastSupra Facet Address: ",
-            address(perpetualMintViewBlastSupra)
+            "New PerpetualMintViewSupraBlast Facet Address: ",
+            address(perpetualMintViewSupraBlast)
         );
         console.log("CoreBlast Address: ", core);
         console.log("VRF Router Address: ", VRF_ROUTER);
 
-        // get new PerpetualMintView + PerpetualMintViewBlastSupra facet cuts
+        // get new PerpetualMintView + PerpetualMintViewSupraBlast facet cuts
         ISolidStateDiamond.FacetCut[]
             memory newPerpetualMintViewFacetCuts = getNewPerpetualMintViewFacetCuts(
-                address(perpetualMintViewBlastSupra)
+                address(perpetualMintViewSupraBlast)
             );
 
-        // get replacement PerpetualMintView + PerpetualMintViewBlastSupra facet cuts
+        // get replacement PerpetualMintView + PerpetualMintViewSupraBlast facet cuts
         ISolidStateDiamond.FacetCut[]
             memory replacementPerpetualMintViewFacetCuts = getReplacementPerpetualMintViewFacetCuts(
-                address(perpetualMintViewBlastSupra)
+                address(perpetualMintViewSupraBlast)
             );
 
         ISolidStateDiamond.FacetCut[]
@@ -62,13 +62,13 @@ contract UpgradePerpetualMintViewBlastSupraEOA is Script {
         facetCuts[3] = replacementPerpetualMintViewFacetCuts[2];
         facetCuts[4] = replacementPerpetualMintViewFacetCuts[3];
 
-        // cut PerpetualMintView + PerpetualMintViewBlastSupra into Core
+        // cut PerpetualMintView + PerpetualMintViewSupraBlast into Core
         ISolidStateDiamond(payable(core)).diamondCut(facetCuts, address(0), "");
 
         vm.stopBroadcast();
     }
 
-    /// @dev provides the new facet cuts for cutting PerpetualMintView & PerpetualMintViewBlastSupra facets into Core
+    /// @dev provides the new facet cuts for cutting PerpetualMintView & PerpetualMintViewSupraBlast facets into Core
     /// @param viewFacetAddress address of PerpetualMintView facet
     function getNewPerpetualMintViewFacetCuts(
         address viewFacetAddress
@@ -245,22 +245,22 @@ contract UpgradePerpetualMintViewBlastSupraEOA is Script {
                     selectors: perpetualMintViewBlastFunctionSelectors
                 });
 
-        // map the PerpetualMintViewBlastSupra related function selectors to their respective interfaces
+        // map the PerpetualMintViewSupraBlast related function selectors to their respective interfaces
         bytes4[]
-            memory perpetualMintViewBlastSupraFunctionSelectors = new bytes4[](
+            memory perpetualMintViewSupraBlastFunctionSelectors = new bytes4[](
                 1
             );
 
-        perpetualMintViewBlastSupraFunctionSelectors[
+        perpetualMintViewSupraBlastFunctionSelectors[
             0
-        ] = IPerpetualMintViewBlastSupra.calculateMintResultBlastSupra.selector;
+        ] = IPerpetualMintViewSupraBlast.calculateMintResultSupraBlast.selector;
 
         ISolidStateDiamond.FacetCut
-            memory perpetualMintViewBlastSupraFacetCut = IDiamondWritableInternal
+            memory perpetualMintViewSupraBlastFacetCut = IDiamondWritableInternal
                 .FacetCut({
                     target: viewFacetAddress,
                     action: IDiamondWritableInternal.FacetCutAction.REPLACE,
-                    selectors: perpetualMintViewBlastSupraFunctionSelectors
+                    selectors: perpetualMintViewSupraBlastFunctionSelectors
                 });
 
         facetCuts = new ISolidStateDiamond.FacetCut[](4);
@@ -268,7 +268,7 @@ contract UpgradePerpetualMintViewBlastSupraEOA is Script {
         facetCuts[0] = pausableFacetCut;
         facetCuts[1] = perpetualMintViewFacetCut;
         facetCuts[2] = perpetualMintViewBlastFacetCut;
-        facetCuts[3] = perpetualMintViewBlastSupraFacetCut;
+        facetCuts[3] = perpetualMintViewSupraBlastFacetCut;
 
         return facetCuts;
     }

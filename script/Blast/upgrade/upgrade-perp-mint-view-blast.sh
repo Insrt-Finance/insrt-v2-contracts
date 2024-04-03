@@ -3,7 +3,7 @@ set -e
 
 CHAIN_ID=81457
 RPC_URL=$BLAST_RPC_URL
-UPGRADE_SCRIPT="01_upgradePerpetualMintViewBlastSupraEOA.s.sol"
+UPGRADE_SCRIPT="01_upgradePerpetualMintViewSupraBlastEOA.s.sol"
 VERIFIER_URL="https://api.blastscan.io/api"
 export CORE_BLAST_ADDRESS="0x8113E6335ddf1E6227113B429CD1F57e8E007760"
 export VRF_ROUTER="0x82A515c2BEC5C4be8aBBbF0D2F59C19A4547709c"

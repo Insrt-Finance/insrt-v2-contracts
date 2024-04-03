@@ -205,7 +205,7 @@ abstract contract PerpetualMintInternal is
     /// @param minter address of minter
     /// @param referrer address of referrer
     /// @param numberOfMints number of mints to attempt
-    /// @param wordsPerMint number of random words per mint (1 for PerpetualMintSupra, 2 for PerpetualMintBlastSupra)
+    /// @param wordsPerMint number of random words per mint (1 for PerpetualMintSupra, 2 for PerpetualMintSupraBlast)
     function _attemptBatchMintForMintWithEthSupra(
         address minter,
         address referrer,
@@ -360,7 +360,7 @@ abstract contract PerpetualMintInternal is
     /// @param referrer address of referrer
     /// @param pricePerMint price per mint for collection ($MINT denominated in units of wei)
     /// @param numberOfMints number of mints to attempt
-    /// @param wordsPerMint number of random words per mint (1 for PerpetualMintSupra, 2 for PerpetualMintBlastSupra)
+    /// @param wordsPerMint number of random words per mint (1 for PerpetualMintSupra, 2 for PerpetualMintSupraBlast)
     function _attemptBatchMintForMintWithMintSupra(
         address minter,
         address referrer,
@@ -529,7 +529,7 @@ abstract contract PerpetualMintInternal is
     /// @param collection address of collection for mint attempts
     /// @param referrer address of referrer
     /// @param numberOfMints number of mints to attempt
-    /// @param wordsPerMint number of random words per mint (2 for PerpetualMintSupra, 3 for PerpetualMintBlastSupra)
+    /// @param wordsPerMint number of random words per mint (2 for PerpetualMintSupra, 3 for PerpetualMintSupraBlast)
     function _attemptBatchMintWithEthSupra(
         address minter,
         address collection,
@@ -703,7 +703,7 @@ abstract contract PerpetualMintInternal is
     /// @param referrer address of referrer
     /// @param pricePerMint price per mint for collection ($MINT denominated in units of wei)
     /// @param numberOfMints number of mints to attempt
-    /// @param wordsPerMint number of random words per mint (2 for PerpetualMintSupra, 3 for PerpetualMintBlastSupra)
+    /// @param wordsPerMint number of random words per mint (2 for PerpetualMintSupra, 3 for PerpetualMintSupraBlast)
     function _attemptBatchMintWithMintSupra(
         address minter,
         address collection,
@@ -910,7 +910,7 @@ abstract contract PerpetualMintInternal is
     /// @param numberOfMints number of mints to attempt
     /// @param signature signature value to use as randomness in calculation
     /// @param pricePerMint price paid per mint for collection (denominated in units of wei)
-    function _calculateMintResultBlastSupra(
+    function _calculateMintResultSupraBlast(
         address collection,
         uint8 numberOfMints,
         uint256[2] calldata signature,

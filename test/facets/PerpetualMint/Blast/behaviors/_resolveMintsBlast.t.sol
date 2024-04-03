@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.19;
 
-import { PerpetualMintTest_BlastSupra } from "../Supra/PerpetualMint.t.sol"; // TODO: for now we are using the Supra version of the PerpetualMintTest contract
+import { PerpetualMintTest_SupraBlast } from "../Supra/PerpetualMint.t.sol"; // TODO: for now we are using the Supra version of the PerpetualMintTest contract
 import { TokenTest } from "../../../Token/Token.t.sol";
 import { BlastForkTest } from "../../../../BlastForkTest.t.sol";
 import { CoreTest } from "../../../../diamonds/Core/Core.t.sol";
@@ -15,7 +15,7 @@ import { IPerpetualMintInternal } from "../../../../../contracts/facets/Perpetua
 contract PerpetualMint_resolveMintsBlast is
     BlastForkTest,
     IPerpetualMintInternal,
-    PerpetualMintTest_BlastSupra,
+    PerpetualMintTest_SupraBlast,
     TokenTest
 {
     /// @dev mimics random values sent by VRF
@@ -28,8 +28,8 @@ contract PerpetualMint_resolveMintsBlast is
     receive() external payable override(CoreTest, TokenProxyTest) {}
 
     /// @dev sets up the context for the test cases
-    function setUp() public override(PerpetualMintTest_BlastSupra, TokenTest) {
-        PerpetualMintTest_BlastSupra.setUp();
+    function setUp() public override(PerpetualMintTest_SupraBlast, TokenTest) {
+        PerpetualMintTest_SupraBlast.setUp();
         TokenTest.setUp();
 
         vm.deal(GAS, 1 ether);

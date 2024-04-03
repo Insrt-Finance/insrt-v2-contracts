@@ -3,8 +3,8 @@ set -e
 
 CHAIN_ID=168587773
 RPC_URL=$BLAST_SEPOLIA_RPC_URL
-UPGRADE_SCRIPT="01_upgradePerpetualMintViewBlastSupraEOA.s.sol"
-VERIFIER_URL="https://api.routescan.io/v2/network/testnet/evm/168587773/etherscan"
+UPGRADE_SCRIPT="01_upgradePerpetualMintViewSupraBlastEOA.s.sol"
+VERIFIER_URL="https://api-sepolia.blastscan.io/api"
 export CORE_BLAST_ADDRESS="0x13B78374e752Ca7D6a41DeE2d2f36ceed47499cd"
 export VRF_ROUTER="0x2c9e897Ed7d4B1a917046c0d5B0770FE6094A181"
 

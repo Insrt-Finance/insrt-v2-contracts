@@ -5,9 +5,9 @@ pragma solidity 0.8.19;
 import { IPerpetualMint } from "../../IPerpetualMint.sol";
 import { PerpetualMintSupra } from "../../Supra/PerpetualMint.sol";
 
-/// @title PerpetualMintBlastSupra
+/// @title PerpetualMintSupraBlast
 /// @dev Blast Supra VRF-specific overrides for PerpetualMint
-contract PerpetualMintBlastSupra is PerpetualMintSupra {
+contract PerpetualMintSupraBlast is PerpetualMintSupra {
     /// @dev number of words used in mints for $MINT
     uint8 private constant TWO_WORDS = 2;
 

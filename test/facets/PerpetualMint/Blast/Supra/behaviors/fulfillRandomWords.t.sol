@@ -4,17 +4,17 @@ pragma solidity 0.8.19;
 
 import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 
-import { PerpetualMintTest_BlastSupra } from "../PerpetualMint.t.sol";
+import { PerpetualMintTest_SupraBlast } from "../PerpetualMint.t.sol";
 import { TokenTest } from "../../../../Token/Token.t.sol";
 import { BlastForkTest } from "../../../../../BlastForkTest.t.sol";
 import { CoreTest } from "../../../../../diamonds/Core/Core.t.sol";
 import { TokenProxyTest } from "../../../../../diamonds/TokenProxy.t.sol";
 
-/// @title PerpetualMint_fulfillRandomWordsBlastSupra
-/// @dev PerpetualMint_BlastSupra test contract for testing expected fulfillRandomWords behavior. Tested on a Blast fork.
-contract PerpetualMint_fulfillRandomWordsBlastSupra is
+/// @title PerpetualMint_fulfillRandomWordsSupraBlast
+/// @dev PerpetualMint_SupraBlast test contract for testing expected fulfillRandomWords behavior. Tested on a Blast fork.
+contract PerpetualMint_fulfillRandomWordsSupraBlast is
     BlastForkTest,
-    PerpetualMintTest_BlastSupra,
+    PerpetualMintTest_SupraBlast,
     TokenTest
 {
     uint32 internal constant TEST_MINT_ATTEMPTS = 3;
@@ -34,8 +34,8 @@ contract PerpetualMint_fulfillRandomWordsBlastSupra is
     receive() external payable override(CoreTest, TokenProxyTest) {}
 
     /// @dev Sets up the test case environment.
-    function setUp() public override(PerpetualMintTest_BlastSupra, TokenTest) {
-        PerpetualMintTest_BlastSupra.setUp();
+    function setUp() public override(PerpetualMintTest_SupraBlast, TokenTest) {
+        PerpetualMintTest_SupraBlast.setUp();
         TokenTest.setUp();
 
         perpetualMint.setMintToken(address(token));

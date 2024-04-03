@@ -630,10 +630,22 @@ Requires the following additional environment variables set:
 - `BLAST_RPC_URL`: Blast RPC URL
 - `BLASTSCAN_API_KEY`: Blastscan API key for contract verification
 
-#### Upgrade PerpetualMint facet
+##### Upgrade & Split PerpetualMintSupraBlast facet
+
+```
+make upgrade-split-perp-mint-blast
+```
+
+#### Upgrade PerpetualMint & PerpetualMintSupraBlast facet
 
 ```
 make upgrade-perp-mint-blast
+```
+
+#### Upgrade PerpetualMintView & PerpetualMintViewSupraBlast facet
+
+```
+make upgrade-perp-mint-view-blast
 ```
 
 #### Blast Sepolia
@@ -643,10 +655,16 @@ Requires the following additional environment variables set:
 - `BLAST_SEPOLIA_RPC_URL`: Blast Sepolia RPC URL
 - `BLASTSCAN_API_KEY`: Blastscan API key for contract verification
 
-##### Upgrade & Split PerpetualMintBlastSupra facet
+##### Upgrade & Split PerpetualMintSupraBlast facet
 
 ```
 make upgrade-split-perp-mint-blast-sepolia
+```
+
+#### Upgrade PerpetualMintView & PerpetualMintViewSupraBlast facet
+
+```
+make upgrade-perp-mint-view-blast-sepolia
 ```
 
 ## On-chain calculations

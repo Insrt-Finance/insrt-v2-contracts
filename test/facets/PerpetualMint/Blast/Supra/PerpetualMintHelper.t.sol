@@ -8,7 +8,7 @@ import { IDiamondWritableInternal } from "@solidstate/contracts/proxy/diamond/wr
 import { IPausable } from "@solidstate/contracts/security/pausable/IPausable.sol";
 import { IERC1155Metadata } from "@solidstate/contracts/token/ERC1155/metadata/IERC1155Metadata.sol";
 
-import { PerpetualMintHarnessBlastSupra } from "./PerpetualMintHarness.t.sol";
+import { PerpetualMintHarnessSupraBlast } from "./PerpetualMintHarness.t.sol";
 import { IPerpetualMintHarnessBlast } from "../IPerpetualMintHarness.sol";
 import { IPerpetualMintHarness } from "../../IPerpetualMintHarness.sol";
 import { PerpetualMintHarnessSupra } from "../../Supra/PerpetualMintHarness.t.sol";
@@ -16,8 +16,8 @@ import { ICore } from "../../../../../contracts/diamonds/Core/ICore.sol";
 import { IPerpetualMintAdminBlast } from "../../../../../contracts/facets/PerpetualMint/Blast/IPerpetualMintAdmin.sol";
 import { IPerpetualMintViewBlast } from "../../../../../contracts/facets/PerpetualMint/Blast/IPerpetualMintView.sol";
 import { PerpetualMintAdminBlast } from "../../../../../contracts/facets/PerpetualMint/Blast/PerpetualMintAdmin.sol";
-import { IPerpetualMintViewBlastSupra } from "../../../../../contracts/facets/PerpetualMint/Blast/Supra/IPerpetualMintView.sol";
-import { PerpetualMintViewBlastSupra } from "../../../../../contracts/facets/PerpetualMint/Blast/Supra/PerpetualMintView.sol";
+import { IPerpetualMintViewSupraBlast } from "../../../../../contracts/facets/PerpetualMint/Blast/Supra/IPerpetualMintView.sol";
+import { PerpetualMintViewSupraBlast } from "../../../../../contracts/facets/PerpetualMint/Blast/Supra/PerpetualMintView.sol";
 import { IPerpetualMint } from "../../../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 import { IPerpetualMintAdmin } from "../../../../../contracts/facets/PerpetualMint/IPerpetualMintAdmin.sol";
 import { IPerpetualMintBase } from "../../../../../contracts/facets/PerpetualMint/IPerpetualMintBase.sol";
@@ -25,21 +25,21 @@ import { IPerpetualMintView } from "../../../../../contracts/facets/PerpetualMin
 import { PerpetualMintAdmin } from "../../../../../contracts/facets/PerpetualMint/PerpetualMintAdmin.sol";
 import { PerpetualMintBase } from "../../../../../contracts/facets/PerpetualMint/PerpetualMintBase.sol";
 
-/// @title PerpetualMintHelper_BlastSupra
+/// @title PerpetualMintHelper_SupraBlast
 /// @dev Test helper contract for setting up PerpetualMintSupra for diamond cutting and testing, Blast-specific
-contract PerpetualMintHelper_BlastSupra {
+contract PerpetualMintHelper_SupraBlast {
     PerpetualMintAdminBlast public perpetualMintAdminBlastImplementation;
     PerpetualMintBase public perpetualMintBaseImplementation;
-    PerpetualMintHarnessBlastSupra
-        public perpetualMintHarnessBlastSupraImplementation;
-    PerpetualMintViewBlastSupra
-        public perpetualMintViewBlastSupraImplementation;
+    PerpetualMintHarnessSupraBlast
+        public perpetualMintHarnessSupraBlastImplementation;
+    PerpetualMintViewSupraBlast
+        public perpetualMintViewSupraBlastImplementation;
 
     // Blast mainnet Supra VRF Router address
     address public constant VRF_ROUTER =
         0x82A515c2BEC5C4be8aBBbF0D2F59C19A4547709c;
 
-    /// @dev deploys PerpetualMintHarnessBlastSupra implementation along with PerpetualMintBlastAdmin, PerpetualMintBase and PerpetualMintViewBlastSupra
+    /// @dev deploys PerpetualMintHarnessSupraBlast implementation along with PerpetualMintBlastAdmin, PerpetualMintBase and PerpetualMintViewSupraBlast
     constructor() {
         perpetualMintAdminBlastImplementation = new PerpetualMintAdminBlast(
             VRF_ROUTER
@@ -47,11 +47,11 @@ contract PerpetualMintHelper_BlastSupra {
 
         perpetualMintBaseImplementation = new PerpetualMintBase(VRF_ROUTER);
 
-        perpetualMintHarnessBlastSupraImplementation = new PerpetualMintHarnessBlastSupra(
+        perpetualMintHarnessSupraBlastImplementation = new PerpetualMintHarnessSupraBlast(
             VRF_ROUTER
         );
 
-        perpetualMintViewBlastSupraImplementation = new PerpetualMintViewBlastSupra(
+        perpetualMintViewSupraBlastImplementation = new PerpetualMintViewSupraBlast(
             VRF_ROUTER
         );
     }
@@ -71,7 +71,7 @@ contract PerpetualMintHelper_BlastSupra {
 
         // map the Pausable test related function selectors to their respective interfaces
         ICore.FacetCut memory pausableFacetCut = _createFacetCut(
-            address(perpetualMintViewBlastSupraImplementation),
+            address(perpetualMintViewSupraBlastImplementation),
             IDiamondWritableInternal.FacetCutAction.ADD,
             _getPausableFunctionSelectors()
         );
@@ -85,7 +85,7 @@ contract PerpetualMintHelper_BlastSupra {
 
         // map the PerpetualMint test related function selectors to their respective interfaces
         ICore.FacetCut memory perpetualMintFacetCut = _createFacetCut(
-            address(perpetualMintHarnessBlastSupraImplementation),
+            address(perpetualMintHarnessSupraBlastImplementation),
             IDiamondWritableInternal.FacetCutAction.ADD,
             _getPerpetualMintFunctionSelectors()
         );
@@ -218,29 +218,29 @@ contract PerpetualMintHelper_BlastSupra {
 
         // map the PerpetualMintView test related function selectors to their respective interfaces
         ICore.FacetCut memory perpetualMintViewFacetCut = _createFacetCut(
-            address(perpetualMintViewBlastSupraImplementation),
+            address(perpetualMintViewSupraBlastImplementation),
             IDiamondWritableInternal.FacetCutAction.ADD,
             _getPerpetualMintViewFunctionSelectors()
         );
 
         // map the PerpetualMintViewBlast related function selectors to their respective interfaces
         ICore.FacetCut memory perpetualMintViewBlastFacetCut = _createFacetCut(
-            address(perpetualMintViewBlastSupraImplementation),
+            address(perpetualMintViewSupraBlastImplementation),
             IDiamondWritableInternal.FacetCutAction.ADD,
             _getPerpetualMintViewBlastFunctionSelectors()
         );
 
-        // map the PerpetualMintViewBlastSupra related function selectors to their respective interfaces
+        // map the PerpetualMintViewSupraBlast related function selectors to their respective interfaces
         ICore.FacetCut
-            memory perpetualMintViewBlastSupraFacetCut = _createFacetCut(
-                address(perpetualMintViewBlastSupraImplementation),
+            memory perpetualMintViewSupraBlastFacetCut = _createFacetCut(
+                address(perpetualMintViewSupraBlastImplementation),
                 IDiamondWritableInternal.FacetCutAction.ADD,
-                _getPerpetualMintViewBlastSupraFunctionSelectors()
+                _getPerpetualMintViewSupraBlastFunctionSelectors()
             );
 
         // map the PerpetualMintHarness test related function selectors to their respective interfaces
         ICore.FacetCut memory perpetualMintHarnessFacetCut = _createFacetCut(
-            address(perpetualMintHarnessBlastSupraImplementation),
+            address(perpetualMintHarnessSupraBlastImplementation),
             IDiamondWritableInternal.FacetCutAction.ADD,
             _getPerpetualMintHarnessFunctionSelectors()
         );
@@ -248,7 +248,7 @@ contract PerpetualMintHelper_BlastSupra {
         // map the PerpetualMintHarnessBlast test related function selectors to their respective interfaces
         ICore.FacetCut
             memory perpetualMintHarnessBlastFacetCut = _createFacetCut(
-                address(perpetualMintHarnessBlastSupraImplementation),
+                address(perpetualMintHarnessSupraBlastImplementation),
                 IDiamondWritableInternal.FacetCutAction.ADD,
                 _getPerpetualMintHarnessBlastFunctionSelectors()
             );
@@ -256,14 +256,14 @@ contract PerpetualMintHelper_BlastSupra {
         // map the PerpetualMintHarnessSupra test related function selectors to their respective interfaces
         ICore.FacetCut
             memory perpetualMintHarnessSupraFacetCut = _createFacetCut(
-                address(perpetualMintHarnessBlastSupraImplementation),
+                address(perpetualMintHarnessSupraBlastImplementation),
                 IDiamondWritableInternal.FacetCutAction.ADD,
                 _getPerpetualMintHarnessSupraFunctionSelectors()
             );
 
         // map the VRFConsumerBaseV2 test related function selectors to their respective interfaces
         ICore.FacetCut memory vrfConsumerBaseV2FacetCut = _createFacetCut(
-            address(perpetualMintHarnessBlastSupraImplementation),
+            address(perpetualMintHarnessSupraBlastImplementation),
             IDiamondWritableInternal.FacetCutAction.ADD,
             _getVRFConsumerBaseV2FunctionSelectors()
         );
@@ -286,7 +286,7 @@ contract PerpetualMintHelper_BlastSupra {
 
         facetCuts[7] = perpetualMintViewBlastFacetCut;
 
-        facetCuts[8] = perpetualMintViewBlastSupraFacetCut;
+        facetCuts[8] = perpetualMintViewSupraBlastFacetCut;
 
         facetCuts[9] = perpetualMintHarnessFacetCut;
 
@@ -443,7 +443,7 @@ contract PerpetualMintHelper_BlastSupra {
     {
         selectors = new bytes4[](1);
 
-        selectors[0] = PerpetualMintHarnessBlastSupra
+        selectors[0] = PerpetualMintHarnessSupraBlast
             .exposed_requestRandomWordsSupra
             .selector;
     }
@@ -522,15 +522,15 @@ contract PerpetualMintHelper_BlastSupra {
         selectors[0] = IPerpetualMintViewBlast.blastYieldRisk.selector;
     }
 
-    function _getPerpetualMintViewBlastSupraFunctionSelectors()
+    function _getPerpetualMintViewSupraBlastFunctionSelectors()
         private
         pure
         returns (bytes4[] memory selectors)
     {
         selectors = new bytes4[](1);
 
-        selectors[0] = IPerpetualMintViewBlastSupra
-            .calculateMintResultBlastSupra
+        selectors[0] = IPerpetualMintViewSupraBlast
+            .calculateMintResultSupraBlast
             .selector;
     }
 

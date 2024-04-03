@@ -4,17 +4,17 @@ pragma solidity 0.8.19;
 
 import { IOwnableInternal } from "@solidstate/contracts/access/ownable/IOwnableInternal.sol";
 
-import { PerpetualMintTest_BlastSupra } from "../Supra/PerpetualMint.t.sol"; // TODO: for now we are using the Supra version of the PerpetualMintTest contract
+import { PerpetualMintTest_SupraBlast } from "../Supra/PerpetualMint.t.sol"; // TODO: for now we are using the Supra version of the PerpetualMintTest contract
 import { BlastForkTest } from "../../../../BlastForkTest.t.sol";
 import { IGuardsInternal } from "../../../../../contracts/common/IGuardsInternal.sol";
 import { IPerpetualMintInternal } from "../../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 
 /// @title PerpetualMint_setBlastYieldRisk
-/// @dev PerpetualMintTest_BlastSupra test contract for testing expected behavior of the setBlastYieldRisk function
+/// @dev PerpetualMintTest_SupraBlast test contract for testing expected behavior of the setBlastYieldRisk function
 contract PerpetualMint_setBlastYieldRisk is
     BlastForkTest,
     IPerpetualMintInternal,
-    PerpetualMintTest_BlastSupra
+    PerpetualMintTest_SupraBlast
 {
     /// @dev new blast yield risk to test
     uint32 newBlastYieldRisk = 20000000; // 2%

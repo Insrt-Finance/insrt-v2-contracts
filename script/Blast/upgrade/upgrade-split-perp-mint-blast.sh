@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
-CHAIN_ID=168587773
-RPC_URL=$BLAST_SEPOLIA_RPC_URL
+CHAIN_ID=81457
+RPC_URL=$BLAST_RPC_URL
 UPGRADE_SCRIPT="01_upgradeAndSplitPerpetualMintSupraBlastEOA.s.sol"
-VERIFIER_URL="https://api-sepolia.blastscan.io/api"
-export CORE_BLAST_ADDRESS="0x13B78374e752Ca7D6a41DeE2d2f36ceed47499cd"
-export VRF_ROUTER="0x2c9e897Ed7d4B1a917046c0d5B0770FE6094A181"
+VERIFIER_URL="https://api.blastscan.io/api"
+export CORE_BLAST_ADDRESS="0x8113E6335ddf1E6227113B429CD1F57e8E007760"
+export VRF_ROUTER="0x82A515c2BEC5C4be8aBBbF0D2F59C19A4547709c"
 
 # Check if BLASTSCAN_API_KEY is set
 if [[ -z $BLASTSCAN_API_KEY ]]; then
@@ -14,9 +14,9 @@ if [[ -z $BLASTSCAN_API_KEY ]]; then
   exit 1
 fi
 
-# Check if BLAST_SEPOLIA_RPC_URL is set
-if [[ -z $BLAST_SEPOLIA_RPC_URL ]]; then
-  echo -e "Error: BLAST_SEPOLIA_RPC_URL is not set in .env.\n"
+# Check if BLAST_RPC_URL is set
+if [[ -z $BLAST_RPC_URL ]]; then
+  echo -e "Error: BLAST_RPC_URL is not set in .env.\n"
   exit 1
 fi
 

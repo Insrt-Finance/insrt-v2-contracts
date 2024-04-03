@@ -2,15 +2,15 @@
 
 pragma solidity 0.8.19;
 
-import { IPerpetualMintViewBlastSupra } from "./IPerpetualMintView.sol";
+import { IPerpetualMintViewSupraBlast } from "./IPerpetualMintView.sol";
 import { IPerpetualMintViewBlast } from "../IPerpetualMintView.sol";
 import { MintResultDataBlast } from "../../Storage.sol";
 import { PerpetualMintViewSupra } from "../../Supra/PerpetualMintView.sol";
 
-/// @title PerpetualMintViewBlastSupra
+/// @title PerpetualMintViewSupraBlast
 /// @dev Supra VRF-specific PerpetualMintView facet contract
-contract PerpetualMintViewBlastSupra is
-    IPerpetualMintViewBlastSupra,
+contract PerpetualMintViewSupraBlast is
+    IPerpetualMintViewSupraBlast,
     PerpetualMintViewSupra
 {
     constructor(address vrf) PerpetualMintViewSupra(vrf) {}
@@ -29,14 +29,14 @@ contract PerpetualMintViewBlastSupra is
         maxClaimableGas = _calculateMaxClaimableGas();
     }
 
-    /// @inheritdoc IPerpetualMintViewBlastSupra
-    function calculateMintResultBlastSupra(
+    /// @inheritdoc IPerpetualMintViewSupraBlast
+    function calculateMintResultSupraBlast(
         address collection,
         uint8 numberOfMints,
         uint256[2] calldata signature,
         uint256 pricePerMint
     ) external view returns (MintResultDataBlast memory result) {
-        result = _calculateMintResultBlastSupra(
+        result = _calculateMintResultSupraBlast(
             collection,
             numberOfMints,
             signature,

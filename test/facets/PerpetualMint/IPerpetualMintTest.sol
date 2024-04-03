@@ -5,7 +5,7 @@ pragma solidity 0.8.19;
 import { IPerpetualMintHarness } from "./IPerpetualMintHarness.sol";
 import { IPerpetualMintHarnessBlast } from "./Blast/IPerpetualMintHarness.sol";
 import { IVRFConsumerBaseV2 } from "../../interfaces/IVRFConsumerBaseV2.sol";
-import { IPerpetualMintViewBlastSupra } from "../../../contracts/facets/PerpetualMint/Blast/Supra/IPerpetualMintView.sol";
+import { IPerpetualMintViewSupraBlast } from "../../../contracts/facets/PerpetualMint/Blast/Supra/IPerpetualMintView.sol";
 import { IPerpetualMintAdminBlast } from "../../../contracts/facets/PerpetualMint/Blast/IPerpetualMintAdmin.sol";
 import { IPerpetualMint } from "../../../contracts/facets/PerpetualMint/IPerpetualMint.sol";
 import { IPerpetualMintAdmin } from "../../../contracts/facets/PerpetualMint/IPerpetualMintAdmin.sol";
@@ -20,7 +20,7 @@ interface IPerpetualMintTest is
     IPerpetualMintAdminBlast,
     IPerpetualMintBase,
     IPerpetualMintView,
-    IPerpetualMintViewBlastSupra,
+    IPerpetualMintViewSupraBlast,
     IPerpetualMintHarness,
     IPerpetualMintHarnessBlast,
     IVRFConsumerBaseV2

@@ -2,6 +2,9 @@
 cache/
 out/
 
+# Solidity artifacts
+bin/
+
 # Ignore Foundry development broadcast logs
 !/broadcast
 /broadcast/*/31337/

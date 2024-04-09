@@ -56,8 +56,15 @@ abstract contract PerpetualMintInternal is
     /// @dev address of the Blast precompile
     address private constant BLAST = 0x4300000000000000000000000000000000000002;
 
+    /// @dev address used to represent ETH as a collection
+    address private constant ETH_COLLECTION_ADDRESS =
+        address(type(uint160).max);
+
     /// @dev address of the Blast Gas precompile
     address private constant GAS = 0x4300000000000000000000000000000000000001;
+
+    /// @dev address used to represent the $MINT token as a collection
+    address private constant MINT_TOKEN_COLLECTION_ADDRESS = address(0);
 
     /// @dev address of the configured VRF
     address private immutable VRF;
@@ -171,10 +178,9 @@ abstract contract PerpetualMintInternal is
 
         Storage.Layout storage l = Storage.layout();
 
-        // for now, mints for $MINT are treated as address(0) collections
-        address collection = address(0);
-
-        CollectionData storage collectionData = l.collections[collection];
+        CollectionData storage collectionData = l.collections[
+            MINT_TOKEN_COLLECTION_ADDRESS
+        ];
 
         _attemptBatchMintForMintWithEth_calculateAndDistributeFees(
             l,
@@ -195,7 +201,7 @@ abstract contract PerpetualMintInternal is
             l,
             collectionData,
             minter,
-            collection,
+            MINT_TOKEN_COLLECTION_ADDRESS,
             mintPriceAdjustmentFactor,
             numWords
         );
@@ -223,10 +229,9 @@ abstract contract PerpetualMintInternal is
 
         Storage.Layout storage l = Storage.layout();
 
-        // for now, mints for $MINT are treated as address(0) collections
-        address collection = address(0);
-
-        CollectionData storage collectionData = l.collections[collection];
+        CollectionData storage collectionData = l.collections[
+            MINT_TOKEN_COLLECTION_ADDRESS
+        ];
 
         _attemptBatchMintForMintWithEth_calculateAndDistributeFees(
             l,
@@ -252,7 +257,7 @@ abstract contract PerpetualMintInternal is
             l,
             collectionData,
             minter,
-            collection,
+            MINT_TOKEN_COLLECTION_ADDRESS,
             mintPriceAdjustmentFactor,
             numWords
         );
@@ -278,7 +283,7 @@ abstract contract PerpetualMintInternal is
         // Calculate the referral fee if a referrer is provided
         if (referrer != address(0)) {
             uint256 referralFeeBP = _collectionReferralFeeBP(
-                l.collections[address(0)] // $MINT
+                l.collections[MINT_TOKEN_COLLECTION_ADDRESS]
             );
 
             if (referralFeeBP == 0) {
@@ -323,10 +328,9 @@ abstract contract PerpetualMintInternal is
             pricePerMint
         );
 
-        // for now, mints for $MINT are treated as address(0) collections
-        address collection = address(0);
-
-        CollectionData storage collectionData = l.collections[collection];
+        CollectionData storage collectionData = l.collections[
+            MINT_TOKEN_COLLECTION_ADDRESS
+        ];
 
         _attemptBatchMintForMintWithMint_calculateAndDistributeFees(
             l,
@@ -349,7 +353,7 @@ abstract contract PerpetualMintInternal is
             l,
             collectionData,
             minter,
-            collection,
+            MINT_TOKEN_COLLECTION_ADDRESS,
             mintPriceAdjustmentFactor,
             numWords
         );
@@ -384,10 +388,9 @@ abstract contract PerpetualMintInternal is
             pricePerMint
         );
 
-        // for now, mints for $MINT are treated as address(0) collections
-        address collection = address(0);
-
-        CollectionData storage collectionData = l.collections[collection];
+        CollectionData storage collectionData = l.collections[
+            MINT_TOKEN_COLLECTION_ADDRESS
+        ];
 
         _attemptBatchMintForMintWithMint_calculateAndDistributeFees(
             l,
@@ -415,7 +418,7 @@ abstract contract PerpetualMintInternal is
             l,
             collectionData,
             minter,
-            collection,
+            MINT_TOKEN_COLLECTION_ADDRESS,
             mintPriceAdjustmentFactor,
             numWords
         );
@@ -445,7 +448,7 @@ abstract contract PerpetualMintInternal is
         // Calculate the referral fee if a referrer is provided
         if (referrer != address(0)) {
             uint256 referralFeeBP = _collectionReferralFeeBP(
-                l.collections[address(0)] // $MINT
+                l.collections[MINT_TOKEN_COLLECTION_ADDRESS]
             );
 
             if (referralFeeBP == 0) {
@@ -480,7 +483,7 @@ abstract contract PerpetualMintInternal is
         address referrer,
         uint32 numberOfMints
     ) internal {
-        if (collection == address(0)) {
+        if (collection == MINT_TOKEN_COLLECTION_ADDRESS) {
             // throw if collection is $MINT
             revert InvalidCollectionAddress();
         }
@@ -537,7 +540,7 @@ abstract contract PerpetualMintInternal is
         uint8 numberOfMints,
         uint8 wordsPerMint
     ) internal {
-        if (collection == address(0)) {
+        if (collection == MINT_TOKEN_COLLECTION_ADDRESS) {
             // throw if collection is $MINT
             revert InvalidCollectionAddress();
         }
@@ -646,7 +649,7 @@ abstract contract PerpetualMintInternal is
         uint256 pricePerMint,
         uint32 numberOfMints
     ) internal {
-        if (collection == address(0)) {
+        if (collection == MINT_TOKEN_COLLECTION_ADDRESS) {
             // throw if collection is $MINT
             revert InvalidCollectionAddress();
         }
@@ -712,7 +715,7 @@ abstract contract PerpetualMintInternal is
         uint8 numberOfMints,
         uint8 wordsPerMint
     ) internal {
-        if (collection == address(0)) {
+        if (collection == MINT_TOKEN_COLLECTION_ADDRESS) {
             // throw if collection is $MINT
             revert InvalidCollectionAddress();
         }
@@ -861,7 +864,7 @@ abstract contract PerpetualMintInternal is
 
         CollectionData storage collectionData = l.collections[collection];
 
-        bool mintForMint = collection == address(0);
+        bool mintForMint = collection == MINT_TOKEN_COLLECTION_ADDRESS;
 
         uint32 numberOfWords = numberOfMints * (mintForMint ? 1 : 2);
 
@@ -920,7 +923,7 @@ abstract contract PerpetualMintInternal is
 
         CollectionData storage collectionData = l.collections[collection];
 
-        bool mintForMint = collection == address(0);
+        bool mintForMint = collection == MINT_TOKEN_COLLECTION_ADDRESS;
 
         uint8 numberOfWords = numberOfMints * (mintForMint ? 2 : 3);
 
@@ -981,7 +984,7 @@ abstract contract PerpetualMintInternal is
 
         CollectionData storage collectionData = l.collections[collection];
 
-        bool mintForMint = collection == address(0);
+        bool mintForMint = collection == MINT_TOKEN_COLLECTION_ADDRESS;
 
         uint8 numberOfWords = numberOfMints * (mintForMint ? 1 : 2);
 
@@ -1493,8 +1496,8 @@ abstract contract PerpetualMintInternal is
 
         CollectionData storage collectionData = l.collections[collection];
 
-        // if the collection is address(0), the mint is for $MINT
-        if (collection == address(0)) {
+        if (collection == MINT_TOKEN_COLLECTION_ADDRESS) {
+            // the mint is for $MINT
             _resolveMintsForMint(
                 l.mintToken,
                 _collectionMintMultiplier(collectionData),
@@ -1506,7 +1509,7 @@ abstract contract PerpetualMintInternal is
                 _ethToMintRatio(l)
             );
         } else {
-            // if the collection is not address(0), the mint is for a collection
+            // the mint is for a collection
             _resolveMints(
                 l.mintToken,
                 collectionData,
@@ -1542,8 +1545,8 @@ abstract contract PerpetualMintInternal is
 
         CollectionData storage collectionData = l.collections[collection];
 
-        // if the collection is address(0), the mint is for $MINT
-        if (collection == address(0)) {
+        if (collection == MINT_TOKEN_COLLECTION_ADDRESS) {
+            // the mint is for $MINT
             _resolveMintsForMintBlast(
                 l.mintToken,
                 _collectionMintMultiplier(collectionData),
@@ -1555,7 +1558,7 @@ abstract contract PerpetualMintInternal is
                 _ethToMintRatio(l)
             );
         } else {
-            // if the collection is not address(0), the mint is for a collection
+            // the mint is for a collection
             _resolveMintsBlast(
                 l.mintToken,
                 collectionData,
@@ -2010,7 +2013,7 @@ abstract contract PerpetualMintInternal is
 
         emit MintResult(
             minter,
-            address(0),
+            MINT_TOKEN_COLLECTION_ADDRESS,
             randomWords.length,
             totalMintAmount,
             0
@@ -2085,7 +2088,7 @@ abstract contract PerpetualMintInternal is
 
         emit MintResultBlast(
             minter,
-            address(0),
+            MINT_TOKEN_COLLECTION_ADDRESS,
             randomWords.length / 2,
             totalBlastYieldAmount,
             totalMintAmount,

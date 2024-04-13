@@ -136,31 +136,35 @@ contract DeployPerpetualMint_Base is Script {
         address facetAddress
     ) internal pure returns (ICore.FacetCut[] memory) {
         // map the PerpetualMint related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](7);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](8);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
-            .attemptBatchMintForMintWithEth
+            .attemptBatchMintForEthWithEth
             .selector;
 
         perpetualMintFunctionSelectors[1] = IPerpetualMint
-            .attemptBatchMintForMintWithMint
+            .attemptBatchMintForMintWithEth
             .selector;
 
         perpetualMintFunctionSelectors[2] = IPerpetualMint
-            .attemptBatchMintWithEth
+            .attemptBatchMintForMintWithMint
             .selector;
 
         perpetualMintFunctionSelectors[3] = IPerpetualMint
+            .attemptBatchMintWithEth
+            .selector;
+
+        perpetualMintFunctionSelectors[4] = IPerpetualMint
             .attemptBatchMintWithMint
             .selector;
 
-        perpetualMintFunctionSelectors[4] = IPerpetualMint.claimPrize.selector;
+        perpetualMintFunctionSelectors[5] = IPerpetualMint.claimPrize.selector;
 
-        perpetualMintFunctionSelectors[5] = IPerpetualMint
+        perpetualMintFunctionSelectors[6] = IPerpetualMint
             .fundConsolationFees
             .selector;
 
-        perpetualMintFunctionSelectors[6] = IPerpetualMint.redeem.selector;
+        perpetualMintFunctionSelectors[7] = IPerpetualMint.redeem.selector;
 
         ICore.FacetCut memory perpetualMintFacetCut = IDiamondWritableInternal
             .FacetCut({
@@ -199,7 +203,7 @@ contract DeployPerpetualMint_Base is Script {
         address facetAddress
     ) internal pure returns (ICore.FacetCut[] memory) {
         // map the PerpetualMintAdmin related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintAdminFunctionSelectors = new bytes4[](27);
+        bytes4[] memory perpetualMintAdminFunctionSelectors = new bytes4[](29);
 
         perpetualMintAdminFunctionSelectors[0] = IPerpetualMintAdmin
             .burnReceipt
@@ -262,50 +266,58 @@ contract DeployPerpetualMint_Base is Script {
             .selector;
 
         perpetualMintAdminFunctionSelectors[15] = IPerpetualMintAdmin
-            .setMintFeeBP
+            .setMintEarningsBufferBP
             .selector;
 
         perpetualMintAdminFunctionSelectors[16] = IPerpetualMintAdmin
-            .setMintToken
+            .setMintFeeBP
             .selector;
 
         perpetualMintAdminFunctionSelectors[17] = IPerpetualMintAdmin
-            .setMintTokenConsolationFeeBP
+            .setMintForEthConsolationFeeBP
             .selector;
 
         perpetualMintAdminFunctionSelectors[18] = IPerpetualMintAdmin
-            .setMintTokenTiers
+            .setMintToken
             .selector;
 
         perpetualMintAdminFunctionSelectors[19] = IPerpetualMintAdmin
-            .setReceiptBaseURI
+            .setMintTokenConsolationFeeBP
             .selector;
 
         perpetualMintAdminFunctionSelectors[20] = IPerpetualMintAdmin
-            .setReceiptTokenURI
+            .setMintTokenTiers
             .selector;
 
         perpetualMintAdminFunctionSelectors[21] = IPerpetualMintAdmin
-            .setRedemptionFeeBP
+            .setReceiptBaseURI
             .selector;
 
         perpetualMintAdminFunctionSelectors[22] = IPerpetualMintAdmin
-            .setRedeemPaused
+            .setReceiptTokenURI
             .selector;
 
         perpetualMintAdminFunctionSelectors[23] = IPerpetualMintAdmin
-            .setTiers
+            .setRedemptionFeeBP
             .selector;
 
         perpetualMintAdminFunctionSelectors[24] = IPerpetualMintAdmin
-            .setVRFConfig
+            .setRedeemPaused
             .selector;
 
         perpetualMintAdminFunctionSelectors[25] = IPerpetualMintAdmin
-            .setVRFSubscriptionBalanceThreshold
+            .setTiers
             .selector;
 
         perpetualMintAdminFunctionSelectors[26] = IPerpetualMintAdmin
+            .setVRFConfig
+            .selector;
+
+        perpetualMintAdminFunctionSelectors[27] = IPerpetualMintAdmin
+            .setVRFSubscriptionBalanceThreshold
+            .selector;
+
+        perpetualMintAdminFunctionSelectors[28] = IPerpetualMintAdmin
             .unpause
             .selector;
 
@@ -422,7 +434,7 @@ contract DeployPerpetualMint_Base is Script {
             });
 
         // map the PerpetualMintView related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](25);
+        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](27);
 
         perpetualMintViewFunctionSelectors[0] = IPerpetualMintView
             .accruedConsolationFees
@@ -485,42 +497,50 @@ contract DeployPerpetualMint_Base is Script {
             .selector;
 
         perpetualMintViewFunctionSelectors[15] = IPerpetualMintView
-            .mintFeeBP
+            .mintEarningsBufferBP
             .selector;
 
         perpetualMintViewFunctionSelectors[16] = IPerpetualMintView
-            .mintToken
+            .mintFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[17] = IPerpetualMintView
-            .mintTokenConsolationFeeBP
+            .mintForEthConsolationFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[18] = IPerpetualMintView
-            .mintTokenTiers
+            .mintToken
             .selector;
 
         perpetualMintViewFunctionSelectors[19] = IPerpetualMintView
-            .redemptionFeeBP
+            .mintTokenConsolationFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[20] = IPerpetualMintView
-            .redeemPaused
+            .mintTokenTiers
             .selector;
 
         perpetualMintViewFunctionSelectors[21] = IPerpetualMintView
-            .SCALE
+            .redemptionFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[22] = IPerpetualMintView
-            .tiers
+            .redeemPaused
             .selector;
 
         perpetualMintViewFunctionSelectors[23] = IPerpetualMintView
-            .vrfConfig
+            .SCALE
             .selector;
 
         perpetualMintViewFunctionSelectors[24] = IPerpetualMintView
+            .tiers
+            .selector;
+
+        perpetualMintViewFunctionSelectors[25] = IPerpetualMintView
+            .vrfConfig
+            .selector;
+
+        perpetualMintViewFunctionSelectors[26] = IPerpetualMintView
             .vrfSubscriptionBalanceThreshold
             .selector;
 

@@ -197,6 +197,10 @@ upgrade-split-perp-mint-arb:
 upgrade-perp-mint-arb:
 	@./script/Arbitrum/upgrade/upgrade-perp-mint-arb.sh
 
+##### Upgrade PerpetualMintAdmin facet
+upgrade-perp-mint-admin-arb:
+	@./script/Arbitrum/upgrade/upgrade-perp-mint-admin-arb.sh
+
 ##### Upgrade PerpetualMintView facet
 upgrade-perp-mint-view-arb:
 	@./script/Arbitrum/upgrade/upgrade-perp-mint-view-arb.sh
@@ -222,6 +226,10 @@ upgrade-split-perp-mint-arb-sepolia:
 ##### Upgrade PerpetualMint facet
 upgrade-perp-mint-arb-sepolia:
 	@./script/Arbitrum/upgrade/upgrade-perp-mint-arb-sepolia.sh
+
+##### Upgrade PerpetualMintAdmin facet
+upgrade-perp-mint-admin-arb-sepolia:
+	@./script/Arbitrum/upgrade/upgrade-perp-mint-admin-arb-sepolia.sh
 
 ##### Upgrade PerpetualMintView facet
 upgrade-perp-mint-view-arb-sepolia:

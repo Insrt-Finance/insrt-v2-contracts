@@ -66,7 +66,9 @@ contract PerpetualMint_requestRandomWords is
         perpetualMint.exposed_requestRandomWords(
             minter,
             COLLECTION,
+            TEST_MINT_EARNINGS_FEE,
             TEST_ADJUSTMENT_FACTOR,
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
             TEST_NUM_WORDS
         );
     }
@@ -81,7 +83,9 @@ contract PerpetualMint_requestRandomWords is
         perpetualMint.exposed_requestRandomWords(
             minter,
             COLLECTION,
+            TEST_MINT_EARNINGS_FEE,
             TEST_ADJUSTMENT_FACTOR,
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
             TEST_NUM_WORDS
         );
 
@@ -94,14 +98,20 @@ contract PerpetualMint_requestRandomWords is
         (
             address requestMinter,
             address requestCollection,
-            uint256 mintPriceAdjustmentFactor
+            uint256 mintEarningsFee,
+            uint256 mintPriceAdjustmentFactor,
+            uint256 prizeValueInWei
         ) = perpetualMint.exposed_requests(requestId);
 
         assert(requestCollection == COLLECTION);
 
         assert(requestMinter == minter);
 
+        assert(mintEarningsFee == TEST_MINT_EARNINGS_FEE);
+
         assert(mintPriceAdjustmentFactor == TEST_ADJUSTMENT_FACTOR);
+
+        assert(prizeValueInWei == TEST_MINT_FOR_COLLECTION_PRIZE_VALUE);
     }
 
     /// @dev Tests that _requestRandomWords functionality reverts when more than the current max number of words (500) is requested.
@@ -129,7 +139,9 @@ contract PerpetualMint_requestRandomWords is
         perpetualMint.exposed_requestRandomWords(
             minter,
             COLLECTION,
+            TEST_MINT_EARNINGS_FEE,
             TEST_ADJUSTMENT_FACTOR,
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
             ++currentMaxNumWords
         );
     }
@@ -147,7 +159,9 @@ contract PerpetualMint_requestRandomWords is
         perpetualMint.exposed_requestRandomWords(
             minter,
             COLLECTION,
+            TEST_MINT_EARNINGS_FEE,
             TEST_ADJUSTMENT_FACTOR,
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
             TEST_NUM_WORDS
         );
     }
@@ -169,7 +183,9 @@ contract PerpetualMint_requestRandomWords is
         perpetualMint.exposed_requestRandomWords(
             minter,
             COLLECTION,
+            TEST_MINT_EARNINGS_FEE,
             TEST_ADJUSTMENT_FACTOR,
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
             TEST_NUM_WORDS
         );
     }

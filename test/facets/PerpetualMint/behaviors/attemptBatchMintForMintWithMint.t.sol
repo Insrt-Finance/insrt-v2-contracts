@@ -25,8 +25,7 @@ contract PerpetualMint_attemptBatchMintForMintWithMint is
 
     uint32 internal constant ZERO_MINT_ATTEMPTS = 0;
 
-    /// @dev for now, mints for $MINT are treated as address(0) collections
-    address COLLECTION = address(0);
+    address COLLECTION = MINT_TOKEN_COLLECTION_ADDRESS;
 
     /// @dev overrides the receive function to accept ETH
     receive() external payable override(CoreTest, TokenProxyTest) {}

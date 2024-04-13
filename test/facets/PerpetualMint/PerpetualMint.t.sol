@@ -33,10 +33,20 @@ abstract contract PerpetualMintTest is CoreTest {
 
     uint32 internal constant TEST_DEFAULT_COLLECTION_REFERRAL_FEE_BP = 25e7; // 25%
 
+    uint32 internal constant TEST_MINT_EARNINGS_BUFFER_BP = 25e7; // 25%
+
     uint32 internal constant TEST_MINT_FEE_BP = 5e6; // 0.5% fee
 
-    /// @dev test mint for collection floor price
-    uint256 internal constant TEST_MINT_FOR_COLLECTION_FLOOR_PRICE = 69 ether;
+    uint256 internal constant TEST_MINT_EARNINGS_FEE = .01 ether;
+
+    /// @dev test mint for collection prize value
+    uint256 internal constant TEST_MINT_FOR_COLLECTION_PRIZE_VALUE = 69 ether;
+
+    /// @dev test mint for $MINT prize value (there is no prize value for minting for $MINT)
+    uint256 internal constant TEST_MINT_FOR_MINT_PRIZE_VALUE = 0;
+
+    /// @dev mint for ETH consolation fee basis points to test
+    uint32 internal constant TEST_MINT_FOR_ETH_CONSOLATION_FEE_BP = 5e6; // 0.5% fee
 
     /// @dev mint for $MINT consolation fee basis points to test
     uint32 internal constant TEST_MINT_TOKEN_CONSOLATION_FEE_BP = 5e6; // 0.5% fee
@@ -62,6 +72,13 @@ abstract contract PerpetualMintTest is CoreTest {
 
     // minter
     address payable internal minter = payable(address(3));
+
+    /// @dev address used to represent ETH as a collection
+    address internal constant ETH_COLLECTION_ADDRESS =
+        address(type(uint160).max);
+
+    /// @dev address used to represent the $MINT token as a collection
+    address internal constant MINT_TOKEN_COLLECTION_ADDRESS = address(0);
 
     /// @dev the no referrer address used during test mint attempts
     address internal constant NO_REFERRER = address(0);
@@ -134,13 +151,21 @@ abstract contract PerpetualMintTest is CoreTest {
             TEST_DEFAULT_COLLECTION_REFERRAL_FEE_BP
         );
 
+        // sets the mint earnings buffer
+        perpetualMint.setMintEarningsBufferBP(TEST_MINT_EARNINGS_BUFFER_BP);
+
+        // sets the mint fee
+        perpetualMint.setMintFeeBP(TEST_MINT_FEE_BP);
+
+        // sets the mint for ETH consolation fee
+        perpetualMint.setMintForEthConsolationFeeBP(
+            TEST_MINT_FOR_ETH_CONSOLATION_FEE_BP
+        );
+
         // sets the mint for $MINT consolation fee
         perpetualMint.setMintTokenConsolationFeeBP(
             TEST_MINT_TOKEN_CONSOLATION_FEE_BP
         );
-
-        // sets the mint fee
-        perpetualMint.setMintFeeBP(TEST_MINT_FEE_BP);
 
         uint256[] memory tierMultipliers = new uint256[](testNumberOfTiers);
         uint32[] memory tierRisks = new uint32[](testNumberOfTiers);
@@ -255,8 +280,7 @@ abstract contract PerpetualMintTest is CoreTest {
     function mock_unsuccessfulMintForMintWithEthAttempts(
         uint32 numberOfMints
     ) internal {
-        // for now, mints for $MINT are treated as address(0) collections
-        address collection = address(0);
+        address collection = MINT_TOKEN_COLLECTION_ADDRESS;
 
         uint256 mockMsgValue = perpetualMint.collectionMintPrice(collection) *
             numberOfMints;

@@ -20,8 +20,7 @@ contract PerpetualMint_resolveMintsForMint is
     /// @dev mimics random values sent by Chainlink VRF
     uint256[] randomWords;
 
-    /// @dev for now, mints for $MINT are treated as address(0) collections
-    address COLLECTION = address(0);
+    address COLLECTION = MINT_TOKEN_COLLECTION_ADDRESS;
 
     /// @dev overrides the receive function to accept ETH
     receive() external payable override(CoreTest, TokenProxyTest) {}
@@ -190,7 +189,7 @@ contract PerpetualMint_resolveMintsForMint is
                 perpetualMint.BASIS()));
 
         vm.expectEmit();
-        emit MintResult(minter, COLLECTION, 1, totalMintedAmount, 0);
+        emit MintResult(minter, COLLECTION, 1, totalMintedAmount, 0, 0);
 
         vm.prank(address(perpetualMint));
         perpetualMint.exposed_resolveMintsForMint(

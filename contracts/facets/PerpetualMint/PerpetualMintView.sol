@@ -144,8 +144,26 @@ contract PerpetualMintView is
     }
 
     /// @inheritdoc IPerpetualMintView
+    function mintEarningsBufferBP()
+        external
+        view
+        returns (uint32 mintEarningsBufferBasisPoints)
+    {
+        mintEarningsBufferBasisPoints = _mintEarningsBufferBP();
+    }
+
+    /// @inheritdoc IPerpetualMintView
     function mintFeeBP() external view returns (uint32 mintFeeBasisPoints) {
         mintFeeBasisPoints = _mintFeeBP();
+    }
+
+    /// @inheritdoc IPerpetualMintView
+    function mintForEthConsolationFeeBP()
+        external
+        view
+        returns (uint32 mintForEthConsolationFeeBasisPoints)
+    {
+        mintForEthConsolationFeeBasisPoints = _mintForEthConsolationFeeBP();
     }
 
     /// @inheritdoc IPerpetualMintView

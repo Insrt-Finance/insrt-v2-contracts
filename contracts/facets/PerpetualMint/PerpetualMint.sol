@@ -11,6 +11,20 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal {
     constructor(address vrf) PerpetualMintInternal(vrf) {}
 
     /// @inheritdoc IPerpetualMint
+    function attemptBatchMintForEthWithEth(
+        address referrer,
+        uint32 numberOfMints,
+        uint256 ethPrizeValueInWei
+    ) external payable virtual whenNotPaused {
+        _attemptBatchMintForEthWithEth(
+            msg.sender,
+            referrer,
+            numberOfMints,
+            ethPrizeValueInWei
+        );
+    }
+
+    /// @inheritdoc IPerpetualMint
     function attemptBatchMintForMintWithEth(
         address referrer,
         uint32 numberOfMints

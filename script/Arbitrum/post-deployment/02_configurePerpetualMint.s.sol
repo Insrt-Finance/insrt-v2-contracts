@@ -18,6 +18,7 @@ contract ConfigurePerpetualMintArb is Script, Test {
         uint32 collectionConsolationFeeBP;
         uint32 defaultCollectionReferralFeeBP;
         uint32 mintFeeBP;
+        uint32 mintForEthConsolationFeeBP;
         uint32 mintTokenConsolationFeeBP;
         uint32 redemptionFeeBP;
     }
@@ -43,11 +44,18 @@ contract ConfigurePerpetualMintArb is Script, Test {
                 vm.envUint("DEFAULT_COLLECTION_REFERRAL_FEE_BP")
             ),
             mintFeeBP: uint32(vm.envUint("MINT_FEE_BP")),
+            mintForEthConsolationFeeBP: uint32(
+                vm.envUint("MINT_FOR_ETH_CONSOLATION_FEE_BP")
+            ),
             mintTokenConsolationFeeBP: uint32(
                 vm.envUint("MINT_TOKEN_CONSOLATION_FEE_BP")
             ),
             redemptionFeeBP: uint32(vm.envUint("REDEMPTION_FEE_BP"))
         });
+
+        uint32 mintEarningsBufferBP = uint32(
+            vm.envUint("MINT_EARNINGS_BUFFER_BP")
+        );
 
         uint256[] memory mintTokenTierMultipliers = vm.envUint(
             "MINT_TOKEN_TIER_MULTIPLIERS",
@@ -86,6 +94,8 @@ contract ConfigurePerpetualMintArb is Script, Test {
 
         vm.startBroadcast(deployerPrivateKey);
 
+        perpetualMint.setMintEarningsBufferBP(mintEarningsBufferBP);
+
         perpetualMint.setMintTokenTiers(
             MintTokenTiersData({
                 tierMultipliers: mintTokenTierMultipliers,
@@ -117,9 +127,14 @@ contract ConfigurePerpetualMintArb is Script, Test {
         );
         console.log("Mint Fee BP Set: ", feesConfig.mintFeeBP);
         console.log(
+            "Mint For ETH Consolation Fee BP Set: ",
+            feesConfig.mintForEthConsolationFeeBP
+        );
+        console.log(
             "Mint Token Consolation Fee BP Set: ",
             feesConfig.mintTokenConsolationFeeBP
         );
+        console.log("Mint Earnings Buffer BP Set: ", mintEarningsBufferBP);
         console.log("Mint Token Tiers Set: ");
         emit log_named_array("  Tier Multipliers: ", mintTokenTierMultipliers);
         emit log_named_array("  Tier Risks: ", envMintTokenTierRisks);
@@ -173,6 +188,10 @@ contract ConfigurePerpetualMintArb is Script, Test {
         );
 
         perpetualMint.setMintFeeBP(config.mintFeeBP);
+
+        perpetualMint.setMintForEthConsolationFeeBP(
+            config.mintForEthConsolationFeeBP
+        );
 
         perpetualMint.setMintTokenConsolationFeeBP(
             config.mintTokenConsolationFeeBP

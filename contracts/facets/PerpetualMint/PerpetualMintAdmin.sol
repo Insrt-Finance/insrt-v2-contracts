@@ -106,8 +106,22 @@ contract PerpetualMintAdmin is IPerpetualMintAdmin, PerpetualMintInternal {
     }
 
     /// @inheritdoc IPerpetualMintAdmin
+    function setMintEarningsBufferBP(
+        uint32 _mintEarningsBufferBP
+    ) external onlyOwner {
+        _setMintEarningsBufferBP(_mintEarningsBufferBP);
+    }
+
+    /// @inheritdoc IPerpetualMintAdmin
     function setMintFeeBP(uint32 _mintFeeBP) external onlyOwner {
         _setMintFeeBP(_mintFeeBP);
+    }
+
+    /// @inheritdoc IPerpetualMintAdmin
+    function setMintForEthConsolationFeeBP(
+        uint32 _mintForEthConsolationFeeBP
+    ) external onlyOwner {
+        _setMintForEthConsolationFeeBP(_mintForEthConsolationFeeBP);
     }
 
     /// @inheritdoc IPerpetualMintAdmin

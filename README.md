@@ -196,7 +196,9 @@ Note: The following environment variables are modifiable in `./script/Arbitrum/p
 
 - `COLLECTION_CONSOLATION_FEE_BP`
 - `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
+- `MINT_EARNINGS_BUFFER_BP`
 - `MINT_FEE_BP`
+- `MINT_FOR_ETH_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_TIER_MULTIPLIERS`
 - `MINT_TOKEN_TIER_RISKS`
@@ -251,7 +253,9 @@ Note: The following environment variables are modifiable in `./script/Arbitrum/p
 
 - `COLLECTION_CONSOLATION_FEE_BP`
 - `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
+- `MINT_EARNINGS_BUFFER_BP`
 - `MINT_FEE_BP`
+- `MINT_FOR_ETH_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_TIER_MULTIPLIERS`
 - `MINT_TOKEN_TIER_RISKS`
@@ -297,7 +301,9 @@ Note: The following environment variables are modifiable in `./script/Arbitrum/p
 
 - `COLLECTION_CONSOLATION_FEE_BP`
 - `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
+- `MINT_EARNINGS_BUFFER_BP`
 - `MINT_FEE_BP`
+- `MINT_FOR_ETH_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_TIER_MULTIPLIERS`
 - `MINT_TOKEN_TIER_RISKS`
@@ -340,7 +346,9 @@ Note: The following environment variables are modifiable in `./script/Base/post-
 
 - `COLLECTION_CONSOLATION_FEE_BP`
 - `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
+- `MINT_EARNINGS_BUFFER_BP`
 - `MINT_FEE_BP`
+- `MINT_FOR_ETH_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_TIER_MULTIPLIERS`
 - `MINT_TOKEN_TIER_RISKS`
@@ -382,7 +390,9 @@ Note: The following environment variables are modifiable in `./script/Base/post-
 
 - `COLLECTION_CONSOLATION_FEE_BP`
 - `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
+- `MINT_EARNINGS_BUFFER_BP`
 - `MINT_FEE_BP`
+- `MINT_FOR_ETH_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_TIER_MULTIPLIERS`
 - `MINT_TOKEN_TIER_RISKS`
@@ -424,7 +434,9 @@ Note: The following environment variables are modifiable in `./script/Base/post-
 
 - `COLLECTION_CONSOLATION_FEE_BP`
 - `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
+- `MINT_EARNINGS_BUFFER_BP`
 - `MINT_FEE_BP`
+- `MINT_FOR_ETH_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_TIER_MULTIPLIERS`
 - `MINT_TOKEN_TIER_RISKS`
@@ -467,7 +479,9 @@ Note: The following environment variables are modifiable in `./script/Blast/post
 - `BLAST_YIELD_RISK`
 - `COLLECTION_CONSOLATION_FEE_BP`
 - `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
+- `MINT_EARNINGS_BUFFER_BP`
 - `MINT_FEE_BP`
+- `MINT_FOR_ETH_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_TIER_MULTIPLIERS`
 - `MINT_TOKEN_TIER_RISKS`
@@ -518,7 +532,9 @@ Note: The following environment variables are modifiable in `./script/Blast/post
 
 - `COLLECTION_CONSOLATION_FEE_BP`
 - `DEFAULT_COLLECTION_REFERRAL_FEE_BP`
+- `MINT_EARNINGS_BUFFER_BP`
 - `MINT_FEE_BP`
+- `MINT_FOR_ETH_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_CONSOLATION_FEE_BP`
 - `MINT_TOKEN_TIER_MULTIPLIERS`
 - `MINT_TOKEN_TIER_RISKS`
@@ -568,6 +584,12 @@ make upgrade-split-perp-mint-arb
 make upgrade-perp-mint-arb
 ```
 
+#### Upgrade PerpetualMintAdmin facet
+
+```
+make upgrade-perp-mint-admin-arb
+```
+
 #### Upgrade PerpetualMintView facet
 
 ```
@@ -609,6 +631,12 @@ make upgrade-split-perp-mint-arb-sepolia
 
 ```
 make upgrade-perp-mint-arb-sepolia
+```
+
+#### Upgrade PerpetualMintAdmin facet
+
+```
+make upgrade-perp-mint-admin-arb-sepolia
 ```
 
 ##### Upgrade PerpetualMintView facet

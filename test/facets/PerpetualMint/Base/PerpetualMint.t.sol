@@ -70,8 +70,16 @@ abstract contract PerpetualMintTest_Base is CoreTest, PerpetualMintTest {
             TEST_DEFAULT_COLLECTION_REFERRAL_FEE_BP
         );
 
+        // sets the mint earnings buffer
+        perpetualMint.setMintEarningsBufferBP(TEST_MINT_EARNINGS_BUFFER_BP);
+
         // sets the mint fee
         perpetualMint.setMintFeeBP(TEST_MINT_FEE_BP);
+
+        // sets the mint for ETH consolation fee
+        perpetualMint.setMintForEthConsolationFeeBP(
+            TEST_MINT_FOR_ETH_CONSOLATION_FEE_BP
+        );
 
         // sets the mint for $MINT consolation fee
         perpetualMint.setMintTokenConsolationFeeBP(

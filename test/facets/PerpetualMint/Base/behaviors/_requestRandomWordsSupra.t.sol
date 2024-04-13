@@ -72,7 +72,9 @@ contract PerpetualMint_requestRandomWordsSupra is
         (
             address requestMinter,
             address requestCollection,
-            uint256 mintPriceAdjustmentFactor
+            ,
+            uint256 mintPriceAdjustmentFactor,
+
         ) = perpetualMint.exposed_requests(requestId);
 
         assert(requestCollection == COLLECTION);

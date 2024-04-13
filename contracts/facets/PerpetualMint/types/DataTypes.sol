@@ -74,6 +74,10 @@ struct RequestData {
     address minter;
     /// @dev adjustment factor based on the ratio of the price per mint paid to the full price per mint
     uint256 mintPriceAdjustmentFactor;
+    /// @dev the mint request mint earnings fee in ETH (denominated in wei)
+    uint256 mintEarningsFee;
+    /// @dev prize value in ETH (denominated in wei) at the time of the mint request
+    uint256 prizeValueInWei;
 }
 
 /// @dev Represents data specific to $MINT mint for collection consolation tiers

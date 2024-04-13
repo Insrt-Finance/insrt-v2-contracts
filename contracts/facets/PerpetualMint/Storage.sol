@@ -44,6 +44,10 @@ library PerpetualMintStorage {
         uint32 defaultCollectionReferralFeeBP;
         /// @dev the risk or probability of winning yield from a mint attempt, applicable only to Blast as of writing
         uint32 yieldRisk;
+        /// @dev mint for ETH consolation fee in basis points
+        uint32 mintForEthConsolationFeeBP;
+        /// @dev mint for ETH mint earnings pool buffer in basis points
+        uint32 mintEarningsBufferBP;
     }
 
     bytes32 internal constant STORAGE_SLOT =

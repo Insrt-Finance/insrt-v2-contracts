@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.19;
 
-import { VRFConfig } from "../../../contracts/facets/PerpetualMint/Storage.sol";
+import { RequestData } from "../../../contracts/facets/PerpetualMint/Storage.sol";
 
 /// @title IPerpetualMintHarness
 /// @dev Interface for PerpetualMintHarness contract
@@ -40,7 +40,9 @@ interface IPerpetualMintHarness {
     function exposed_requestRandomWords(
         address minter,
         address collection,
+        uint256 mintEarningsFee,
         uint256 mintPriceAdjustmentFactor,
+        uint256 prizeValueInWei,
         uint32 numWords
     ) external;
 
@@ -61,7 +63,9 @@ interface IPerpetualMintHarness {
         returns (
             address minter,
             address collection,
-            uint256 mintPriceAdjustmentFactor
+            uint256 mintEarningsFee,
+            uint256 mintPriceAdjustmentFactor,
+            uint256 prizeValueInWei
         );
 
     /// @dev exposes _resolveMints
@@ -69,6 +73,12 @@ interface IPerpetualMintHarness {
         address minter,
         address collection,
         uint256 mintPriceAdjustmentFactor,
+        uint256[] memory randomWords
+    ) external;
+
+    /// @dev exposes _resolveMintsForEth
+    function exposed_resolveMintsForEth(
+        RequestData calldata request,
         uint256[] memory randomWords
     ) external;
 
@@ -96,6 +106,8 @@ interface IPerpetualMintHarness {
         uint256 requestId,
         address minter,
         address collection,
-        uint256 mintPriceAdjustmentFactor
+        uint256 mintEarningsFee,
+        uint256 mintPriceAdjustmentFactor,
+        uint256 prizeValueInWei
     ) external;
 }

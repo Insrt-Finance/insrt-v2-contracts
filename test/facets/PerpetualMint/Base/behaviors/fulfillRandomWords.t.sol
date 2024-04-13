@@ -27,8 +27,9 @@ contract PerpetualMint_fulfillRandomWordsBase is
     address internal constant MINT_FOR_COLLECTION_ADDRESS =
         BORED_APE_YACHT_CLUB;
 
-    /// @dev address to test when minting for $MINT, currently treated as address(0)
-    address internal constant MINT_FOR_MINT_ADDRESS = address(0);
+    /// @dev address to test when minting for $MINT
+    address internal constant MINT_FOR_MINT_ADDRESS =
+        MINT_TOKEN_COLLECTION_ADDRESS;
 
     /// @dev overrides the receive function to accept ETH
     receive() external payable override(CoreTest, TokenProxyTest) {}

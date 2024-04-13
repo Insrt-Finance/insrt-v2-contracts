@@ -158,6 +158,132 @@ abstract contract PerpetualMintInternal is
         }
     }
 
+    /// @notice Attempts a batch mint for the msg.sender for ETH using ETH as payment.
+    /// @param minter address of minter
+    /// @param referrer address of referrer
+    /// @param numberOfMints number of mints to attempt
+    /// @param ethPrizeValueInWei value of ETH prize in wei
+    function _attemptBatchMintForEthWithEth(
+        address minter,
+        address referrer,
+        uint32 numberOfMints,
+        uint256 ethPrizeValueInWei
+    ) internal {
+        uint256 msgValue = msg.value;
+
+        uint256 pricePerSpin = msgValue / numberOfMints;
+
+        _attemptBatchMint_paidInEth_validateMintParameters(
+            msgValue,
+            pricePerSpin
+        );
+
+        Storage.Layout storage l = Storage.layout();
+
+        _attemptBatchMintForEthWithEth_checkMaxPayout(
+            l.mintEarnings,
+            ethPrizeValueInWei,
+            l.mintEarningsBufferBP,
+            numberOfMints
+        );
+
+        CollectionData storage collectionData = l.collections[
+            ETH_COLLECTION_ADDRESS
+        ];
+
+        uint256 mintEarningsFee = _attemptBatchMintForEthWithEth_calculateAndDistributeFees(
+                l,
+                collectionData,
+                msgValue,
+                referrer
+            );
+
+        // if the number of words requested is greater than the max allowed by the VRF coordinator,
+        // the request for random words will fail (max random words is currently 500 per request).
+        uint32 numWords = numberOfMints * 2; // 2 words per mint for ETH, current max of 250 mints per tx
+
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpin
+            );
+
+        _requestRandomWords(
+            l,
+            collectionData,
+            minter,
+            ETH_COLLECTION_ADDRESS,
+            mintEarningsFee,
+            mintPriceAdjustmentFactor,
+            ethPrizeValueInWei,
+            numWords
+        );
+    }
+
+    function _attemptBatchMintForEthWithEth_calculateAndDistributeFees(
+        Storage.Layout storage l,
+        CollectionData storage collectionData,
+        uint256 msgValue,
+        address referrer
+    ) private returns (uint256 mintEarningsFee) {
+        // calculate the mint for ETH consolation fee
+        uint256 mintForEthConsolationFee = (msgValue *
+            l.mintForEthConsolationFeeBP) / BASIS;
+
+        // Apply the mint for ETH-specific fee ratio
+        uint256 additionalDepositorFee = (mintForEthConsolationFee *
+            collectionData.mintFeeDistributionRatioBP) / BASIS;
+
+        // calculate the protocol mint fee
+        uint256 mintFee = (msgValue * l.mintFeeBP) / BASIS;
+
+        uint256 referralFee;
+
+        // Calculate the referral fee if a referrer is provided
+        if (referrer != address(0)) {
+            uint256 referralFeeBP = _collectionReferralFeeBP(collectionData);
+
+            if (referralFeeBP == 0) {
+                referralFeeBP = l.defaultCollectionReferralFeeBP;
+            }
+
+            // Calculate referral fee based on the mintFee and referral fee percentage
+            referralFee = (mintFee * referralFeeBP) / BASIS;
+
+            // Pay the referrer
+            payable(referrer).sendValue(referralFee);
+        }
+
+        // update the accrued consolation fees
+        l.consolationFees += mintForEthConsolationFee - additionalDepositorFee;
+
+        mintEarningsFee =
+            msgValue -
+            mintForEthConsolationFee -
+            mintFee +
+            additionalDepositorFee;
+
+        // update the accrued depositor mint earnings
+        l.mintEarnings += mintEarningsFee;
+
+        // Update the accrued protocol fees (subtracting the referral fee if applicable)
+        l.protocolFees += mintFee - referralFee;
+    }
+
+    function _attemptBatchMintForEthWithEth_checkMaxPayout(
+        uint256 mintEarnings,
+        uint256 ethPrizeValueInWei,
+        uint32 mintEarningsBufferBP,
+        uint32 numberOfMints
+    ) private pure {
+        // throw if the potential max payout is greater than mint earnings when adjusted using the mint earnings buffer
+        if (
+            numberOfMints * ethPrizeValueInWei >
+            (mintEarnings * (BASIS - mintEarningsBufferBP)) / BASIS
+        ) {
+            revert InsufficientMintEarnings();
+        }
+    }
+
     /// @notice Attempts a batch mint for the msg.sender for $MINT using ETH as payment.
     /// @param minter address of minter
     /// @param referrer address of referrer
@@ -202,7 +328,9 @@ abstract contract PerpetualMintInternal is
             collectionData,
             minter,
             MINT_TOKEN_COLLECTION_ADDRESS,
+            0,
             mintPriceAdjustmentFactor,
+            0,
             numWords
         );
     }
@@ -354,7 +482,9 @@ abstract contract PerpetualMintInternal is
             collectionData,
             minter,
             MINT_TOKEN_COLLECTION_ADDRESS,
+            0,
             mintPriceAdjustmentFactor,
+            0,
             numWords
         );
     }
@@ -522,7 +652,9 @@ abstract contract PerpetualMintInternal is
             collectionData,
             minter,
             collection,
+            0,
             mintPriceAdjustmentFactor,
+            0,
             numWords
         );
     }
@@ -594,7 +726,7 @@ abstract contract PerpetualMintInternal is
         CollectionData storage collectionData,
         uint256 msgValue,
         address referrer
-    ) private {
+    ) private returns (uint256 mintEarningsFee) {
         // calculate the mint for collection consolation fee
         uint256 collectionConsolationFee = (msgValue *
             l.collectionConsolationFeeBP) / BASIS;
@@ -626,12 +758,14 @@ abstract contract PerpetualMintInternal is
         // update the accrued consolation fees
         l.consolationFees += collectionConsolationFee - additionalDepositorFee;
 
-        // update the accrued depositor mint earnings
-        l.mintEarnings +=
+        mintEarningsFee =
             msgValue -
             collectionConsolationFee -
             mintFee +
             additionalDepositorFee;
+
+        // update the accrued depositor mint earnings
+        l.mintEarnings += mintEarningsFee;
 
         // Update the accrued protocol fees (subtracting the referral fee if applicable)
         l.protocolFees += mintFee - referralFee;
@@ -695,7 +829,9 @@ abstract contract PerpetualMintInternal is
             collectionData,
             minter,
             collection,
+            0,
             mintPriceAdjustmentFactor,
+            0,
             numWords
         );
     }
@@ -778,7 +914,7 @@ abstract contract PerpetualMintInternal is
         address referrer,
         uint256 ethRequired,
         uint256 ethToMintRatio
-    ) private {
+    ) private returns (uint256 mintEarningsFee) {
         // calculate amount of $MINT required
         uint256 mintRequired = ethRequired * ethToMintRatio;
 
@@ -824,8 +960,10 @@ abstract contract PerpetualMintInternal is
         // update the accrued consolation fees
         l.consolationFees -= netConsolationFee;
 
+        mintEarningsFee = netConsolationFee - mintFee;
+
         // update the accrued depositor mint earnings
-        l.mintEarnings += netConsolationFee - mintFee;
+        l.mintEarnings += mintEarningsFee;
 
         // Update the accrued protocol fees, subtracting the referral fee
         l.protocolFees += mintFee - referralFee;
@@ -1508,6 +1646,16 @@ abstract contract PerpetualMintInternal is
                 randomWords,
                 _ethToMintRatio(l)
             );
+        } else if (collection == ETH_COLLECTION_ADDRESS) {
+            // the mint is for ETH
+            _resolveMintsForEth(
+                l,
+                request,
+                _collectionMintMultiplier(collectionData),
+                _collectionMintPrice(collectionData),
+                randomWords,
+                _ethToMintRatio(l)
+            );
         } else {
             // the mint is for a collection
             _resolveMints(
@@ -1597,10 +1745,32 @@ abstract contract PerpetualMintInternal is
         IToken(l.mintToken).mintAirdrop(amount);
     }
 
+    /// @notice Returns the current mint earnings buffer in basis points
+    /// @return mintEarningsBufferBasisPoints mint earnings buffer in basis points
+    function _mintEarningsBufferBP()
+        internal
+        view
+        returns (uint32 mintEarningsBufferBasisPoints)
+    {
+        mintEarningsBufferBasisPoints = Storage.layout().mintEarningsBufferBP;
+    }
+
     /// @notice Returns the current mint fee in basis points
     /// @return mintFeeBasisPoints mint fee in basis points
     function _mintFeeBP() internal view returns (uint32 mintFeeBasisPoints) {
         mintFeeBasisPoints = Storage.layout().mintFeeBP;
+    }
+
+    /// @notice Returns the current mint for ETH consolation fee in basis points
+    /// @return mintForEthConsolationFeeBasisPoints mint for ETH consolation fee in basis points
+    function _mintForEthConsolationFeeBP()
+        internal
+        view
+        returns (uint32 mintForEthConsolationFeeBasisPoints)
+    {
+        mintForEthConsolationFeeBasisPoints = Storage
+            .layout()
+            .mintForEthConsolationFeeBP;
     }
 
     /// @notice Returns the address of the current $MINT token
@@ -1609,7 +1779,7 @@ abstract contract PerpetualMintInternal is
         mintToken = Storage.layout().mintToken;
     }
 
-    /// @notice Returns the current $MINT consolation fee in basis points
+    /// @notice Returns the current mint for $MINT consolation fee in basis points
     /// @return mintTokenConsolationFeeBasisPoints mint for $MINT consolation fee in basis points
     function _mintTokenConsolationFeeBP()
         internal
@@ -1685,14 +1855,18 @@ abstract contract PerpetualMintInternal is
     /// @param collectionData the CollectionData struct for a given collection
     /// @param minter address calling this function
     /// @param collection address of collection to attempt mint for
+    /// @param mintEarningsFee fee contributed to the mint earnings pool
     /// @param mintPriceAdjustmentFactor adjustment factor for mint price
+    /// @param prizeValueInWei value of prize in ETH (denominated in wei)
     /// @param numWords amount of random values to request
     function _requestRandomWords(
         Storage.Layout storage l,
         CollectionData storage collectionData,
         address minter,
         address collection,
+        uint256 mintEarningsFee,
         uint256 mintPriceAdjustmentFactor,
+        uint256 prizeValueInWei,
         uint32 numWords
     ) internal {
         VRFCoordinatorV2Interface vrfCoordinator = VRFCoordinatorV2Interface(
@@ -1717,11 +1891,13 @@ abstract contract PerpetualMintInternal is
 
         collectionData.pendingRequests.add(requestId);
 
-        RequestData storage request = l.requests[requestId];
-
-        request.collection = collection;
-        request.minter = minter;
-        request.mintPriceAdjustmentFactor = mintPriceAdjustmentFactor;
+        l.requests[requestId] = RequestData({
+            collection: collection,
+            minter: minter,
+            mintEarningsFee: mintEarningsFee,
+            mintPriceAdjustmentFactor: mintPriceAdjustmentFactor,
+            prizeValueInWei: prizeValueInWei
+        });
     }
 
     /// @notice requests random values from Supra VRF, Supra VRF-specific
@@ -1851,7 +2027,8 @@ abstract contract PerpetualMintInternal is
             collection,
             randomWords.length / 2,
             totalMintAmount,
-            totalReceiptAmount
+            totalReceiptAmount,
+            0
         );
     }
 
@@ -1970,6 +2147,125 @@ abstract contract PerpetualMintInternal is
         );
     }
 
+    /// @notice resolves the outcomes of attempted mints for ETH
+    /// @param l the PerpetualMint storage layout
+    /// @param request the RequestData struct for the mint request
+    /// @param mintForEthMultiplier minting for ETH multiplier
+    /// @param mintForEthPrice mint for ETH mint price
+    /// @param randomWords array of random values relating to number of attempts
+    /// @param ethToMintRatio ratio of ETH to $MINT
+    function _resolveMintsForEth(
+        Storage.Layout storage l,
+        RequestData memory request,
+        uint256 mintForEthMultiplier,
+        uint256 mintForEthPrice,
+        uint256[] memory randomWords,
+        uint256 ethToMintRatio
+    ) internal {
+        // ensure the number of random words is even
+        // each valid mint attempt requires two random words
+        if (randomWords.length % 2 != 0) {
+            revert UnmatchedRandomWords();
+        }
+
+        // determine the risk by dividing the mint earnings fee by the prize value in wei
+        uint256 risk = (request.mintEarningsFee * BASIS) /
+            request.prizeValueInWei;
+
+        uint256 cumulativeTierMultiplier;
+        uint256 totalReceiptAmount;
+        uint256 totalPrizeValueAmount;
+
+        for (uint256 i = 0; i < randomWords.length; i += 2) {
+            // first random word is used to determine whether the mint attempt was successful
+            uint256 firstNormalizedValue = _normalizeValue(
+                randomWords[i],
+                BASIS
+            );
+
+            // if the risk is less than the first normalized value, the mint attempt is unsuccessful
+            // and the second normalized value is used to determine the consolation tier
+            if (!(risk > firstNormalizedValue)) {
+                // second random word is used to determine the consolation tier
+                uint256 secondNormalizedValue = _normalizeValue(
+                    randomWords[i + 1],
+                    BASIS
+                );
+
+                cumulativeTierMultiplier += _calculateTierMultiplier(
+                    l.tiers,
+                    secondNormalizedValue
+                );
+            } else {
+                // successful attempt, increment prize amount
+                totalPrizeValueAmount += request.prizeValueInWei;
+
+                // increment receipt amount in case automated ETH payout fails
+                ++totalReceiptAmount;
+            }
+        }
+
+        uint256 totalMintAmount;
+
+        // Mint the cumulative amounts at the end
+        if (cumulativeTierMultiplier > 0) {
+            // Adjust for the cumulative tier multiplier, ETH to $MINT ratio, mint for ETH price, and apply mint for ETH-specific multiplier & mint price adjustment factor
+            totalMintAmount =
+                (cumulativeTierMultiplier *
+                    ethToMintRatio *
+                    mintForEthPrice *
+                    mintForEthMultiplier *
+                    request.mintPriceAdjustmentFactor) /
+                (uint256(BASIS) * BASIS * BASIS);
+
+            IToken(l.mintToken).mint(request.minter, totalMintAmount);
+        }
+
+        // Pay out ETH prize for successful attempts
+        if (totalPrizeValueAmount > 0) {
+            // Ensure there are enough mint earnings to cover the prize payout
+            if (l.mintEarnings < totalPrizeValueAmount) {
+                // Not enough mint earnings, mint receipts for manual payout
+                _safeMint(
+                    request.minter,
+                    uint256(bytes32(abi.encode(ETH_COLLECTION_ADDRESS))), // encode address as tokenId
+                    totalReceiptAmount,
+                    ""
+                );
+            } else {
+                // decrease mint earnings by the total prize value amount
+                l.mintEarnings -= totalPrizeValueAmount;
+
+                // try to send ETH prize
+                (bool success, ) = request.minter.call{
+                    value: totalPrizeValueAmount
+                }("");
+
+                if (!success) {
+                    // transfer ETH failed, revert the deduction
+                    l.mintEarnings += totalPrizeValueAmount;
+
+                    // mint receipts for manual payout
+                    _safeMint(
+                        request.minter,
+                        uint256(bytes32(abi.encode(ETH_COLLECTION_ADDRESS))), // encode address as tokenId
+                        totalReceiptAmount,
+                        ""
+                    );
+                }
+            }
+        }
+
+        emit MintResult(
+            request.minter,
+            ETH_COLLECTION_ADDRESS,
+            randomWords.length / 2,
+            totalMintAmount,
+            totalReceiptAmount,
+            totalPrizeValueAmount
+        );
+    }
+
     /// @notice resolves the outcomes of attempted mints for $MINT
     /// @param mintToken address of $MINT token
     /// @param mintForMintMultiplier minting for $MINT multiplier
@@ -2016,6 +2312,7 @@ abstract contract PerpetualMintInternal is
             MINT_TOKEN_COLLECTION_ADDRESS,
             randomWords.length,
             totalMintAmount,
+            0,
             0
         );
     }
@@ -2289,6 +2586,16 @@ abstract contract PerpetualMintInternal is
         emit EthToMintRatioSet(ratio);
     }
 
+    /// @notice sets the mint earnings buffer in basis points
+    /// @param mintEarningsBufferBP mint earnings buffer in basis points
+    function _setMintEarningsBufferBP(uint32 mintEarningsBufferBP) internal {
+        _enforceBasis(mintEarningsBufferBP, BASIS);
+
+        Storage.layout().mintEarningsBufferBP = mintEarningsBufferBP;
+
+        emit MintEarningsBufferSet(mintEarningsBufferBP);
+    }
+
     /// @notice sets the mint fee in basis points
     /// @param mintFeeBP mint fee in basis points
     function _setMintFeeBP(uint32 mintFeeBP) internal {
@@ -2297,6 +2604,20 @@ abstract contract PerpetualMintInternal is
         Storage.layout().mintFeeBP = mintFeeBP;
 
         emit MintFeeSet(mintFeeBP);
+    }
+
+    /// @notice sets the mint for ETH consolation fee in basis points
+    /// @param mintForEthConsolationFeeBP mint for ETH consolation fee in basis points
+    function _setMintForEthConsolationFeeBP(
+        uint32 mintForEthConsolationFeeBP
+    ) internal {
+        _enforceBasis(mintForEthConsolationFeeBP, BASIS);
+
+        Storage
+            .layout()
+            .mintForEthConsolationFeeBP = mintForEthConsolationFeeBP;
+
+        emit MintForEthConsolationFeeSet(mintForEthConsolationFeeBP);
     }
 
     /// @notice sets the address of the mint consolation token

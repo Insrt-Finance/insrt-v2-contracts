@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.19;
 
-import { MintTokenTiersData, PerpetualMintStorage as Storage, TiersData, VRFConfig } from "./Storage.sol";
+import { MintTokenTiersData, RequestData, TiersData, VRFConfig } from "./Storage.sol";
 
 /// @title IPerpetualMintInternal
 /// @dev Interface containing all errors and events used in the PerpetualMint facet contract
@@ -13,6 +13,10 @@ interface IPerpetualMintInternal {
     /// @notice thrown when there are not enough consolation fees accrued to faciliate
     /// minting with $MINT
     error InsufficientConsolationFees();
+
+    /// @notice thrown when the potential mint for ETH max payout is greater than mint earnings
+    /// when adjusted using the mint earnings buffer
+    error InsufficientMintEarnings();
 
     /// @notice thrown when an invalid collection address is provided when minting for a collection
     /// for now, this is only thrown when attempting to address(0) when minting for a collection
@@ -86,16 +90,24 @@ interface IPerpetualMintInternal {
     /// @param ratio value of ETH:MINT ratio
     event EthToMintRatioSet(uint256 ratio);
 
+    /// @notice emitted when the mint earnings buffer is set
+    /// @param mintEarningsBufferBP mint earnings buffer in basis points
+    event MintEarningsBufferSet(uint32 mintEarningsBufferBP);
+
     /// @notice emitted when the mint fee is set
     /// @param mintFeeBP mint fee in basis points
     event MintFeeSet(uint32 mintFeeBP);
+
+    /// @notice emitted when the mint for ETH consolation fee is set
+    /// @param mintForEthConsolationFeeBP minting for ETH consolation fee in basis points
+    event MintForEthConsolationFeeSet(uint32 mintForEthConsolationFeeBP);
 
     /// @notice emitted when the mint price of a collection is set
     /// @param collection address of collection
     /// @param price mint price of collection
     event MintPriceSet(address collection, uint256 price);
 
-    /// @notice emitted when the $MINT consolation fee is set
+    /// @notice emitted when the mint for $MINT consolation fee is set
     /// @param mintTokenConsolationFeeBP minting for $MINT consolation fee in basis points
     event MintTokenConsolationFeeSet(uint32 mintTokenConsolationFeeBP);
 
@@ -108,13 +120,15 @@ interface IPerpetualMintInternal {
     /// @param collection address of collection that attempted mint is for
     /// @param attempts number of mint attempts
     /// @param totalMintAmount amount of $MINT tokens minted
-    /// @param totalReceiptAmount amount of receipts (ERC1155 tokens) minted (successful mint attempts)
+    /// @param totalNumberOfWins total number of wins (successful mint attempts)
+    /// @param totalPrizeValueAmount total ETH value of prizes won, denominated in wei
     event MintResult(
         address indexed minter,
         address indexed collection,
         uint256 attempts,
         uint256 totalMintAmount,
-        uint256 totalReceiptAmount
+        uint256 totalNumberOfWins,
+        uint256 totalPrizeValueAmount
     );
 
     /// @notice emitted when the outcome of an attempted mint is resolved on Blast

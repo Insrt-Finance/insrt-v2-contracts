@@ -68,7 +68,7 @@ contract PerpetualMintHelper {
         returns (ICore.FacetCut[] memory)
     {
         // map the PerpetualMintAdmin test related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintAdminFunctionSelectors = new bytes4[](27);
+        bytes4[] memory perpetualMintAdminFunctionSelectors = new bytes4[](29);
 
         perpetualMintAdminFunctionSelectors[0] = IPerpetualMintAdmin
             .burnReceipt
@@ -131,50 +131,58 @@ contract PerpetualMintHelper {
             .selector;
 
         perpetualMintAdminFunctionSelectors[15] = IPerpetualMintAdmin
-            .setMintFeeBP
+            .setMintEarningsBufferBP
             .selector;
 
         perpetualMintAdminFunctionSelectors[16] = IPerpetualMintAdmin
-            .setMintToken
+            .setMintFeeBP
             .selector;
 
         perpetualMintAdminFunctionSelectors[17] = IPerpetualMintAdmin
-            .setMintTokenConsolationFeeBP
+            .setMintForEthConsolationFeeBP
             .selector;
 
         perpetualMintAdminFunctionSelectors[18] = IPerpetualMintAdmin
-            .setMintTokenTiers
+            .setMintToken
             .selector;
 
         perpetualMintAdminFunctionSelectors[19] = IPerpetualMintAdmin
-            .setReceiptBaseURI
+            .setMintTokenConsolationFeeBP
             .selector;
 
         perpetualMintAdminFunctionSelectors[20] = IPerpetualMintAdmin
-            .setReceiptTokenURI
+            .setMintTokenTiers
             .selector;
 
         perpetualMintAdminFunctionSelectors[21] = IPerpetualMintAdmin
-            .setRedemptionFeeBP
+            .setReceiptBaseURI
             .selector;
 
         perpetualMintAdminFunctionSelectors[22] = IPerpetualMintAdmin
-            .setRedeemPaused
+            .setReceiptTokenURI
             .selector;
 
         perpetualMintAdminFunctionSelectors[23] = IPerpetualMintAdmin
-            .setTiers
+            .setRedemptionFeeBP
             .selector;
 
         perpetualMintAdminFunctionSelectors[24] = IPerpetualMintAdmin
-            .setVRFConfig
+            .setRedeemPaused
             .selector;
 
         perpetualMintAdminFunctionSelectors[25] = IPerpetualMintAdmin
-            .setVRFSubscriptionBalanceThreshold
+            .setTiers
             .selector;
 
         perpetualMintAdminFunctionSelectors[26] = IPerpetualMintAdmin
+            .setVRFConfig
+            .selector;
+
+        perpetualMintAdminFunctionSelectors[27] = IPerpetualMintAdmin
+            .setVRFSubscriptionBalanceThreshold
+            .selector;
+
+        perpetualMintAdminFunctionSelectors[28] = IPerpetualMintAdmin
             .unpause
             .selector;
 
@@ -270,31 +278,35 @@ contract PerpetualMintHelper {
         returns (ICore.FacetCut[] memory)
     {
         // map the PerpetualMint test related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](7);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](8);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
-            .attemptBatchMintForMintWithEth
+            .attemptBatchMintForEthWithEth
             .selector;
 
         perpetualMintFunctionSelectors[1] = IPerpetualMint
-            .attemptBatchMintForMintWithMint
+            .attemptBatchMintForMintWithEth
             .selector;
 
         perpetualMintFunctionSelectors[2] = IPerpetualMint
-            .attemptBatchMintWithEth
+            .attemptBatchMintForMintWithMint
             .selector;
 
         perpetualMintFunctionSelectors[3] = IPerpetualMint
+            .attemptBatchMintWithEth
+            .selector;
+
+        perpetualMintFunctionSelectors[4] = IPerpetualMint
             .attemptBatchMintWithMint
             .selector;
 
-        perpetualMintFunctionSelectors[4] = IPerpetualMint.claimPrize.selector;
+        perpetualMintFunctionSelectors[5] = IPerpetualMint.claimPrize.selector;
 
-        perpetualMintFunctionSelectors[5] = IPerpetualMint
+        perpetualMintFunctionSelectors[6] = IPerpetualMint
             .fundConsolationFees
             .selector;
 
-        perpetualMintFunctionSelectors[6] = IPerpetualMint.redeem.selector;
+        perpetualMintFunctionSelectors[7] = IPerpetualMint.redeem.selector;
 
         ICore.FacetCut memory perpetualMintFacetCut = IDiamondWritableInternal
             .FacetCut({
@@ -304,7 +316,7 @@ contract PerpetualMintHelper {
             });
 
         // map the PerpetualMintView test related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](26);
+        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](28);
 
         perpetualMintViewFunctionSelectors[0] = IPerpetualMintView
             .accruedConsolationFees
@@ -371,42 +383,50 @@ contract PerpetualMintHelper {
             .selector;
 
         perpetualMintViewFunctionSelectors[16] = IPerpetualMintView
-            .mintFeeBP
+            .mintEarningsBufferBP
             .selector;
 
         perpetualMintViewFunctionSelectors[17] = IPerpetualMintView
-            .mintToken
+            .mintFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[18] = IPerpetualMintView
-            .mintTokenConsolationFeeBP
+            .mintForEthConsolationFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[19] = IPerpetualMintView
-            .mintTokenTiers
+            .mintToken
             .selector;
 
         perpetualMintViewFunctionSelectors[20] = IPerpetualMintView
-            .redemptionFeeBP
+            .mintTokenConsolationFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[21] = IPerpetualMintView
-            .redeemPaused
+            .mintTokenTiers
             .selector;
 
         perpetualMintViewFunctionSelectors[22] = IPerpetualMintView
-            .SCALE
+            .redemptionFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[23] = IPerpetualMintView
-            .tiers
+            .redeemPaused
             .selector;
 
         perpetualMintViewFunctionSelectors[24] = IPerpetualMintView
-            .vrfConfig
+            .SCALE
             .selector;
 
         perpetualMintViewFunctionSelectors[25] = IPerpetualMintView
+            .tiers
+            .selector;
+
+        perpetualMintViewFunctionSelectors[26] = IPerpetualMintView
+            .vrfConfig
+            .selector;
+
+        perpetualMintViewFunctionSelectors[27] = IPerpetualMintView
             .vrfSubscriptionBalanceThreshold
             .selector;
 
@@ -420,7 +440,7 @@ contract PerpetualMintHelper {
 
         // map the PerpetualMintHarness test related function selectors to their respective interfaces
         bytes4[] memory perpetualMintHarnessFunctionSelectors = new bytes4[](
-            16
+            17
         );
 
         perpetualMintHarnessFunctionSelectors[0] = IPerpetualMintHarness
@@ -460,30 +480,34 @@ contract PerpetualMintHelper {
             .selector;
 
         perpetualMintHarnessFunctionSelectors[9] = IPerpetualMintHarness
+            .exposed_resolveMintsForEth
+            .selector;
+
+        perpetualMintHarnessFunctionSelectors[10] = IPerpetualMintHarness
             .exposed_resolveMintsForMint
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[10] = bytes4(
+        perpetualMintHarnessFunctionSelectors[11] = bytes4(
             keccak256("mintReceipts(address,uint256)")
         );
 
-        perpetualMintHarnessFunctionSelectors[11] = bytes4(
+        perpetualMintHarnessFunctionSelectors[12] = bytes4(
             keccak256("mintReceipts(address,uint256,uint256)")
         );
 
-        perpetualMintHarnessFunctionSelectors[12] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[13] = IPerpetualMintHarness
             .setConsolationFees
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[13] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[14] = IPerpetualMintHarness
             .setMintEarnings
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[14] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[15] = IPerpetualMintHarness
             .setProtocolFees
             .selector;
 
-        perpetualMintHarnessFunctionSelectors[15] = IPerpetualMintHarness
+        perpetualMintHarnessFunctionSelectors[16] = IPerpetualMintHarness
             .setRequests
             .selector;
 

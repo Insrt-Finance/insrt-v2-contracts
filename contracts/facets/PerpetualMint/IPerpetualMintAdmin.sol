@@ -81,15 +81,25 @@ interface IPerpetualMintAdmin {
     /// @param ratio ratio of ETH to $MINT
     function setEthToMintRatio(uint256 ratio) external;
 
+    /// @notice sets the mint earnings buffer in basis points
+    /// @param mintEarningsBufferBP mint earnings buffer in basis points
+    function setMintEarningsBufferBP(uint32 mintEarningsBufferBP) external;
+
     /// @notice sets the mint fee in basis points
     /// @param mintFeeBP mint fee in basis points
     function setMintFeeBP(uint32 mintFeeBP) external;
+
+    /// @notice sets the mint for ETH consolation fee in basis points
+    /// @param mintForEthConsolationFeeBP minting for ETH consolation fee in basis points
+    function setMintForEthConsolationFeeBP(
+        uint32 mintForEthConsolationFeeBP
+    ) external;
 
     /// @notice sets the address of the mint consolation token
     /// @param mintToken address of the mint consolation token
     function setMintToken(address mintToken) external;
 
-    /// @notice sets the minting for $MINT consolation fee in basis points
+    /// @notice sets the mint for $MINT consolation fee in basis points
     /// @param mintTokenConsolationFeeBP minting for $MINT consolation fee in basis points
     function setMintTokenConsolationFeeBP(
         uint32 mintTokenConsolationFeeBP

@@ -480,7 +480,7 @@ contract PerpetualMint_attemptBatchMintWithMint is
         );
 
         perpetualMint.attemptBatchMintWithMint(
-            address(0),
+            MINT_TOKEN_COLLECTION_ADDRESS,
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             ZERO_MINT_ATTEMPTS

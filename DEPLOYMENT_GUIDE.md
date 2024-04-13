@@ -248,8 +248,14 @@ export COLLECTION_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 # Default collection mint referral fee in basis points
 export DEFAULT_COLLECTION_REFERRAL_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
+# Mint for ETH buffer applied to mint earnings as a safety measure
+export MINT_EARNINGS_BUFFER_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
 # Protocol mint fee
 export MINT_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
+# Mint for ETH consolation fee used for funding $MINT
+export MINT_FOR_ETH_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
 # Mint for $MINT consolation fee used for funding $MINT
 export MINT_TOKEN_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
@@ -295,8 +301,14 @@ export COLLECTION_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 # Default collection mint referral fee in basis points
 export DEFAULT_COLLECTION_REFERRAL_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
+# Mint for ETH buffer applied to mint earnings as a safety measure
+export MINT_EARNINGS_BUFFER_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
 # Protocol mint fee
 export MINT_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
+# Mint for ETH consolation fee used for funding $MINT
+export MINT_FOR_ETH_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
 # Mint for $MINT consolation fee used for funding $MINT
 export MINT_TOKEN_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
@@ -332,8 +344,14 @@ export COLLECTION_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 # Default collection mint referral fee in basis points
 export DEFAULT_COLLECTION_REFERRAL_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
+# Mint for ETH buffer applied to mint earnings as a safety measure
+export MINT_EARNINGS_BUFFER_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
 # Protocol mint fee
 export MINT_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
+
+# Mint for ETH consolation fee used for funding $MINT
+export MINT_FOR_ETH_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%
 
 # Mint for $MINT consolation fee used for funding $MINT
 export MINT_TOKEN_CONSOLATION_FEE_BP=<1e7 percentage number> # Example: 1e7 = 1%

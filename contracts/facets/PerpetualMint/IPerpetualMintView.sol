@@ -111,15 +111,29 @@ interface IPerpetualMintView is IPausable {
     /// @return ratio current ETH to $MINT ratio
     function ethToMintRatio() external view returns (uint256 ratio);
 
+    /// @notice Returns the mint earnings buffer in basis points
+    /// @return mintEarningsBufferBasisPoints mint earnings buffer in basis points
+    function mintEarningsBufferBP()
+        external
+        view
+        returns (uint32 mintEarningsBufferBasisPoints);
+
     /// @notice Returns the mint fee in basis points
     /// @return mintFeeBasisPoints mint fee in basis points
     function mintFeeBP() external view returns (uint32 mintFeeBasisPoints);
+
+    /// @notice Returns the mint for ETH consolation fee in basis points
+    /// @return mintForEthConsolationFeeBasisPoints minting for ETH consolation fee in basis points
+    function mintForEthConsolationFeeBP()
+        external
+        view
+        returns (uint32 mintForEthConsolationFeeBasisPoints);
 
     /// @notice Returns the address of the current $MINT token
     /// @return token address of the current $MINT token
     function mintToken() external view returns (address token);
 
-    /// @notice Returns the $MINT consolation fee in basis points
+    /// @notice Returns the mint for $MINT consolation fee in basis points
     /// @return mintTokenConsolationFeeBasisPoints minting for $MINT consolation fee in basis points
     function mintTokenConsolationFeeBP()
         external

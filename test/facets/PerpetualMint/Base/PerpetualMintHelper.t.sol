@@ -468,23 +468,25 @@ contract PerpetualMintHelper_Base {
         pure
         returns (bytes4[] memory selectors)
     {
-        selectors = new bytes4[](8);
+        selectors = new bytes4[](9);
 
         selectors[0] = IPerpetualMint.attemptBatchMintForEthWithEth.selector;
 
-        selectors[1] = IPerpetualMint.attemptBatchMintForMintWithEth.selector;
+        selectors[1] = IPerpetualMint.attemptBatchMintForEthWithMint.selector;
 
-        selectors[2] = IPerpetualMint.attemptBatchMintForMintWithMint.selector;
+        selectors[2] = IPerpetualMint.attemptBatchMintForMintWithEth.selector;
 
-        selectors[3] = IPerpetualMint.attemptBatchMintWithEth.selector;
+        selectors[3] = IPerpetualMint.attemptBatchMintForMintWithMint.selector;
 
-        selectors[4] = IPerpetualMint.attemptBatchMintWithMint.selector;
+        selectors[4] = IPerpetualMint.attemptBatchMintWithEth.selector;
 
-        selectors[5] = IPerpetualMint.claimPrize.selector;
+        selectors[5] = IPerpetualMint.attemptBatchMintWithMint.selector;
 
-        selectors[6] = IPerpetualMint.fundConsolationFees.selector;
+        selectors[6] = IPerpetualMint.claimPrize.selector;
 
-        selectors[7] = IPerpetualMint.redeem.selector;
+        selectors[7] = IPerpetualMint.fundConsolationFees.selector;
+
+        selectors[8] = IPerpetualMint.redeem.selector;
     }
 
     function _getPerpetualMintBaseFunctionSelectors()

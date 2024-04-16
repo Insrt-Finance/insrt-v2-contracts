@@ -50,7 +50,9 @@ interface IPerpetualMintHarness {
     function exposed_requestRandomWordsSupra(
         address minter,
         address collection,
+        uint256 mintEarningsFee,
         uint256 mintPriceAdjustmentFactor,
+        uint256 prizeValueInWei,
         uint8 numWords
     ) external;
 

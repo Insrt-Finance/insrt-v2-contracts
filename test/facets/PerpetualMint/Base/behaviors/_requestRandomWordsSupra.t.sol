@@ -46,7 +46,9 @@ contract PerpetualMint_requestRandomWordsSupra is
         perpetualMint.exposed_requestRandomWordsSupra(
             minter,
             COLLECTION,
+            TEST_MINT_EARNINGS_FEE,
             TEST_ADJUSTMENT_FACTOR,
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
             TEST_NUM_WORDS
         );
     }
@@ -59,7 +61,9 @@ contract PerpetualMint_requestRandomWordsSupra is
         perpetualMint.exposed_requestRandomWordsSupra(
             minter,
             COLLECTION,
+            TEST_MINT_EARNINGS_FEE,
             TEST_ADJUSTMENT_FACTOR,
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
             TEST_NUM_WORDS
         );
 
@@ -96,7 +100,9 @@ contract PerpetualMint_requestRandomWordsSupra is
         perpetualMint.exposed_requestRandomWordsSupra(
             minter,
             COLLECTION,
+            TEST_MINT_EARNINGS_FEE,
             TEST_ADJUSTMENT_FACTOR,
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
             ++currentMaxNumWords
         );
     }
@@ -113,7 +119,9 @@ contract PerpetualMint_requestRandomWordsSupra is
         perpetualMint.exposed_requestRandomWordsSupra(
             minter,
             COLLECTION,
+            TEST_MINT_EARNINGS_FEE,
             TEST_ADJUSTMENT_FACTOR,
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
             TEST_NUM_WORDS
         );
     }
@@ -131,7 +139,9 @@ contract PerpetualMint_requestRandomWordsSupra is
         perpetualMint.exposed_requestRandomWordsSupra(
             minter,
             COLLECTION,
+            TEST_MINT_EARNINGS_FEE,
             TEST_ADJUSTMENT_FACTOR,
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
             TEST_NUM_WORDS
         );
     }
@@ -149,7 +159,9 @@ contract PerpetualMint_requestRandomWordsSupra is
         perpetualMint.exposed_requestRandomWordsSupra(
             minter,
             COLLECTION,
+            TEST_MINT_EARNINGS_FEE,
             TEST_ADJUSTMENT_FACTOR,
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
             TEST_NUM_WORDS
         );
     }

@@ -234,6 +234,68 @@ abstract contract PerpetualMintInternal is
         );
     }
 
+    function _attemptBatchMintForEthWithEthSupra(
+        address minter,
+        address referrer,
+        uint8 numberOfMints,
+        uint8 wordsPerMint,
+        uint256 ethPrizeValueInWei
+    ) internal {
+        uint256 msgValue = msg.value;
+
+        uint256 pricePerSpin = msgValue / numberOfMints;
+
+        _attemptBatchMint_paidInEth_validateMintParameters(
+            msgValue,
+            pricePerSpin
+        );
+
+        Storage.Layout storage l = Storage.layout();
+
+        _attemptBatchMintForEth_checkMaxPayout(
+            l.mintEarnings,
+            ethPrizeValueInWei,
+            l.mintEarningsBufferBP,
+            numberOfMints
+        );
+
+        CollectionData storage collectionData = l.collections[
+            ETH_COLLECTION_ADDRESS
+        ];
+
+        uint256 mintEarningsFee = _attemptBatchMintForEthWithEth_calculateAndDistributeFees(
+                l,
+                collectionData,
+                msgValue,
+                referrer
+            );
+
+        // Calculate the total number of random words required for the Supra VRF request.
+        // Constraints:
+        // 1. numWords = 0 results in a revert.
+        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
+        // If the number of words requested exceeds this limit, the function call will revert.
+        //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
+        //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
+        uint8 numWords = numberOfMints * wordsPerMint;
+
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpin
+            );
+
+        _requestRandomWordsSupra(
+            l,
+            collectionData,
+            minter,
+            ETH_COLLECTION_ADDRESS,
+            mintEarningsFee,
+            mintPriceAdjustmentFactor,
+            ethPrizeValueInWei,
+            numWords
+        );
+    }
+
     function _attemptBatchMintForEthWithEth_calculateAndDistributeFees(
         Storage.Layout storage l,
         CollectionData storage collectionData,
@@ -348,6 +410,51 @@ abstract contract PerpetualMintInternal is
         );
     }
 
+    function _attemptBatchMintForEthWithMintSupra(
+        address minter,
+        address referrer,
+        uint256 pricePerMint,
+        uint8 numberOfMints,
+        uint8 wordsPerMint,
+        uint256 ethPrizeValueInWei
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        uint256 ethToMintRatio = _ethToMintRatio(l);
+
+        uint256 pricePerSpinInWei = pricePerMint / ethToMintRatio;
+
+        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
+
+        CollectionData storage collectionData = l.collections[
+            ETH_COLLECTION_ADDRESS
+        ];
+
+        uint256 mintEarningsFee = _attemptBatchMintForEthWithMintSupra_validateAndDistributeFees(
+                minter,
+                referrer,
+                numberOfMints,
+                ethPrizeValueInWei,
+                pricePerMint,
+                pricePerSpinInWei,
+                ethRequired,
+                ethToMintRatio,
+                l,
+                collectionData
+            );
+
+        _attemptBatchMintForEthWithMintSupra_requestRandomWordsSupra(
+            minter,
+            numberOfMints,
+            wordsPerMint,
+            ethPrizeValueInWei,
+            mintEarningsFee,
+            pricePerSpinInWei,
+            l,
+            collectionData
+        );
+    }
+
     function _attemptBatchMintForEthWithMint_calculateAndDistributeFees(
         Storage.Layout storage l,
         CollectionData storage collectionData,
@@ -408,6 +515,79 @@ abstract contract PerpetualMintInternal is
 
         // Update the accrued protocol fees (subtracting the referral fee if applicable)
         l.protocolFees += mintFee - referralFee;
+    }
+
+    function _attemptBatchMintForEthWithMintSupra_requestRandomWordsSupra(
+        address minter,
+        uint8 numberOfMints,
+        uint8 wordsPerMint,
+        uint256 ethPrizeValueInWei,
+        uint256 mintEarningsFee,
+        uint256 pricePerSpinInWei,
+        Storage.Layout storage l,
+        CollectionData storage collectionData
+    ) private {
+        // Calculate the total number of random words required for the Supra VRF request.
+        // Constraints:
+        // 1. numWords = 0 results in a revert.
+        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
+        // If the number of words requested exceeds this limit, the function call will revert.
+        //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
+        //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
+        uint8 numWords = numberOfMints * wordsPerMint;
+
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpinInWei
+            );
+
+        _requestRandomWordsSupra(
+            l,
+            collectionData,
+            minter,
+            ETH_COLLECTION_ADDRESS,
+            mintEarningsFee,
+            mintPriceAdjustmentFactor,
+            ethPrizeValueInWei,
+            numWords
+        );
+    }
+
+    function _attemptBatchMintForEthWithMintSupra_validateAndDistributeFees(
+        address minter,
+        address referrer,
+        uint8 numberOfMints,
+        uint256 ethPrizeValueInWei,
+        uint256 pricePerMint,
+        uint256 pricePerSpinInWei,
+        uint256 ethRequired,
+        uint256 ethToMintRatio,
+        Storage.Layout storage l,
+        CollectionData storage collectionData
+    ) private returns (uint256 mintEarningsFee) {
+        _attemptBatchMint_paidInMint_validateMintParameters(
+            numberOfMints,
+            l.consolationFees,
+            ethRequired,
+            pricePerSpinInWei,
+            pricePerMint
+        );
+
+        _attemptBatchMintForEth_checkMaxPayout(
+            l.mintEarnings,
+            ethPrizeValueInWei,
+            l.mintEarningsBufferBP,
+            numberOfMints
+        );
+
+        mintEarningsFee = _attemptBatchMintForEthWithMint_calculateAndDistributeFees(
+            l,
+            collectionData,
+            minter,
+            referrer,
+            ethRequired,
+            ethToMintRatio
+        );
     }
 
     /// @notice Attempts a batch mint for the msg.sender for $MINT using ETH as payment.
@@ -512,7 +692,9 @@ abstract contract PerpetualMintInternal is
             collectionData,
             minter,
             MINT_TOKEN_COLLECTION_ADDRESS,
+            0,
             mintPriceAdjustmentFactor,
+            0,
             numWords
         );
     }
@@ -675,7 +857,9 @@ abstract contract PerpetualMintInternal is
             collectionData,
             minter,
             MINT_TOKEN_COLLECTION_ADDRESS,
+            0,
             mintPriceAdjustmentFactor,
+            0,
             numWords
         );
     }
@@ -842,7 +1026,9 @@ abstract contract PerpetualMintInternal is
             collectionData,
             minter,
             collection,
+            0,
             mintPriceAdjustmentFactor,
+            0,
             numWords
         );
     }
@@ -1028,7 +1214,9 @@ abstract contract PerpetualMintInternal is
             collectionData,
             minter,
             collection,
+            0,
             mintPriceAdjustmentFactor,
+            0,
             numWords
         );
     }
@@ -2031,14 +2219,18 @@ abstract contract PerpetualMintInternal is
     /// @param collectionData the CollectionData struct for a given collection
     /// @param minter address calling this function
     /// @param collection address of collection to attempt mint for
+    /// @param mintEarningsFee fee contributed to the mint earnings pool
     /// @param mintPriceAdjustmentFactor adjustment factor for mint price
+    /// @param prizeValueInWei value of prize in ETH (denominated in wei)
     /// @param numWords amount of random values to request
     function _requestRandomWordsSupra(
         Storage.Layout storage l,
         CollectionData storage collectionData,
         address minter,
         address collection,
+        uint256 mintEarningsFee,
         uint256 mintPriceAdjustmentFactor,
+        uint256 prizeValueInWei,
         uint8 numWords
     ) internal {
         ISupraRouterContract supraRouter = ISupraRouterContract(VRF);
@@ -2052,11 +2244,13 @@ abstract contract PerpetualMintInternal is
 
         collectionData.pendingRequests.add(requestId);
 
-        RequestData storage request = l.requests[requestId];
-
-        request.collection = collection;
-        request.minter = minter;
-        request.mintPriceAdjustmentFactor = mintPriceAdjustmentFactor;
+        l.requests[requestId] = RequestData({
+            collection: collection,
+            minter: minter,
+            mintEarningsFee: mintEarningsFee,
+            mintPriceAdjustmentFactor: mintPriceAdjustmentFactor,
+            prizeValueInWei: prizeValueInWei
+        });
     }
 
     /// @notice resolves the outcomes of attempted mints for a given collection

@@ -103,7 +103,9 @@ contract PerpetualMintHarnessSupraBlast is
     function exposed_requestRandomWordsSupra(
         address minter,
         address collection,
+        uint256 mintEarningsFee,
         uint256 mintPriceAdjustmentFactor,
+        uint256 prizeValueInWei,
         uint8 numWords
     ) external {
         Storage.Layout storage l = Storage.layout();
@@ -115,7 +117,9 @@ contract PerpetualMintHarnessSupraBlast is
             collectionData,
             minter,
             collection,
+            mintEarningsFee,
             mintPriceAdjustmentFactor,
+            prizeValueInWei,
             numWords
         );
     }

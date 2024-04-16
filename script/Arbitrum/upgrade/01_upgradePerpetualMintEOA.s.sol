@@ -70,7 +70,7 @@ contract UpgradePerpetualMintArbEOA is Script {
         bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](1);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
-            .attemptBatchMintForEthWithEth
+            .attemptBatchMintForEthWithMint
             .selector;
 
         ICore.FacetCut memory perpetualMintFacetCut = IDiamondWritableInternal
@@ -93,31 +93,35 @@ contract UpgradePerpetualMintArbEOA is Script {
         address facetAddress
     ) internal pure returns (ICore.FacetCut[] memory) {
         // map the PerpetualMint related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](7);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](8);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
-            .attemptBatchMintForMintWithEth
+            .attemptBatchMintForEthWithEth
             .selector;
 
         perpetualMintFunctionSelectors[1] = IPerpetualMint
-            .attemptBatchMintForMintWithMint
+            .attemptBatchMintForMintWithEth
             .selector;
 
         perpetualMintFunctionSelectors[2] = IPerpetualMint
-            .attemptBatchMintWithEth
+            .attemptBatchMintForMintWithMint
             .selector;
 
         perpetualMintFunctionSelectors[3] = IPerpetualMint
+            .attemptBatchMintWithEth
+            .selector;
+
+        perpetualMintFunctionSelectors[4] = IPerpetualMint
             .attemptBatchMintWithMint
             .selector;
 
-        perpetualMintFunctionSelectors[4] = IPerpetualMint.claimPrize.selector;
+        perpetualMintFunctionSelectors[5] = IPerpetualMint.claimPrize.selector;
 
-        perpetualMintFunctionSelectors[5] = IPerpetualMint
+        perpetualMintFunctionSelectors[6] = IPerpetualMint
             .fundConsolationFees
             .selector;
 
-        perpetualMintFunctionSelectors[6] = IPerpetualMint.redeem.selector;
+        perpetualMintFunctionSelectors[7] = IPerpetualMint.redeem.selector;
 
         ICore.FacetCut memory perpetualMintFacetCut = IDiamondWritableInternal
             .FacetCut({

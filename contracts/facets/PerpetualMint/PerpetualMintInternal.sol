@@ -158,6 +158,21 @@ abstract contract PerpetualMintInternal is
         }
     }
 
+    function _attemptBatchMintForEth_checkMaxPayout(
+        uint256 mintEarnings,
+        uint256 ethPrizeValueInWei,
+        uint32 mintEarningsBufferBP,
+        uint32 numberOfMints
+    ) private pure {
+        // throw if the potential max payout is greater than mint earnings when adjusted using the mint earnings buffer
+        if (
+            numberOfMints * ethPrizeValueInWei >
+            (mintEarnings * (BASIS - mintEarningsBufferBP)) / BASIS
+        ) {
+            revert InsufficientMintEarnings();
+        }
+    }
+
     /// @notice Attempts a batch mint for the msg.sender for ETH using ETH as payment.
     /// @param minter address of minter
     /// @param referrer address of referrer
@@ -180,7 +195,7 @@ abstract contract PerpetualMintInternal is
 
         Storage.Layout storage l = Storage.layout();
 
-        _attemptBatchMintForEthWithEth_checkMaxPayout(
+        _attemptBatchMintForEth_checkMaxPayout(
             l.mintEarnings,
             ethPrizeValueInWei,
             l.mintEarningsBufferBP,
@@ -269,19 +284,130 @@ abstract contract PerpetualMintInternal is
         l.protocolFees += mintFee - referralFee;
     }
 
-    function _attemptBatchMintForEthWithEth_checkMaxPayout(
-        uint256 mintEarnings,
-        uint256 ethPrizeValueInWei,
-        uint32 mintEarningsBufferBP,
-        uint32 numberOfMints
-    ) private pure {
-        // throw if the potential max payout is greater than mint earnings when adjusted using the mint earnings buffer
-        if (
-            numberOfMints * ethPrizeValueInWei >
-            (mintEarnings * (BASIS - mintEarningsBufferBP)) / BASIS
-        ) {
-            revert InsufficientMintEarnings();
+    function _attemptBatchMintForEthWithMint(
+        address minter,
+        address referrer,
+        uint256 pricePerMint,
+        uint32 numberOfMints,
+        uint256 ethPrizeValueInWei
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        uint256 ethToMintRatio = _ethToMintRatio(l);
+
+        uint256 pricePerSpinInWei = pricePerMint / ethToMintRatio;
+
+        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
+
+        _attemptBatchMint_paidInMint_validateMintParameters(
+            numberOfMints,
+            l.consolationFees,
+            ethRequired,
+            pricePerSpinInWei,
+            pricePerMint
+        );
+
+        _attemptBatchMintForEth_checkMaxPayout(
+            l.mintEarnings,
+            ethPrizeValueInWei,
+            l.mintEarningsBufferBP,
+            numberOfMints
+        );
+
+        CollectionData storage collectionData = l.collections[
+            ETH_COLLECTION_ADDRESS
+        ];
+
+        uint256 mintEarningsFee = _attemptBatchMintForEthWithMint_calculateAndDistributeFees(
+                l,
+                collectionData,
+                minter,
+                referrer,
+                ethRequired,
+                ethToMintRatio
+            );
+
+        // if the number of words requested is greater than the max allowed by the VRF coordinator,
+        // the request for random words will fail (max random words is currently 500 per request).
+        uint32 numWords = numberOfMints * 2; // 2 words per mint for ETH, current max of 250 mints per tx
+
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpinInWei
+            );
+
+        _requestRandomWords(
+            l,
+            collectionData,
+            minter,
+            ETH_COLLECTION_ADDRESS,
+            mintEarningsFee,
+            mintPriceAdjustmentFactor,
+            ethPrizeValueInWei,
+            numWords
+        );
+    }
+
+    function _attemptBatchMintForEthWithMint_calculateAndDistributeFees(
+        Storage.Layout storage l,
+        CollectionData storage collectionData,
+        address minter,
+        address referrer,
+        uint256 ethRequired,
+        uint256 ethToMintRatio
+    ) private returns (uint256 mintEarningsFee) {
+        // calculate amount of $MINT required
+        uint256 mintRequired = ethRequired * ethToMintRatio;
+
+        IToken(l.mintToken).burn(minter, mintRequired);
+
+        // calculate the mint for ETH consolation fee
+        uint256 mintForEthConsolationFee = (ethRequired *
+            l.mintForEthConsolationFeeBP) / BASIS;
+
+        // Apply the mint for ETH-specific fee ratio
+        uint256 additionalDepositorFee = (mintForEthConsolationFee *
+            collectionData.mintFeeDistributionRatioBP) / BASIS;
+
+        // calculate the protocol mint fee
+        uint256 mintFee = (ethRequired * l.mintFeeBP) / BASIS;
+
+        uint256 referralFee;
+
+        // Calculate the referral fee if a referrer is provided
+        if (referrer != address(0)) {
+            uint256 referralFeeBP = _collectionReferralFeeBP(collectionData);
+
+            if (referralFeeBP == 0) {
+                referralFeeBP = l.defaultCollectionReferralFeeBP;
+            }
+
+            // Calculate referral fee based on the mintFee and referral fee percentage
+            referralFee = (mintFee * referralFeeBP) / BASIS;
+
+            // Pay the referrer in $MINT
+            IToken(l.mintToken).mintReferral(
+                referrer,
+                referralFee * ethToMintRatio
+            );
         }
+
+        // calculate the net mint for ETH consolation fee
+        // ETH required for mint taken from the mintForEthConsolationFee
+        uint256 netConsolationFee = ethRequired -
+            mintForEthConsolationFee +
+            additionalDepositorFee;
+
+        // update the accrued consolation fees
+        l.consolationFees -= netConsolationFee;
+
+        mintEarningsFee = netConsolationFee - mintFee;
+
+        // update the accrued depositor mint earnings
+        l.mintEarnings += mintEarningsFee;
+
+        // Update the accrued protocol fees (subtracting the referral fee if applicable)
+        l.protocolFees += mintFee - referralFee;
     }
 
     /// @notice Attempts a batch mint for the msg.sender for $MINT using ETH as payment.

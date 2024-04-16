@@ -60,11 +60,7 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(
-            NO_REFERRER,
-            TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
-        );
+        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -134,11 +130,7 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(
-            NO_REFERRER,
-            TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
-        );
+        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -206,11 +198,7 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(
-            NO_REFERRER,
-            TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
-        );
+        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -277,7 +265,7 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_COLLECTION_PRIZE_VALUE);
+        }(REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -329,6 +317,86 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
         assert(REFERRER.balance == expectedMintReferralFee);
     }
 
+    /// @dev Tests attemptBatchMintForWithEth functionality when a collection mint fee distribution ratio is set.
+    function test_attemptBatchMintForEthWithEthWithCollectionMintFeeDistributionRatio()
+        external
+    {
+        uint256 preMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        assert(preMintAccruedConsolationFees == 0);
+
+        uint256 preMintAccruedMintEarnings = perpetualMint
+            .accruedMintEarnings();
+
+        uint256 preMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
+
+        assert(preMintAccruedProtocolFees == 0);
+
+        uint256 preMintContractBalance = address(perpetualMint).balance;
+
+        assert(preMintContractBalance == 0);
+
+        perpetualMint.setCollectionMintFeeDistributionRatioBP(
+            COLLECTION,
+            TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP
+        );
+
+        uint256 preCalculatedCollectionConsolationFee = ((MINT_PRICE *
+            TEST_MINT_ATTEMPTS) * perpetualMint.collectionConsolationFeeBP()) /
+            perpetualMint.BASIS();
+
+        uint256 expectedAdditionalDepositorFee = (preCalculatedCollectionConsolationFee *
+                TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP) /
+                perpetualMint.BASIS();
+
+        vm.prank(minter);
+        perpetualMint.attemptBatchMintForEthWithEth{
+            value: MINT_PRICE * TEST_MINT_ATTEMPTS
+        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
+
+        uint256 postMintAccruedConsolationFees = perpetualMint
+            .accruedConsolationFees();
+
+        assert(
+            postMintAccruedConsolationFees ==
+                preCalculatedCollectionConsolationFee -
+                    expectedAdditionalDepositorFee
+        );
+
+        uint256 postMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
+
+        assert(
+            postMintAccruedProtocolFees ==
+                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
+                    perpetualMint.mintFeeBP()) / perpetualMint.BASIS())
+        );
+
+        uint256 postMintAccruedMintEarnings = perpetualMint
+            .accruedMintEarnings();
+
+        assert(
+            postMintAccruedMintEarnings ==
+                (MINT_PRICE * TEST_MINT_ATTEMPTS) -
+                    preCalculatedCollectionConsolationFee -
+                    postMintAccruedProtocolFees +
+                    expectedAdditionalDepositorFee +
+                    preMintAccruedMintEarnings
+        );
+
+        uint256 postMintContractBalance = address(perpetualMint).balance;
+
+        assert(
+            postMintContractBalance ==
+                postMintAccruedConsolationFees +
+                    postMintAccruedMintEarnings +
+                    postMintAccruedProtocolFees -
+                    preMintAccruedMintEarnings // account for the mocked mint earnings during setup
+        );
+    }
+
     /// @dev Tests that attemptBatchMintForEthWithEth functionality reverts when attempting to mint for an ETH prize value that
     /// is more than the buffer adjusted mint earnings.
     function test_attemptBatchMintForEthWithEthRevertsWhen_AttemptingToMintMoreThanBufferAdjustedMintEarnings()
@@ -340,11 +408,7 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
 
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(
-            NO_REFERRER,
-            TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE * 2
-        );
+        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE * 2);
     }
 
     /// @dev Tests that attemptBatchMintForEthWithEth functionality reverts when attempting to mint with an incorrect msg value amount.
@@ -355,11 +419,7 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
 
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS + 1
-        }(
-            NO_REFERRER,
-            TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
-        );
+        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
     }
 
     /// @dev Tests that attemptBatchMintForEthWithEth functionality reverts when attempting to mint with less than MINIMUM_PRICE_PER_SPIN.
@@ -371,7 +431,7 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
         perpetualMint.attemptBatchMintForEthWithEth(
             NO_REFERRER,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE
         );
     }
 
@@ -384,7 +444,7 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
         perpetualMint.attemptBatchMintForEthWithEth(
             NO_REFERRER,
             ZERO_MINT_ATTEMPTS,
-            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE
         );
     }
 
@@ -397,11 +457,7 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
 
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(
-            NO_REFERRER,
-            TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
-        );
+        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
     }
 
     function _activateVRFConsumer() private {

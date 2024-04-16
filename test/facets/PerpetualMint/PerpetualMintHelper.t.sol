@@ -278,35 +278,39 @@ contract PerpetualMintHelper {
         returns (ICore.FacetCut[] memory)
     {
         // map the PerpetualMint test related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](8);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](9);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
             .attemptBatchMintForEthWithEth
             .selector;
 
         perpetualMintFunctionSelectors[1] = IPerpetualMint
-            .attemptBatchMintForMintWithEth
+            .attemptBatchMintForEthWithMint
             .selector;
 
         perpetualMintFunctionSelectors[2] = IPerpetualMint
-            .attemptBatchMintForMintWithMint
+            .attemptBatchMintForMintWithEth
             .selector;
 
         perpetualMintFunctionSelectors[3] = IPerpetualMint
-            .attemptBatchMintWithEth
+            .attemptBatchMintForMintWithMint
             .selector;
 
         perpetualMintFunctionSelectors[4] = IPerpetualMint
+            .attemptBatchMintWithEth
+            .selector;
+
+        perpetualMintFunctionSelectors[5] = IPerpetualMint
             .attemptBatchMintWithMint
             .selector;
 
-        perpetualMintFunctionSelectors[5] = IPerpetualMint.claimPrize.selector;
+        perpetualMintFunctionSelectors[6] = IPerpetualMint.claimPrize.selector;
 
-        perpetualMintFunctionSelectors[6] = IPerpetualMint
+        perpetualMintFunctionSelectors[7] = IPerpetualMint
             .fundConsolationFees
             .selector;
 
-        perpetualMintFunctionSelectors[7] = IPerpetualMint.redeem.selector;
+        perpetualMintFunctionSelectors[8] = IPerpetualMint.redeem.selector;
 
         ICore.FacetCut memory perpetualMintFacetCut = IDiamondWritableInternal
             .FacetCut({

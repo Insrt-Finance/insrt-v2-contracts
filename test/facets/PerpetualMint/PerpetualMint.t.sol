@@ -40,7 +40,10 @@ abstract contract PerpetualMintTest is CoreTest {
     uint256 internal constant TEST_MINT_EARNINGS_FEE = .01 ether;
 
     /// @dev test mint for collection prize value
-    uint256 internal constant TEST_MINT_FOR_COLLECTION_PRIZE_VALUE = 69 ether;
+    uint256 internal constant TEST_MINT_FOR_COLLECTION_PRIZE_VALUE = 420 ether;
+
+    /// @dev test mint for ETH prize value
+    uint256 internal constant TEST_MINT_FOR_ETH_PRIZE_VALUE = 69 ether;
 
     /// @dev test mint for $MINT prize value (there is no prize value for minting for $MINT)
     uint256 internal constant TEST_MINT_FOR_MINT_PRIZE_VALUE = 0;

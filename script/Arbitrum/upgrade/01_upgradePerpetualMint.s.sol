@@ -82,10 +82,14 @@ contract UpgradePerpetualMintArb is BatchScript {
         address facetAddress
     ) internal pure returns (ICore.FacetCut[] memory) {
         // map the PerpetualMint related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](1);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](2);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
             .attemptBatchMintForEthWithEth
+            .selector;
+
+        perpetualMintFunctionSelectors[1] = IPerpetualMint
+            .attemptBatchMintForEthWithMint
             .selector;
 
         ICore.FacetCut memory perpetualMintFacetCut = IDiamondWritableInternal

@@ -62,7 +62,7 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFee: TEST_MINT_EARNINGS_FEE,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
             }),
             randomWords
         );
@@ -116,7 +116,7 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFee: TEST_MINT_EARNINGS_FEE,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
             }),
             randomWords
         );
@@ -170,7 +170,7 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFee: TEST_MINT_EARNINGS_FEE,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
             }),
             randomWords
         );
@@ -224,7 +224,7 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFee: TEST_MINT_EARNINGS_FEE,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
             }),
             randomWords
         );
@@ -233,21 +233,21 @@ contract PerpetualMint_resolveMintsForEth is
         assert(
             address(perpetualMint).balance ==
                 preFulfillmentContractBalance -
-                    (TEST_MINT_FOR_COLLECTION_PRIZE_VALUE * MINT_ATTEMPTS)
+                    (TEST_MINT_FOR_ETH_PRIZE_VALUE * MINT_ATTEMPTS)
         );
 
         // check that the minter's ETH balance increased by the prize value for each mint
         assert(
             address(minter).balance ==
                 preFulfillmentMinterBalance +
-                    (TEST_MINT_FOR_COLLECTION_PRIZE_VALUE * MINT_ATTEMPTS)
+                    (TEST_MINT_FOR_ETH_PRIZE_VALUE * MINT_ATTEMPTS)
         );
 
         // check that mint earnings decreased by the prize value for each mint
         assert(
             perpetualMint.accruedMintEarnings() ==
                 preFulfillmentAccruedtMintEarnings -
-                    (TEST_MINT_FOR_COLLECTION_PRIZE_VALUE * MINT_ATTEMPTS)
+                    (TEST_MINT_FOR_ETH_PRIZE_VALUE * MINT_ATTEMPTS)
         );
 
         // check that minter received no token receipts
@@ -286,7 +286,7 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFee: TEST_MINT_EARNINGS_FEE,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
             }),
             randomWords
         );
@@ -338,7 +338,7 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFee: TEST_MINT_EARNINGS_FEE,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
             }),
             randomWords
         );
@@ -372,7 +372,7 @@ contract PerpetualMint_resolveMintsForEth is
             1,
             0,
             1,
-            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE
         );
 
         vm.prank(address(perpetualMint));
@@ -382,7 +382,7 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFee: TEST_MINT_EARNINGS_FEE,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
             }),
             randomWords
         );
@@ -404,7 +404,7 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFee: TEST_MINT_EARNINGS_FEE,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
             }),
             randomWords
         );
@@ -421,7 +421,7 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFee: TEST_MINT_EARNINGS_FEE,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
             }),
             randomWords
         );
@@ -439,7 +439,7 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFee: TEST_MINT_EARNINGS_FEE,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
             }),
             randomWords
         );

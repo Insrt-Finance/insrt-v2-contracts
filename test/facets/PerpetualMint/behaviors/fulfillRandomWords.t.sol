@@ -211,7 +211,7 @@ contract PerpetualMint_fulfillRandomWords is
         // store current block number to use as the mint block number
         uint256 mintBlockNumber = block.number;
 
-        // attempt to mint for a collection using ETH
+        // attempt to mint for ETH
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
@@ -243,6 +243,89 @@ contract PerpetualMint_fulfillRandomWords is
             TEST_MINT_EARNINGS_FEE,
             TEST_ADJUSTMENT_FACTOR,
             TEST_MINT_FOR_ETH_PRIZE_VALUE
+        );
+
+        // calculate and store the mint fulfillment block number using vrf config min confirmations
+        uint256 mintFulfillmentBlockNumber = mintBlockNumber +
+            vrfConfig.minConfirmations;
+
+        // roll forward to the mint fulfillment block number
+        vm.roll(mintFulfillmentBlockNumber);
+
+        // setup random words to fulfill the mint request
+        uint256[] memory randomWords = new uint256[](
+            numberOfRandomWordsRequested
+        );
+
+        // generate random words
+        for (uint256 i = 0; i < numberOfRandomWordsRequested; ++i) {
+            randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
+        }
+
+        assert(
+            perpetualMint.exposed_pendingRequestsAt(
+                ETH_COLLECTION_ADDRESS,
+                1
+            ) == mockMintRequestId
+        );
+
+        // mock the VRF Coordinator fulfill random words call
+        vrfCoordinatorV2Mock.fulfillRandomWordsWithOverridePlus(
+            mockMintRequestId,
+            address(perpetualMint),
+            randomWords
+        );
+
+        // we expect the next call to fail to assert the mock mint request has been fulfilled
+        vm.expectRevert(EnumerableSet.EnumerableSet__IndexOutOfBounds.selector);
+
+        perpetualMint.exposed_pendingRequestsAt(ETH_COLLECTION_ADDRESS, 1);
+    }
+
+    /// @dev Tests fulfillRandomWords functionality when mint for ETH is paid in $MINT.
+    function testFuzz_fulfillRandomWordsMintForEthWithMint(
+        uint256 randomness
+    ) external {
+        uint256 currentEthToMintRatio = perpetualMint.ethToMintRatio();
+
+        // store current block number to use as the mint block number
+        uint256 mintBlockNumber = block.number;
+
+        // attempt to mint for ETH using $MINT
+        vm.prank(minter);
+        perpetualMint.attemptBatchMintForEthWithMint(
+            NO_REFERRER,
+            MINT_PRICE * currentEthToMintRatio,
+            TEST_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE
+        );
+
+        uint32 numberOfRandomWordsRequested = TEST_MINT_ATTEMPTS * 2; // 2 words per mint for ETH attempt
+
+        // mock the VRF Coordinator request random words call
+        vm.prank(address(perpetualMint));
+        uint256 mockMintRequestId = vrfCoordinatorV2Mock.requestRandomWords(
+            vrfConfig.keyHash,
+            mockVRFSubscriptionId,
+            vrfConfig.minConfirmations,
+            vrfConfig.callbackGasLimit,
+            numberOfRandomWordsRequested
+        );
+
+        // add the mock mint request as a pending request
+        perpetualMint.exposed_pendingRequestsAdd(
+            ETH_COLLECTION_ADDRESS,
+            mockMintRequestId
+        );
+
+        // add the mock mint request data
+        perpetualMint.setRequests(
+            mockMintRequestId,
+            minter,
+            ETH_COLLECTION_ADDRESS,
+            TEST_MINT_EARNINGS_FEE,
+            TEST_ADJUSTMENT_FACTOR,
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
@@ -627,7 +710,7 @@ contract PerpetualMint_fulfillRandomWords is
 
         uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords / 2;
 
-        // attempt to mint for collection with ETH
+        // attempt to mint for ETH
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * MAXIMUM_MINT_ATTEMPTS
@@ -674,6 +757,105 @@ contract PerpetualMint_fulfillRandomWords is
             TEST_MINT_EARNINGS_FEE,
             TEST_ADJUSTMENT_FACTOR,
             TEST_MINT_FOR_ETH_PRIZE_VALUE
+        );
+
+        // calculate and store the mint fulfillment block number using vrf config min confirmations
+        uint256 mintFulfillmentBlockNumber = mintBlockNumber +
+            vrfConfig.minConfirmations;
+
+        // roll forward to the mint fulfillment block number
+        vm.roll(mintFulfillmentBlockNumber);
+
+        // setup random words to fulfill the mint request
+        uint256[] memory randomWords = new uint256[](
+            numberOfRandomWordsRequested
+        );
+
+        // generate random words
+        for (uint256 i = 1; i < numberOfRandomWordsRequested; ++i) {
+            randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
+        }
+
+        // mock the VRF Coordinator fulfill random words call
+        bool success = vrfCoordinatorV2Mock.fulfillRandomWordsWithOverridePlus(
+            mockMintRequestId,
+            address(perpetualMint),
+            randomWords
+        );
+
+        assert(success == true);
+    }
+
+    /// @dev Tests that fulfillRandomWords (when minting for ETH paid in $MINT) can currently handle the max limit of 250 attempted mints per tx.
+    function testFuzz_fulfillRandomWordsMintForETHWithMintCanHandleMaximum250MintAttempts(
+        uint256 randomness
+    ) external {
+        uint256 currentEthToMintRatio = perpetualMint.ethToMintRatio();
+
+        // store current block number to use as the mint block number
+        uint256 mintBlockNumber = block.number;
+
+        // grab the current max number of words
+        uint32 currentMaxNumWords = IVRFCoordinatorV2(
+            this.perpetualMintHelper().VRF_COORDINATOR()
+        ).MAX_NUM_WORDS();
+
+        // check that the current max number of words is 500
+        assert(currentMaxNumWords == 500);
+
+        uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords / 2;
+
+        // attempt to mint for ETH with $MINT
+        vm.prank(minter);
+        perpetualMint.attemptBatchMintForEthWithMint(
+            NO_REFERRER,
+            MINT_PRICE * currentEthToMintRatio,
+            MAXIMUM_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE
+        );
+
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                IVRFCoordinatorV2.NumWordsTooBig.selector,
+                currentMaxNumWords + 2,
+                currentMaxNumWords
+            )
+        );
+
+        vm.prank(minter);
+        perpetualMint.attemptBatchMintForEthWithMint(
+            NO_REFERRER,
+            MINT_PRICE * currentEthToMintRatio,
+            MAXIMUM_MINT_ATTEMPTS + 1,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE
+        );
+
+        uint32 numberOfRandomWordsRequested = currentMaxNumWords; // 2 words per mint for ETH attempt
+
+        // mock the VRF Coordinator request random words call
+        vm.prank(address(perpetualMint));
+        uint256 mockMintRequestId = vrfCoordinatorV2Mock.requestRandomWords(
+            vrfConfig.keyHash,
+            mockVRFSubscriptionId,
+            vrfConfig.minConfirmations,
+            vrfConfig.callbackGasLimit,
+            numberOfRandomWordsRequested
+        );
+
+        // add the mock mint request as a pending request
+        perpetualMint.exposed_pendingRequestsAdd(
+            MINT_FOR_COLLECTION_ADDRESS,
+            mockMintRequestId
+        );
+
+        // add the mock mint request data
+        perpetualMint.setRequests(
+            mockMintRequestId,
+            minter,
+            MINT_FOR_COLLECTION_ADDRESS,
+            TEST_MINT_EARNINGS_FEE,
+            TEST_ADJUSTMENT_FACTOR,
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations

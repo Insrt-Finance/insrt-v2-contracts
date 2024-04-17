@@ -137,14 +137,16 @@ interface IPerpetualMintInternal {
     /// @param attempts number of mint attempts
     /// @param totalBlastYieldAmount amount of Blast yield received, denominatined in wei
     /// @param totalMintAmount amount of $MINT tokens minted
-    /// @param totalReceiptAmount amount of receipts (ERC1155 tokens) minted (successful mint attempts)
+    /// @param totalNumberOfWins total number of wins (successful mint attempts)
+    /// @param totalPrizeValueAmount total ETH value of prizes won, denominated in wei
     event MintResultBlast(
         address indexed minter,
         address indexed collection,
         uint256 attempts,
         uint256 totalBlastYieldAmount,
         uint256 totalMintAmount,
-        uint256 totalReceiptAmount
+        uint256 totalNumberOfWins,
+        uint256 totalPrizeValueAmount
     );
 
     /// @notice emitted when the mint token tiers are set

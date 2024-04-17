@@ -11,10 +11,42 @@ contract PerpetualMintSupraBlast is PerpetualMintSupra {
     /// @dev number of words used in mints for $MINT
     uint8 private constant TWO_WORDS = 2;
 
-    /// @dev number of words used in mints for collections
+    /// @dev number of words used in mints for ETH & mints for collections
     uint8 private constant THREE_WORDS = 3;
 
     constructor(address vrf) PerpetualMintSupra(vrf) {}
+
+    /// @inheritdoc IPerpetualMint
+    function attemptBatchMintForEthWithEth(
+        address referrer,
+        uint32 numberOfMints,
+        uint256 ethPrizeValueInWei
+    ) external payable override whenNotPaused {
+        _attemptBatchMintForEthWithEthSupra(
+            msg.sender,
+            referrer,
+            uint8(numberOfMints),
+            THREE_WORDS,
+            ethPrizeValueInWei
+        );
+    }
+
+    /// @inheritdoc IPerpetualMint
+    function attemptBatchMintForEthWithMint(
+        address referrer,
+        uint256 pricePerMint,
+        uint32 numberOfMints,
+        uint256 ethPrizeValueInWei
+    ) external override whenNotPaused {
+        _attemptBatchMintForEthWithMintSupra(
+            msg.sender,
+            referrer,
+            pricePerMint,
+            uint8(numberOfMints),
+            THREE_WORDS,
+            ethPrizeValueInWei
+        );
+    }
 
     /// @inheritdoc IPerpetualMint
     function attemptBatchMintForMintWithEth(

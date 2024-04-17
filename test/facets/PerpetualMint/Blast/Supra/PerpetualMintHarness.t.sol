@@ -181,6 +181,27 @@ contract PerpetualMintHarnessSupraBlast is
     }
 
     /// @inheritdoc IPerpetualMintHarnessBlast
+    function exposed_resolveMintsForEthBlast(
+        RequestData calldata request,
+        uint256[] memory randomWords
+    ) external {
+        Storage.Layout storage l = Storage.layout();
+
+        CollectionData storage collectionData = l.collections[
+            request.collection
+        ];
+
+        _resolveMintsForEthBlast(
+            l,
+            request,
+            _collectionMintMultiplier(collectionData),
+            _collectionMintPrice(collectionData),
+            randomWords,
+            _ethToMintRatio(l)
+        );
+    }
+
+    /// @inheritdoc IPerpetualMintHarnessBlast
     function exposed_resolveMintsBlast(
         address minter,
         address collection,

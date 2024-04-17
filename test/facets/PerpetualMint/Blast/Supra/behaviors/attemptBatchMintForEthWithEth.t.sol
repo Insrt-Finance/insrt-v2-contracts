@@ -4,21 +4,22 @@ pragma solidity 0.8.19;
 
 import { IPausableInternal } from "@solidstate/contracts/security/pausable/IPausableInternal.sol";
 
-import { PerpetualMintTest_Base } from "../PerpetualMint.t.sol";
-import { BaseForkTest } from "../../../../BaseForkTest.t.sol";
-import { IPerpetualMintInternal } from "../../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
+import { PerpetualMintTest_SupraBlast } from "../PerpetualMint.t.sol";
+import { BlastForkTest } from "../../../../../BlastForkTest.t.sol";
+import { IPerpetualMintInternal } from "../../../../../../contracts/facets/PerpetualMint/IPerpetualMintInternal.sol";
 
-/// @title PerpetualMint_attemptBatchMintForEthWithEthBase
-/// @dev PerpetualMint_Base test contract for testing expected attemptBatchMintForEthWithEth behavior. Tested on a Base fork.
-contract PerpetualMint_attemptBatchMintForEthWithEthBase is
-    BaseForkTest,
+/// @title PerpetualMint_attemptBatchMintForEthWithEthSupraBlast
+/// @dev PerpetualMint_SupraBlast test contract for testing expected attemptBatchMintForEthWithEth behavior. Tested on a Blast fork.
+contract PerpetualMint_attemptBatchMintForEthWithEthSupraBlast is
+    BlastForkTest,
     IPerpetualMintInternal,
-    PerpetualMintTest_Base
+    PerpetualMintTest_SupraBlast
 {
     uint32 internal constant TEST_MINT_ATTEMPTS = 3;
 
     uint32 internal constant ZERO_MINT_ATTEMPTS = 0;
 
+    /// @dev collection to test
     address COLLECTION = ETH_COLLECTION_ADDRESS;
 
     /// @dev Sets up the test case environment.
@@ -313,7 +314,7 @@ contract PerpetualMint_attemptBatchMintForEthWithEthBase is
         assert(REFERRER.balance == expectedMintReferralFee);
     }
 
-    /// @dev Tests attemptBatchMintForWithEth functionality when a collection mint fee distribution ratio is set.
+    /// @dev Tests attemptBatchMintForEthWithEth functionality when a collection mint fee distribution ratio is set.
     function test_attemptBatchMintForEthWithEthWithCollectionMintFeeDistributionRatio()
         external
     {
@@ -340,10 +341,10 @@ contract PerpetualMint_attemptBatchMintForEthWithEthBase is
         );
 
         uint256 preCalculatedCollectionConsolationFee = ((MINT_PRICE *
-            TEST_MINT_ATTEMPTS) * perpetualMint.collectionConsolationFeeBP()) /
+            TEST_MINT_ATTEMPTS) * perpetualMint.mintForEthConsolationFeeBP()) /
             perpetualMint.BASIS();
 
-        uint256 expectedAdditionalDepositorFee = (preCalculatedCollectionConsolationFee *
+        uint256 preCalculatedAdditionalDepositorFee = (preCalculatedCollectionConsolationFee *
                 TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP) /
                 perpetualMint.BASIS();
 
@@ -358,7 +359,7 @@ contract PerpetualMint_attemptBatchMintForEthWithEthBase is
         assert(
             postMintAccruedConsolationFees ==
                 preCalculatedCollectionConsolationFee -
-                    expectedAdditionalDepositorFee
+                    preCalculatedAdditionalDepositorFee
         );
 
         uint256 postMintAccruedProtocolFees = perpetualMint
@@ -378,7 +379,7 @@ contract PerpetualMint_attemptBatchMintForEthWithEthBase is
                 (MINT_PRICE * TEST_MINT_ATTEMPTS) -
                     preCalculatedCollectionConsolationFee -
                     postMintAccruedProtocolFees +
-                    expectedAdditionalDepositorFee +
+                    preCalculatedAdditionalDepositorFee +
                     preMintAccruedMintEarnings
         );
 

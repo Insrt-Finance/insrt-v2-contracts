@@ -98,7 +98,7 @@ contract PerpetualMintHelper_SupraBlast {
         );
 
         // map the PerpetualMintAdmin test related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintAdminFunctionSelectors = new bytes4[](27);
+        bytes4[] memory perpetualMintAdminFunctionSelectors = new bytes4[](29);
 
         perpetualMintAdminFunctionSelectors[0] = IPerpetualMintAdmin
             .burnReceipt
@@ -161,50 +161,58 @@ contract PerpetualMintHelper_SupraBlast {
             .selector;
 
         perpetualMintAdminFunctionSelectors[15] = IPerpetualMintAdmin
-            .setMintFeeBP
+            .setMintEarningsBufferBP
             .selector;
 
         perpetualMintAdminFunctionSelectors[16] = IPerpetualMintAdmin
-            .setMintToken
+            .setMintFeeBP
             .selector;
 
         perpetualMintAdminFunctionSelectors[17] = IPerpetualMintAdmin
-            .setMintTokenConsolationFeeBP
+            .setMintForEthConsolationFeeBP
             .selector;
 
         perpetualMintAdminFunctionSelectors[18] = IPerpetualMintAdmin
-            .setMintTokenTiers
+            .setMintToken
             .selector;
 
         perpetualMintAdminFunctionSelectors[19] = IPerpetualMintAdmin
-            .setReceiptBaseURI
+            .setMintTokenConsolationFeeBP
             .selector;
 
         perpetualMintAdminFunctionSelectors[20] = IPerpetualMintAdmin
-            .setReceiptTokenURI
+            .setMintTokenTiers
             .selector;
 
         perpetualMintAdminFunctionSelectors[21] = IPerpetualMintAdmin
-            .setRedemptionFeeBP
+            .setReceiptBaseURI
             .selector;
 
         perpetualMintAdminFunctionSelectors[22] = IPerpetualMintAdmin
-            .setRedeemPaused
+            .setReceiptTokenURI
             .selector;
 
         perpetualMintAdminFunctionSelectors[23] = IPerpetualMintAdmin
-            .setTiers
+            .setRedemptionFeeBP
             .selector;
 
         perpetualMintAdminFunctionSelectors[24] = IPerpetualMintAdmin
-            .setVRFConfig
+            .setRedeemPaused
             .selector;
 
         perpetualMintAdminFunctionSelectors[25] = IPerpetualMintAdmin
-            .setVRFSubscriptionBalanceThreshold
+            .setTiers
             .selector;
 
         perpetualMintAdminFunctionSelectors[26] = IPerpetualMintAdmin
+            .setVRFConfig
+            .selector;
+
+        perpetualMintAdminFunctionSelectors[27] = IPerpetualMintAdmin
+            .setVRFSubscriptionBalanceThreshold
+            .selector;
+
+        perpetualMintAdminFunctionSelectors[28] = IPerpetualMintAdmin
             .unpause
             .selector;
 
@@ -335,21 +343,25 @@ contract PerpetualMintHelper_SupraBlast {
         pure
         returns (bytes4[] memory selectors)
     {
-        selectors = new bytes4[](7);
+        selectors = new bytes4[](9);
 
-        selectors[0] = IPerpetualMint.attemptBatchMintForMintWithEth.selector;
+        selectors[0] = IPerpetualMint.attemptBatchMintForEthWithEth.selector;
 
-        selectors[1] = IPerpetualMint.attemptBatchMintForMintWithMint.selector;
+        selectors[1] = IPerpetualMint.attemptBatchMintForEthWithMint.selector;
 
-        selectors[2] = IPerpetualMint.attemptBatchMintWithEth.selector;
+        selectors[2] = IPerpetualMint.attemptBatchMintForMintWithEth.selector;
 
-        selectors[3] = IPerpetualMint.attemptBatchMintWithMint.selector;
+        selectors[3] = IPerpetualMint.attemptBatchMintForMintWithMint.selector;
 
-        selectors[4] = IPerpetualMint.claimPrize.selector;
+        selectors[4] = IPerpetualMint.attemptBatchMintWithEth.selector;
 
-        selectors[5] = IPerpetualMint.fundConsolationFees.selector;
+        selectors[5] = IPerpetualMint.attemptBatchMintWithMint.selector;
 
-        selectors[6] = IPerpetualMint.redeem.selector;
+        selectors[6] = IPerpetualMint.claimPrize.selector;
+
+        selectors[7] = IPerpetualMint.fundConsolationFees.selector;
+
+        selectors[8] = IPerpetualMint.redeem.selector;
     }
 
     function _getPerpetualMintAdminBlastFunctionSelectors()
@@ -425,13 +437,17 @@ contract PerpetualMintHelper_SupraBlast {
         pure
         returns (bytes4[] memory selectors)
     {
-        selectors = new bytes4[](2);
+        selectors = new bytes4[](3);
 
         selectors[0] = IPerpetualMintHarnessBlast
             .exposed_resolveMintsBlast
             .selector;
 
         selectors[1] = IPerpetualMintHarnessBlast
+            .exposed_resolveMintsForEthBlast
+            .selector;
+
+        selectors[2] = IPerpetualMintHarnessBlast
             .exposed_resolveMintsForMintBlast
             .selector;
     }
@@ -453,7 +469,7 @@ contract PerpetualMintHelper_SupraBlast {
         pure
         returns (bytes4[] memory selectors)
     {
-        selectors = new bytes4[](25);
+        selectors = new bytes4[](27);
 
         selectors[0] = IPerpetualMintView.accruedConsolationFees.selector;
 
@@ -489,25 +505,29 @@ contract PerpetualMintHelper_SupraBlast {
 
         selectors[14] = IPerpetualMintView.ethToMintRatio.selector;
 
-        selectors[15] = IPerpetualMintView.mintFeeBP.selector;
+        selectors[15] = IPerpetualMintView.mintEarningsBufferBP.selector;
 
-        selectors[16] = IPerpetualMintView.mintToken.selector;
+        selectors[16] = IPerpetualMintView.mintFeeBP.selector;
 
-        selectors[17] = IPerpetualMintView.mintTokenConsolationFeeBP.selector;
+        selectors[17] = IPerpetualMintView.mintForEthConsolationFeeBP.selector;
 
-        selectors[18] = IPerpetualMintView.mintTokenTiers.selector;
+        selectors[18] = IPerpetualMintView.mintToken.selector;
 
-        selectors[19] = IPerpetualMintView.redemptionFeeBP.selector;
+        selectors[19] = IPerpetualMintView.mintTokenConsolationFeeBP.selector;
 
-        selectors[20] = IPerpetualMintView.redeemPaused.selector;
+        selectors[20] = IPerpetualMintView.mintTokenTiers.selector;
 
-        selectors[21] = IPerpetualMintView.SCALE.selector;
+        selectors[21] = IPerpetualMintView.redemptionFeeBP.selector;
 
-        selectors[22] = IPerpetualMintView.tiers.selector;
+        selectors[22] = IPerpetualMintView.redeemPaused.selector;
 
-        selectors[23] = IPerpetualMintView.vrfConfig.selector;
+        selectors[23] = IPerpetualMintView.SCALE.selector;
 
-        selectors[24] = IPerpetualMintView
+        selectors[24] = IPerpetualMintView.tiers.selector;
+
+        selectors[25] = IPerpetualMintView.vrfConfig.selector;
+
+        selectors[26] = IPerpetualMintView
             .vrfSubscriptionBalanceThreshold
             .selector;
     }

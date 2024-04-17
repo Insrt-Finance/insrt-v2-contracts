@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.19;
 
-import { IPerpetualMintHarness } from "../IPerpetualMintHarness.sol";
+import { IPerpetualMintHarness, RequestData } from "../IPerpetualMintHarness.sol";
 
 /// @title IPerpetualMintHarnessBlast
 /// @dev Extended Blast-specific interface for the PerpetualMintHarness contract
@@ -12,6 +12,12 @@ interface IPerpetualMintHarnessBlast is IPerpetualMintHarness {
         address minter,
         address collection,
         uint256 mintPriceAdjustmentFactor,
+        uint256[] memory randomWords
+    ) external;
+
+    /// @dev exposes _resolveMintsForEthBlast
+    function exposed_resolveMintsForEthBlast(
+        RequestData calldata request,
         uint256[] memory randomWords
     ) external;
 

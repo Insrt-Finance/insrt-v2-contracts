@@ -2019,6 +2019,16 @@ abstract contract PerpetualMintInternal is
                 randomWords,
                 _ethToMintRatio(l)
             );
+        } else if (collection == ETH_COLLECTION_ADDRESS) {
+            // the mint is for ETH
+            _resolveMintsForEthBlast(
+                l,
+                request,
+                _collectionMintMultiplier(collectionData),
+                _collectionMintPrice(collectionData),
+                randomWords,
+                _ethToMintRatio(l)
+            );
         } else {
             // the mint is for a collection
             _resolveMintsBlast(
@@ -2463,7 +2473,8 @@ abstract contract PerpetualMintInternal is
             randomWords.length / 3,
             totalBlastYieldAmount,
             totalMintAmount,
-            totalReceiptAmount
+            totalReceiptAmount,
+            0
         );
     }
 
@@ -2580,6 +2591,142 @@ abstract contract PerpetualMintInternal is
             request.minter,
             ETH_COLLECTION_ADDRESS,
             randomWords.length / 2,
+            totalMintAmount,
+            totalReceiptAmount,
+            totalPrizeValueAmount
+        );
+    }
+
+    /// @notice resolves the outcomes of attempted mints for ETH on Blast
+    /// @param l the PerpetualMint storage layout
+    /// @param request the RequestData struct for the mint request
+    /// @param mintForEthMultiplier minting for ETH multiplier
+    /// @param mintForEthPrice mint for ETH mint price
+    /// @param randomWords array of random values relating to number of attempts
+    /// @param ethToMintRatio ratio of ETH to $MINT
+    function _resolveMintsForEthBlast(
+        Storage.Layout storage l,
+        RequestData memory request,
+        uint256 mintForEthMultiplier,
+        uint256 mintForEthPrice,
+        uint256[] memory randomWords,
+        uint256 ethToMintRatio
+    ) internal {
+        // ensure the number of random words is odd
+        // each valid mint attempt requires three random words
+        if (randomWords.length % 3 != 0) {
+            revert UnmatchedRandomWords();
+        }
+
+        uint32 blastYieldRisk = _blastYieldRisk();
+
+        // determine the risk by dividing the mint earnings fee by the prize value in wei
+        uint256 risk = (request.mintEarningsFee * BASIS) /
+            request.prizeValueInWei;
+
+        uint256 cumulativeTierMultiplier;
+        uint256 totalBlastYieldAmount;
+        uint256 totalReceiptAmount;
+        uint256 totalPrizeValueAmount;
+
+        for (uint256 i = 0; i < randomWords.length; i += 3) {
+            // first random word is used to determine whether the mint attempt was successful
+            uint256 firstNormalizedValue = _normalizeValue(
+                randomWords[i],
+                BASIS
+            );
+
+            // if the risk is less than the first normalized value, the mint attempt is unsuccessful
+            // and the second normalized value is used to determine the consolation tier
+            if (!(risk > firstNormalizedValue)) {
+                // second random word is used to determine the consolation tier
+                uint256 secondNormalizedValue = _normalizeValue(
+                    randomWords[i + 1],
+                    BASIS
+                );
+
+                cumulativeTierMultiplier += _calculateTierMultiplier(
+                    l.tiers,
+                    secondNormalizedValue
+                );
+            } else {
+                // successful attempt, increment prize amount
+                totalPrizeValueAmount += request.prizeValueInWei;
+
+                // increment receipt amount in case automated ETH payout fails
+                ++totalReceiptAmount;
+            }
+
+            // third random word is used to determine the Blast yield outcome
+            uint256 thirdNormalizedValue = _normalizeValue(
+                randomWords[i + 2],
+                BASIS
+            );
+
+            totalBlastYieldAmount += _processBlastYieldOutcome(
+                thirdNormalizedValue,
+                request.minter,
+                blastYieldRisk,
+                totalBlastYieldAmount
+            );
+        }
+
+        uint256 totalMintAmount;
+
+        // Mint the cumulative amounts at the end
+        if (cumulativeTierMultiplier > 0) {
+            // Adjust for the cumulative tier multiplier, ETH to $MINT ratio, mint for ETH price, and apply mint for ETH-specific multiplier & mint price adjustment factor
+            totalMintAmount =
+                (cumulativeTierMultiplier *
+                    ethToMintRatio *
+                    mintForEthPrice *
+                    mintForEthMultiplier *
+                    request.mintPriceAdjustmentFactor) /
+                (uint256(BASIS) * BASIS * BASIS);
+
+            IToken(l.mintToken).mint(request.minter, totalMintAmount);
+        }
+
+        // Pay out ETH prize for successful attempts
+        if (totalPrizeValueAmount > 0) {
+            // Ensure there are enough mint earnings to cover the prize payout
+            if (l.mintEarnings < totalPrizeValueAmount) {
+                // Not enough mint earnings, mint receipts for manual payout
+                _safeMint(
+                    request.minter,
+                    uint256(bytes32(abi.encode(ETH_COLLECTION_ADDRESS))), // encode address as tokenId
+                    totalReceiptAmount,
+                    ""
+                );
+            } else {
+                // decrease mint earnings by the total prize value amount
+                l.mintEarnings -= totalPrizeValueAmount;
+
+                // try to send ETH prize
+                (bool success, ) = request.minter.call{
+                    value: totalPrizeValueAmount
+                }("");
+
+                if (!success) {
+                    // transfer ETH failed, revert the deduction
+                    l.mintEarnings += totalPrizeValueAmount;
+
+                    // mint receipts for manual payout
+                    _safeMint(
+                        request.minter,
+                        uint256(bytes32(abi.encode(ETH_COLLECTION_ADDRESS))), // encode address as tokenId
+                        totalReceiptAmount,
+                        ""
+                    );
+                }
+            }
+        }
+
+        emit MintResultBlast(
+            request.minter,
+            ETH_COLLECTION_ADDRESS,
+            randomWords.length / 3,
+            totalBlastYieldAmount,
             totalMintAmount,
             totalReceiptAmount,
             totalPrizeValueAmount
@@ -2709,6 +2856,7 @@ abstract contract PerpetualMintInternal is
             randomWords.length / 2,
             totalBlastYieldAmount,
             totalMintAmount,
+            0,
             0
         );
     }

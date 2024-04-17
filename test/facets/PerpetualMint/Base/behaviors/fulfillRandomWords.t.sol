@@ -125,7 +125,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
         // store current block number to use as the mint block number
         uint256 mintBlockNumber = block.number;
 
-        // attempt to mint for a collection using ETH
+        // attempt to mint for ETH
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
@@ -138,7 +138,73 @@ contract PerpetualMint_fulfillRandomWordsBase is
         // roll forward to the mint fulfillment block number
         vm.roll(mintFulfillmentBlockNumber);
 
-        uint8 numberOfRandomWordsRequested = uint8(TEST_MINT_ATTEMPTS * 2); // 2 words per mint for collection attempt
+        uint8 numberOfRandomWordsRequested = uint8(TEST_MINT_ATTEMPTS * 2); // 2 words per mint for ETH attempt
+
+        // Supra VRF Router nonce storage slot
+        bytes32 nonceStorageSlot = bytes32(uint256(3));
+
+        uint256 postRequestNonce = uint256(
+            vm.load(address(supraRouterContract), nonceStorageSlot)
+        );
+
+        // setup random words to fulfill the mint request
+        uint256[] memory randomWords = new uint256[](
+            numberOfRandomWordsRequested
+        );
+
+        // generate random words
+        for (uint256 i = 0; i < numberOfRandomWordsRequested; ++i) {
+            randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
+        }
+
+        assert(
+            perpetualMint.exposed_pendingRequestsAt(
+                ETH_COLLECTION_ADDRESS,
+                0
+            ) == postRequestNonce
+        );
+
+        // mock the Supra VRF Generator RNG request callback
+        vm.prank(supraRouterContract._supraGeneratorContract());
+        supraRouterContract.rngCallback(
+            postRequestNonce,
+            randomWords,
+            address(perpetualMint),
+            VRF_REQUEST_FUNCTION_SIGNATURE
+        );
+
+        // we expect the next call to fail to assert the mock mint request has been fulfilled
+        vm.expectRevert(EnumerableSet.EnumerableSet__IndexOutOfBounds.selector);
+
+        perpetualMint.exposed_pendingRequestsAt(ETH_COLLECTION_ADDRESS, 1);
+    }
+
+    /// @dev Tests fulfillRandomWords functionality when mint for ETH is paid in $MINT.
+    function testFuzz_fulfillRandomWordsMintForEthWithMint(
+        uint256 randomness
+    ) external {
+        uint256 currentEthToMintRatio = perpetualMint.ethToMintRatio();
+
+        // store current block number to use as the mint block number
+        uint256 mintBlockNumber = block.number;
+
+        // attempt to mint for ETH using $MINT
+        vm.prank(minter);
+        perpetualMint.attemptBatchMintForEthWithMint(
+            NO_REFERRER,
+            MINT_PRICE * currentEthToMintRatio,
+            TEST_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE
+        );
+
+        // calculate and store the mint fulfillment block number using the configured vrf min # of confirmations
+        uint256 mintFulfillmentBlockNumber = mintBlockNumber +
+            TEST_VRF_NUMBER_OF_CONFIRMATIONS;
+
+        // roll forward to the mint fulfillment block number
+        vm.roll(mintFulfillmentBlockNumber);
+
+        uint8 numberOfRandomWordsRequested = uint8(TEST_MINT_ATTEMPTS * 2); // 2 words per mint for ETH attempt
 
         // Supra VRF Router nonce storage slot
         bytes32 nonceStorageSlot = bytes32(uint256(3));
@@ -441,7 +507,7 @@ contract PerpetualMint_fulfillRandomWordsBase is
 
         uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords / 2;
 
-        // attempt to mint for collection with ETH
+        // attempt to mint for ETH
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * MAXIMUM_MINT_ATTEMPTS
@@ -457,7 +523,78 @@ contract PerpetualMint_fulfillRandomWordsBase is
             TEST_MINT_FOR_ETH_PRIZE_VALUE
         );
 
-        uint8 numberOfRandomWordsRequested = uint8(MAXIMUM_MINT_ATTEMPTS * 2); // 2 words per mint for collection attempt
+        uint8 numberOfRandomWordsRequested = uint8(MAXIMUM_MINT_ATTEMPTS * 2); // 2 words per mint for ETH attempt
+
+        // calculate and store the mint fulfillment block number using the configured vrf min # of confirmations
+        uint256 mintFulfillmentBlockNumber = mintBlockNumber +
+            TEST_VRF_NUMBER_OF_CONFIRMATIONS;
+
+        // roll forward to the mint fulfillment block number
+        vm.roll(mintFulfillmentBlockNumber);
+
+        // Supra VRF Router nonce storage slot
+        bytes32 nonceStorageSlot = bytes32(uint256(3));
+
+        uint256 postRequestNonce = uint256(
+            vm.load(address(supraRouterContract), nonceStorageSlot)
+        );
+
+        // setup random words to fulfill the mint request
+        uint256[] memory randomWords = new uint256[](
+            numberOfRandomWordsRequested
+        );
+
+        // generate random words
+        for (uint256 i = 0; i < numberOfRandomWordsRequested; ++i) {
+            randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
+        }
+
+        // mock the Supra VRF Generator RNG request callback
+        vm.prank(supraRouterContract._supraGeneratorContract());
+        (bool success, ) = supraRouterContract.rngCallback(
+            postRequestNonce,
+            randomWords,
+            address(perpetualMint),
+            VRF_REQUEST_FUNCTION_SIGNATURE
+        );
+
+        assert(success == true);
+    }
+
+    /// @dev Tests that fulfillRandomWords (when minting for ETH paid in $MINT) can currently handle the max limit of 127 attempted mints per tx.
+    function testFuzz_fulfillRandomWordsMintForEthWithMintCanHandleMaximum127MintAttempts(
+        uint256 randomness
+    ) external {
+        uint256 currentEthToMintRatio = perpetualMint.ethToMintRatio();
+
+        // store current block number to use as the mint block number
+        uint256 mintBlockNumber = block.number;
+
+        // specify the current max number of words
+        uint8 currentMaxNumWords = type(uint8).max;
+
+        uint32 MAXIMUM_MINT_ATTEMPTS = currentMaxNumWords / 2;
+
+        // attempt to mint for ETH with $MINT
+        vm.prank(minter);
+        perpetualMint.attemptBatchMintForEthWithMint(
+            NO_REFERRER,
+            MINT_PRICE * currentEthToMintRatio,
+            MAXIMUM_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE
+        );
+
+        vm.expectRevert();
+
+        vm.prank(minter);
+        perpetualMint.attemptBatchMintForEthWithMint(
+            NO_REFERRER,
+            MINT_PRICE * currentEthToMintRatio,
+            MAXIMUM_MINT_ATTEMPTS + 1,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE
+        );
+
+        uint8 numberOfRandomWordsRequested = uint8(MAXIMUM_MINT_ATTEMPTS * 2); // 2 words per mint for ETH attempt
 
         // calculate and store the mint fulfillment block number using the configured vrf min # of confirmations
         uint256 mintFulfillmentBlockNumber = mintBlockNumber +

@@ -349,7 +349,7 @@ contract PerpetualMint_resolveMintsBlast is
         randomWords.push(uint256(uint160(address(msg.sender))));
 
         vm.expectEmit();
-        emit MintResultBlast(minter, COLLECTION, 1, 0, 0, 1);
+        emit MintResultBlast(minter, COLLECTION, 1, 0, 0, 1, 0);
 
         vm.prank(address(perpetualMint));
         perpetualMint.exposed_resolveMintsBlast(

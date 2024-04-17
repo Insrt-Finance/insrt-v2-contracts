@@ -292,7 +292,7 @@ contract PerpetualMint_resolveMintsForMintBlast is
                 perpetualMint.BASIS()));
 
         vm.expectEmit();
-        emit MintResultBlast(minter, COLLECTION, 1, 0, totalMintedAmount, 0);
+        emit MintResultBlast(minter, COLLECTION, 1, 0, totalMintedAmount, 0, 0);
 
         vm.prank(address(perpetualMint));
         perpetualMint.exposed_resolveMintsForMintBlast(

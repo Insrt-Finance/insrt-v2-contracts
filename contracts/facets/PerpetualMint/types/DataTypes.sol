@@ -10,6 +10,8 @@ import { EnumerableSet } from "@solidstate/contracts/data/EnumerableSet.sol";
 struct CalculateMintResult_SharedData {
     /// @dev The current collection's mint fee distribution ratio in basis points
     uint32 collectionMintFeeDistributionRatioBP;
+    /// @dev The current collection's mint referral fee in basis points
+    uint32 collectionReferralFeeBP;
     /// @dev The current collection's set risk of ruin (if applicable)
     uint32 collectionRisk;
     /// @dev The current mint for ETH consolation fee in basis points

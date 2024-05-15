@@ -35,14 +35,16 @@ contract PerpetualMintViewSupraBlast is
         uint8 numberOfMints,
         uint256[2] calldata signature,
         uint256 pricePerMint,
-        uint256 prizeValueInWei
+        uint256 prizeValueInWei,
+        bool referralMint
     ) external view returns (MintResultDataBlast memory result) {
         result = _calculateMintResultSupraBlast(
             collection,
             numberOfMints,
             signature,
             pricePerMint,
-            prizeValueInWei
+            prizeValueInWei,
+            referralMint
         );
     }
 }

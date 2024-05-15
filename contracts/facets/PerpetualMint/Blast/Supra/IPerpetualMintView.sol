@@ -19,6 +19,7 @@ interface IPerpetualMintViewSupraBlast is IPerpetualMintViewBlast {
         uint8 numberOfMints,
         uint256[2] calldata signature,
         uint256 pricePerMint,
-        uint256 prizeValueInWei
+        uint256 prizeValueInWei,
+        bool referralMint
     ) external view returns (MintResultDataBlast memory result);
 }

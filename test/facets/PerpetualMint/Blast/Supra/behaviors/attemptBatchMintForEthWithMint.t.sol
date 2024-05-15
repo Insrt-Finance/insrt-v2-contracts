@@ -95,10 +95,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMintSupraBlast is
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
-        uint256 expectedMintFee = (expectedEthRequired *
-            perpetualMint.mintFeeBP()) / perpetualMint.BASIS();
-
-        assert(postMintAccruedProtocolFees == expectedMintFee);
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -106,8 +104,7 @@ contract PerpetualMint_attemptBatchMintForEthWithMintSupraBlast is
         assert(
             postMintAccruedMintEarnings ==
                 expectedEthRequired -
-                    expectedCollectionConsolationFee -
-                    expectedMintFee +
+                    expectedCollectionConsolationFee +
                     preMintAccruedMintEarnings // account for the mocked mint earnings during setup
         );
 
@@ -171,10 +168,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMintSupraBlast is
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
-        uint256 expectedMintFee = (expectedEthRequired *
-            perpetualMint.mintFeeBP()) / perpetualMint.BASIS();
-
-        assert(postMintAccruedProtocolFees == expectedMintFee);
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -182,8 +177,7 @@ contract PerpetualMint_attemptBatchMintForEthWithMintSupraBlast is
         assert(
             postMintAccruedMintEarnings ==
                 expectedEthRequired -
-                    expectedCollectionConsolationFee -
-                    expectedMintFee +
+                    expectedCollectionConsolationFee +
                     preMintAccruedMintEarnings // account for the mocked mint earnings during setup
         );
 
@@ -245,10 +239,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMintSupraBlast is
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
-        uint256 expectedMintFee = (expectedEthRequired *
-            perpetualMint.mintFeeBP()) / perpetualMint.BASIS();
-
-        assert(postMintAccruedProtocolFees == expectedMintFee);
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -256,8 +248,7 @@ contract PerpetualMint_attemptBatchMintForEthWithMintSupraBlast is
         assert(
             postMintAccruedMintEarnings ==
                 expectedEthRequired -
-                    expectedCollectionConsolationFee -
-                    expectedMintFee +
+                    expectedCollectionConsolationFee +
                     preMintAccruedMintEarnings // account for the mocked mint earnings during setup
         );
 
@@ -325,10 +316,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMintSupraBlast is
             perpetualMint.defaultCollectionReferralFeeBP()) /
             perpetualMint.BASIS();
 
-        assert(
-            postMintAccruedProtocolFees ==
-                expectedMintFee - expectedMintReferralFee
-        );
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -337,7 +326,7 @@ contract PerpetualMint_attemptBatchMintForEthWithMintSupraBlast is
             postMintAccruedMintEarnings ==
                 expectedEthRequired -
                     expectedCollectionConsolationFee -
-                    expectedMintFee +
+                    expectedMintReferralFee +
                     preMintAccruedMintEarnings // account for the mocked mint earnings during setup
         );
 
@@ -414,10 +403,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMintSupraBlast is
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
-        uint256 expectedMintFee = (expectedEthRequired *
-            perpetualMint.mintFeeBP()) / perpetualMint.BASIS();
-
-        assert(postMintAccruedProtocolFees == expectedMintFee);
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -425,8 +412,7 @@ contract PerpetualMint_attemptBatchMintForEthWithMintSupraBlast is
         assert(
             postMintAccruedMintEarnings ==
                 expectedEthRequired -
-                    expectedCollectionConsolationFee -
-                    expectedMintFee +
+                    expectedCollectionConsolationFee +
                     expectedAdditionalDepositorFee +
                     preMintAccruedMintEarnings // account for the mocked mint earnings during setup
         );

@@ -61,11 +61,8 @@ contract PerpetualMint_attemptBatchMintWithEthSupraBlast is
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
-        assert(
-            postMintAccruedProtocolFees ==
-                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
-                    perpetualMint.mintFeeBP()) / perpetualMint.BASIS())
-        );
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -73,15 +70,12 @@ contract PerpetualMint_attemptBatchMintWithEthSupraBlast is
         assert(
             postMintAccruedMintEarnings ==
                 (MINT_PRICE * TEST_MINT_ATTEMPTS) -
-                    postMintAccruedConsolationFees -
-                    postMintAccruedProtocolFees
+                    postMintAccruedConsolationFees
         );
 
         assert(
             address(perpetualMint).balance ==
-                postMintAccruedConsolationFees +
-                    postMintAccruedMintEarnings +
-                    postMintAccruedProtocolFees
+                postMintAccruedConsolationFees + postMintAccruedMintEarnings
         );
     }
 
@@ -125,11 +119,8 @@ contract PerpetualMint_attemptBatchMintWithEthSupraBlast is
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
-        assert(
-            postMintAccruedProtocolFees ==
-                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
-                    perpetualMint.mintFeeBP()) / perpetualMint.BASIS())
-        );
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -137,15 +128,12 @@ contract PerpetualMint_attemptBatchMintWithEthSupraBlast is
         assert(
             postMintAccruedMintEarnings ==
                 (MINT_PRICE * TEST_MINT_ATTEMPTS) -
-                    postMintAccruedConsolationFees -
-                    postMintAccruedProtocolFees
+                    postMintAccruedConsolationFees
         );
 
         assert(
             address(perpetualMint).balance ==
-                postMintAccruedConsolationFees +
-                    postMintAccruedMintEarnings +
-                    postMintAccruedProtocolFees
+                postMintAccruedConsolationFees + postMintAccruedMintEarnings
         );
     }
 
@@ -189,11 +177,8 @@ contract PerpetualMint_attemptBatchMintWithEthSupraBlast is
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
-        assert(
-            postMintAccruedProtocolFees ==
-                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
-                    perpetualMint.mintFeeBP()) / perpetualMint.BASIS())
-        );
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -201,15 +186,12 @@ contract PerpetualMint_attemptBatchMintWithEthSupraBlast is
         assert(
             postMintAccruedMintEarnings ==
                 (MINT_PRICE * TEST_MINT_ATTEMPTS) -
-                    postMintAccruedConsolationFees -
-                    postMintAccruedProtocolFees
+                    postMintAccruedConsolationFees
         );
 
         assert(
             address(perpetualMint).balance ==
-                postMintAccruedConsolationFees +
-                    postMintAccruedMintEarnings +
-                    postMintAccruedProtocolFees
+                postMintAccruedConsolationFees + postMintAccruedMintEarnings
         );
     }
 
@@ -259,10 +241,8 @@ contract PerpetualMint_attemptBatchMintWithEthSupraBlast is
             perpetualMint.collectionReferralFeeBP(COLLECTION)) /
             perpetualMint.BASIS();
 
-        assert(
-            postMintAccruedProtocolFees ==
-                expectedMintProtocolFee - expectedMintReferralFee
-        );
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -271,15 +251,12 @@ contract PerpetualMint_attemptBatchMintWithEthSupraBlast is
             postMintAccruedMintEarnings ==
                 (MINT_PRICE * TEST_MINT_ATTEMPTS) -
                     postMintAccruedConsolationFees -
-                    postMintAccruedProtocolFees -
                     expectedMintReferralFee
         );
 
         assert(
             address(perpetualMint).balance ==
-                postMintAccruedConsolationFees +
-                    postMintAccruedMintEarnings +
-                    postMintAccruedProtocolFees
+                postMintAccruedConsolationFees + postMintAccruedMintEarnings
         );
 
         assert(REFERRER.balance == expectedMintReferralFee);
@@ -336,11 +313,8 @@ contract PerpetualMint_attemptBatchMintWithEthSupraBlast is
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
-        assert(
-            postMintAccruedProtocolFees ==
-                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
-                    perpetualMint.mintFeeBP()) / perpetualMint.BASIS())
-        );
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -348,16 +322,13 @@ contract PerpetualMint_attemptBatchMintWithEthSupraBlast is
         assert(
             postMintAccruedMintEarnings ==
                 (MINT_PRICE * TEST_MINT_ATTEMPTS) -
-                    preCalculatedCollectionConsolationFee -
-                    postMintAccruedProtocolFees +
+                    preCalculatedCollectionConsolationFee +
                     preCalculatedAdditionalDepositorFee
         );
 
         assert(
             address(perpetualMint).balance ==
-                postMintAccruedConsolationFees +
-                    postMintAccruedMintEarnings +
-                    postMintAccruedProtocolFees
+                postMintAccruedConsolationFees + postMintAccruedMintEarnings
         );
     }
 

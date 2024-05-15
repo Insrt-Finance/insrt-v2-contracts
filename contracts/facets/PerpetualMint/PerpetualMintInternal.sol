@@ -234,68 +234,6 @@ abstract contract PerpetualMintInternal is
         );
     }
 
-    function _attemptBatchMintForEthWithEthSupra(
-        address minter,
-        address referrer,
-        uint8 numberOfMints,
-        uint8 wordsPerMint,
-        uint256 ethPrizeValueInWei
-    ) internal {
-        uint256 msgValue = msg.value;
-
-        uint256 pricePerSpin = msgValue / numberOfMints;
-
-        _attemptBatchMint_paidInEth_validateMintParameters(
-            msgValue,
-            pricePerSpin
-        );
-
-        Storage.Layout storage l = Storage.layout();
-
-        _attemptBatchMintForEth_checkMaxPayout(
-            l.mintEarnings,
-            ethPrizeValueInWei,
-            l.mintEarningsBufferBP,
-            numberOfMints
-        );
-
-        CollectionData storage collectionData = l.collections[
-            ETH_COLLECTION_ADDRESS
-        ];
-
-        uint256 mintEarningsFeePerSpin = _attemptBatchMintForEthWithEth_calculateAndDistributeFees(
-                l,
-                collectionData,
-                msgValue,
-                referrer
-            ) / numberOfMints;
-
-        // Calculate the total number of random words required for the Supra VRF request.
-        // Constraints:
-        // 1. numWords = 0 results in a revert.
-        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
-        // If the number of words requested exceeds this limit, the function call will revert.
-        //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
-        //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
-        uint8 numWords = numberOfMints * wordsPerMint;
-
-        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
-                collectionData,
-                pricePerSpin
-            );
-
-        _requestRandomWordsSupra(
-            l,
-            collectionData,
-            minter,
-            ETH_COLLECTION_ADDRESS,
-            mintEarningsFeePerSpin,
-            mintPriceAdjustmentFactor,
-            ethPrizeValueInWei,
-            numWords
-        );
-    }
-
     function _attemptBatchMintForEthWithEth_calculateAndDistributeFees(
         Storage.Layout storage l,
         CollectionData storage collectionData,
@@ -344,6 +282,115 @@ abstract contract PerpetualMintInternal is
 
         // Update the accrued protocol fees (subtracting the referral fee if applicable)
         l.protocolFees += mintFee - referralFee;
+    }
+
+    function _attemptBatchMintForEthWithEthSupra(
+        address minter,
+        address referrer,
+        uint8 numberOfMints,
+        uint8 wordsPerMint,
+        uint256 ethPrizeValueInWei
+    ) internal {
+        uint256 msgValue = msg.value;
+
+        uint256 pricePerSpin = msgValue / numberOfMints;
+
+        _attemptBatchMint_paidInEth_validateMintParameters(
+            msgValue,
+            pricePerSpin
+        );
+
+        Storage.Layout storage l = Storage.layout();
+
+        _attemptBatchMintForEth_checkMaxPayout(
+            l.mintEarnings,
+            ethPrizeValueInWei,
+            l.mintEarningsBufferBP,
+            numberOfMints
+        );
+
+        CollectionData storage collectionData = l.collections[
+            ETH_COLLECTION_ADDRESS
+        ];
+
+        uint256 mintEarningsFeePerSpin = _attemptBatchMintForEthWithEthSupraBlast_calculateAndDistributeFees(
+                l,
+                collectionData,
+                msgValue,
+                referrer
+            ) / numberOfMints;
+
+        // Calculate the total number of random words required for the Supra VRF request.
+        // Constraints:
+        // 1. numWords = 0 results in a revert.
+        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
+        // If the number of words requested exceeds this limit, the function call will revert.
+        //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
+        //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
+        uint8 numWords = numberOfMints * wordsPerMint;
+
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpin
+            );
+
+        _requestRandomWordsSupra(
+            l,
+            collectionData,
+            minter,
+            ETH_COLLECTION_ADDRESS,
+            mintEarningsFeePerSpin,
+            mintPriceAdjustmentFactor,
+            ethPrizeValueInWei,
+            numWords
+        );
+    }
+
+    function _attemptBatchMintForEthWithEthSupraBlast_calculateAndDistributeFees(
+        Storage.Layout storage l,
+        CollectionData storage collectionData,
+        uint256 msgValue,
+        address referrer
+    ) private returns (uint256 mintEarningsFee) {
+        // calculate the mint for ETH consolation fee
+        uint256 mintForEthConsolationFee = (msgValue *
+            l.mintForEthConsolationFeeBP) / BASIS;
+
+        // Apply the mint for ETH-specific fee ratio
+        uint256 additionalDepositorFee = (mintForEthConsolationFee *
+            collectionData.mintFeeDistributionRatioBP) / BASIS;
+
+        // calculate the protocol mint fee
+        uint256 mintFee = (msgValue * l.mintFeeBP) / BASIS;
+
+        uint256 referralFee;
+
+        // Calculate the referral fee if a referrer is provided
+        if (referrer != address(0)) {
+            uint256 referralFeeBP = _collectionReferralFeeBP(collectionData);
+
+            if (referralFeeBP == 0) {
+                referralFeeBP = l.defaultCollectionReferralFeeBP;
+            }
+
+            // Calculate referral fee based on the mintFee and referral fee percentage
+            referralFee = (mintFee * referralFeeBP) / BASIS;
+
+            // Pay the referrer
+            payable(referrer).sendValue(referralFee);
+        }
+
+        // update the accrued consolation fees
+        l.consolationFees += mintForEthConsolationFee - additionalDepositorFee;
+
+        mintEarningsFee =
+            msgValue -
+            mintForEthConsolationFee +
+            additionalDepositorFee -
+            referralFee;
+
+        // update the accrued depositor mint earnings
+        l.mintEarnings += mintEarningsFee;
     }
 
     function _attemptBatchMintForEthWithMint(
@@ -410,51 +457,6 @@ abstract contract PerpetualMintInternal is
         );
     }
 
-    function _attemptBatchMintForEthWithMintSupra(
-        address minter,
-        address referrer,
-        uint256 pricePerMint,
-        uint8 numberOfMints,
-        uint8 wordsPerMint,
-        uint256 ethPrizeValueInWei
-    ) internal {
-        Storage.Layout storage l = Storage.layout();
-
-        uint256 ethToMintRatio = _ethToMintRatio(l);
-
-        uint256 pricePerSpinInWei = pricePerMint / ethToMintRatio;
-
-        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
-
-        CollectionData storage collectionData = l.collections[
-            ETH_COLLECTION_ADDRESS
-        ];
-
-        uint256 mintEarningsFeePerSpin = _attemptBatchMintForEthWithMintSupra_validateAndDistributeFees(
-                minter,
-                referrer,
-                numberOfMints,
-                ethPrizeValueInWei,
-                pricePerMint,
-                pricePerSpinInWei,
-                ethRequired,
-                ethToMintRatio,
-                l,
-                collectionData
-            ) / numberOfMints;
-
-        _attemptBatchMintForEthWithMintSupra_requestRandomWordsSupra(
-            minter,
-            numberOfMints,
-            wordsPerMint,
-            ethPrizeValueInWei,
-            mintEarningsFeePerSpin,
-            pricePerSpinInWei,
-            l,
-            collectionData
-        );
-    }
-
     function _attemptBatchMintForEthWithMint_calculateAndDistributeFees(
         Storage.Layout storage l,
         CollectionData storage collectionData,
@@ -515,6 +517,51 @@ abstract contract PerpetualMintInternal is
 
         // Update the accrued protocol fees (subtracting the referral fee if applicable)
         l.protocolFees += mintFee - referralFee;
+    }
+
+    function _attemptBatchMintForEthWithMintSupra(
+        address minter,
+        address referrer,
+        uint256 pricePerMint,
+        uint8 numberOfMints,
+        uint8 wordsPerMint,
+        uint256 ethPrizeValueInWei
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        uint256 ethToMintRatio = _ethToMintRatio(l);
+
+        uint256 pricePerSpinInWei = pricePerMint / ethToMintRatio;
+
+        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
+
+        CollectionData storage collectionData = l.collections[
+            ETH_COLLECTION_ADDRESS
+        ];
+
+        uint256 mintEarningsFeePerSpin = _attemptBatchMintForEthWithMintSupra_validateAndDistributeFees(
+                minter,
+                referrer,
+                numberOfMints,
+                ethPrizeValueInWei,
+                pricePerMint,
+                pricePerSpinInWei,
+                ethRequired,
+                ethToMintRatio,
+                l,
+                collectionData
+            ) / numberOfMints;
+
+        _attemptBatchMintForEthWithMintSupra_requestRandomWordsSupra(
+            minter,
+            numberOfMints,
+            wordsPerMint,
+            ethPrizeValueInWei,
+            mintEarningsFeePerSpin,
+            pricePerSpinInWei,
+            l,
+            collectionData
+        );
     }
 
     function _attemptBatchMintForEthWithMintSupra_requestRandomWordsSupra(
@@ -580,7 +627,7 @@ abstract contract PerpetualMintInternal is
             numberOfMints
         );
 
-        mintEarningsFee = _attemptBatchMintForEthWithMint_calculateAndDistributeFees(
+        mintEarningsFee = _attemptBatchMintForEthWithMintSupraBlast_calculateAndDistributeFees(
             l,
             collectionData,
             minter,
@@ -588,6 +635,65 @@ abstract contract PerpetualMintInternal is
             ethRequired,
             ethToMintRatio
         );
+    }
+
+    function _attemptBatchMintForEthWithMintSupraBlast_calculateAndDistributeFees(
+        Storage.Layout storage l,
+        CollectionData storage collectionData,
+        address minter,
+        address referrer,
+        uint256 ethRequired,
+        uint256 ethToMintRatio
+    ) private returns (uint256 mintEarningsFee) {
+        // calculate amount of $MINT required
+        uint256 mintRequired = ethRequired * ethToMintRatio;
+
+        IToken(l.mintToken).burn(minter, mintRequired);
+
+        // calculate the mint for ETH consolation fee
+        uint256 mintForEthConsolationFee = (ethRequired *
+            l.mintForEthConsolationFeeBP) / BASIS;
+
+        // Apply the mint for ETH-specific fee ratio
+        uint256 additionalDepositorFee = (mintForEthConsolationFee *
+            collectionData.mintFeeDistributionRatioBP) / BASIS;
+
+        // calculate the protocol mint fee
+        uint256 mintFee = (ethRequired * l.mintFeeBP) / BASIS;
+
+        uint256 referralFee;
+
+        // Calculate the referral fee if a referrer is provided
+        if (referrer != address(0)) {
+            uint256 referralFeeBP = _collectionReferralFeeBP(collectionData);
+
+            if (referralFeeBP == 0) {
+                referralFeeBP = l.defaultCollectionReferralFeeBP;
+            }
+
+            // Calculate referral fee based on the mintFee and referral fee percentage
+            referralFee = (mintFee * referralFeeBP) / BASIS;
+
+            // Pay the referrer in $MINT
+            IToken(l.mintToken).mintReferral(
+                referrer,
+                referralFee * ethToMintRatio
+            );
+        }
+
+        // calculate the net mint for ETH consolation fee
+        // ETH required for mint taken from the mintForEthConsolationFee
+        uint256 netConsolationFee = ethRequired -
+            mintForEthConsolationFee +
+            additionalDepositorFee;
+
+        // update the accrued consolation fees
+        l.consolationFees -= netConsolationFee;
+
+        mintEarningsFee = netConsolationFee - referralFee;
+
+        // update the accrued depositor mint earnings
+        l.mintEarnings += mintEarningsFee;
     }
 
     /// @notice Attempts a batch mint for the msg.sender for $MINT using ETH as payment.
@@ -969,70 +1075,6 @@ abstract contract PerpetualMintInternal is
         );
     }
 
-    /// @notice Attempts a Supra VRF-specific batch mint for the msg.sender for a single collection using ETH as payment.
-    /// @param minter address of minter
-    /// @param collection address of collection for mint attempts
-    /// @param referrer address of referrer
-    /// @param numberOfMints number of mints to attempt
-    /// @param wordsPerMint number of random words per mint (2 for PerpetualMintSupra, 3 for PerpetualMintSupraBlast)
-    function _attemptBatchMintWithEthSupra(
-        address minter,
-        address collection,
-        address referrer,
-        uint8 numberOfMints,
-        uint8 wordsPerMint
-    ) internal {
-        if (collection == MINT_TOKEN_COLLECTION_ADDRESS) {
-            // throw if collection is $MINT
-            revert InvalidCollectionAddress();
-        }
-
-        uint256 msgValue = msg.value;
-
-        uint256 pricePerSpin = msgValue / numberOfMints;
-
-        _attemptBatchMint_paidInEth_validateMintParameters(
-            msgValue,
-            pricePerSpin
-        );
-
-        Storage.Layout storage l = Storage.layout();
-
-        CollectionData storage collectionData = l.collections[collection];
-
-        _attemptBatchMintWithEth_calculateAndDistributeFees(
-            l,
-            collectionData,
-            msgValue,
-            referrer
-        );
-
-        // Calculate the total number of random words required for the Supra VRF request.
-        // Constraints:
-        // 1. numWords = 0 results in a revert.
-        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
-        // If the number of words requested exceeds this limit, the function call will revert.
-        //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
-        //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
-        uint8 numWords = numberOfMints * wordsPerMint;
-
-        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
-                collectionData,
-                pricePerSpin
-            );
-
-        _requestRandomWordsSupra(
-            l,
-            collectionData,
-            minter,
-            collection,
-            0,
-            mintPriceAdjustmentFactor,
-            0,
-            numWords
-        );
-    }
-
     function _attemptBatchMintWithEth_calculateAndDistributeFees(
         Storage.Layout storage l,
         CollectionData storage collectionData,
@@ -1081,6 +1123,117 @@ abstract contract PerpetualMintInternal is
 
         // Update the accrued protocol fees (subtracting the referral fee if applicable)
         l.protocolFees += mintFee - referralFee;
+    }
+
+    /// @notice Attempts a Supra VRF-specific batch mint for the msg.sender for a single collection using ETH as payment.
+    /// @param minter address of minter
+    /// @param collection address of collection for mint attempts
+    /// @param referrer address of referrer
+    /// @param numberOfMints number of mints to attempt
+    /// @param wordsPerMint number of random words per mint (2 for PerpetualMintSupra, 3 for PerpetualMintSupraBlast)
+    function _attemptBatchMintWithEthSupra(
+        address minter,
+        address collection,
+        address referrer,
+        uint8 numberOfMints,
+        uint8 wordsPerMint
+    ) internal {
+        if (collection == MINT_TOKEN_COLLECTION_ADDRESS) {
+            // throw if collection is $MINT
+            revert InvalidCollectionAddress();
+        }
+
+        uint256 msgValue = msg.value;
+
+        uint256 pricePerSpin = msgValue / numberOfMints;
+
+        _attemptBatchMint_paidInEth_validateMintParameters(
+            msgValue,
+            pricePerSpin
+        );
+
+        Storage.Layout storage l = Storage.layout();
+
+        CollectionData storage collectionData = l.collections[collection];
+
+        _attemptBatchMintWithEthSupraBlast_calculateAndDistributeFees(
+            l,
+            collectionData,
+            msgValue,
+            referrer
+        );
+
+        // Calculate the total number of random words required for the Supra VRF request.
+        // Constraints:
+        // 1. numWords = 0 results in a revert.
+        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
+        // If the number of words requested exceeds this limit, the function call will revert.
+        //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
+        //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
+        uint8 numWords = numberOfMints * wordsPerMint;
+
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpin
+            );
+
+        _requestRandomWordsSupra(
+            l,
+            collectionData,
+            minter,
+            collection,
+            0,
+            mintPriceAdjustmentFactor,
+            0,
+            numWords
+        );
+    }
+
+    function _attemptBatchMintWithEthSupraBlast_calculateAndDistributeFees(
+        Storage.Layout storage l,
+        CollectionData storage collectionData,
+        uint256 msgValue,
+        address referrer
+    ) private returns (uint256 mintEarningsFee) {
+        // calculate the mint for collection consolation fee
+        uint256 collectionConsolationFee = (msgValue *
+            l.collectionConsolationFeeBP) / BASIS;
+
+        // apply the collection-specific mint fee ratio
+        uint256 additionalDepositorFee = (collectionConsolationFee *
+            collectionData.mintFeeDistributionRatioBP) / BASIS;
+
+        // calculate the protocol mint fee
+        uint256 mintFee = (msgValue * l.mintFeeBP) / BASIS;
+
+        uint256 referralFee;
+
+        // Calculate the referral fee if a referrer is provided
+        if (referrer != address(0)) {
+            uint256 referralFeeBP = _collectionReferralFeeBP(collectionData);
+
+            if (referralFeeBP == 0) {
+                referralFeeBP = l.defaultCollectionReferralFeeBP;
+            }
+
+            // Calculate referral fee based on the mintFee and referral fee percentage
+            referralFee = (mintFee * referralFeeBP) / BASIS;
+
+            // Pay the referrer
+            payable(referrer).sendValue(referralFee);
+        }
+
+        // update the accrued consolation fees
+        l.consolationFees += collectionConsolationFee - additionalDepositorFee;
+
+        mintEarningsFee =
+            msgValue -
+            collectionConsolationFee +
+            additionalDepositorFee -
+            referralFee;
+
+        // update the accrued depositor mint earnings
+        l.mintEarnings += mintEarningsFee;
     }
 
     /// @notice Attempts a batch mint for the msg.sender for a single collection using $MINT tokens as payment.
@@ -1137,79 +1290,6 @@ abstract contract PerpetualMintInternal is
             );
 
         _requestRandomWords(
-            l,
-            collectionData,
-            minter,
-            collection,
-            0,
-            mintPriceAdjustmentFactor,
-            0,
-            numWords
-        );
-    }
-
-    /// @notice Attempts a Supra VRF-specific batch mint for the msg.sender for a single collection using $MINT tokens as payment.
-    /// @param minter address of minter
-    /// @param collection address of collection for mint attempts
-    /// @param referrer address of referrer
-    /// @param pricePerMint price per mint for collection ($MINT denominated in units of wei)
-    /// @param numberOfMints number of mints to attempt
-    /// @param wordsPerMint number of random words per mint (2 for PerpetualMintSupra, 3 for PerpetualMintSupraBlast)
-    function _attemptBatchMintWithMintSupra(
-        address minter,
-        address collection,
-        address referrer,
-        uint256 pricePerMint,
-        uint8 numberOfMints,
-        uint8 wordsPerMint
-    ) internal {
-        if (collection == MINT_TOKEN_COLLECTION_ADDRESS) {
-            // throw if collection is $MINT
-            revert InvalidCollectionAddress();
-        }
-
-        Storage.Layout storage l = Storage.layout();
-
-        uint256 ethToMintRatio = _ethToMintRatio(l);
-
-        uint256 pricePerSpinInWei = pricePerMint / ethToMintRatio;
-
-        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
-
-        _attemptBatchMint_paidInMint_validateMintParameters(
-            numberOfMints,
-            l.consolationFees,
-            ethRequired,
-            pricePerSpinInWei,
-            pricePerMint
-        );
-
-        CollectionData storage collectionData = l.collections[collection];
-
-        _attemptBatchMintWithMint_calculateAndDistributeFees(
-            l,
-            collectionData,
-            minter,
-            referrer,
-            ethRequired,
-            ethToMintRatio
-        );
-
-        // Calculate the total number of random words required for the Supra VRF request.
-        // Constraints:
-        // 1. numWords = 0 results in a revert.
-        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
-        // If the number of words requested exceeds this limit, the function call will revert.
-        //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
-        //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
-        uint8 numWords = numberOfMints * wordsPerMint;
-
-        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
-                collectionData,
-                pricePerSpinInWei
-            );
-
-        _requestRandomWordsSupra(
             l,
             collectionData,
             minter,
@@ -1281,6 +1361,138 @@ abstract contract PerpetualMintInternal is
 
         // Update the accrued protocol fees, subtracting the referral fee
         l.protocolFees += mintFee - referralFee;
+    }
+
+    /// @notice Attempts a Supra VRF-specific batch mint for the msg.sender for a single collection using $MINT tokens as payment.
+    /// @param minter address of minter
+    /// @param collection address of collection for mint attempts
+    /// @param referrer address of referrer
+    /// @param pricePerMint price per mint for collection ($MINT denominated in units of wei)
+    /// @param numberOfMints number of mints to attempt
+    /// @param wordsPerMint number of random words per mint (2 for PerpetualMintSupra, 3 for PerpetualMintSupraBlast)
+    function _attemptBatchMintWithMintSupra(
+        address minter,
+        address collection,
+        address referrer,
+        uint256 pricePerMint,
+        uint8 numberOfMints,
+        uint8 wordsPerMint
+    ) internal {
+        if (collection == MINT_TOKEN_COLLECTION_ADDRESS) {
+            // throw if collection is $MINT
+            revert InvalidCollectionAddress();
+        }
+
+        Storage.Layout storage l = Storage.layout();
+
+        uint256 ethToMintRatio = _ethToMintRatio(l);
+
+        uint256 pricePerSpinInWei = pricePerMint / ethToMintRatio;
+
+        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
+
+        _attemptBatchMint_paidInMint_validateMintParameters(
+            numberOfMints,
+            l.consolationFees,
+            ethRequired,
+            pricePerSpinInWei,
+            pricePerMint
+        );
+
+        CollectionData storage collectionData = l.collections[collection];
+
+        _attemptBatchMintWithMintSupraBlast_calculateAndDistributeFees(
+            l,
+            collectionData,
+            minter,
+            referrer,
+            ethRequired,
+            ethToMintRatio
+        );
+
+        // Calculate the total number of random words required for the Supra VRF request.
+        // Constraints:
+        // 1. numWords = 0 results in a revert.
+        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
+        // If the number of words requested exceeds this limit, the function call will revert.
+        //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
+        //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
+        uint8 numWords = numberOfMints * wordsPerMint;
+
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpinInWei
+            );
+
+        _requestRandomWordsSupra(
+            l,
+            collectionData,
+            minter,
+            collection,
+            0,
+            mintPriceAdjustmentFactor,
+            0,
+            numWords
+        );
+    }
+
+    function _attemptBatchMintWithMintSupraBlast_calculateAndDistributeFees(
+        Storage.Layout storage l,
+        CollectionData storage collectionData,
+        address minter,
+        address referrer,
+        uint256 ethRequired,
+        uint256 ethToMintRatio
+    ) private returns (uint256 mintEarningsFee) {
+        // calculate amount of $MINT required
+        uint256 mintRequired = ethRequired * ethToMintRatio;
+
+        IToken(l.mintToken).burn(minter, mintRequired);
+
+        // calculate the mint for collection consolation fee
+        uint256 collectionConsolationFee = (ethRequired *
+            l.collectionConsolationFeeBP) / BASIS;
+
+        // apply the collection-specific mint fee ratio
+        uint256 additionalDepositorFee = (collectionConsolationFee *
+            collectionData.mintFeeDistributionRatioBP) / BASIS;
+
+        // calculate the protocol mint fee
+        uint256 mintFee = (ethRequired * l.mintFeeBP) / BASIS;
+
+        uint256 referralFee;
+
+        // Calculate the referral fee if a referrer is provided
+        if (referrer != address(0)) {
+            uint256 referralFeeBP = _collectionReferralFeeBP(collectionData);
+
+            if (referralFeeBP == 0) {
+                referralFeeBP = l.defaultCollectionReferralFeeBP;
+            }
+
+            // Calculate referral fee based on the mintFee and referral fee percentage
+            referralFee = (mintFee * referralFeeBP) / BASIS;
+
+            // Pay the referrer in $MINT
+            IToken(l.mintToken).mintReferral(
+                referrer,
+                referralFee * ethToMintRatio
+            );
+        }
+
+        // calculate the net collection consolation fee
+        // ETH required for mint taken from collectionConsolationFee
+        uint256 netConsolationFee = ethRequired -
+            collectionConsolationFee +
+            additionalDepositorFee;
+
+        // update the accrued consolation fees
+        l.consolationFees -= netConsolationFee;
+
+        mintEarningsFee = netConsolationFee - referralFee;
+
+        // update the accrued depositor mint earnings
+        l.mintEarnings += mintEarningsFee;
     }
 
     /// @notice returns the value of BASIS
@@ -1381,6 +1593,9 @@ abstract contract PerpetualMintInternal is
         calculateMintResultSharedData
             .collectionMintPrice = _collectionMintPrice(collectionData);
 
+        calculateMintResultSharedData
+            .collectionReferralFeeBP = _collectionReferralFeeBP(collectionData);
+
         calculateMintResultSharedData.collectionRisk = _collectionRisk(
             collectionData
         );
@@ -1431,7 +1646,8 @@ abstract contract PerpetualMintInternal is
         uint8 numberOfMints,
         uint256[2] calldata signature,
         uint256 pricePerMint,
-        uint256 prizeValueInWei
+        uint256 prizeValueInWei,
+        bool referralMint
     ) internal view returns (MintResultDataBlast memory result) {
         bool mintForEth = collection == ETH_COLLECTION_ADDRESS;
 
@@ -1461,7 +1677,8 @@ abstract contract PerpetualMintInternal is
             msgValue,
             prizeValueInWei,
             mintForEth,
-            mintForMint
+            mintForMint,
+            referralMint
         );
     }
 
@@ -1471,7 +1688,8 @@ abstract contract PerpetualMintInternal is
         uint256 msgValue,
         uint256 prizeValueInWei,
         bool mintForEth,
-        bool mintForMint
+        bool mintForMint,
+        bool referralMint
     ) private view returns (MintResultDataBlast memory result) {
         if (mintForMint) {
             result = _calculateMintForMintResultBlast_sharedLogic(
@@ -1483,7 +1701,8 @@ abstract contract PerpetualMintInternal is
                 calculateMintResultSharedData,
                 randomWords,
                 msgValue,
-                prizeValueInWei
+                prizeValueInWei,
+                referralMint
             );
         } else {
             result = _calculateMintForCollectionResultBlast_sharedLogic(
@@ -1702,11 +1921,37 @@ abstract contract PerpetualMintInternal is
         }
     }
 
+    function _calculateMintForEthResult_calculateFees(
+        CalculateMintResult_SharedData memory calculateMintResultSharedData,
+        uint256 msgValue
+    ) private pure returns (uint256 mintEarningsFee) {
+        // calculate the mint for ETH consolation fee
+        uint256 mintForEthConsolationFee = (msgValue *
+            calculateMintResultSharedData.mintForEthConsolationFeeBP) / BASIS;
+
+        // apply the mint for ETH-specific mint fee ratio
+        uint256 additionalDepositorFee = (mintForEthConsolationFee *
+            calculateMintResultSharedData
+                .collectionMintFeeDistributionRatioBP) / BASIS;
+
+        // calculate the protocol mint fee
+        uint256 mintFee = (msgValue * calculateMintResultSharedData.mintFeeBP) /
+            BASIS;
+
+        // calculate the mint earnings fee
+        mintEarningsFee =
+            msgValue -
+            mintForEthConsolationFee -
+            mintFee +
+            additionalDepositorFee;
+    }
+
     function _calculateMintForEthResultBlast_sharedLogic(
         CalculateMintResult_SharedData memory calculateMintResultSharedData,
         uint256[] memory randomWords,
         uint256 msgValue,
-        uint256 prizeValueInWei
+        uint256 prizeValueInWei,
+        bool referralMint
     ) private view returns (MintResultDataBlast memory result) {
         uint32 blastYieldRisk = _blastYieldRisk();
 
@@ -1715,9 +1960,10 @@ abstract contract PerpetualMintInternal is
         uint256 risk;
 
         {
-            uint256 mintEarningsFeePerSpin = _calculateMintForEthResult_calculateFees(
+            uint256 mintEarningsFeePerSpin = _calculateMintForEthResultBlast_calculateFees(
                     calculateMintResultSharedData,
-                    msgValue
+                    msgValue,
+                    referralMint
                 ) / numberOfMints;
 
             // determine the risk by dividing the mint earnings fee per spin by the prize value in wei
@@ -1763,10 +2009,11 @@ abstract contract PerpetualMintInternal is
         }
     }
 
-    function _calculateMintForEthResult_calculateFees(
+    function _calculateMintForEthResultBlast_calculateFees(
         CalculateMintResult_SharedData memory calculateMintResultSharedData,
-        uint256 msgValue
-    ) private pure returns (uint256 mintEarningsFee) {
+        uint256 msgValue,
+        bool referralMint
+    ) private view returns (uint256 mintEarningsFee) {
         // calculate the mint for ETH consolation fee
         uint256 mintForEthConsolationFee = (msgValue *
             calculateMintResultSharedData.mintForEthConsolationFeeBP) / BASIS;
@@ -1780,12 +2027,27 @@ abstract contract PerpetualMintInternal is
         uint256 mintFee = (msgValue * calculateMintResultSharedData.mintFeeBP) /
             BASIS;
 
+        uint256 referralFee;
+
+        // Calculate the referral fee if referral mint
+        if (referralMint) {
+            uint256 referralFeeBP = calculateMintResultSharedData
+                .collectionReferralFeeBP;
+
+            if (referralFeeBP == 0) {
+                referralFeeBP = _defaultCollectionReferralFeeBP();
+            }
+
+            // Calculate referral fee based on the mintFee and referral fee percentage
+            referralFee = (mintFee * referralFeeBP) / BASIS;
+        }
+
         // calculate the mint earnings fee
         mintEarningsFee =
             msgValue -
-            mintForEthConsolationFee -
-            mintFee +
-            additionalDepositorFee;
+            mintForEthConsolationFee +
+            additionalDepositorFee -
+            referralFee;
     }
 
     function _calculateMintForMintResult_sharedLogic(

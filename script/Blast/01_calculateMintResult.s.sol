@@ -10,6 +10,18 @@ import { MintOutcome, MintResultDataBlast, MintTokenTiersData, TiersData } from 
 /// @title CalculateMintResultSupraBlast
 /// @dev Script for calculating the result of a batch mint attempt on Blast, Supra-specific
 contract CalculateMintResultSupraBlast is Script, Test {
+    struct ConfigData {
+        address collection;
+        bool mintForEth;
+        bool mintForMint;
+        bool referralMint;
+        uint8 numberOfMints;
+        uint256 pricePerMint;
+        uint256 prizeValueInWei;
+        uint256[] envRandomness;
+        uint256[2] randomness;
+    }
+
     // get CoreBlast PerpetualMint diamond address
     address payable perpetualMintAddress =
         payable(vm.envAddress("CORE_BLAST_ADDRESS"));
@@ -26,52 +38,23 @@ contract CalculateMintResultSupraBlast is Script, Test {
 
     /// @dev runs the script logic
     function run() external {
-        // get collection address
-        address collection = vm.envAddress("COLLECTION_ADDRESS");
-
-        // determine if minting for ETH
-        bool mintForEth = collection == address(type(uint160).max);
-
-        // determine if minting for mint or collection
-        bool mintForMint = collection == address(0);
-
-        // get number of mints
-        uint8 numberOfMints = uint8(vm.envUint("NUMBER_OF_MINTS"));
-
-        // get randomness signature
-        uint256[] memory envRandomness = vm.envUint("RANDOMNESS", ",");
-
-        // get price per mint
-        uint256 pricePerMint = vm.envUint("PRICE_PER_MINT");
-
-        // get prize value in wei
-        uint256 prizeValueInWei = vm.envUint("PRIZE_VALUE_IN_WEI");
-
-        // convert randomness signature to uint256[2]
-        uint256[2] memory randomnessFixed;
-
-        randomnessFixed[0] = envRandomness[0];
-        randomnessFixed[1] = envRandomness[1];
+        ConfigData memory config = getConfigData();
 
         uint256 collectionMintMultiplier = core.collectionMintMultiplier(
-            collection
+            config.collection
         );
 
-        uint256 collectionMintPrice = core.collectionMintPrice(collection);
+        uint256 collectionMintPrice = core.collectionMintPrice(
+            config.collection
+        );
 
         console.log("BASIS: ", BASIS);
-        console.log("Collection Address: ", collection);
-        console.log("Mint for ETH?: ", mintForEth);
-        console.log("Mint for Mint?: ", mintForMint);
+        printConfigData(config);
         console.log("Collection Mint Multiplier: ", collectionMintMultiplier);
         console.log("Collection Mint Price: ", collectionMintPrice);
         console.log("ETH to Mint Ratio: ", ethToMintRatio);
-        console.log("Number of Mints: ", numberOfMints);
-        emit log_named_array("Randomness Signature: ", envRandomness);
-        console.log("Price Per Mint: ", pricePerMint);
-        console.log("Prize Value in Wei: ", prizeValueInWei);
 
-        if (mintForMint) {
+        if (config.mintForMint) {
             console.log("Mint Token Tiers: ");
             emit log_named_array(
                 "  Tier Multipliers: ",
@@ -82,8 +65,8 @@ contract CalculateMintResultSupraBlast is Script, Test {
                 toUint256Array(mintTokenTiers.tierRisks)
             );
         } else {
-            if (mintForEth) {
-                uint256 msgValue = numberOfMints * pricePerMint;
+            if (config.mintForEth) {
+                uint256 msgValue = config.numberOfMints * config.pricePerMint;
 
                 // calculate the mint for ETH consolation fee
                 uint256 mintForEthConsolationFee = (msgValue *
@@ -91,22 +74,39 @@ contract CalculateMintResultSupraBlast is Script, Test {
 
                 // apply the mint for ETH-specific mint fee ratio
                 uint256 additionalDepositorFee = (mintForEthConsolationFee *
-                    core.collectionMintFeeDistributionRatioBP(collection)) /
-                    BASIS;
+                    core.collectionMintFeeDistributionRatioBP(
+                        config.collection
+                    )) / BASIS;
 
                 // calculate the protocol mint fee
                 uint256 mintFee = (msgValue * core.mintFeeBP()) / BASIS;
 
+                uint256 referralFee;
+
+                if (config.referralMint) {
+                    uint256 referralFeeBP = core.collectionReferralFeeBP(
+                        config.collection
+                    );
+
+                    if (referralFeeBP == 0) {
+                        referralFeeBP = core.defaultCollectionReferralFeeBP();
+                    }
+
+                    // Calculate referral fee based on the mintFee and referral fee percentage
+                    referralFee = (mintFee * referralFeeBP) / BASIS;
+                }
+
                 uint256 mintEarningsFee = msgValue -
                     mintForEthConsolationFee -
-                    mintFee +
+                    referralFee +
                     additionalDepositorFee;
 
-                uint256 risk = (mintEarningsFee * BASIS) / prizeValueInWei;
+                uint256 risk = (mintEarningsFee * BASIS) /
+                    config.prizeValueInWei;
 
                 console.log("Risk: ", risk);
             } else {
-                uint32 collectionRisk = core.collectionRisk(collection);
+                uint32 collectionRisk = core.collectionRisk(config.collection);
 
                 console.log("Collection Risk: ", collectionRisk);
             }
@@ -120,11 +120,12 @@ contract CalculateMintResultSupraBlast is Script, Test {
         }
 
         MintResultDataBlast memory result = core.calculateMintResultSupraBlast(
-            collection,
-            numberOfMints,
-            randomnessFixed,
-            pricePerMint,
-            prizeValueInWei
+            config.collection,
+            config.numberOfMints,
+            config.randomness,
+            config.pricePerMint,
+            config.prizeValueInWei,
+            config.referralMint
         );
 
         // Iterate over the mintOutcomes array in MintResultData
@@ -147,8 +148,8 @@ contract CalculateMintResultSupraBlast is Script, Test {
 
         console.log("\nTotal Mint Amount: ", result.totalMintAmount);
 
-        if (!mintForMint) {
-            if (mintForEth) {
+        if (!config.mintForMint) {
+            if (config.mintForEth) {
                 console.log(
                     "Total Prize Value Amount: ",
                     result.totalPrizeValueAmount
@@ -161,6 +162,58 @@ contract CalculateMintResultSupraBlast is Script, Test {
                 "\n"
             );
         }
+    }
+
+    function getConfigData() internal view returns (ConfigData memory config) {
+        // get collection address
+        config.collection = vm.envAddress("COLLECTION_ADDRESS");
+
+        // determine if minting for ETH
+        config.mintForEth = config.collection == address(type(uint160).max);
+
+        // determine if minting for mint or collection
+        config.mintForMint = config.collection == address(0);
+
+        // determine if referral mint
+        config.referralMint = vm.envBool("REFERRAL_MINT");
+
+        // get number of mints
+        config.numberOfMints = uint8(vm.envUint("NUMBER_OF_MINTS"));
+
+        // get price per mint
+        config.pricePerMint = vm.envUint("PRICE_PER_MINT");
+
+        // get prize value in wei
+        config.prizeValueInWei = vm.envUint("PRIZE_VALUE_IN_WEI");
+
+        // get randomness signature from environment
+        config.envRandomness = vm.envUint("RANDOMNESS", ",");
+
+        // convert randomness signature to fixed size array
+        config.randomness = toFixedRandomnessArray(config.envRandomness);
+    }
+
+    function printConfigData(ConfigData memory config) internal {
+        console.log("Collection Address: ", config.collection);
+        console.log("Mint for ETH?: ", config.mintForEth);
+        console.log("Mint for Mint?: ", config.mintForMint);
+        console.log("Referral Mint?: ", config.referralMint);
+        console.log("Number of Mints: ", config.numberOfMints);
+        emit log_named_array("Randomness Signature: ", config.envRandomness);
+        console.log("Price Per Mint: ", config.pricePerMint);
+        console.log("Prize Value in Wei: ", config.prizeValueInWei);
+    }
+
+    function toFixedRandomnessArray(
+        uint256[] memory input
+    ) internal pure returns (uint256[2] memory fixedRandomness) {
+        require(
+            input.length >= 2,
+            "Input array must contain at least two elements."
+        );
+
+        fixedRandomness[0] = input[0];
+        fixedRandomness[1] = input[1];
     }
 
     /// @notice Converts a uint32 array to a uint256 array

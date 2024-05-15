@@ -114,31 +114,39 @@ contract UpgradePerpetualMintSupraBlast is BatchScript {
         address facetAddress
     ) internal pure returns (ICore.FacetCut[] memory facetCuts) {
         // map the PerpetualMint related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](7);
+        bytes4[] memory perpetualMintFunctionSelectors = new bytes4[](9);
 
         perpetualMintFunctionSelectors[0] = IPerpetualMint
-            .attemptBatchMintForMintWithEth
+            .attemptBatchMintForEthWithEth
             .selector;
 
         perpetualMintFunctionSelectors[1] = IPerpetualMint
-            .attemptBatchMintForMintWithMint
+            .attemptBatchMintForEthWithMint
             .selector;
 
         perpetualMintFunctionSelectors[2] = IPerpetualMint
-            .attemptBatchMintWithEth
+            .attemptBatchMintForMintWithEth
             .selector;
 
         perpetualMintFunctionSelectors[3] = IPerpetualMint
+            .attemptBatchMintForMintWithMint
+            .selector;
+
+        perpetualMintFunctionSelectors[4] = IPerpetualMint
+            .attemptBatchMintWithEth
+            .selector;
+
+        perpetualMintFunctionSelectors[5] = IPerpetualMint
             .attemptBatchMintWithMint
             .selector;
 
-        perpetualMintFunctionSelectors[4] = IPerpetualMint.claimPrize.selector;
+        perpetualMintFunctionSelectors[6] = IPerpetualMint.claimPrize.selector;
 
-        perpetualMintFunctionSelectors[5] = IPerpetualMint
+        perpetualMintFunctionSelectors[7] = IPerpetualMint
             .fundConsolationFees
             .selector;
 
-        perpetualMintFunctionSelectors[6] = IPerpetualMint.redeem.selector;
+        perpetualMintFunctionSelectors[8] = IPerpetualMint.redeem.selector;
 
         ICore.FacetCut memory perpetualMintFacetCut = IDiamondWritableInternal
             .FacetCut({

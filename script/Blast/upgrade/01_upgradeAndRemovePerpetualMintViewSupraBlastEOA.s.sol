@@ -77,7 +77,35 @@ contract UpgradeAndRemovePerpetualMintViewSupraBlastEOA is Script {
     /// @param viewFacetAddress address of PerpetualMintView facet
     function getNewPerpetualMintViewFacetCuts(
         address viewFacetAddress
-    ) internal pure returns (ICore.FacetCut[] memory) {
+    ) internal pure returns (ICore.FacetCut[] memory facetCuts) {
+        // map the PerpetualMintViewSupraBlast related function selectors to their respective interfaces
+        bytes4[]
+            memory perpetualMintViewSupraBlastFunctionSelectors = new bytes4[](
+                1
+            );
+
+        perpetualMintViewSupraBlastFunctionSelectors[
+            0
+        ] = IPerpetualMintViewSupraBlast.calculateMintResultSupraBlast.selector;
+
+        ICore.FacetCut
+            memory perpetualMintViewSupraBlastFacetCut = IDiamondWritableInternal
+                .FacetCut({
+                    target: viewFacetAddress,
+                    action: IDiamondWritableInternal.FacetCutAction.ADD,
+                    selectors: perpetualMintViewSupraBlastFunctionSelectors
+                });
+
+        facetCuts = new ICore.FacetCut[](1);
+
+        facetCuts[0] = perpetualMintViewSupraBlastFacetCut;
+    }
+
+    /// @dev provides the removal facet cuts for removing PerpetualMintView & PerpetualMintViewSupraBlast facets functions from Core
+    /// @param viewFacetAddress address of PerpetualMintView facet
+    function getRemovalPerpetualMintViewFacetCuts(
+        address viewFacetAddress
+    ) internal pure returns (ICore.FacetCut[] memory facetCuts) {
         // map the PerpetualMintViewSupraBlast related function selectors to their respective interfaces
         bytes4[]
             memory perpetualMintViewSupraBlastFunctionSelectors = new bytes4[](
@@ -94,54 +122,20 @@ contract UpgradeAndRemovePerpetualMintViewSupraBlastEOA is Script {
             memory perpetualMintViewSupraBlastFacetCut = IDiamondWritableInternal
                 .FacetCut({
                     target: viewFacetAddress,
-                    action: IDiamondWritableInternal.FacetCutAction.ADD,
-                    selectors: perpetualMintViewSupraBlastFunctionSelectors
-                });
-
-        ICore.FacetCut[] memory facetCuts = new ICore.FacetCut[](1);
-
-        facetCuts[0] = perpetualMintViewSupraBlastFacetCut;
-
-        return facetCuts;
-    }
-
-    /// @dev provides the removal facet cuts for removing PerpetualMintView & PerpetualMintViewSupraBlast facets functions from Core
-    /// @param viewFacetAddress address of PerpetualMintView facet
-    function getRemovalPerpetualMintViewFacetCuts(
-        address viewFacetAddress
-    ) internal pure returns (ICore.FacetCut[] memory) {
-        // map the PerpetualMintViewSupraBlast related function selectors to their respective interfaces
-        bytes4[]
-            memory perpetualMintViewSupraBlastFunctionSelectors = new bytes4[](
-                1
-            );
-
-        perpetualMintViewSupraBlastFunctionSelectors[0] = bytes4(
-            keccak256(
-                "calculateMintResultSupraBlast(address,uint8,uint256[2],uint256)"
-            )
-        );
-
-        ICore.FacetCut
-            memory perpetualMintViewSupraBlastFacetCut = IDiamondWritableInternal
-                .FacetCut({
-                    target: viewFacetAddress,
                     action: IDiamondWritableInternal.FacetCutAction.REMOVE,
                     selectors: perpetualMintViewSupraBlastFunctionSelectors
                 });
 
-        ICore.FacetCut[] memory facetCuts = new ICore.FacetCut[](1);
+        facetCuts = new ICore.FacetCut[](1);
 
         facetCuts[0] = perpetualMintViewSupraBlastFacetCut;
-
-        return facetCuts;
     }
 
     /// @dev provides the replacement facet cuts for cutting PerpetualMintView facet into Core
     /// @param viewFacetAddress address of PerpetualMintView facet
     function getReplacementPerpetualMintViewFacetCuts(
         address viewFacetAddress
-    ) internal pure returns (ICore.FacetCut[] memory) {
+    ) internal pure returns (ICore.FacetCut[] memory facetCuts) {
         // map the Pausable function selectors to their respective interfaces
         bytes4[] memory pausableFunctionSelectors = new bytes4[](1);
 
@@ -265,15 +259,13 @@ contract UpgradeAndRemovePerpetualMintViewSupraBlastEOA is Script {
             .vrfSubscriptionBalanceThreshold
             .selector;
 
-        ICore.FacetCut memory perpetualMintViewFacetCut;
-
-        ICore.FacetCut[] memory facetCuts;
-
-        perpetualMintViewFacetCut = IDiamondWritableInternal.FacetCut({
-            target: viewFacetAddress,
-            action: IDiamondWritableInternal.FacetCutAction.REPLACE,
-            selectors: perpetualMintViewFunctionSelectors
-        });
+        ICore.FacetCut
+            memory perpetualMintViewFacetCut = IDiamondWritableInternal
+                .FacetCut({
+                    target: viewFacetAddress,
+                    action: IDiamondWritableInternal.FacetCutAction.REPLACE,
+                    selectors: perpetualMintViewFunctionSelectors
+                });
 
         // map the PerpetualMintViewBlast related function selectors to their respective interfaces
         bytes4[] memory perpetualMintViewBlastFunctionSelectors = new bytes4[](
@@ -301,7 +293,5 @@ contract UpgradeAndRemovePerpetualMintViewSupraBlastEOA is Script {
         facetCuts[0] = pausableFacetCut;
         facetCuts[1] = perpetualMintViewFacetCut;
         facetCuts[2] = perpetualMintViewBlastFacetCut;
-
-        return facetCuts;
     }
 }

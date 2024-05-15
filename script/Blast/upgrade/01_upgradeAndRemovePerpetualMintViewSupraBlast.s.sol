@@ -69,14 +69,13 @@ contract UpgradeAndRemovePerpetualMintViewSupraBlast is BatchScript {
                 address(perpetualMintViewSupraBlast)
             );
 
-        ICore.FacetCut[] memory facetCuts = new ICore.FacetCut[](6);
+        ICore.FacetCut[] memory facetCuts = new ICore.FacetCut[](5);
 
         facetCuts[0] = newPerpetualMintViewFacetCuts[0];
-        facetCuts[1] = newPerpetualMintViewFacetCuts[1];
-        facetCuts[2] = removalPerpetualMintViewFacetCuts[0];
-        facetCuts[3] = replacementPerpetualMintViewFacetCuts[0];
-        facetCuts[4] = replacementPerpetualMintViewFacetCuts[1];
-        facetCuts[5] = replacementPerpetualMintViewFacetCuts[2];
+        facetCuts[1] = removalPerpetualMintViewFacetCuts[0];
+        facetCuts[2] = replacementPerpetualMintViewFacetCuts[0];
+        facetCuts[3] = replacementPerpetualMintViewFacetCuts[1];
+        facetCuts[4] = replacementPerpetualMintViewFacetCuts[2];
 
         bytes memory diamondCutTx = abi.encodeWithSelector(
             IDiamondWritable.diamondCut.selector,
@@ -95,25 +94,6 @@ contract UpgradeAndRemovePerpetualMintViewSupraBlast is BatchScript {
     function getNewPerpetualMintViewFacetCuts(
         address viewFacetAddress
     ) internal pure returns (ICore.FacetCut[] memory facetCuts) {
-        // map the PerpetualMintView related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](2);
-
-        perpetualMintViewFunctionSelectors[0] = IPerpetualMintView
-            .mintEarningsBufferBP
-            .selector;
-
-        perpetualMintViewFunctionSelectors[1] = IPerpetualMintView
-            .mintForEthConsolationFeeBP
-            .selector;
-
-        ICore.FacetCut
-            memory perpetualMintViewFacetCut = IDiamondWritableInternal
-                .FacetCut({
-                    target: viewFacetAddress,
-                    action: IDiamondWritableInternal.FacetCutAction.ADD,
-                    selectors: perpetualMintViewFunctionSelectors
-                });
-
         // map the PerpetualMintViewSupraBlast related function selectors to their respective interfaces
         bytes4[]
             memory perpetualMintViewSupraBlastFunctionSelectors = new bytes4[](
@@ -132,10 +112,9 @@ contract UpgradeAndRemovePerpetualMintViewSupraBlast is BatchScript {
                     selectors: perpetualMintViewSupraBlastFunctionSelectors
                 });
 
-        facetCuts = new ICore.FacetCut[](2);
+        facetCuts = new ICore.FacetCut[](1);
 
-        facetCuts[0] = perpetualMintViewFacetCut;
-        facetCuts[1] = perpetualMintViewSupraBlastFacetCut;
+        facetCuts[0] = perpetualMintViewSupraBlastFacetCut;
     }
 
     /// @dev provides the removal facet cuts for removing PerpetualMintView facet functions from CoreBlast
@@ -148,7 +127,7 @@ contract UpgradeAndRemovePerpetualMintViewSupraBlast is BatchScript {
 
         perpetualMintViewFunctionSelectors[0] = bytes4(
             keccak256(
-                "calculateMintResultSupraBlast(address,uint8,uint256[2],uint256)"
+                "calculateMintResultSupraBlast(address,uint8,uint256[2],uint256,uint256)"
             )
         );
 
@@ -183,7 +162,7 @@ contract UpgradeAndRemovePerpetualMintViewSupraBlast is BatchScript {
             });
 
         // map the PerpetualMintView related function selectors to their respective interfaces
-        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](25);
+        bytes4[] memory perpetualMintViewFunctionSelectors = new bytes4[](27);
 
         perpetualMintViewFunctionSelectors[0] = IPerpetualMintView
             .accruedConsolationFees
@@ -246,42 +225,50 @@ contract UpgradeAndRemovePerpetualMintViewSupraBlast is BatchScript {
             .selector;
 
         perpetualMintViewFunctionSelectors[15] = IPerpetualMintView
-            .mintFeeBP
+            .mintEarningsBufferBP
             .selector;
 
         perpetualMintViewFunctionSelectors[16] = IPerpetualMintView
-            .mintToken
+            .mintFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[17] = IPerpetualMintView
-            .mintTokenConsolationFeeBP
+            .mintForEthConsolationFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[18] = IPerpetualMintView
-            .mintTokenTiers
+            .mintToken
             .selector;
 
         perpetualMintViewFunctionSelectors[19] = IPerpetualMintView
-            .redemptionFeeBP
+            .mintTokenConsolationFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[20] = IPerpetualMintView
-            .redeemPaused
+            .mintTokenTiers
             .selector;
 
         perpetualMintViewFunctionSelectors[21] = IPerpetualMintView
-            .SCALE
+            .redemptionFeeBP
             .selector;
 
         perpetualMintViewFunctionSelectors[22] = IPerpetualMintView
-            .tiers
+            .redeemPaused
             .selector;
 
         perpetualMintViewFunctionSelectors[23] = IPerpetualMintView
-            .vrfConfig
+            .SCALE
             .selector;
 
         perpetualMintViewFunctionSelectors[24] = IPerpetualMintView
+            .tiers
+            .selector;
+
+        perpetualMintViewFunctionSelectors[25] = IPerpetualMintView
+            .vrfConfig
+            .selector;
+
+        perpetualMintViewFunctionSelectors[26] = IPerpetualMintView
             .vrfSubscriptionBalanceThreshold
             .selector;
 

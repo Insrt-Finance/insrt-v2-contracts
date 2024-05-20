@@ -747,64 +747,6 @@ abstract contract PerpetualMintInternal is
         );
     }
 
-    /// @notice Attempts a Supra VRF-specific batch mint for the msg.sender for $MINT using ETH as payment.
-    /// @param minter address of minter
-    /// @param referrer address of referrer
-    /// @param numberOfMints number of mints to attempt
-    /// @param wordsPerMint number of random words per mint (1 for PerpetualMintSupra, 2 for PerpetualMintSupraBlast)
-    function _attemptBatchMintForMintWithEthSupra(
-        address minter,
-        address referrer,
-        uint8 numberOfMints,
-        uint8 wordsPerMint
-    ) internal {
-        uint256 msgValue = msg.value;
-
-        uint256 pricePerSpin = msgValue / numberOfMints;
-
-        _attemptBatchMint_paidInEth_validateMintParameters(
-            msgValue,
-            pricePerSpin
-        );
-
-        Storage.Layout storage l = Storage.layout();
-
-        CollectionData storage collectionData = l.collections[
-            MINT_TOKEN_COLLECTION_ADDRESS
-        ];
-
-        _attemptBatchMintForMintWithEth_calculateAndDistributeFees(
-            l,
-            msgValue,
-            referrer
-        );
-
-        // Calculate the total number of random words required for the Supra VRF request.
-        // Constraints:
-        // 1. numWords = 0 results in a revert.
-        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
-        // If the number of words requested exceeds this limit, the function call will revert.
-        //    - For Blast Supra: 2 words per mint for $MINT (max 127 mints per transaction).
-        //    - For standard Supra: 1 word per mint for $MINT (max 255 mints per transaction).
-        uint8 numWords = numberOfMints * wordsPerMint;
-
-        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
-                collectionData,
-                pricePerSpin
-            );
-
-        _requestRandomWordsSupra(
-            l,
-            collectionData,
-            minter,
-            MINT_TOKEN_COLLECTION_ADDRESS,
-            0,
-            mintPriceAdjustmentFactor,
-            0,
-            numWords
-        );
-    }
-
     function _attemptBatchMintForMintWithEth_calculateAndDistributeFees(
         Storage.Layout storage l,
         uint256 msgValue,
@@ -841,6 +783,99 @@ abstract contract PerpetualMintInternal is
 
         // Update the accrued protocol fees (subtracting the referral fee if applicable)
         l.protocolFees += mintFee - referralFee;
+    }
+
+    /// @notice Attempts a Supra VRF-specific batch mint for the msg.sender for $MINT using ETH as payment.
+    /// @param minter address of minter
+    /// @param referrer address of referrer
+    /// @param numberOfMints number of mints to attempt
+    /// @param wordsPerMint number of random words per mint (1 for PerpetualMintSupra, 2 for PerpetualMintSupraBlast)
+    function _attemptBatchMintForMintWithEthSupra(
+        address minter,
+        address referrer,
+        uint8 numberOfMints,
+        uint8 wordsPerMint
+    ) internal {
+        uint256 msgValue = msg.value;
+
+        uint256 pricePerSpin = msgValue / numberOfMints;
+
+        _attemptBatchMint_paidInEth_validateMintParameters(
+            msgValue,
+            pricePerSpin
+        );
+
+        Storage.Layout storage l = Storage.layout();
+
+        CollectionData storage collectionData = l.collections[
+            MINT_TOKEN_COLLECTION_ADDRESS
+        ];
+
+        _attemptBatchMintForMintWithEthSupraBlast_calculateAndDistributeFees(
+            l,
+            msgValue,
+            referrer
+        );
+
+        // Calculate the total number of random words required for the Supra VRF request.
+        // Constraints:
+        // 1. numWords = 0 results in a revert.
+        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
+        // If the number of words requested exceeds this limit, the function call will revert.
+        //    - For Blast Supra: 2 words per mint for $MINT (max 127 mints per transaction).
+        //    - For standard Supra: 1 word per mint for $MINT (max 255 mints per transaction).
+        uint8 numWords = numberOfMints * wordsPerMint;
+
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpin
+            );
+
+        _requestRandomWordsSupra(
+            l,
+            collectionData,
+            minter,
+            MINT_TOKEN_COLLECTION_ADDRESS,
+            0,
+            mintPriceAdjustmentFactor,
+            0,
+            numWords
+        );
+    }
+
+    function _attemptBatchMintForMintWithEthSupraBlast_calculateAndDistributeFees(
+        Storage.Layout storage l,
+        uint256 msgValue,
+        address referrer
+    ) private {
+        // calculate the mint for $MINT consolation fee
+        uint256 mintTokenConsolationFee = (msgValue *
+            l.mintTokenConsolationFeeBP) / BASIS;
+
+        // calculate the protocol mint fee
+        uint256 mintFee = msgValue - mintTokenConsolationFee;
+
+        uint256 referralFee;
+
+        // Calculate the referral fee if a referrer is provided
+        if (referrer != address(0)) {
+            uint256 referralFeeBP = _collectionReferralFeeBP(
+                l.collections[MINT_TOKEN_COLLECTION_ADDRESS]
+            );
+
+            if (referralFeeBP == 0) {
+                referralFeeBP = l.defaultCollectionReferralFeeBP;
+            }
+
+            // Calculate referral fee based on the mintFee and referral fee percentage
+            referralFee = (mintFee * referralFeeBP) / BASIS;
+
+            // Pay the referrer
+            payable(referrer).sendValue(referralFee);
+        }
+
+        // update the accrued consolation fees
+        l.consolationFees += mintTokenConsolationFee + (mintFee - referralFee);
     }
 
     /// @notice Attempts a batch mint for the msg.sender for $MINT using $MINT tokens as payment.
@@ -903,73 +938,6 @@ abstract contract PerpetualMintInternal is
         );
     }
 
-    /// @notice Attempts a Supra VRF-specific batch mint for the msg.sender for $MINT using $MINT tokens as payment.
-    /// @param minter address of minter
-    /// @param referrer address of referrer
-    /// @param pricePerMint price per mint for collection ($MINT denominated in units of wei)
-    /// @param numberOfMints number of mints to attempt
-    /// @param wordsPerMint number of random words per mint (1 for PerpetualMintSupra, 2 for PerpetualMintSupraBlast)
-    function _attemptBatchMintForMintWithMintSupra(
-        address minter,
-        address referrer,
-        uint256 pricePerMint,
-        uint8 numberOfMints,
-        uint8 wordsPerMint
-    ) internal {
-        Storage.Layout storage l = Storage.layout();
-
-        uint256 ethToMintRatio = _ethToMintRatio(l);
-
-        uint256 pricePerSpinInWei = pricePerMint / ethToMintRatio;
-
-        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
-
-        _attemptBatchMint_paidInMint_validateMintParameters(
-            numberOfMints,
-            l.consolationFees,
-            ethRequired,
-            pricePerSpinInWei,
-            pricePerMint
-        );
-
-        CollectionData storage collectionData = l.collections[
-            MINT_TOKEN_COLLECTION_ADDRESS
-        ];
-
-        _attemptBatchMintForMintWithMint_calculateAndDistributeFees(
-            l,
-            ethRequired,
-            ethToMintRatio,
-            minter,
-            referrer
-        );
-
-        // Calculate the total number of random words required for the Supra VRF request.
-        // Constraints:
-        // 1. numWords = 0 results in a revert.
-        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
-        // If the number of words requested exceeds this limit, the function call will revert.
-        //    - For Blast Supra: 2 words per mint for $MINT (max 127 mints per transaction).
-        //    - For standard Supra: 1 word per mint for $MINT (max 255 mints per transaction).
-        uint8 numWords = numberOfMints * wordsPerMint;
-
-        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
-                collectionData,
-                pricePerSpinInWei
-            );
-
-        _requestRandomWordsSupra(
-            l,
-            collectionData,
-            minter,
-            MINT_TOKEN_COLLECTION_ADDRESS,
-            0,
-            mintPriceAdjustmentFactor,
-            0,
-            numWords
-        );
-    }
-
     function _attemptBatchMintForMintWithMint_calculateAndDistributeFees(
         Storage.Layout storage l,
         uint256 ethRequired,
@@ -1016,6 +984,118 @@ abstract contract PerpetualMintInternal is
 
         // Update the accrued protocol fees
         l.protocolFees += netMintFee - referralFee;
+    }
+
+    /// @notice Attempts a Supra VRF-specific batch mint for the msg.sender for $MINT using $MINT tokens as payment.
+    /// @param minter address of minter
+    /// @param referrer address of referrer
+    /// @param pricePerMint price per mint for collection ($MINT denominated in units of wei)
+    /// @param numberOfMints number of mints to attempt
+    /// @param wordsPerMint number of random words per mint (1 for PerpetualMintSupra, 2 for PerpetualMintSupraBlast)
+    function _attemptBatchMintForMintWithMintSupra(
+        address minter,
+        address referrer,
+        uint256 pricePerMint,
+        uint8 numberOfMints,
+        uint8 wordsPerMint
+    ) internal {
+        Storage.Layout storage l = Storage.layout();
+
+        uint256 ethToMintRatio = _ethToMintRatio(l);
+
+        uint256 pricePerSpinInWei = pricePerMint / ethToMintRatio;
+
+        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
+
+        _attemptBatchMint_paidInMint_validateMintParameters(
+            numberOfMints,
+            l.consolationFees,
+            ethRequired,
+            pricePerSpinInWei,
+            pricePerMint
+        );
+
+        CollectionData storage collectionData = l.collections[
+            MINT_TOKEN_COLLECTION_ADDRESS
+        ];
+
+        _attemptBatchMintForMintWithMintSupraBlast_calculateAndDistributeFees(
+            l,
+            ethRequired,
+            ethToMintRatio,
+            minter,
+            referrer
+        );
+
+        // Calculate the total number of random words required for the Supra VRF request.
+        // Constraints:
+        // 1. numWords = 0 results in a revert.
+        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
+        // If the number of words requested exceeds this limit, the function call will revert.
+        //    - For Blast Supra: 2 words per mint for $MINT (max 127 mints per transaction).
+        //    - For standard Supra: 1 word per mint for $MINT (max 255 mints per transaction).
+        uint8 numWords = numberOfMints * wordsPerMint;
+
+        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                collectionData,
+                pricePerSpinInWei
+            );
+
+        _requestRandomWordsSupra(
+            l,
+            collectionData,
+            minter,
+            MINT_TOKEN_COLLECTION_ADDRESS,
+            0,
+            mintPriceAdjustmentFactor,
+            0,
+            numWords
+        );
+    }
+
+    function _attemptBatchMintForMintWithMintSupraBlast_calculateAndDistributeFees(
+        Storage.Layout storage l,
+        uint256 ethRequired,
+        uint256 ethToMintRatio,
+        address minter,
+        address referrer
+    ) private {
+        // calculate amount of $MINT required
+        uint256 mintRequired = ethRequired * ethToMintRatio;
+
+        IToken(l.mintToken).burn(minter, mintRequired);
+
+        // calculate the mint for $MINT consolation fee
+        uint256 mintTokenConsolationFee = (ethRequired *
+            l.mintTokenConsolationFeeBP) / BASIS;
+
+        // Calculate the net mint fee
+        uint256 netMintFee = ethRequired - mintTokenConsolationFee;
+
+        uint256 referralFee;
+
+        // Calculate the referral fee if a referrer is provided
+        if (referrer != address(0)) {
+            uint256 referralFeeBP = _collectionReferralFeeBP(
+                l.collections[MINT_TOKEN_COLLECTION_ADDRESS]
+            );
+
+            if (referralFeeBP == 0) {
+                referralFeeBP = l.defaultCollectionReferralFeeBP;
+            }
+
+            // Calculate referral fee based on the netMintFee and referral fee percentage
+            referralFee = (netMintFee * referralFeeBP) / BASIS;
+
+            // Pay the referrer in $MINT
+            IToken(l.mintToken).mintReferral(
+                referrer,
+                referralFee * ethToMintRatio
+            );
+        }
+
+        // Update the accrued consolation fees
+        l.consolationFees -= referralFee;
     }
 
     /// @notice Attempts a batch mint for the msg.sender for a single collection using ETH as payment.

@@ -60,20 +60,14 @@ contract PerpetualMint_attemptBatchMintForMintWithEthSupraBlast is
             .accruedConsolationFees();
 
         assert(
-            postMintAccruedConsolationFees ==
-                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
-                    perpetualMint.mintTokenConsolationFeeBP()) /
-                    perpetualMint.BASIS())
+            postMintAccruedConsolationFees == MINT_PRICE * TEST_MINT_ATTEMPTS
         );
 
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
-        assert(
-            postMintAccruedProtocolFees ==
-                (MINT_PRICE * TEST_MINT_ATTEMPTS) -
-                    postMintAccruedConsolationFees
-        );
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -82,8 +76,7 @@ contract PerpetualMint_attemptBatchMintForMintWithEthSupraBlast is
         assert(postMintAccruedMintEarnings == 0);
 
         assert(
-            address(perpetualMint).balance ==
-                postMintAccruedConsolationFees + postMintAccruedProtocolFees
+            address(perpetualMint).balance == postMintAccruedConsolationFees
         );
     }
 
@@ -120,20 +113,14 @@ contract PerpetualMint_attemptBatchMintForMintWithEthSupraBlast is
             .accruedConsolationFees();
 
         assert(
-            postMintAccruedConsolationFees ==
-                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
-                    perpetualMint.mintTokenConsolationFeeBP()) /
-                    perpetualMint.BASIS())
+            postMintAccruedConsolationFees == MINT_PRICE * TEST_MINT_ATTEMPTS
         );
 
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
-        assert(
-            postMintAccruedProtocolFees ==
-                (MINT_PRICE * TEST_MINT_ATTEMPTS) -
-                    postMintAccruedConsolationFees
-        );
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -142,8 +129,7 @@ contract PerpetualMint_attemptBatchMintForMintWithEthSupraBlast is
         assert(postMintAccruedMintEarnings == 0);
 
         assert(
-            address(perpetualMint).balance ==
-                postMintAccruedConsolationFees + postMintAccruedProtocolFees
+            address(perpetualMint).balance == postMintAccruedConsolationFees
         );
     }
 
@@ -180,20 +166,14 @@ contract PerpetualMint_attemptBatchMintForMintWithEthSupraBlast is
             .accruedConsolationFees();
 
         assert(
-            postMintAccruedConsolationFees ==
-                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
-                    perpetualMint.mintTokenConsolationFeeBP()) /
-                    perpetualMint.BASIS())
+            postMintAccruedConsolationFees == MINT_PRICE * TEST_MINT_ATTEMPTS
         );
 
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
-        assert(
-            postMintAccruedProtocolFees ==
-                (MINT_PRICE * TEST_MINT_ATTEMPTS) -
-                    postMintAccruedConsolationFees
-        );
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -202,8 +182,7 @@ contract PerpetualMint_attemptBatchMintForMintWithEthSupraBlast is
         assert(postMintAccruedMintEarnings == 0);
 
         assert(
-            address(perpetualMint).balance ==
-                postMintAccruedConsolationFees + postMintAccruedProtocolFees
+            address(perpetualMint).balance == postMintAccruedConsolationFees
         );
     }
 
@@ -236,27 +215,25 @@ contract PerpetualMint_attemptBatchMintForMintWithEthSupraBlast is
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
 
-        assert(
-            postMintAccruedConsolationFees ==
-                (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
-                    perpetualMint.mintTokenConsolationFeeBP()) /
-                    perpetualMint.BASIS())
-        );
-
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
         uint256 expectedMintProtocolFee = (MINT_PRICE * TEST_MINT_ATTEMPTS) -
-            postMintAccruedConsolationFees;
+            (((MINT_PRICE * TEST_MINT_ATTEMPTS) *
+                perpetualMint.mintTokenConsolationFeeBP()) /
+                perpetualMint.BASIS());
 
         uint256 expectedMintReferralFee = (expectedMintProtocolFee *
             perpetualMint.defaultCollectionReferralFeeBP()) /
             perpetualMint.BASIS();
 
         assert(
-            postMintAccruedProtocolFees ==
-                expectedMintProtocolFee - expectedMintReferralFee
+            postMintAccruedConsolationFees ==
+                (MINT_PRICE * TEST_MINT_ATTEMPTS) - expectedMintReferralFee
         );
+
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -265,8 +242,7 @@ contract PerpetualMint_attemptBatchMintForMintWithEthSupraBlast is
         assert(postMintAccruedMintEarnings == 0);
 
         assert(
-            address(perpetualMint).balance ==
-                postMintAccruedConsolationFees + postMintAccruedProtocolFees
+            address(perpetualMint).balance == postMintAccruedConsolationFees
         );
 
         assert(REFERRER.balance == expectedMintReferralFee);

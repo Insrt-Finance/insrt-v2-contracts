@@ -77,26 +77,16 @@ contract PerpetualMint_attemptBatchMintForMintWithMintSupraBlast is
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
 
-        uint256 expectedMintTokenConsolationFee = (expectedEthRequired *
-            perpetualMint.mintTokenConsolationFeeBP()) / perpetualMint.BASIS();
-
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
 
-        assert(
-            postMintAccruedConsolationFees ==
-                preMintAccruedConsolationFees -
-                    (expectedEthRequired - expectedMintTokenConsolationFee)
-        );
+        assert(postMintAccruedConsolationFees == preMintAccruedConsolationFees);
 
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
-        // the difference between the expected ETH required and the $MINT consolation fee is the protocol fee
-        uint256 expectedMintFee = expectedEthRequired -
-            expectedMintTokenConsolationFee;
-
-        assert(postMintAccruedProtocolFees == expectedMintFee);
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -148,26 +138,16 @@ contract PerpetualMint_attemptBatchMintForMintWithMintSupraBlast is
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
 
-        uint256 expectedMintTokenConsolationFee = (expectedEthRequired *
-            perpetualMint.mintTokenConsolationFeeBP()) / perpetualMint.BASIS();
-
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
 
-        assert(
-            postMintAccruedConsolationFees ==
-                preMintAccruedConsolationFees -
-                    (expectedEthRequired - expectedMintTokenConsolationFee)
-        );
+        assert(postMintAccruedConsolationFees == preMintAccruedConsolationFees);
 
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
-        // the difference between the expected ETH required and the $MINT consolation fee is the protocol fee
-        uint256 expectedMintFee = expectedEthRequired -
-            expectedMintTokenConsolationFee;
-
-        assert(postMintAccruedProtocolFees == expectedMintFee);
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -219,26 +199,16 @@ contract PerpetualMint_attemptBatchMintForMintWithMintSupraBlast is
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
 
-        uint256 expectedMintTokenConsolationFee = (expectedEthRequired *
-            perpetualMint.mintTokenConsolationFeeBP()) / perpetualMint.BASIS();
-
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
 
-        assert(
-            postMintAccruedConsolationFees ==
-                preMintAccruedConsolationFees -
-                    (expectedEthRequired - expectedMintTokenConsolationFee)
-        );
+        assert(postMintAccruedConsolationFees == preMintAccruedConsolationFees);
 
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
-        // the difference between the expected ETH required and the $MINT consolation fee is the protocol fee
-        uint256 expectedMintFee = expectedEthRequired -
-            expectedMintTokenConsolationFee;
-
-        assert(postMintAccruedProtocolFees == expectedMintFee);
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();
@@ -295,12 +265,6 @@ contract PerpetualMint_attemptBatchMintForMintWithMintSupraBlast is
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
 
-        assert(
-            postMintAccruedConsolationFees ==
-                preMintAccruedConsolationFees -
-                    (expectedEthRequired - expectedMintTokenConsolationFee)
-        );
-
         uint256 postMintAccruedProtocolFees = perpetualMint
             .accruedProtocolFees();
 
@@ -313,9 +277,12 @@ contract PerpetualMint_attemptBatchMintForMintWithMintSupraBlast is
             perpetualMint.BASIS();
 
         assert(
-            postMintAccruedProtocolFees ==
-                expectedMintFee - expectedMintReferralFee
+            postMintAccruedConsolationFees ==
+                preMintAccruedConsolationFees - expectedMintReferralFee
         );
+
+        // protocol fee is not applied to Blast deploy
+        assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);
 
         uint256 postMintAccruedMintEarnings = perpetualMint
             .accruedMintEarnings();

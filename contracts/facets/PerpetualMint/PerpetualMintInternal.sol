@@ -284,6 +284,12 @@ abstract contract PerpetualMintInternal is
         l.protocolFees += mintFee - referralFee;
     }
 
+    /// @notice Attempts a Supra VRF-specific batch mint for the msg.sender for ETH using ETH as payment.
+    /// @param minter address of minter
+    /// @param referrer address of referrer
+    /// @param numberOfMints number of mints to attempt
+    /// @param wordsPerMint number of random words per mint (2 for PerpetualMintSupra, 3 for PerpetualMintSupraBlast)
+    /// @param ethPrizeValueInWei value of ETH prize in wei
     function _attemptBatchMintForEthWithEthSupra(
         address minter,
         address referrer,
@@ -381,18 +387,26 @@ abstract contract PerpetualMintInternal is
         }
 
         // update the accrued consolation fees
-        l.consolationFees += mintForEthConsolationFee - additionalDepositorFee;
+        l.consolationFees +=
+            mintForEthConsolationFee -
+            additionalMintEarningsFee;
 
         mintEarningsFee =
             msgValue -
             mintForEthConsolationFee +
-            additionalDepositorFee -
+            additionalMintEarningsFee -
             referralFee;
 
         // update the accrued depositor mint earnings
         l.mintEarnings += mintEarningsFee;
     }
 
+    /// @notice Attempts a batch mint for the msg.sender for ETH using $MINT tokens as payment.
+    /// @param minter address of minter
+    /// @param referrer address of referrer
+    /// @param pricePerMint price per mint for collection ($MINT denominated in units of wei)
+    /// @param numberOfMints number of mints to attempt
+    /// @param ethPrizeValueInWei value of ETH prize in wei
     function _attemptBatchMintForEthWithMint(
         address minter,
         address referrer,
@@ -519,6 +533,12 @@ abstract contract PerpetualMintInternal is
         l.protocolFees += mintFee - referralFee;
     }
 
+    /// @notice Attempts a Supra VRF-specific batch mint for the msg.sender for ETH using $MINT tokens as payment.
+    /// @param minter address of minter
+    /// @param referrer address of referrer
+    /// @param pricePerMint price per mint for collection ($MINT denominated in units of wei)
+    /// @param numberOfMints number of mints to attempt
+    /// @param ethPrizeValueInWei value of ETH prize in wei
     function _attemptBatchMintForEthWithMintSupra(
         address minter,
         address referrer,

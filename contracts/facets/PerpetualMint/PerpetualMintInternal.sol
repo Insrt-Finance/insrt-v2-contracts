@@ -14,7 +14,7 @@ import { AddressUtils } from "@solidstate/contracts/utils/AddressUtils.sol";
 import { IGas } from "./Blast/IGas.sol";
 import { ERC1155MetadataExtensionInternal } from "./ERC1155MetadataExtensionInternal.sol";
 import { IPerpetualMintInternal } from "./IPerpetualMintInternal.sol";
-import { CalculateMintResult_SharedData, CollectionData, MintOutcome, MintResultData, MintResultDataBlast, MintTokenTiersData, PerpetualMintStorage as Storage, RequestData, TiersData, VRFConfig } from "./Storage.sol";
+import { CalculateMintResult_SharedData, CollectionData, MintForEthWithEthParametersSupra, MintForEthWithMintParametersSupra, MintOutcome, MintResultData, MintResultDataBlast, MintTokenTiersData, PerpetualMintStorage as Storage, RequestData, TiersData, VRFConfig } from "./Storage.sol";
 import { IToken } from "../Token/IToken.sol";
 import { GuardsInternal } from "../../common/GuardsInternal.sol";
 import { IBlast } from "../../diamonds/Core/Blast/IBlast.sol";
@@ -289,12 +289,14 @@ abstract contract PerpetualMintInternal is
     /// @param referrer address of referrer
     /// @param numberOfMints number of mints to attempt
     /// @param wordsPerMint number of random words per mint (2 for PerpetualMintSupra, 3 for PerpetualMintSupraBlast)
+    /// @param riskRewardRatio The ratio determining the distribution of the consolation fee between the consolation pool and the prize earnings pool
     /// @param ethPrizeValueInWei value of ETH prize in wei
     function _attemptBatchMintForEthWithEthSupra(
         address minter,
         address referrer,
         uint8 numberOfMints,
         uint8 wordsPerMint,
+        uint32 riskRewardRatio,
         uint256 ethPrizeValueInWei
     ) internal {
         uint256 msgValue = msg.value;
@@ -306,13 +308,31 @@ abstract contract PerpetualMintInternal is
             pricePerSpin
         );
 
+        MintForEthWithEthParametersSupra
+            memory mintForEthWithEthParametersSupra = MintForEthWithEthParametersSupra({
+                minter: minter,
+                referrer: referrer,
+                numberOfMints: numberOfMints,
+                wordsPerMint: wordsPerMint,
+                riskRewardRatio: riskRewardRatio,
+                ethPrizeValueInWei: ethPrizeValueInWei,
+                msgValue: msgValue,
+                pricePerSpin: pricePerSpin
+            });
+
+        _processMintForEthWithEthAttemptSupra(mintForEthWithEthParametersSupra);
+    }
+
+    function _processMintForEthWithEthAttemptSupra(
+        MintForEthWithEthParametersSupra memory mintForEthWithEthParametersSupra
+    ) private {
         Storage.Layout storage l = Storage.layout();
 
         _attemptBatchMintForEth_checkMaxPayout(
             l.mintEarnings,
-            ethPrizeValueInWei,
+            mintForEthWithEthParametersSupra.ethPrizeValueInWei,
             l.mintEarningsBufferBP,
-            numberOfMints
+            mintForEthWithEthParametersSupra.numberOfMints
         );
 
         CollectionData storage collectionData = l.collections[
@@ -322,9 +342,10 @@ abstract contract PerpetualMintInternal is
         uint256 mintEarningsFeePerSpin = _attemptBatchMintForEthWithEthSupraBlast_calculateAndDistributeFees(
                 l,
                 collectionData,
-                msgValue,
-                referrer
-            ) / numberOfMints;
+                mintForEthWithEthParametersSupra.msgValue,
+                mintForEthWithEthParametersSupra.referrer,
+                mintForEthWithEthParametersSupra.riskRewardRatio
+            ) / mintForEthWithEthParametersSupra.numberOfMints;
 
         // Calculate the total number of random words required for the Supra VRF request.
         // Constraints:
@@ -333,21 +354,25 @@ abstract contract PerpetualMintInternal is
         // If the number of words requested exceeds this limit, the function call will revert.
         //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
         //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
-        uint8 numWords = numberOfMints * wordsPerMint;
-
-        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
-                collectionData,
-                pricePerSpin
-            );
+        uint8 numWords = mintForEthWithEthParametersSupra.numberOfMints *
+            mintForEthWithEthParametersSupra.wordsPerMint;
 
         _requestRandomWordsSupra(
             l,
             collectionData,
-            minter,
-            ETH_COLLECTION_ADDRESS,
-            mintEarningsFeePerSpin,
-            mintPriceAdjustmentFactor,
-            ethPrizeValueInWei,
+            RequestData({
+                minter: mintForEthWithEthParametersSupra.minter,
+                collection: ETH_COLLECTION_ADDRESS,
+                mintEarningsFeePerSpin: mintEarningsFeePerSpin,
+                mintPriceAdjustmentFactor: _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                    collectionData,
+                    mintForEthWithEthParametersSupra.pricePerSpin
+                ),
+                prizeValueInWei: mintForEthWithEthParametersSupra
+                    .ethPrizeValueInWei,
+                riskRewardRatio: mintForEthWithEthParametersSupra
+                    .riskRewardRatio
+            }),
             numWords
         );
     }
@@ -356,15 +381,26 @@ abstract contract PerpetualMintInternal is
         Storage.Layout storage l,
         CollectionData storage collectionData,
         uint256 msgValue,
-        address referrer
+        address referrer,
+        uint32 riskRewardRatio
     ) private returns (uint256 mintEarningsFee) {
+        uint32 mintForEthConsolationFeeBP = l.mintForEthConsolationFeeBP;
+
+        _enforceBasis(
+            riskRewardRatio,
+            uint32(
+                (BASIS + BASIS) -
+                    ((uint256(BASIS) ** 2) / mintForEthConsolationFeeBP)
+            )
+        );
+
         // calculate the mint for ETH consolation fee
         uint256 mintForEthConsolationFee = (msgValue *
-            l.mintForEthConsolationFeeBP) / BASIS;
+            mintForEthConsolationFeeBP) / BASIS;
 
-        // Apply the mint for ETH-specific fee ratio
-        uint256 additionalDepositorFee = (mintForEthConsolationFee *
-            collectionData.mintFeeDistributionRatioBP) / BASIS;
+        // calculate additional mint earnings fee
+        uint256 additionalMintEarningsFee = (mintForEthConsolationFee *
+            riskRewardRatio) / BASIS;
 
         // calculate the protocol mint fee
         uint256 mintFee = (msgValue * l.mintFeeBP) / BASIS;
@@ -538,6 +574,8 @@ abstract contract PerpetualMintInternal is
     /// @param referrer address of referrer
     /// @param pricePerMint price per mint for collection ($MINT denominated in units of wei)
     /// @param numberOfMints number of mints to attempt
+    /// @param wordsPerMint number of random words per mint (2 for PerpetualMintSupra, 3 for PerpetualMintSupraBlast)
+    /// @param riskRewardRatio The ratio determining the distribution of the consolation fee between the consolation pool and the prize earnings pool
     /// @param ethPrizeValueInWei value of ETH prize in wei
     function _attemptBatchMintForEthWithMintSupra(
         address minter,
@@ -545,6 +583,7 @@ abstract contract PerpetualMintInternal is
         uint256 pricePerMint,
         uint8 numberOfMints,
         uint8 wordsPerMint,
+        uint32 riskRewardRatio,
         uint256 ethPrizeValueInWei
     ) internal {
         Storage.Layout storage l = Storage.layout();
@@ -555,42 +594,42 @@ abstract contract PerpetualMintInternal is
 
         uint256 ethRequired = pricePerSpinInWei * numberOfMints;
 
+        MintForEthWithMintParametersSupra
+            memory mintForEthWithMintParametersSupra = MintForEthWithMintParametersSupra({
+                minter: minter,
+                referrer: referrer,
+                pricePerMint: pricePerMint,
+                numberOfMints: numberOfMints,
+                wordsPerMint: wordsPerMint,
+                riskRewardRatio: riskRewardRatio,
+                ethPrizeValueInWei: ethPrizeValueInWei,
+                ethToMintRatio: ethToMintRatio,
+                pricePerSpinInWei: pricePerSpinInWei,
+                ethRequired: ethRequired
+            });
+
         CollectionData storage collectionData = l.collections[
             ETH_COLLECTION_ADDRESS
         ];
 
         uint256 mintEarningsFeePerSpin = _attemptBatchMintForEthWithMintSupra_validateAndDistributeFees(
-                minter,
-                referrer,
-                numberOfMints,
-                ethPrizeValueInWei,
-                pricePerMint,
-                pricePerSpinInWei,
-                ethRequired,
-                ethToMintRatio,
+                mintForEthWithMintParametersSupra,
                 l,
                 collectionData
-            ) / numberOfMints;
+            ) / mintForEthWithMintParametersSupra.numberOfMints;
 
         _attemptBatchMintForEthWithMintSupra_requestRandomWordsSupra(
-            minter,
-            numberOfMints,
-            wordsPerMint,
-            ethPrizeValueInWei,
+            mintForEthWithMintParametersSupra,
             mintEarningsFeePerSpin,
-            pricePerSpinInWei,
             l,
             collectionData
         );
     }
 
     function _attemptBatchMintForEthWithMintSupra_requestRandomWordsSupra(
-        address minter,
-        uint8 numberOfMints,
-        uint8 wordsPerMint,
-        uint256 ethPrizeValueInWei,
+        MintForEthWithMintParametersSupra
+            memory mintForEthWithMintParametersSupra,
         uint256 mintEarningsFeePerSpin,
-        uint256 pricePerSpinInWei,
         Storage.Layout storage l,
         CollectionData storage collectionData
     ) private {
@@ -601,59 +640,58 @@ abstract contract PerpetualMintInternal is
         // If the number of words requested exceeds this limit, the function call will revert.
         //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
         //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
-        uint8 numWords = numberOfMints * wordsPerMint;
-
-        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
-                collectionData,
-                pricePerSpinInWei
-            );
+        uint8 numWords = mintForEthWithMintParametersSupra.numberOfMints *
+            mintForEthWithMintParametersSupra.wordsPerMint;
 
         _requestRandomWordsSupra(
             l,
             collectionData,
-            minter,
-            ETH_COLLECTION_ADDRESS,
-            mintEarningsFeePerSpin,
-            mintPriceAdjustmentFactor,
-            ethPrizeValueInWei,
+            RequestData({
+                minter: mintForEthWithMintParametersSupra.minter,
+                collection: ETH_COLLECTION_ADDRESS,
+                mintEarningsFeePerSpin: mintEarningsFeePerSpin,
+                mintPriceAdjustmentFactor: _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                    collectionData,
+                    mintForEthWithMintParametersSupra.pricePerSpinInWei
+                ),
+                prizeValueInWei: mintForEthWithMintParametersSupra
+                    .ethPrizeValueInWei,
+                riskRewardRatio: mintForEthWithMintParametersSupra
+                    .riskRewardRatio
+            }),
             numWords
         );
     }
 
     function _attemptBatchMintForEthWithMintSupra_validateAndDistributeFees(
-        address minter,
-        address referrer,
-        uint8 numberOfMints,
-        uint256 ethPrizeValueInWei,
-        uint256 pricePerMint,
-        uint256 pricePerSpinInWei,
-        uint256 ethRequired,
-        uint256 ethToMintRatio,
+        MintForEthWithMintParametersSupra
+            memory mintForEthWithMintParametersSupra,
         Storage.Layout storage l,
         CollectionData storage collectionData
     ) private returns (uint256 mintEarningsFee) {
         _attemptBatchMint_paidInMint_validateMintParameters(
-            numberOfMints,
+            mintForEthWithMintParametersSupra.numberOfMints,
             l.consolationFees,
-            ethRequired,
-            pricePerSpinInWei,
-            pricePerMint
+            mintForEthWithMintParametersSupra.ethRequired,
+            mintForEthWithMintParametersSupra.pricePerSpinInWei,
+            mintForEthWithMintParametersSupra.pricePerMint
         );
 
         _attemptBatchMintForEth_checkMaxPayout(
             l.mintEarnings,
-            ethPrizeValueInWei,
+            mintForEthWithMintParametersSupra.ethPrizeValueInWei,
             l.mintEarningsBufferBP,
-            numberOfMints
+            mintForEthWithMintParametersSupra.numberOfMints
         );
 
         mintEarningsFee = _attemptBatchMintForEthWithMintSupraBlast_calculateAndDistributeFees(
             l,
             collectionData,
-            minter,
-            referrer,
-            ethRequired,
-            ethToMintRatio
+            mintForEthWithMintParametersSupra.minter,
+            mintForEthWithMintParametersSupra.referrer,
+            mintForEthWithMintParametersSupra.ethRequired,
+            mintForEthWithMintParametersSupra.ethToMintRatio,
+            mintForEthWithMintParametersSupra.riskRewardRatio
         );
     }
 
@@ -663,8 +701,19 @@ abstract contract PerpetualMintInternal is
         address minter,
         address referrer,
         uint256 ethRequired,
-        uint256 ethToMintRatio
+        uint256 ethToMintRatio,
+        uint32 riskRewardRatio
     ) private returns (uint256 mintEarningsFee) {
+        uint32 mintForEthConsolationFeeBP = l.mintForEthConsolationFeeBP;
+
+        _enforceBasis(
+            riskRewardRatio,
+            uint32(
+                (BASIS + BASIS) -
+                    ((uint256(BASIS) ** 2) / mintForEthConsolationFeeBP)
+            )
+        );
+
         // calculate amount of $MINT required
         uint256 mintRequired = ethRequired * ethToMintRatio;
 
@@ -672,11 +721,11 @@ abstract contract PerpetualMintInternal is
 
         // calculate the mint for ETH consolation fee
         uint256 mintForEthConsolationFee = (ethRequired *
-            l.mintForEthConsolationFeeBP) / BASIS;
+            mintForEthConsolationFeeBP) / BASIS;
 
-        // Apply the mint for ETH-specific fee ratio
-        uint256 additionalDepositorFee = (mintForEthConsolationFee *
-            collectionData.mintFeeDistributionRatioBP) / BASIS;
+        // calculate additional mint earnings fee
+        uint256 additionalMintEarningsFee = (mintForEthConsolationFee *
+            riskRewardRatio) / BASIS;
 
         // calculate the protocol mint fee
         uint256 mintFee = (ethRequired * l.mintFeeBP) / BASIS;
@@ -705,7 +754,7 @@ abstract contract PerpetualMintInternal is
         // ETH required for mint taken from the mintForEthConsolationFee
         uint256 netConsolationFee = ethRequired -
             mintForEthConsolationFee +
-            additionalDepositorFee;
+            additionalMintEarningsFee;
 
         // update the accrued consolation fees
         l.consolationFees -= netConsolationFee;
@@ -854,11 +903,14 @@ abstract contract PerpetualMintInternal is
         _requestRandomWordsSupra(
             l,
             collectionData,
-            minter,
-            MINT_TOKEN_COLLECTION_ADDRESS,
-            0,
-            mintPriceAdjustmentFactor,
-            0,
+            RequestData({
+                minter: minter,
+                collection: MINT_TOKEN_COLLECTION_ADDRESS,
+                mintEarningsFeePerSpin: 0,
+                mintPriceAdjustmentFactor: mintPriceAdjustmentFactor,
+                prizeValueInWei: 0,
+                riskRewardRatio: 0
+            }),
             numWords
         );
     }
@@ -1035,10 +1087,6 @@ abstract contract PerpetualMintInternal is
             pricePerMint
         );
 
-        CollectionData storage collectionData = l.collections[
-            MINT_TOKEN_COLLECTION_ADDRESS
-        ];
-
         _attemptBatchMintForMintWithMintSupraBlast_calculateAndDistributeFees(
             l,
             ethRequired,
@@ -1056,19 +1104,24 @@ abstract contract PerpetualMintInternal is
         //    - For standard Supra: 1 word per mint for $MINT (max 255 mints per transaction).
         uint8 numWords = numberOfMints * wordsPerMint;
 
-        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
-                collectionData,
-                pricePerSpinInWei
-            );
+        CollectionData storage collectionData = l.collections[
+            MINT_TOKEN_COLLECTION_ADDRESS
+        ];
 
         _requestRandomWordsSupra(
             l,
             collectionData,
-            minter,
-            MINT_TOKEN_COLLECTION_ADDRESS,
-            0,
-            mintPriceAdjustmentFactor,
-            0,
+            RequestData({
+                minter: minter,
+                collection: MINT_TOKEN_COLLECTION_ADDRESS,
+                mintEarningsFeePerSpin: 0,
+                mintPriceAdjustmentFactor: _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                    collectionData,
+                    pricePerSpinInWei
+                ),
+                prizeValueInWei: 0,
+                riskRewardRatio: 0
+            }),
             numWords
         );
     }
@@ -1280,11 +1333,14 @@ abstract contract PerpetualMintInternal is
         _requestRandomWordsSupra(
             l,
             collectionData,
-            minter,
-            collection,
-            0,
-            mintPriceAdjustmentFactor,
-            0,
+            RequestData({
+                minter: minter,
+                collection: collection,
+                mintEarningsFeePerSpin: 0,
+                mintPriceAdjustmentFactor: mintPriceAdjustmentFactor,
+                prizeValueInWei: 0,
+                riskRewardRatio: 0
+            }),
             numWords
         );
     }
@@ -1510,29 +1566,28 @@ abstract contract PerpetualMintInternal is
             ethToMintRatio
         );
 
-        // Calculate the total number of random words required for the Supra VRF request.
-        // Constraints:
-        // 1. numWords = 0 results in a revert.
-        // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
-        // If the number of words requested exceeds this limit, the function call will revert.
-        //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
-        //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
-        uint8 numWords = numberOfMints * wordsPerMint;
-
-        uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
-                collectionData,
-                pricePerSpinInWei
-            );
-
         _requestRandomWordsSupra(
             l,
             collectionData,
-            minter,
-            collection,
-            0,
-            mintPriceAdjustmentFactor,
-            0,
-            numWords
+            RequestData({
+                minter: minter,
+                collection: collection,
+                mintEarningsFeePerSpin: 0,
+                mintPriceAdjustmentFactor: _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                    collectionData,
+                    pricePerSpinInWei
+                ),
+                prizeValueInWei: 0,
+                riskRewardRatio: 0
+            }),
+            // Calculate the total number of random words required for the Supra VRF request.
+            // Constraints:
+            // 1. numWords = 0 results in a revert.
+            // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
+            // If the number of words requested exceeds this limit, the function call will revert.
+            //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
+            //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
+            numberOfMints * wordsPerMint
         );
     }
 
@@ -1741,13 +1796,16 @@ abstract contract PerpetualMintInternal is
     /// @param signature signature value to use as randomness in calculation
     /// @param pricePerMint price paid per mint (denominated in units of wei)
     /// @param prizeValueInWei prize value in wei
+    /// @param referralMint boolean indicating if the mint is a referral mint
+    /// @param riskRewardRatio risk reward ratio
     function _calculateMintResultSupraBlast(
         address collection,
         uint8 numberOfMints,
         uint256[2] calldata signature,
         uint256 pricePerMint,
         uint256 prizeValueInWei,
-        bool referralMint
+        bool referralMint,
+        uint32 riskRewardRatio
     ) internal view returns (MintResultDataBlast memory result) {
         bool mintForEth = collection == ETH_COLLECTION_ADDRESS;
 
@@ -1761,6 +1819,17 @@ abstract contract PerpetualMintInternal is
                 pricePerMint
             );
 
+        // enforce the basis for the risk reward ratio
+        _enforceBasis(
+            riskRewardRatio,
+            uint32(
+                (BASIS + BASIS) -
+                    ((uint256(BASIS) ** 2) /
+                        calculateMintResultSharedData
+                            .mintForEthConsolationFeeBP)
+            )
+        );
+
         uint256[] memory randomWords = new uint256[](numberOfWords);
 
         for (uint256 i = 0; i < numberOfWords; ++i) {
@@ -1770,6 +1839,8 @@ abstract contract PerpetualMintInternal is
         }
 
         uint256 msgValue = numberOfMints * pricePerMint;
+
+        calculateMintResultSharedData.riskRewardRatio = riskRewardRatio;
 
         result = _calculateMintResultBlast_sharedLogic(
             randomWords,
@@ -1974,6 +2045,43 @@ abstract contract PerpetualMintInternal is
         }
     }
 
+    function _calculateMintForEthOutcome(
+        uint256 secondNormalizedValue,
+        CalculateMintResult_SharedData memory calculateMintResultSharedData
+    ) private pure returns (MintOutcome memory outcome) {
+        uint256 cumulativeRisk;
+
+        for (
+            uint256 j = 0;
+            j < calculateMintResultSharedData.tiers.tierRisks.length;
+            ++j
+        ) {
+            cumulativeRisk += calculateMintResultSharedData.tiers.tierRisks[j];
+
+            if (cumulativeRisk > secondNormalizedValue) {
+                uint256 mintAmount = (calculateMintResultSharedData
+                    .tiers
+                    .tierMultipliers[j] *
+                    calculateMintResultSharedData.mintPriceAdjustmentFactor *
+                    calculateMintResultSharedData.ethToMintRatio *
+                    calculateMintResultSharedData.collectionMintPrice *
+                    (BASIS - calculateMintResultSharedData.riskRewardRatio)) /
+                    (uint256(BASIS) * BASIS * BASIS);
+
+                outcome.tierIndex = j;
+                outcome.tierMultiplier = calculateMintResultSharedData
+                    .tiers
+                    .tierMultipliers[j];
+                outcome.tierRisk = calculateMintResultSharedData
+                    .tiers
+                    .tierRisks[j];
+                outcome.mintAmount = mintAmount;
+
+                break;
+            }
+        }
+    }
+
     function _calculateMintForEthResult_sharedLogic(
         CalculateMintResult_SharedData memory calculateMintResultSharedData,
         uint256[] memory randomWords,
@@ -2081,7 +2189,7 @@ abstract contract PerpetualMintInternal is
             );
 
             if (!(risk > firstNormalizedValue)) {
-                outcome = _calculateMintForCollectionOutcome(
+                outcome = _calculateMintForEthOutcome(
                     _normalizeValue(randomWords[i + 1], BASIS), // secondNormalizedValue
                     calculateMintResultSharedData
                 );
@@ -2118,10 +2226,9 @@ abstract contract PerpetualMintInternal is
         uint256 mintForEthConsolationFee = (msgValue *
             calculateMintResultSharedData.mintForEthConsolationFeeBP) / BASIS;
 
-        // apply the mint for ETH-specific mint fee ratio
-        uint256 additionalDepositorFee = (mintForEthConsolationFee *
-            calculateMintResultSharedData
-                .collectionMintFeeDistributionRatioBP) / BASIS;
+        // calculate additional mint earnings fee
+        uint256 additionalMintEarningsFee = (mintForEthConsolationFee *
+            calculateMintResultSharedData.riskRewardRatio) / BASIS;
 
         // calculate the protocol mint fee
         uint256 mintFee = (msgValue * calculateMintResultSharedData.mintFeeBP) /
@@ -2146,7 +2253,7 @@ abstract contract PerpetualMintInternal is
         mintEarningsFee =
             msgValue -
             mintForEthConsolationFee +
-            additionalDepositorFee -
+            additionalMintEarningsFee -
             referralFee;
     }
 
@@ -2565,7 +2672,6 @@ abstract contract PerpetualMintInternal is
             _resolveMintsForEthBlast(
                 l,
                 request,
-                _collectionMintMultiplier(collectionData),
                 _collectionMintPrice(collectionData),
                 randomWords,
                 _ethToMintRatio(l)
@@ -2761,27 +2867,20 @@ abstract contract PerpetualMintInternal is
             minter: minter,
             mintEarningsFeePerSpin: mintEarningsFeePerSpin,
             mintPriceAdjustmentFactor: mintPriceAdjustmentFactor,
-            prizeValueInWei: prizeValueInWei
+            prizeValueInWei: prizeValueInWei,
+            riskRewardRatio: 0
         });
     }
 
     /// @notice requests random values from Supra VRF, Supra VRF-specific
     /// @param l the PerpetualMint storage layout
     /// @param collectionData the CollectionData struct for a given collection
-    /// @param minter address calling this function
-    /// @param collection address of collection to attempt mint for
-    /// @param mintEarningsFeePerSpin fee contributed to the mint earnings pool per spin
-    /// @param mintPriceAdjustmentFactor adjustment factor for mint price
-    /// @param prizeValueInWei value of prize in ETH (denominated in wei)
+    /// @param request the RequestData struct for the mint request
     /// @param numWords amount of random values to request
     function _requestRandomWordsSupra(
         Storage.Layout storage l,
         CollectionData storage collectionData,
-        address minter,
-        address collection,
-        uint256 mintEarningsFeePerSpin,
-        uint256 mintPriceAdjustmentFactor,
-        uint256 prizeValueInWei,
+        RequestData memory request,
         uint8 numWords
     ) internal {
         ISupraRouterContract supraRouter = ISupraRouterContract(VRF);
@@ -2795,13 +2894,7 @@ abstract contract PerpetualMintInternal is
 
         collectionData.pendingRequests.add(requestId);
 
-        l.requests[requestId] = RequestData({
-            collection: collection,
-            minter: minter,
-            mintEarningsFeePerSpin: mintEarningsFeePerSpin,
-            mintPriceAdjustmentFactor: mintPriceAdjustmentFactor,
-            prizeValueInWei: prizeValueInWei
-        });
+        l.requests[requestId] = request;
     }
 
     /// @notice resolves the outcomes of attempted mints for a given collection
@@ -3141,14 +3234,12 @@ abstract contract PerpetualMintInternal is
     /// @notice resolves the outcomes of attempted mints for ETH on Blast
     /// @param l the PerpetualMint storage layout
     /// @param request the RequestData struct for the mint request
-    /// @param mintForEthMultiplier minting for ETH multiplier
     /// @param mintForEthPrice mint for ETH mint price
     /// @param randomWords array of random values relating to number of attempts
     /// @param ethToMintRatio ratio of ETH to $MINT
     function _resolveMintsForEthBlast(
         Storage.Layout storage l,
         RequestData memory request,
-        uint256 mintForEthMultiplier,
         uint256 mintForEthPrice,
         uint256[] memory randomWords,
         uint256 ethToMintRatio
@@ -3221,11 +3312,13 @@ abstract contract PerpetualMintInternal is
                 (cumulativeTierMultiplier *
                     ethToMintRatio *
                     mintForEthPrice *
-                    mintForEthMultiplier *
+                    (BASIS - request.riskRewardRatio) *
                     request.mintPriceAdjustmentFactor) /
                 (uint256(BASIS) * BASIS * BASIS);
 
-            IToken(l.mintToken).mint(request.minter, totalMintAmount);
+            if (totalMintAmount > 0) {
+                IToken(l.mintToken).mint(request.minter, totalMintAmount);
+            }
         }
 
         // Pay out ETH prize for successful attempts

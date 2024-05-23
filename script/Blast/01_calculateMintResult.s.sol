@@ -16,6 +16,7 @@ contract CalculateMintResultSupraBlast is Script, Test {
         bool mintForMint;
         bool referralMint;
         uint8 numberOfMints;
+        uint32 riskRewardRatio;
         uint256 pricePerMint;
         uint256 prizeValueInWei;
         uint256[] envRandomness;
@@ -50,7 +51,14 @@ contract CalculateMintResultSupraBlast is Script, Test {
 
         console.log("BASIS: ", BASIS);
         printConfigData(config);
-        console.log("Collection Mint Multiplier: ", collectionMintMultiplier);
+
+        if (!config.mintForEth) {
+            console.log(
+                "Collection Mint Multiplier: ",
+                collectionMintMultiplier
+            );
+        }
+
         console.log("Collection Mint Price: ", collectionMintPrice);
         console.log("ETH to Mint Ratio: ", ethToMintRatio);
 
@@ -72,11 +80,9 @@ contract CalculateMintResultSupraBlast is Script, Test {
                 uint256 mintForEthConsolationFee = (msgValue *
                     core.mintForEthConsolationFeeBP()) / BASIS;
 
-                // apply the mint for ETH-specific mint fee ratio
-                uint256 additionalDepositorFee = (mintForEthConsolationFee *
-                    core.collectionMintFeeDistributionRatioBP(
-                        config.collection
-                    )) / BASIS;
+                // calculate additional mint earnings fee
+                uint256 additionalMintEarningsFee = (mintForEthConsolationFee *
+                    config.riskRewardRatio) / BASIS;
 
                 // calculate the protocol mint fee
                 uint256 mintFee = (msgValue * core.mintFeeBP()) / BASIS;
@@ -99,12 +105,13 @@ contract CalculateMintResultSupraBlast is Script, Test {
                 uint256 mintEarningsFee = msgValue -
                     mintForEthConsolationFee -
                     referralFee +
-                    additionalDepositorFee;
+                    additionalMintEarningsFee;
 
                 uint256 risk = (mintEarningsFee * BASIS) /
                     config.prizeValueInWei;
 
                 console.log("Risk: ", risk);
+                console.log("Risk Reward Ratio: ", config.riskRewardRatio);
             } else {
                 uint32 collectionRisk = core.collectionRisk(config.collection);
 
@@ -125,7 +132,8 @@ contract CalculateMintResultSupraBlast is Script, Test {
             config.randomness,
             config.pricePerMint,
             config.prizeValueInWei,
-            config.referralMint
+            config.referralMint,
+            config.riskRewardRatio
         );
 
         // Iterate over the mintOutcomes array in MintResultData
@@ -176,6 +184,9 @@ contract CalculateMintResultSupraBlast is Script, Test {
 
         // determine if referral mint
         config.referralMint = vm.envBool("REFERRAL_MINT");
+
+        // get risk reward ratio
+        config.riskRewardRatio = uint32(vm.envUint("RISK_REWARD_RATIO"));
 
         // get number of mints
         config.numberOfMints = uint8(vm.envUint("NUMBER_OF_MINTS"));

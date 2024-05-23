@@ -14,12 +14,15 @@ interface IPerpetualMintViewSupraBlast is IPerpetualMintViewBlast {
     /// @param signature signature value to use as randomness in calculation
     /// @param pricePerMint price paid per mint (denominated in units of wei)
     /// @param prizeValueInWei value of the prize in wei
+    /// @param referralMint boolean indicating if the mint is a referral mint
+    /// @param riskRewardRatio risk reward ratio for mint attempts
     function calculateMintResultSupraBlast(
         address collection,
         uint8 numberOfMints,
         uint256[2] calldata signature,
         uint256 pricePerMint,
         uint256 prizeValueInWei,
-        bool referralMint
+        bool referralMint,
+        uint32 riskRewardRatio
     ) external view returns (MintResultDataBlast memory result);
 }

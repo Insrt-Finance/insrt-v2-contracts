@@ -20,7 +20,8 @@ contract PerpetualMintSupraBlast is PerpetualMintSupra {
     function attemptBatchMintForEthWithEth(
         address referrer,
         uint32 numberOfMints,
-        uint256 ethPrizeValueInWei
+        uint256 ethPrizeValueInWei,
+        uint32 riskRewardRatio
     ) external payable override whenNotPaused {
         // Validate that the number of mints is within the uint8 range
         if (numberOfMints > type(uint8).max) {
@@ -32,6 +33,7 @@ contract PerpetualMintSupraBlast is PerpetualMintSupra {
             referrer,
             uint8(numberOfMints),
             THREE_WORDS,
+            riskRewardRatio,
             ethPrizeValueInWei
         );
     }
@@ -41,7 +43,8 @@ contract PerpetualMintSupraBlast is PerpetualMintSupra {
         address referrer,
         uint256 pricePerMint,
         uint32 numberOfMints,
-        uint256 ethPrizeValueInWei
+        uint256 ethPrizeValueInWei,
+        uint32 riskRewardRatio
     ) external override whenNotPaused {
         // Validate that the number of mints is within the uint8 range
         if (numberOfMints > type(uint8).max) {
@@ -54,6 +57,7 @@ contract PerpetualMintSupraBlast is PerpetualMintSupra {
             pricePerMint,
             uint8(numberOfMints),
             THREE_WORDS,
+            riskRewardRatio,
             ethPrizeValueInWei
         );
     }

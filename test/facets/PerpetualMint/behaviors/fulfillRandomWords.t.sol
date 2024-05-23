@@ -164,7 +164,8 @@ contract PerpetualMint_fulfillRandomWords is
             MINT_FOR_COLLECTION_ADDRESS,
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
-            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
@@ -215,7 +216,12 @@ contract PerpetualMint_fulfillRandomWords is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
+        }(
+            NO_REFERRER,
+            TEST_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
+        );
 
         uint32 numberOfRandomWordsRequested = TEST_MINT_ATTEMPTS * 2; // 2 words per mint for ETH attempt
 
@@ -242,7 +248,8 @@ contract PerpetualMint_fulfillRandomWords is
             ETH_COLLECTION_ADDRESS,
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
@@ -297,7 +304,8 @@ contract PerpetualMint_fulfillRandomWords is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         uint32 numberOfRandomWordsRequested = TEST_MINT_ATTEMPTS * 2; // 2 words per mint for ETH attempt
@@ -325,7 +333,8 @@ contract PerpetualMint_fulfillRandomWords is
             ETH_COLLECTION_ADDRESS,
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
-            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
@@ -403,7 +412,8 @@ contract PerpetualMint_fulfillRandomWords is
             MINT_FOR_MINT_ADDRESS,
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
-            TEST_MINT_FOR_MINT_PRIZE_VALUE
+            TEST_MINT_FOR_MINT_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
@@ -484,7 +494,8 @@ contract PerpetualMint_fulfillRandomWords is
             MINT_FOR_COLLECTION_ADDRESS,
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
-            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
@@ -566,7 +577,8 @@ contract PerpetualMint_fulfillRandomWords is
             MINT_FOR_MINT_ADDRESS,
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
-            TEST_MINT_FOR_MINT_PRIZE_VALUE
+            TEST_MINT_FOR_MINT_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
@@ -663,7 +675,8 @@ contract PerpetualMint_fulfillRandomWords is
             MINT_FOR_COLLECTION_ADDRESS,
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
-            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
@@ -714,7 +727,12 @@ contract PerpetualMint_fulfillRandomWords is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * MAXIMUM_MINT_ATTEMPTS
-        }(NO_REFERRER, MAXIMUM_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
+        }(
+            NO_REFERRER,
+            MAXIMUM_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
+        );
 
         vm.expectRevert(
             abi.encodeWithSelector(
@@ -728,7 +746,8 @@ contract PerpetualMint_fulfillRandomWords is
         }(
             NO_REFERRER,
             MAXIMUM_MINT_ATTEMPTS + 1,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         uint32 numberOfRandomWordsRequested = currentMaxNumWords; // 2 words per mint for ETH attempt
@@ -756,7 +775,8 @@ contract PerpetualMint_fulfillRandomWords is
             ETH_COLLECTION_ADDRESS,
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
@@ -811,7 +831,8 @@ contract PerpetualMint_fulfillRandomWords is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             MAXIMUM_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         vm.expectRevert(
@@ -827,7 +848,8 @@ contract PerpetualMint_fulfillRandomWords is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             MAXIMUM_MINT_ATTEMPTS + 1,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         uint32 numberOfRandomWordsRequested = currentMaxNumWords; // 2 words per mint for ETH attempt
@@ -855,7 +877,8 @@ contract PerpetualMint_fulfillRandomWords is
             MINT_FOR_COLLECTION_ADDRESS,
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
-            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
@@ -944,7 +967,8 @@ contract PerpetualMint_fulfillRandomWords is
             MINT_FOR_MINT_ADDRESS,
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
-            TEST_MINT_FOR_MINT_PRIZE_VALUE
+            TEST_MINT_FOR_MINT_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
@@ -1043,7 +1067,8 @@ contract PerpetualMint_fulfillRandomWords is
             MINT_FOR_COLLECTION_ADDRESS,
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
-            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE
+            TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations
@@ -1140,7 +1165,8 @@ contract PerpetualMint_fulfillRandomWords is
             MINT_FOR_MINT_ADDRESS,
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
-            TEST_MINT_FOR_MINT_PRIZE_VALUE
+            TEST_MINT_FOR_MINT_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         // calculate and store the mint fulfillment block number using vrf config min confirmations

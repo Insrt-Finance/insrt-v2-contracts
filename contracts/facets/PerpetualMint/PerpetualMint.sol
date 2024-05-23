@@ -14,7 +14,8 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal {
     function attemptBatchMintForEthWithEth(
         address referrer,
         uint32 numberOfMints,
-        uint256 ethPrizeValueInWei
+        uint256 ethPrizeValueInWei,
+        uint32
     ) external payable virtual whenNotPaused {
         _attemptBatchMintForEthWithEth(
             msg.sender,
@@ -29,7 +30,8 @@ contract PerpetualMint is IPerpetualMint, PerpetualMintInternal {
         address referrer,
         uint256 pricePerMint,
         uint32 numberOfMints,
-        uint256 ethPrizeValueInWei
+        uint256 ethPrizeValueInWei,
+        uint32
     ) external virtual whenNotPaused {
         _attemptBatchMintForEthWithMint(
             msg.sender,

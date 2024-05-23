@@ -128,7 +128,12 @@ contract PerpetualMint_fulfillRandomWordsSupraBlast is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
+        }(
+            NO_REFERRER,
+            TEST_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
+        );
 
         // calculate and store the mint fulfillment block number using the configured vrf min # of confirmations
         uint256 mintFulfillmentBlockNumber = mintBlockNumber +
@@ -193,7 +198,8 @@ contract PerpetualMint_fulfillRandomWordsSupraBlast is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         // calculate and store the mint fulfillment block number using the configured vrf min # of confirmations
@@ -510,7 +516,12 @@ contract PerpetualMint_fulfillRandomWordsSupraBlast is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * MAXIMUM_MINT_ATTEMPTS
-        }(NO_REFERRER, MAXIMUM_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
+        }(
+            NO_REFERRER,
+            MAXIMUM_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
+        );
 
         vm.expectRevert();
 
@@ -519,7 +530,8 @@ contract PerpetualMint_fulfillRandomWordsSupraBlast is
         }(
             NO_REFERRER,
             MAXIMUM_MINT_ATTEMPTS + 1,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         uint8 numberOfRandomWordsRequested = uint8(MAXIMUM_MINT_ATTEMPTS * 3); // 3 words per mint for ETH attempt
@@ -580,7 +592,8 @@ contract PerpetualMint_fulfillRandomWordsSupraBlast is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             MAXIMUM_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         vm.expectRevert();
@@ -590,7 +603,8 @@ contract PerpetualMint_fulfillRandomWordsSupraBlast is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             MAXIMUM_MINT_ATTEMPTS + 1,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         uint8 numberOfRandomWordsRequested = uint8(MAXIMUM_MINT_ATTEMPTS * 3); // 3 words per mint for ETH attempt

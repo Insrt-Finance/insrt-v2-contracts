@@ -60,7 +60,12 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
+        }(
+            NO_REFERRER,
+            TEST_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
+        );
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -130,7 +135,12 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
+        }(
+            NO_REFERRER,
+            TEST_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
+        );
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -198,7 +208,12 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
+        }(
+            NO_REFERRER,
+            TEST_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
+        );
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -265,7 +280,12 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
+        }(
+            REFERRER,
+            TEST_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
+        );
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -343,25 +363,30 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
             TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP
         );
 
-        uint256 preCalculatedCollectionConsolationFee = ((MINT_PRICE *
-            TEST_MINT_ATTEMPTS) * perpetualMint.collectionConsolationFeeBP()) /
+        uint256 preCalculatedMintForEthConsolationFee = ((MINT_PRICE *
+            TEST_MINT_ATTEMPTS) * perpetualMint.mintForEthConsolationFeeBP()) /
             perpetualMint.BASIS();
 
-        uint256 expectedAdditionalDepositorFee = (preCalculatedCollectionConsolationFee *
+        uint256 expectedAdditionalDepositorFee = (preCalculatedMintForEthConsolationFee *
                 TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP) /
                 perpetualMint.BASIS();
 
         vm.prank(minter);
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
+        }(
+            NO_REFERRER,
+            TEST_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
+        );
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
 
         assert(
             postMintAccruedConsolationFees ==
-                preCalculatedCollectionConsolationFee -
+                preCalculatedMintForEthConsolationFee -
                     expectedAdditionalDepositorFee
         );
 
@@ -380,7 +405,7 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
         assert(
             postMintAccruedMintEarnings ==
                 (MINT_PRICE * TEST_MINT_ATTEMPTS) -
-                    preCalculatedCollectionConsolationFee -
+                    preCalculatedMintForEthConsolationFee -
                     postMintAccruedProtocolFees +
                     expectedAdditionalDepositorFee +
                     preMintAccruedMintEarnings
@@ -408,7 +433,12 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
 
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE * 2);
+        }(
+            NO_REFERRER,
+            TEST_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE * 2,
+            TEST_RISK_REWARD_RATIO
+        );
     }
 
     /// @dev Tests that attemptBatchMintForEthWithEth functionality reverts when attempting to mint with an incorrect msg value amount.
@@ -419,7 +449,12 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
 
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS + 1
-        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
+        }(
+            NO_REFERRER,
+            TEST_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
+        );
     }
 
     /// @dev Tests that attemptBatchMintForEthWithEth functionality reverts when attempting to mint with less than MINIMUM_PRICE_PER_SPIN.
@@ -431,7 +466,8 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
         perpetualMint.attemptBatchMintForEthWithEth(
             NO_REFERRER,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
     }
 
@@ -444,7 +480,8 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
         perpetualMint.attemptBatchMintForEthWithEth(
             NO_REFERRER,
             ZERO_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
     }
 
@@ -457,7 +494,12 @@ contract PerpetualMint_attemptBatchMintForEthWithEth is
 
         perpetualMint.attemptBatchMintForEthWithEth{
             value: MINT_PRICE * TEST_MINT_ATTEMPTS
-        }(NO_REFERRER, TEST_MINT_ATTEMPTS, TEST_MINT_FOR_ETH_PRIZE_VALUE);
+        }(
+            NO_REFERRER,
+            TEST_MINT_ATTEMPTS,
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
+        );
     }
 
     function _activateVRFConsumer() private {

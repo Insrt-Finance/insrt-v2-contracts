@@ -75,7 +75,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMintBase is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
@@ -151,7 +152,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMintBase is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
@@ -225,7 +227,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMintBase is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
@@ -298,7 +301,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMintBase is
             REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
@@ -388,7 +392,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMintBase is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
@@ -457,7 +462,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMintBase is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE * 2
+            TEST_MINT_FOR_ETH_PRIZE_VALUE * 2,
+            TEST_RISK_REWARD_RATIO
         );
     }
 
@@ -471,7 +477,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMintBase is
             NO_REFERRER,
             2_500 ether + 1, // 2,500 $MINT + 1 wei (dust)
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
     }
 
@@ -485,7 +492,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMintBase is
             NO_REFERRER,
             1 ether - 1, // less than 1 $MINT
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
     }
 
@@ -501,7 +509,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMintBase is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             ZERO_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
     }
 
@@ -518,7 +527,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMintBase is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
     }
 }

@@ -49,7 +49,8 @@ contract PerpetualMint_requestRandomWordsSupra is
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
             TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
-            TEST_NUM_WORDS
+            TEST_NUM_WORDS,
+            TEST_RISK_REWARD_RATIO
         );
     }
 
@@ -64,7 +65,8 @@ contract PerpetualMint_requestRandomWordsSupra is
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
             TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
-            TEST_NUM_WORDS
+            TEST_NUM_WORDS,
+            TEST_RISK_REWARD_RATIO
         );
 
         // this call succeeds only if the request was added to pendingRequests
@@ -103,7 +105,8 @@ contract PerpetualMint_requestRandomWordsSupra is
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
             TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
-            ++currentMaxNumWords
+            ++currentMaxNumWords,
+            TEST_RISK_REWARD_RATIO
         );
     }
 
@@ -122,7 +125,8 @@ contract PerpetualMint_requestRandomWordsSupra is
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
             TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
-            TEST_NUM_WORDS
+            TEST_NUM_WORDS,
+            TEST_RISK_REWARD_RATIO
         );
     }
 
@@ -142,7 +146,8 @@ contract PerpetualMint_requestRandomWordsSupra is
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
             TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
-            TEST_NUM_WORDS
+            TEST_NUM_WORDS,
+            TEST_RISK_REWARD_RATIO
         );
     }
 
@@ -162,7 +167,8 @@ contract PerpetualMint_requestRandomWordsSupra is
             TEST_MINT_EARNINGS_FEE_PER_SPIN,
             TEST_ADJUSTMENT_FACTOR,
             TEST_MINT_FOR_COLLECTION_PRIZE_VALUE,
-            TEST_NUM_WORDS
+            TEST_NUM_WORDS,
+            TEST_RISK_REWARD_RATIO
         );
     }
 }

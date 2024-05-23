@@ -18,6 +18,8 @@ struct CalculateMintResult_SharedData {
     uint32 mintForEthConsolationFeeBP;
     /// @dev The current mint protocol fee in basis points
     uint32 mintFeeBP;
+    /// @dev The used risk reward ratio for the mint attempt
+    uint32 riskRewardRatio;
     /// @dev The current ETH to $MINT conversion ratio
     uint256 ethToMintRatio;
     /// @dev The current collection's mint multiplier
@@ -47,6 +49,32 @@ struct CollectionData {
     uint256 mintMultiplier;
     /// @dev collection-specific mint referral fee in basis points
     uint32 referralFeeBP;
+}
+
+/// @dev Represents data specific to mint for ETH paid in ETH for Supra VRF-specific mint requests.
+struct MintForEthWithEthParametersSupra {
+    address minter;
+    address referrer;
+    uint8 numberOfMints;
+    uint8 wordsPerMint;
+    uint32 riskRewardRatio;
+    uint256 ethPrizeValueInWei;
+    uint256 msgValue;
+    uint256 pricePerSpin;
+}
+
+/// @dev Represents data specific to mint for ETH paid in $MINT for Supra VRF-specific mint requests.
+struct MintForEthWithMintParametersSupra {
+    address minter;
+    address referrer;
+    uint8 numberOfMints;
+    uint8 wordsPerMint;
+    uint32 riskRewardRatio;
+    uint256 ethPrizeValueInWei;
+    uint256 ethToMintRatio;
+    uint256 pricePerMint;
+    uint256 pricePerSpinInWei;
+    uint256 ethRequired;
 }
 
 /// @dev Represents the outcome of a single mint attempt.
@@ -108,6 +136,8 @@ struct RequestData {
     uint256 mintEarningsFeePerSpin;
     /// @dev prize value in ETH (denominated in wei) at the time of the mint request
     uint256 prizeValueInWei;
+    /// @dev risk reward ratio for the mint request
+    uint32 riskRewardRatio;
 }
 
 /// @dev Represents data specific to $MINT mint for collection consolation tiers

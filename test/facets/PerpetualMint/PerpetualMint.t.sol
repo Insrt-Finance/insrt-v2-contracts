@@ -49,10 +49,13 @@ abstract contract PerpetualMintTest is CoreTest {
     uint256 internal constant TEST_MINT_FOR_MINT_PRIZE_VALUE = 0;
 
     /// @dev mint for ETH consolation fee basis points to test
-    uint32 internal constant TEST_MINT_FOR_ETH_CONSOLATION_FEE_BP = 5e6; // 0.5% fee
+    uint32 internal constant TEST_MINT_FOR_ETH_CONSOLATION_FEE_BP = 85e7; // 85% fee
 
     /// @dev mint for $MINT consolation fee basis points to test
     uint32 internal constant TEST_MINT_TOKEN_CONSOLATION_FEE_BP = 5e6; // 0.5% fee
+
+    /// @dev test risk reward ratio
+    uint32 internal TEST_RISK_REWARD_RATIO = 0; // 0% risk, full $MINT consolation prize
 
     uint64 internal constant TEST_VRF_SUBSCRIPTION_ID = 1;
 

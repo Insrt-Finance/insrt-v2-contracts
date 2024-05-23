@@ -10,6 +10,8 @@ export NUMBER_OF_MINTS=$2
 export RANDOMNESS="$3,$4"
 export PRICE_PER_MINT=$5
 export PRIZE_VALUE_IN_WEI=$6
+export REFERRAL_MINT=$7
+export RISK_REWARD_RATIO=$8
 
 # Run forge scripts
 forge script script/Blast/${CALCULATION_SCRIPT} --rpc-url $RPC_URL

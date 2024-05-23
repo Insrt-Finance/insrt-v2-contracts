@@ -754,5 +754,5 @@ Requires the following additional environment variables set:
 #### Calculating mint results
 
 ```
-make calculate-mint-result-blast <mint-collection-address> <number-of-mint-attempts> <randomness-signature-index-1> <randomness-signature-index-2> <price-per-mint> <prize-value> <referral-mint>
+make calculate-mint-result-blast <mint-collection-address> <number-of-mint-attempts> <randomness-signature-index-1> <randomness-signature-index-2> <price-per-mint> <prize-value> <referral-mint> <risk-reward_ratio>
 ```

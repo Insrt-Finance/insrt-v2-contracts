@@ -79,13 +79,14 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
 
-        uint256 expectedCollectionConsolationFee = (expectedEthRequired *
-            perpetualMint.collectionConsolationFeeBP()) / perpetualMint.BASIS();
+        uint256 expectedMintForEthConsolationFee = (expectedEthRequired *
+            perpetualMint.mintForEthConsolationFeeBP()) / perpetualMint.BASIS();
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -93,7 +94,7 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
         assert(
             postMintAccruedConsolationFees ==
                 preMintAccruedConsolationFees -
-                    (expectedEthRequired - expectedCollectionConsolationFee)
+                    (expectedEthRequired - expectedMintForEthConsolationFee)
         );
 
         uint256 postMintAccruedProtocolFees = perpetualMint
@@ -110,7 +111,7 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
         assert(
             postMintAccruedMintEarnings ==
                 expectedEthRequired -
-                    expectedCollectionConsolationFee -
+                    expectedMintForEthConsolationFee -
                     expectedMintFee +
                     preMintAccruedMintEarnings // account for the mocked mint earnings during setup
         );
@@ -155,13 +156,14 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
 
-        uint256 expectedCollectionConsolationFee = (expectedEthRequired *
-            perpetualMint.collectionConsolationFeeBP()) / perpetualMint.BASIS();
+        uint256 expectedMintForEthConsolationFee = (expectedEthRequired *
+            perpetualMint.mintForEthConsolationFeeBP()) / perpetualMint.BASIS();
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -169,7 +171,7 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
         assert(
             postMintAccruedConsolationFees ==
                 preMintAccruedConsolationFees -
-                    (expectedEthRequired - expectedCollectionConsolationFee)
+                    (expectedEthRequired - expectedMintForEthConsolationFee)
         );
 
         uint256 postMintAccruedProtocolFees = perpetualMint
@@ -186,7 +188,7 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
         assert(
             postMintAccruedMintEarnings ==
                 expectedEthRequired -
-                    expectedCollectionConsolationFee -
+                    expectedMintForEthConsolationFee -
                     expectedMintFee +
                     preMintAccruedMintEarnings // account for the mocked mint earnings during setup
         );
@@ -229,13 +231,14 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
 
-        uint256 expectedCollectionConsolationFee = (expectedEthRequired *
-            perpetualMint.collectionConsolationFeeBP()) / perpetualMint.BASIS();
+        uint256 expectedMintForEthConsolationFee = (expectedEthRequired *
+            perpetualMint.mintForEthConsolationFeeBP()) / perpetualMint.BASIS();
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -243,7 +246,7 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
         assert(
             postMintAccruedConsolationFees ==
                 preMintAccruedConsolationFees -
-                    (expectedEthRequired - expectedCollectionConsolationFee)
+                    (expectedEthRequired - expectedMintForEthConsolationFee)
         );
 
         uint256 postMintAccruedProtocolFees = perpetualMint
@@ -260,7 +263,7 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
         assert(
             postMintAccruedMintEarnings ==
                 expectedEthRequired -
-                    expectedCollectionConsolationFee -
+                    expectedMintForEthConsolationFee -
                     expectedMintFee +
                     preMintAccruedMintEarnings // account for the mocked mint earnings during setup
         );
@@ -302,13 +305,14 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
             REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
 
-        uint256 expectedCollectionConsolationFee = (expectedEthRequired *
-            perpetualMint.collectionConsolationFeeBP()) / perpetualMint.BASIS();
+        uint256 expectedMintForEthConsolationFee = (expectedEthRequired *
+            perpetualMint.mintForEthConsolationFeeBP()) / perpetualMint.BASIS();
 
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
@@ -316,7 +320,7 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
         assert(
             postMintAccruedConsolationFees ==
                 preMintAccruedConsolationFees -
-                    (expectedEthRequired - expectedCollectionConsolationFee)
+                    (expectedEthRequired - expectedMintForEthConsolationFee)
         );
 
         uint256 postMintAccruedProtocolFees = perpetualMint
@@ -340,7 +344,7 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
         assert(
             postMintAccruedMintEarnings ==
                 expectedEthRequired -
-                    expectedCollectionConsolationFee -
+                    expectedMintForEthConsolationFee -
                     expectedMintFee +
                     preMintAccruedMintEarnings // account for the mocked mint earnings during setup
         );
@@ -392,15 +396,16 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
 
         uint256 expectedEthRequired = MINT_PRICE * TEST_MINT_ATTEMPTS;
 
-        uint256 expectedCollectionConsolationFee = (expectedEthRequired *
-            perpetualMint.collectionConsolationFeeBP()) / perpetualMint.BASIS();
+        uint256 expectedMintForEthConsolationFee = (expectedEthRequired *
+            perpetualMint.mintForEthConsolationFeeBP()) / perpetualMint.BASIS();
 
-        uint256 expectedAdditionalDepositorFee = (expectedCollectionConsolationFee *
+        uint256 expectedAdditionalDepositorFee = (expectedMintForEthConsolationFee *
                 TEST_COLLECTION_MINT_FEE_DISTRIBUTION_RATIO_BP) /
                 perpetualMint.BASIS();
 
@@ -411,7 +416,7 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
             postMintAccruedConsolationFees ==
                 preMintAccruedConsolationFees -
                     (expectedEthRequired -
-                        expectedCollectionConsolationFee +
+                        expectedMintForEthConsolationFee +
                         expectedAdditionalDepositorFee)
         );
 
@@ -429,7 +434,7 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
         assert(
             postMintAccruedMintEarnings ==
                 expectedEthRequired -
-                    expectedCollectionConsolationFee -
+                    expectedMintForEthConsolationFee -
                     expectedMintFee +
                     expectedAdditionalDepositorFee +
                     preMintAccruedMintEarnings // account for the mocked mint earnings during setup
@@ -461,7 +466,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE * 2
+            TEST_MINT_FOR_ETH_PRIZE_VALUE * 2,
+            TEST_RISK_REWARD_RATIO
         );
     }
 
@@ -475,7 +481,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
             NO_REFERRER,
             2_500 ether + 1, // 2,500 $MINT + 1 wei (dust)
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
     }
 
@@ -489,7 +496,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
             NO_REFERRER,
             1 ether - 1, // less than 1 $MINT
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
     }
 
@@ -505,7 +513,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             ZERO_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
     }
 
@@ -522,7 +531,8 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
             NO_REFERRER,
             MINT_PRICE * currentEthToMintRatio,
             TEST_MINT_ATTEMPTS,
-            TEST_MINT_FOR_ETH_PRIZE_VALUE
+            TEST_MINT_FOR_ETH_PRIZE_VALUE,
+            TEST_RISK_REWARD_RATIO
         );
     }
 

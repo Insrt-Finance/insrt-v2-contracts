@@ -9,10 +9,12 @@ interface IPerpetualMint {
     /// @param referrer referrer address for mint attempts
     /// @param numberOfMints number of mints to attempt
     /// @param ethPrizeValueInWei value of ETH prize in wei
+    /// @param riskRewardRatio risk reward ratio for mint attempts
     function attemptBatchMintForEthWithEth(
         address referrer,
         uint32 numberOfMints,
-        uint256 ethPrizeValueInWei
+        uint256 ethPrizeValueInWei,
+        uint32 riskRewardRatio
     ) external payable;
 
     /// @notice Attempts a batch mint for the msg.sender for ETH using $MINT tokens as payment.
@@ -20,11 +22,13 @@ interface IPerpetualMint {
     /// @param pricePerMint price per mint for ETH ($MINT denominated in units of wei)
     /// @param numberOfMints number of mints to attempt
     /// @param ethPrizeValueInWei value of ETH prize in wei
+    /// @param riskRewardRatio risk reward ratio for mint attempts
     function attemptBatchMintForEthWithMint(
         address referrer,
         uint256 pricePerMint,
         uint32 numberOfMints,
-        uint256 ethPrizeValueInWei
+        uint256 ethPrizeValueInWei,
+        uint32 riskRewardRatio
     ) external;
 
     /// @notice Attempts a batch mint for the msg.sender for $MINT using ETH as payment.

@@ -62,7 +62,8 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFeePerSpin: TEST_MINT_EARNINGS_FEE_PER_SPIN,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE,
+                riskRewardRatio: TEST_RISK_REWARD_RATIO
             }),
             randomWords
         );
@@ -116,7 +117,8 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFeePerSpin: TEST_MINT_EARNINGS_FEE_PER_SPIN,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE,
+                riskRewardRatio: TEST_RISK_REWARD_RATIO
             }),
             randomWords
         );
@@ -170,7 +172,8 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFeePerSpin: TEST_MINT_EARNINGS_FEE_PER_SPIN,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE,
+                riskRewardRatio: TEST_RISK_REWARD_RATIO
             }),
             randomWords
         );
@@ -224,7 +227,8 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFeePerSpin: TEST_MINT_EARNINGS_FEE_PER_SPIN,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE,
+                riskRewardRatio: TEST_RISK_REWARD_RATIO
             }),
             randomWords
         );
@@ -286,7 +290,8 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFeePerSpin: TEST_MINT_EARNINGS_FEE_PER_SPIN,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE,
+                riskRewardRatio: TEST_RISK_REWARD_RATIO
             }),
             randomWords
         );
@@ -338,7 +343,8 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFeePerSpin: TEST_MINT_EARNINGS_FEE_PER_SPIN,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE,
+                riskRewardRatio: TEST_RISK_REWARD_RATIO
             }),
             randomWords
         );
@@ -382,7 +388,8 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFeePerSpin: TEST_MINT_EARNINGS_FEE_PER_SPIN,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE,
+                riskRewardRatio: TEST_RISK_REWARD_RATIO
             }),
             randomWords
         );
@@ -404,7 +411,8 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFeePerSpin: TEST_MINT_EARNINGS_FEE_PER_SPIN,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE,
+                riskRewardRatio: TEST_RISK_REWARD_RATIO
             }),
             randomWords
         );
@@ -421,7 +429,8 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFeePerSpin: TEST_MINT_EARNINGS_FEE_PER_SPIN,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE,
+                riskRewardRatio: TEST_RISK_REWARD_RATIO
             }),
             randomWords
         );
@@ -439,7 +448,8 @@ contract PerpetualMint_resolveMintsForEth is
                 collection: COLLECTION,
                 mintEarningsFeePerSpin: TEST_MINT_EARNINGS_FEE_PER_SPIN,
                 mintPriceAdjustmentFactor: TEST_ADJUSTMENT_FACTOR,
-                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE
+                prizeValueInWei: TEST_MINT_FOR_ETH_PRIZE_VALUE,
+                riskRewardRatio: TEST_RISK_REWARD_RATIO
             }),
             randomWords
         );

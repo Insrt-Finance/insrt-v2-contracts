@@ -18,13 +18,15 @@ contract PerpetualMintHarnessSupra is PerpetualMintHarness {
     function attemptBatchMintForEthWithEth(
         address referrer,
         uint32 numberOfMints,
-        uint256 ethPrizeValueInWei
+        uint256 ethPrizeValueInWei,
+        uint32 riskRewardRatio
     ) external payable override whenNotPaused {
         _attemptBatchMintForEthWithEthSupra(
             msg.sender,
             referrer,
             uint8(numberOfMints),
             TWO_WORDS,
+            riskRewardRatio,
             ethPrizeValueInWei
         );
     }
@@ -33,7 +35,8 @@ contract PerpetualMintHarnessSupra is PerpetualMintHarness {
         address referrer,
         uint256 pricePerMint,
         uint32 numberOfMints,
-        uint256 ethPrizeValueInWei
+        uint256 ethPrizeValueInWei,
+        uint32 riskRewardRatio
     ) external override whenNotPaused {
         _attemptBatchMintForEthWithMintSupra(
             msg.sender,
@@ -41,6 +44,7 @@ contract PerpetualMintHarnessSupra is PerpetualMintHarness {
             pricePerMint,
             uint8(numberOfMints),
             TWO_WORDS,
+            riskRewardRatio,
             ethPrizeValueInWei
         );
     }

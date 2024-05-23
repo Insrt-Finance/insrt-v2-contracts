@@ -102,9 +102,9 @@ contract UpgradeAndRemovePerpetualMintViewSupraBlastEOA is Script {
     }
 
     /// @dev provides the removal facet cuts for removing PerpetualMintView & PerpetualMintViewSupraBlast facets functions from Core
-    /// @param viewFacetAddress address of PerpetualMintView facet
+    /// @param facetAddress target address to remove
     function getRemovalPerpetualMintViewFacetCuts(
-        address viewFacetAddress
+        address facetAddress
     ) internal pure returns (ICore.FacetCut[] memory facetCuts) {
         // map the PerpetualMintViewSupraBlast related function selectors to their respective interfaces
         bytes4[]
@@ -114,14 +114,14 @@ contract UpgradeAndRemovePerpetualMintViewSupraBlastEOA is Script {
 
         perpetualMintViewSupraBlastFunctionSelectors[0] = bytes4(
             keccak256(
-                "calculateMintResultSupraBlast(address,uint8,uint256[2],uint256,uint256)"
+                "calculateMintResultSupraBlast(address,uint8,uint256[2],uint256,uint256,bool)"
             )
         );
 
         ICore.FacetCut
             memory perpetualMintViewSupraBlastFacetCut = IDiamondWritableInternal
                 .FacetCut({
-                    target: viewFacetAddress,
+                    target: facetAddress,
                     action: IDiamondWritableInternal.FacetCutAction.REMOVE,
                     selectors: perpetualMintViewSupraBlastFunctionSelectors
                 });

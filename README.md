@@ -658,6 +658,12 @@ Requires the following additional environment variables set:
 - `BLAST_RPC_URL`: Blast RPC URL
 - `BLASTSCAN_API_KEY`: Blastscan API key for contract verification
 
+##### Upgrade & Remove PerpetualMint & PerpetualMintSupraBlast facet
+
+```
+make upgrade-remove-perp-mint-blast
+```
+
 ##### Upgrade & Remove PerpetualMintView & PerpetualMintViewSupraBlast facet
 
 ```
@@ -694,6 +700,12 @@ Requires the following additional environment variables set:
 
 - `BLAST_SEPOLIA_RPC_URL`: Blast Sepolia RPC URL
 - `BLASTSCAN_API_KEY`: Blastscan API key for contract verification
+
+##### Upgrade & Remove PerpetualMint & PerpetualMintSupraBlast facet
+
+```
+make upgrade-remove-perp-mint-blast-sepolia
+```
 
 ##### Upgrade & Remove PerpetualMintView & PerpetualMintViewSupraBlast facet
 

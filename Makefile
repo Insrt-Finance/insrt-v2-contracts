@@ -249,6 +249,10 @@ remove-failed-vrf-fulfillments-blast:
 upgrade-perp-mint-admin-blast:
 	@./script/Blast/upgrade/upgrade-perp-mint-admin-blast.sh
 
+##### Upgrade & Remove PerpetualMint & PerpetualMintSupraBlast facet
+upgrade-remove-perp-mint-blast:
+	@./script/Blast/upgrade/upgrade-remove-perp-mint-blast.sh
+
 ##### Upgrade & Remove PerpetualMintView & PerpetualMintViewSupraBlast facet
 upgrade-remove-perp-mint-view-blast:
 	@./script/Blast/upgrade/upgrade-remove-perp-mint-view-blast.sh
@@ -270,6 +274,10 @@ upgrade-split-perp-mint-blast:
 ##### Configure Blast Points Operator using ConfigurePointsOperator facet
 configure-blast-points-operator-blast-sepolia:
 	@./script/Blast/upgrade/configure-points-operator-blast-sepolia.sh
+
+##### Upgrade & Remove PerpetualMint & PerpetualMintSupraBlast facet
+upgrade-remove-perp-mint-blast-sepolia:
+	@./script/Blast/upgrade/upgrade-remove-perp-mint-blast-sepolia.sh
 
 ##### Upgrade & Remove PerpetualMintView & PerpetualMintViewSupraBlast facet
 upgrade-remove-perp-mint-view-blast-sepolia:

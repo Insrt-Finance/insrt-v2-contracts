@@ -127,7 +127,7 @@ contract UpgradeAndRemovePerpetualMintViewSupraBlast is BatchScript {
 
         perpetualMintViewFunctionSelectors[0] = bytes4(
             keccak256(
-                "calculateMintResultSupraBlast(address,uint8,uint256[2],uint256,uint256)"
+                "calculateMintResultSupraBlast(address,uint8,uint256[2],uint256,uint256,bool)"
             )
         );
 

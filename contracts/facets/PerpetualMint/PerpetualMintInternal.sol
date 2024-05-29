@@ -2125,7 +2125,7 @@ abstract contract PerpetualMintInternal is
                 ++result.totalSuccessfulMints;
             }
 
-            result.mintOutcomes[i / 3] = outcome;
+            result.mintOutcomes[i / 2] = outcome;
         }
     }
 

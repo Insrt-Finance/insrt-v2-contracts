@@ -761,7 +761,7 @@ abstract contract PerpetualMintInternal is
 
         mintEarningsFee = netConsolationFee - referralFee;
 
-        // update the accrued depositor mint earnings
+        // update the accrued mint earnings
         l.mintEarnings += mintEarningsFee;
     }
 

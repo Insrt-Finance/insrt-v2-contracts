@@ -9,6 +9,7 @@ import { IGuardsInternal } from "./IGuardsInternal.sol";
 abstract contract GuardsInternal is IGuardsInternal {
     /// @notice enforces that a value does not exceed the basis
     /// @param value value to check
+    /// @param basis basis to check against
     function _enforceBasis(uint32 value, uint32 basis) internal pure {
         if (value > basis) {
             revert BasisExceeded();

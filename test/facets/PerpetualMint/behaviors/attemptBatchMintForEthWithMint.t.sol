@@ -317,21 +317,23 @@ contract PerpetualMint_attemptBatchMintForEthWithMint is
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
 
-        assert(
-            postMintAccruedConsolationFees ==
-                preMintAccruedConsolationFees -
-                    (expectedEthRequired - expectedMintForEthConsolationFee)
-        );
-
-        uint256 postMintAccruedProtocolFees = perpetualMint
-            .accruedProtocolFees();
-
         uint256 expectedMintFee = (expectedEthRequired *
             perpetualMint.mintFeeBP()) / perpetualMint.BASIS();
 
         uint256 expectedMintReferralFee = (expectedMintFee *
             perpetualMint.defaultCollectionReferralFeeBP()) /
             perpetualMint.BASIS();
+
+        assert(
+            postMintAccruedConsolationFees ==
+                preMintAccruedConsolationFees -
+                    (expectedEthRequired -
+                        expectedMintForEthConsolationFee -
+                        expectedMintReferralFee)
+        );
+
+        uint256 postMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
 
         assert(
             postMintAccruedProtocolFees ==

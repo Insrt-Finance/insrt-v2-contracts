@@ -292,21 +292,23 @@ contract PerpetualMint_attemptBatchMintWithMintSupraBlast is
         uint256 postMintAccruedConsolationFees = perpetualMint
             .accruedConsolationFees();
 
-        assert(
-            postMintAccruedConsolationFees ==
-                preMintAccruedConsolationFees -
-                    (expectedEthRequired - expectedCollectionConsolationFee)
-        );
-
-        uint256 postMintAccruedProtocolFees = perpetualMint
-            .accruedProtocolFees();
-
         uint256 expectedMintFee = (expectedEthRequired *
             perpetualMint.mintFeeBP()) / perpetualMint.BASIS();
 
         uint256 expectedMintReferralFee = (expectedMintFee *
             perpetualMint.collectionReferralFeeBP(COLLECTION)) /
             perpetualMint.BASIS();
+
+        assert(
+            postMintAccruedConsolationFees ==
+                preMintAccruedConsolationFees -
+                    (expectedEthRequired -
+                        expectedCollectionConsolationFee -
+                        expectedMintReferralFee)
+        );
+
+        uint256 postMintAccruedProtocolFees = perpetualMint
+            .accruedProtocolFees();
 
         // protocol fee is not applied to Blast deploy
         assert(postMintAccruedProtocolFees == preMintAccruedProtocolFees);

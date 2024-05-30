@@ -557,8 +557,8 @@ abstract contract PerpetualMintInternal is
             mintForEthConsolationFee +
             additionalDepositorFee;
 
-        // update the accrued consolation fees
-        l.consolationFees -= netConsolationFee;
+        // update the accrued consolation fees (subtracting the referral fee if applicable)
+        l.consolationFees -= netConsolationFee - referralFee;
 
         mintEarningsFee = netConsolationFee - mintFee;
 
@@ -756,8 +756,8 @@ abstract contract PerpetualMintInternal is
             mintForEthConsolationFee +
             additionalMintEarningsFee;
 
-        // update the accrued consolation fees
-        l.consolationFees -= netConsolationFee;
+        // update the accrued consolation fees (subtracting the referral fee if applicable)
+        l.consolationFees -= netConsolationFee - referralFee;
 
         mintEarningsFee = netConsolationFee - referralFee;
 
@@ -1507,8 +1507,8 @@ abstract contract PerpetualMintInternal is
             collectionConsolationFee +
             additionalDepositorFee;
 
-        // update the accrued consolation fees
-        l.consolationFees -= netConsolationFee;
+        // update the accrued consolation fees (subtracting the referral fee if applicable)
+        l.consolationFees -= netConsolationFee - referralFee;
 
         mintEarningsFee = netConsolationFee - mintFee;
 
@@ -1641,8 +1641,8 @@ abstract contract PerpetualMintInternal is
             collectionConsolationFee +
             additionalDepositorFee;
 
-        // update the accrued consolation fees
-        l.consolationFees -= netConsolationFee;
+        // update the accrued consolation fees (subtracting the referral fee if applicable)
+        l.consolationFees -= netConsolationFee - referralFee;
 
         mintEarningsFee = netConsolationFee - referralFee;
 

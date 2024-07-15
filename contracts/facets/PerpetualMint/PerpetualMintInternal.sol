@@ -53,6 +53,9 @@ abstract contract PerpetualMintInternal is
     /// @dev minimum price per spin, 0.0025 ETH / 2,500 $MINT
     uint256 internal constant MINIMUM_PRICE_PER_SPIN = 0.0025 ether;
 
+    /// @dev number of words for VRF request
+    uint32 internal constant STANDARD_NUMBER_OF_WORDS = 2;
+
     /// @dev address of the Blast precompile
     address private constant BLAST = 0x4300000000000000000000000000000000000002;
 
@@ -213,25 +216,27 @@ abstract contract PerpetualMintInternal is
                 referrer
             ) / numberOfMints;
 
-        // if the number of words requested is greater than the max allowed by the VRF coordinator,
-        // the request for random words will fail (max random words is currently 500 per request).
-        uint32 numWords = numberOfMints * 2; // 2 words per mint for ETH, current max of 250 mints per tx
-
         uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
                 collectionData,
                 pricePerSpin
             );
 
-        _requestRandomWords(
-            l,
-            collectionData,
-            minter,
-            ETH_COLLECTION_ADDRESS,
-            mintEarningsFeePerSpin,
-            mintPriceAdjustmentFactor,
-            ethPrizeValueInWei,
-            numWords
-        );
+        // if the number of words requested is greater than the max allowed by the VRF coordinator,
+        // the request for random words will fail (max random words is currently 500 per request).
+        // 2 words per mint for ETH, current max of 250 mints per tx
+
+        for(uint256 i = 0; i < numberOfMints; i++){
+            _requestRandomWords(
+                l,
+                collectionData,
+                minter,
+                ETH_COLLECTION_ADDRESS,
+                mintEarningsFeePerSpin,
+                mintPriceAdjustmentFactor,
+                ethPrizeValueInWei,
+                STANDARD_NUMBER_OF_WORDS
+            );
+        }
     }
 
     function _attemptBatchMintForEthWithEth_calculateAndDistributeFees(
@@ -354,27 +359,27 @@ abstract contract PerpetualMintInternal is
         // If the number of words requested exceeds this limit, the function call will revert.
         //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
         //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
-        uint8 numWords = mintForEthWithEthParametersSupra.numberOfMints *
-            mintForEthWithEthParametersSupra.wordsPerMint;
 
-        _requestRandomWordsSupra(
-            l,
-            collectionData,
-            RequestData({
-                minter: mintForEthWithEthParametersSupra.minter,
-                collection: ETH_COLLECTION_ADDRESS,
-                mintEarningsFeePerSpin: mintEarningsFeePerSpin,
-                mintPriceAdjustmentFactor: _attemptBatchMint_calculateMintPriceAdjustmentFactor(
-                    collectionData,
-                    mintForEthWithEthParametersSupra.pricePerSpin
-                ),
-                prizeValueInWei: mintForEthWithEthParametersSupra
-                    .ethPrizeValueInWei,
-                riskRewardRatio: mintForEthWithEthParametersSupra
-                    .riskRewardRatio
-            }),
-            numWords
-        );
+        for(uint256 i = 0; i < mintForEthWithEthParametersSupra.numberOfMints; i++){
+            _requestRandomWordsSupra(
+                l,
+                collectionData,
+                RequestData({
+                    minter: mintForEthWithEthParametersSupra.minter,
+                    collection: ETH_COLLECTION_ADDRESS,
+                    mintEarningsFeePerSpin: mintEarningsFeePerSpin,
+                    mintPriceAdjustmentFactor: _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                        collectionData,
+                        mintForEthWithEthParametersSupra.pricePerSpin
+                    ),
+                    prizeValueInWei: mintForEthWithEthParametersSupra
+                        .ethPrizeValueInWei,
+                    riskRewardRatio: mintForEthWithEthParametersSupra
+                        .riskRewardRatio
+                }),
+                mintForEthWithEthParametersSupra.wordsPerMint
+            );
+        }
     }
 
     function _attemptBatchMintForEthWithEthSupraBlast_calculateAndDistributeFees(
@@ -486,25 +491,27 @@ abstract contract PerpetualMintInternal is
                 ethToMintRatio
             ) / numberOfMints;
 
-        // if the number of words requested is greater than the max allowed by the VRF coordinator,
-        // the request for random words will fail (max random words is currently 500 per request).
-        uint32 numWords = numberOfMints * 2; // 2 words per mint for ETH, current max of 250 mints per tx
-
         uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
                 collectionData,
                 pricePerSpinInWei
             );
 
-        _requestRandomWords(
-            l,
-            collectionData,
-            minter,
-            ETH_COLLECTION_ADDRESS,
-            mintEarningsFeePerSpin,
-            mintPriceAdjustmentFactor,
-            ethPrizeValueInWei,
-            numWords
-        );
+        // if the number of words requested is greater than the max allowed by the VRF coordinator,
+        // the request for random words will fail (max random words is currently 500 per request).
+        // 2 words per mint for ETH, current max of 250 mints per tx
+
+        for(uint256 i = 0; i < numberOfMints; i++){
+            _requestRandomWords(
+                l,
+                collectionData,
+                minter,
+                ETH_COLLECTION_ADDRESS,
+                mintEarningsFeePerSpin,
+                mintPriceAdjustmentFactor,
+                ethPrizeValueInWei,
+                STANDARD_NUMBER_OF_WORDS
+            );
+        }
     }
 
     function _attemptBatchMintForEthWithMint_calculateAndDistributeFees(
@@ -640,27 +647,27 @@ abstract contract PerpetualMintInternal is
         // If the number of words requested exceeds this limit, the function call will revert.
         //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
         //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
-        uint8 numWords = mintForEthWithMintParametersSupra.numberOfMints *
-            mintForEthWithMintParametersSupra.wordsPerMint;
 
-        _requestRandomWordsSupra(
-            l,
-            collectionData,
-            RequestData({
-                minter: mintForEthWithMintParametersSupra.minter,
-                collection: ETH_COLLECTION_ADDRESS,
-                mintEarningsFeePerSpin: mintEarningsFeePerSpin,
-                mintPriceAdjustmentFactor: _attemptBatchMint_calculateMintPriceAdjustmentFactor(
-                    collectionData,
-                    mintForEthWithMintParametersSupra.pricePerSpinInWei
-                ),
-                prizeValueInWei: mintForEthWithMintParametersSupra
-                    .ethPrizeValueInWei,
-                riskRewardRatio: mintForEthWithMintParametersSupra
-                    .riskRewardRatio
-            }),
-            numWords
-        );
+        for(uint256 i = 0; i < mintForEthWithMintParametersSupra.numberOfMints; i++){
+            _requestRandomWordsSupra(
+                l,
+                collectionData,
+                RequestData({
+                    minter: mintForEthWithMintParametersSupra.minter,
+                    collection: ETH_COLLECTION_ADDRESS,
+                    mintEarningsFeePerSpin: mintEarningsFeePerSpin,
+                    mintPriceAdjustmentFactor: _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                        collectionData,
+                        mintForEthWithMintParametersSupra.pricePerSpinInWei
+                    ),
+                    prizeValueInWei: mintForEthWithMintParametersSupra
+                        .ethPrizeValueInWei,
+                    riskRewardRatio: mintForEthWithMintParametersSupra
+                        .riskRewardRatio
+                }),
+                mintForEthWithMintParametersSupra.wordsPerMint
+            );
+        }
     }
 
     function _attemptBatchMintForEthWithMintSupra_validateAndDistributeFees(
@@ -795,25 +802,28 @@ abstract contract PerpetualMintInternal is
             referrer
         );
 
-        // if the number of words requested is greater than the max allowed by the VRF coordinator,
-        // the request for random words will fail (max random words is currently 500 per request).
-        uint32 numWords = numberOfMints * 1; // 1 words per mint for $MINT, current max of 500 mints per tx
-
         uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
                 collectionData,
                 pricePerSpin
             );
+        
+        // if the number of words requested is greater than the max allowed by the VRF coordinator,
+        // the request for random words will fail (max random words is currently 500 per request).
+        // 1 words per mint for $MINT, current max of 500 mints per tx
 
-        _requestRandomWords(
-            l,
-            collectionData,
-            minter,
-            MINT_TOKEN_COLLECTION_ADDRESS,
-            0,
-            mintPriceAdjustmentFactor,
-            0,
-            numWords
-        );
+
+        for(uint256 i = 0; i < numberOfMints; i++){ 
+            _requestRandomWords(
+                l,
+                collectionData,
+                minter,
+                MINT_TOKEN_COLLECTION_ADDRESS,
+                0,
+                mintPriceAdjustmentFactor,
+                0,
+                1
+            );
+        }
     }
 
     function _attemptBatchMintForMintWithEth_calculateAndDistributeFees(
@@ -893,26 +903,27 @@ abstract contract PerpetualMintInternal is
         // If the number of words requested exceeds this limit, the function call will revert.
         //    - For Blast Supra: 2 words per mint for $MINT (max 127 mints per transaction).
         //    - For standard Supra: 1 word per mint for $MINT (max 255 mints per transaction).
-        uint8 numWords = numberOfMints * wordsPerMint;
 
         uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
                 collectionData,
                 pricePerSpin
             );
 
-        _requestRandomWordsSupra(
-            l,
-            collectionData,
-            RequestData({
-                minter: minter,
-                collection: MINT_TOKEN_COLLECTION_ADDRESS,
-                mintEarningsFeePerSpin: 0,
-                mintPriceAdjustmentFactor: mintPriceAdjustmentFactor,
-                prizeValueInWei: 0,
-                riskRewardRatio: 0
-            }),
-            numWords
-        );
+        for(uint256 i = 0; i < numberOfMints; i++){
+            _requestRandomWordsSupra(
+                l,
+                collectionData,
+                RequestData({
+                    minter: minter,
+                    collection: MINT_TOKEN_COLLECTION_ADDRESS,
+                    mintEarningsFeePerSpin: 0,
+                    mintPriceAdjustmentFactor: mintPriceAdjustmentFactor,
+                    prizeValueInWei: 0,
+                    riskRewardRatio: 0
+                }),
+                wordsPerMint
+            );
+        }
     }
 
     function _attemptBatchMintForMintWithEthSupraBlast_calculateAndDistributeFees(
@@ -991,23 +1002,25 @@ abstract contract PerpetualMintInternal is
 
         // if the number of words requested is greater than the max allowed by the VRF coordinator,
         // the request for random words will fail (max random words is currently 500 per request).
-        uint32 numWords = numberOfMints * 1; // 1 words per mint for $MINT, current max of 500 mints per tx
+        // 1 words per mint for $MINT, current max of 500 mints per tx
 
         uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
                 collectionData,
                 pricePerSpinInWei
             );
 
-        _requestRandomWords(
-            l,
-            collectionData,
-            minter,
-            MINT_TOKEN_COLLECTION_ADDRESS,
-            0,
-            mintPriceAdjustmentFactor,
-            0,
-            numWords
-        );
+        for(uint256 i = 0; i < numberOfMints; i++){
+            _requestRandomWords(
+                l,
+                collectionData,
+                minter,
+                MINT_TOKEN_COLLECTION_ADDRESS,
+                0,
+                mintPriceAdjustmentFactor,
+                0,
+                1
+            );
+        }
     }
 
     function _attemptBatchMintForMintWithMint_calculateAndDistributeFees(
@@ -1102,28 +1115,29 @@ abstract contract PerpetualMintInternal is
         // If the number of words requested exceeds this limit, the function call will revert.
         //    - For Blast Supra: 2 words per mint for $MINT (max 127 mints per transaction).
         //    - For standard Supra: 1 word per mint for $MINT (max 255 mints per transaction).
-        uint8 numWords = numberOfMints * wordsPerMint;
 
         CollectionData storage collectionData = l.collections[
             MINT_TOKEN_COLLECTION_ADDRESS
         ];
 
-        _requestRandomWordsSupra(
-            l,
-            collectionData,
-            RequestData({
-                minter: minter,
-                collection: MINT_TOKEN_COLLECTION_ADDRESS,
-                mintEarningsFeePerSpin: 0,
-                mintPriceAdjustmentFactor: _attemptBatchMint_calculateMintPriceAdjustmentFactor(
-                    collectionData,
-                    pricePerSpinInWei
-                ),
-                prizeValueInWei: 0,
-                riskRewardRatio: 0
-            }),
-            numWords
-        );
+        for(uint256 i = 0; i < numberOfMints; i++){
+            _requestRandomWordsSupra(
+                l,
+                collectionData,
+                RequestData({
+                    minter: minter,
+                    collection: MINT_TOKEN_COLLECTION_ADDRESS,
+                    mintEarningsFeePerSpin: 0,
+                    mintPriceAdjustmentFactor: _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                        collectionData,
+                        pricePerSpinInWei
+                    ),
+                    prizeValueInWei: 0,
+                    riskRewardRatio: 0
+                }),
+                wordsPerMint
+            );
+        }
     }
 
     function _attemptBatchMintForMintWithMintSupraBlast_calculateAndDistributeFees(
@@ -1207,25 +1221,29 @@ abstract contract PerpetualMintInternal is
             referrer
         );
 
-        // if the number of words requested is greater than the max allowed by the VRF coordinator,
-        // the request for random words will fail (max random words is currently 500 per request).
-        uint32 numWords = numberOfMints * 2; // 2 words per mint, current max of 250 mints per tx
 
         uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
                 collectionData,
                 pricePerSpin
             );
 
-        _requestRandomWords(
-            l,
-            collectionData,
-            minter,
-            collection,
-            0,
-            mintPriceAdjustmentFactor,
-            0,
-            numWords
-        );
+        // if the number of words requested is greater than the max allowed by the VRF coordinator,
+        // the request for random words will fail (max random words is currently 500 per request).
+        // 2 words per mint, current max of 250 mints per tx
+
+
+        for(uint256 i = 0; i < numberOfMints; i++){
+            _requestRandomWords(
+                l,
+                collectionData,
+                minter,
+                collection,
+                0,
+                mintPriceAdjustmentFactor,
+                0,
+                STANDARD_NUMBER_OF_WORDS
+            );
+        }
     }
 
     function _attemptBatchMintWithEth_calculateAndDistributeFees(
@@ -1323,26 +1341,27 @@ abstract contract PerpetualMintInternal is
         // If the number of words requested exceeds this limit, the function call will revert.
         //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
         //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
-        uint8 numWords = numberOfMints * wordsPerMint;
 
         uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
                 collectionData,
                 pricePerSpin
             );
 
-        _requestRandomWordsSupra(
-            l,
-            collectionData,
-            RequestData({
-                minter: minter,
-                collection: collection,
-                mintEarningsFeePerSpin: 0,
-                mintPriceAdjustmentFactor: mintPriceAdjustmentFactor,
-                prizeValueInWei: 0,
-                riskRewardRatio: 0
-            }),
-            numWords
-        );
+        for(uint256 i = 0; i < numberOfMints; i++){
+            _requestRandomWordsSupra(
+                l,
+                collectionData,
+                RequestData({
+                    minter: minter,
+                    collection: collection,
+                    mintEarningsFeePerSpin: 0,
+                    mintPriceAdjustmentFactor: mintPriceAdjustmentFactor,
+                    prizeValueInWei: 0,
+                    riskRewardRatio: 0
+                }),
+                wordsPerMint
+            );
+        }
     }
 
     function _attemptBatchMintWithEthSupraBlast_calculateAndDistributeFees(
@@ -1436,25 +1455,29 @@ abstract contract PerpetualMintInternal is
             ethToMintRatio
         );
 
-        // if the number of words requested is greater than the max allowed by the VRF coordinator,
-        // the request for random words will fail (max random words is currently 500 per request).
-        uint32 numWords = numberOfMints * 2; // 2 words per mint, current max of 250 mints per tx
 
         uint256 mintPriceAdjustmentFactor = _attemptBatchMint_calculateMintPriceAdjustmentFactor(
                 collectionData,
                 pricePerSpinInWei
             );
+        
+        // if the number of words requested is greater than the max allowed by the VRF coordinator,
+        // the request for random words will fail (max random words is currently 500 per request).
+        // 2 words per mint, current max of 250 mints per tx
 
-        _requestRandomWords(
-            l,
-            collectionData,
-            minter,
-            collection,
-            0,
-            mintPriceAdjustmentFactor,
-            0,
-            numWords
-        );
+
+        for(uint256 i = 0; i < numberOfMints; i++){
+            _requestRandomWords(
+                l,
+                collectionData,
+                minter,
+                collection,
+                0,
+                mintPriceAdjustmentFactor,
+                0,
+                STANDARD_NUMBER_OF_WORDS
+            );
+        }
     }
 
     function _attemptBatchMintWithMint_calculateAndDistributeFees(
@@ -1541,16 +1564,12 @@ abstract contract PerpetualMintInternal is
 
         Storage.Layout storage l = Storage.layout();
 
-        uint256 ethToMintRatio = _ethToMintRatio(l);
-
-        uint256 pricePerSpinInWei = pricePerMint / ethToMintRatio;
-
-        uint256 ethRequired = pricePerSpinInWei * numberOfMints;
+        uint256 pricePerSpinInWei = pricePerMint / _ethToMintRatio(l);
 
         _attemptBatchMint_paidInMint_validateMintParameters(
             numberOfMints,
             l.consolationFees,
-            ethRequired,
+            pricePerSpinInWei * numberOfMints,
             pricePerSpinInWei,
             pricePerMint
         );
@@ -1562,33 +1581,35 @@ abstract contract PerpetualMintInternal is
             collectionData,
             minter,
             referrer,
-            ethRequired,
-            ethToMintRatio
+            pricePerSpinInWei * numberOfMints,
+            _ethToMintRatio(l)
         );
 
-        _requestRandomWordsSupra(
-            l,
-            collectionData,
-            RequestData({
-                minter: minter,
-                collection: collection,
-                mintEarningsFeePerSpin: 0,
-                mintPriceAdjustmentFactor: _attemptBatchMint_calculateMintPriceAdjustmentFactor(
-                    collectionData,
-                    pricePerSpinInWei
-                ),
-                prizeValueInWei: 0,
-                riskRewardRatio: 0
-            }),
-            // Calculate the total number of random words required for the Supra VRF request.
-            // Constraints:
-            // 1. numWords = 0 results in a revert.
-            // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
-            // If the number of words requested exceeds this limit, the function call will revert.
-            //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
-            //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
-            numberOfMints * wordsPerMint
-        );
+        for(uint256 i = 0; i < numberOfMints; i++){
+            _requestRandomWordsSupra(
+                l,
+                collectionData,
+                RequestData({
+                    minter: minter,
+                    collection: collection,
+                    mintEarningsFeePerSpin: 0,
+                    mintPriceAdjustmentFactor: _attemptBatchMint_calculateMintPriceAdjustmentFactor(
+                        collectionData,
+                        pricePerSpinInWei
+                    ),
+                    prizeValueInWei: 0,
+                    riskRewardRatio: 0
+                }),
+                // Calculate the total number of random words required for the Supra VRF request.
+                // Constraints:
+                // 1. numWords = 0 results in a revert.
+                // 2. Supra VRF limit: The maximum number of words allowed per request is 255.
+                // If the number of words requested exceeds this limit, the function call will revert.
+                //    - For Blast Supra: 3 words per mint (max 85 mints per transaction).
+                //    - For standard Supra: 2 word per mint (max 127 mints per transaction).
+                wordsPerMint
+            );
+        }
     }
 
     function _attemptBatchMintWithMintSupraBlast_calculateAndDistributeFees(

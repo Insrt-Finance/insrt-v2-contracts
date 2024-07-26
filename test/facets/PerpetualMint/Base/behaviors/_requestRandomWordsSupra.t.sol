@@ -20,27 +20,12 @@ contract PerpetualMint_requestRandomWordsSupra is
     /// @dev collection to test
     address COLLECTION = BORED_APE_YACHT_CLUB;
 
-    /// @dev Tests that _requestRandomWordsSupra functionality emits a RequestGenerated event when successfully requesting random words.
+    /// @dev Tests that _requestRandomWordsSupra functionality calls rngRequest on SupraGenerator contract when successfully requesting random words.
     function test_requestRandomWordsSupraEmitsRequestGenerated() external {
-        // Supra VRF Router nonce storage slot
-        bytes32 nonceStorageSlot = bytes32(uint256(3));
-
-        uint256 currentNonce = uint256(
-            vm.load(address(supraRouterContract), nonceStorageSlot)
-        );
-
-        vm.expectEmit();
-        emit RequestGenerated(
-            ++currentNonce,
-            ISupraGeneratorContract(
-                supraRouterContract._supraGeneratorContract()
-            ).instanceId(), // instanceId of Supra Generator
-            address(perpetualMint), // caller contract
-            VRF_REQUEST_FUNCTION_SIGNATURE,
-            TEST_NUM_WORDS,
-            TEST_VRF_NUMBER_OF_CONFIRMATIONS,
-            0, // no client seed used in Supra VRF requests
-            address(this) // client wallet address
+        vm.expectCall(
+            supraRouterContract._supraGeneratorContract(),
+            abi.encodeWithSelector(ISupraGeneratorContract.rngRequest.selector),
+            1
         );
 
         perpetualMint.exposed_requestRandomWordsSupra(

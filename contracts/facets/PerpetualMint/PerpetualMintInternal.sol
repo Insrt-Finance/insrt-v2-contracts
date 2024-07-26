@@ -2906,7 +2906,6 @@ abstract contract PerpetualMintInternal is
 
         collectionData.pendingRequests.add(requestId);
 
-        console.log(collectionData.pendingRequests.length());
         l.requests[requestId] = request;
     }
 

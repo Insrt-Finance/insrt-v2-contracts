@@ -10,7 +10,6 @@ import { BlastForkTest } from "../../../../../BlastForkTest.t.sol";
 import { CoreTest } from "../../../../../diamonds/Core/Core.t.sol";
 import { TokenProxyTest } from "../../../../../diamonds/TokenProxy.t.sol";
 
-import 'forge-std/console.sol';
 /// @title PerpetualMint_fulfillRandomWordsSupraBlast
 /// @dev PerpetualMint_SupraBlast test contract for testing expected fulfillRandomWords behavior. Tested on a Blast fork.
 contract PerpetualMint_fulfillRandomWordsSupraBlast is
@@ -96,7 +95,6 @@ contract PerpetualMint_fulfillRandomWordsSupraBlast is
             randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
         }
 
-      
         for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
             // each mint attempt adds a new request id, so all are checked
             assert(
@@ -105,23 +103,18 @@ contract PerpetualMint_fulfillRandomWordsSupraBlast is
                     i
                 ) == postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1)
             );
-
-       
         }
 
-         for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
-         // mock the Supra VRF Generator RNG request callback for all requests
-        vm.prank(supraRouterContract._supraGeneratorContract());
-        supraRouterContract.rngCallback(
-            postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1),
-            randomWords,
-            address(perpetualMint),
-            VRF_REQUEST_FUNCTION_SIGNATURE
-        );
-         }
-        
-
-
+        for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
+            // mock the Supra VRF Generator RNG request callback for all requests
+            vm.prank(supraRouterContract._supraGeneratorContract());
+            supraRouterContract.rngCallback(
+                postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1),
+                randomWords,
+                address(perpetualMint),
+                VRF_REQUEST_FUNCTION_SIGNATURE
+            );
+        }
 
         // we expect the next call to fail to assert all the mock mint request have been fulfilled
         vm.expectRevert(EnumerableSet.EnumerableSet__IndexOutOfBounds.selector);
@@ -181,20 +174,18 @@ contract PerpetualMint_fulfillRandomWordsSupraBlast is
                     i
                 ) == postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1)
             );
-
-       
         }
 
-         for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
-         // mock the Supra VRF Generator RNG request callback for all requests
-        vm.prank(supraRouterContract._supraGeneratorContract());
-        supraRouterContract.rngCallback(
-            postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1),
-            randomWords,
-            address(perpetualMint),
-            VRF_REQUEST_FUNCTION_SIGNATURE
-        );
-         }
+        for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
+            // mock the Supra VRF Generator RNG request callback for all requests
+            vm.prank(supraRouterContract._supraGeneratorContract());
+            supraRouterContract.rngCallback(
+                postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1),
+                randomWords,
+                address(perpetualMint),
+                VRF_REQUEST_FUNCTION_SIGNATURE
+            );
+        }
 
         // we expect the next call to fail to assert the mock mint request has been fulfilled
         vm.expectRevert(EnumerableSet.EnumerableSet__IndexOutOfBounds.selector);
@@ -255,20 +246,18 @@ contract PerpetualMint_fulfillRandomWordsSupraBlast is
                     i
                 ) == postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1)
             );
-
-       
         }
 
-         for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
-         // mock the Supra VRF Generator RNG request callback for all requests
-        vm.prank(supraRouterContract._supraGeneratorContract());
-        supraRouterContract.rngCallback(
-            postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1),
-            randomWords,
-            address(perpetualMint),
-            VRF_REQUEST_FUNCTION_SIGNATURE
-        );
-         }
+        for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
+            // mock the Supra VRF Generator RNG request callback for all requests
+            vm.prank(supraRouterContract._supraGeneratorContract());
+            supraRouterContract.rngCallback(
+                postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1),
+                randomWords,
+                address(perpetualMint),
+                VRF_REQUEST_FUNCTION_SIGNATURE
+            );
+        }
 
         // we expect the next call to fail to assert the mock mint request has been fulfilled
         vm.expectRevert(EnumerableSet.EnumerableSet__IndexOutOfBounds.selector);
@@ -315,7 +304,7 @@ contract PerpetualMint_fulfillRandomWordsSupraBlast is
             randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
         }
 
-       for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
+        for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
             // each mint attempt adds a new request id, so all are checked
             assert(
                 perpetualMint.exposed_pendingRequestsAt(
@@ -323,20 +312,18 @@ contract PerpetualMint_fulfillRandomWordsSupraBlast is
                     i
                 ) == postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1)
             );
-
-       
         }
 
-         for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
-         // mock the Supra VRF Generator RNG request callback for all requests
-        vm.prank(supraRouterContract._supraGeneratorContract());
-        supraRouterContract.rngCallback(
-            postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1),
-            randomWords,
-            address(perpetualMint),
-            VRF_REQUEST_FUNCTION_SIGNATURE
-        );
-         }
+        for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
+            // mock the Supra VRF Generator RNG request callback for all requests
+            vm.prank(supraRouterContract._supraGeneratorContract());
+            supraRouterContract.rngCallback(
+                postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1),
+                randomWords,
+                address(perpetualMint),
+                VRF_REQUEST_FUNCTION_SIGNATURE
+            );
+        }
 
         // we expect the next call to fail to assert the mock mint request has been fulfilled
         vm.expectRevert(EnumerableSet.EnumerableSet__IndexOutOfBounds.selector);
@@ -388,7 +375,7 @@ contract PerpetualMint_fulfillRandomWordsSupraBlast is
             randomWords[i] = uint256(keccak256(abi.encode(randomness, i)));
         }
 
-       for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
+        for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
             // each mint attempt adds a new request id, so all are checked
             assert(
                 perpetualMint.exposed_pendingRequestsAt(
@@ -396,20 +383,18 @@ contract PerpetualMint_fulfillRandomWordsSupraBlast is
                     i
                 ) == postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1)
             );
-
-       
         }
 
-         for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
-         // mock the Supra VRF Generator RNG request callback for all requests
-        vm.prank(supraRouterContract._supraGeneratorContract());
-        supraRouterContract.rngCallback(
-            postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1),
-            randomWords,
-            address(perpetualMint),
-            VRF_REQUEST_FUNCTION_SIGNATURE
-        );
-         }
+        for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
+            // mock the Supra VRF Generator RNG request callback for all requests
+            vm.prank(supraRouterContract._supraGeneratorContract());
+            supraRouterContract.rngCallback(
+                postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1),
+                randomWords,
+                address(perpetualMint),
+                VRF_REQUEST_FUNCTION_SIGNATURE
+            );
+        }
 
         // we expect the next call to fail to assert the mock mint request has been fulfilled
         vm.expectRevert(EnumerableSet.EnumerableSet__IndexOutOfBounds.selector);
@@ -468,20 +453,18 @@ contract PerpetualMint_fulfillRandomWordsSupraBlast is
                     i
                 ) == postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1)
             );
-
-       
         }
 
-         for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
-         // mock the Supra VRF Generator RNG request callback for all requests
-        vm.prank(supraRouterContract._supraGeneratorContract());
-        supraRouterContract.rngCallback(
-            postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1),
-            randomWords,
-            address(perpetualMint),
-            VRF_REQUEST_FUNCTION_SIGNATURE
-        );
-         }
+        for (uint256 i; i < TEST_MINT_ATTEMPTS; ++i) {
+            // mock the Supra VRF Generator RNG request callback for all requests
+            vm.prank(supraRouterContract._supraGeneratorContract());
+            supraRouterContract.rngCallback(
+                postRequestNonce - (TEST_MINT_ATTEMPTS - i - 1),
+                randomWords,
+                address(perpetualMint),
+                VRF_REQUEST_FUNCTION_SIGNATURE
+            );
+        }
         // we expect the next call to fail to assert the mock mint request has been fulfilled
         vm.expectRevert(EnumerableSet.EnumerableSet__IndexOutOfBounds.selector);
 

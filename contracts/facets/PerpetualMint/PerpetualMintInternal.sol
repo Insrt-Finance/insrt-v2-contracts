@@ -20,8 +20,6 @@ import { GuardsInternal } from "../../common/GuardsInternal.sol";
 import { IBlast } from "../../diamonds/Core/Blast/IBlast.sol";
 import { ISupraRouterContract } from "../../vrf/Supra/ISupraRouterContract.sol";
 
-import 'forge-std/console.sol';
-
 /// @title PerpetualMintInternal
 /// @dev defines modularly all logic for the PerpetualMint mechanism in internal functions
 abstract contract PerpetualMintInternal is

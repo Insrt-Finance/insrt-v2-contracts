@@ -183,6 +183,12 @@ abstract contract PerpetualMintTest_SupraBlast is
             memory facetCuts = perpetualMintHelper_SupraBlast.getFacetCuts();
 
         coreBlastDiamond.diamondCut(facetCuts, address(0), "");
+
+        ISolidStateDiamond.FacetCut[]
+            memory emergencyWithdrawFacetCuts = perpetualMintHelper_SupraBlast
+                .getPerpetualMintEmergencyWithdrawFacetCuts();
+
+        coreBlastDiamond.diamondCut(emergencyWithdrawFacetCuts, address(0), "");
     }
 
     /// @dev Helper function to activate Supra VRF by adding the contract and client to the Supra VRF Deposit Contract whitelist and depositing funds.

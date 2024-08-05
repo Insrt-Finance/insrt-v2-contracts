@@ -24,6 +24,8 @@ import { IPerpetualMintBase } from "../../../../../contracts/facets/PerpetualMin
 import { IPerpetualMintView } from "../../../../../contracts/facets/PerpetualMint/IPerpetualMintView.sol";
 import { PerpetualMintAdmin } from "../../../../../contracts/facets/PerpetualMint/PerpetualMintAdmin.sol";
 import { PerpetualMintBase } from "../../../../../contracts/facets/PerpetualMint/PerpetualMintBase.sol";
+import { IPerpetualMintEmergencyWithdraw } from "../../../../../contracts/facets/PerpetualMint/IPerpetualMintEmergencyWithdraw.sol";
+import { PerpetualMintEmergencyWithdraw } from "../../../../../contracts/facets/PerpetualMint/PerpetualMintEmergencyWithdraw.sol";
 
 /// @title PerpetualMintHelper_SupraBlast
 /// @dev Test helper contract for setting up PerpetualMintSupra for diamond cutting and testing, Blast-specific
@@ -34,6 +36,8 @@ contract PerpetualMintHelper_SupraBlast {
         public perpetualMintHarnessSupraBlastImplementation;
     PerpetualMintViewSupraBlast
         public perpetualMintViewSupraBlastImplementation;
+    PerpetualMintEmergencyWithdraw
+        public perpetualMintEmergencyWithdrawImplementation;
 
     // Blast mainnet Supra VRF Router address
     address public constant VRF_ROUTER =
@@ -52,6 +56,10 @@ contract PerpetualMintHelper_SupraBlast {
         );
 
         perpetualMintViewSupraBlastImplementation = new PerpetualMintViewSupraBlast(
+            VRF_ROUTER
+        );
+
+        perpetualMintEmergencyWithdrawImplementation = new PerpetualMintEmergencyWithdraw(
             VRF_ROUTER
         );
     }
@@ -305,6 +313,23 @@ contract PerpetualMintHelper_SupraBlast {
         facetCuts[12] = vrfConsumerBaseV2FacetCut;
     }
 
+    function getPerpetualMintEmergencyWithdrawFacetCuts()
+        external
+        view
+        returns (ICore.FacetCut[] memory facetCuts)
+    {
+        facetCuts = new ICore.FacetCut[](1);
+
+        ICore.FacetCut
+            memory perpetualMintEmergencyWithdrawFacetCut = _createFacetCut(
+                address(perpetualMintEmergencyWithdrawImplementation),
+                IDiamondWritableInternal.FacetCutAction.ADD,
+                _getPerpetualMintEmegencyWithdrawSelectors()
+            );
+
+        facetCuts[0] = perpetualMintEmergencyWithdrawFacetCut;
+    }
+
     function _createFacetCut(
         address target,
         IDiamondWritableInternal.FacetCutAction action,
@@ -316,6 +341,18 @@ contract PerpetualMintHelper_SupraBlast {
                 action: action,
                 selectors: selectors
             });
+    }
+
+    function _getPerpetualMintEmegencyWithdrawSelectors()
+        private
+        pure
+        returns (bytes4[] memory selectors)
+    {
+        selectors = new bytes4[](1);
+
+        selectors[0] = IPerpetualMintEmergencyWithdraw
+            .withdrawAllFunds
+            .selector;
     }
 
     function _getERC1155FunctionSelectors()

@@ -291,6 +291,10 @@ upgrade-perp-mint-blast-sepolia:
 upgrade-perp-mint-admin-blast-sepolia:
 	@./script/Blast/upgrade/upgrade-perp-mint-admin-blast-sepolia.sh
 
+##### Deploy PerpetualMintEmergencyWithdraw and upgrade CoreBlast
+upgrade-perp-mint-admin-blast-sepolia:
+	@./script/Blast/upgrade/deploy-emergency-withdraw.sh
+
 ##### Upgrade PerpetualMintView + PerpetualMintViewSupraBlast facet
 upgrade-perp-mint-view-blast-sepolia:
 	@./script/Blast/upgrade/upgrade-perp-mint-view-blast-sepolia.sh

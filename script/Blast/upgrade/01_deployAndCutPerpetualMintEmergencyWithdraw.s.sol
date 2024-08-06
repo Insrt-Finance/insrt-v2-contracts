@@ -1,17 +1,20 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.19;
 
-import "forge-safe/BatchScript.sol";
+import { Script, console2 } from "forge-std/Script.sol";
 import { IDiamondWritableInternal } from "@solidstate/contracts/proxy/diamond/writable/IDiamondWritable.sol";
 import { IDiamondWritable } from "@solidstate/contracts/proxy/diamond/writable/IDiamondWritable.sol";
 
+import { IMultiSigWallet } from "../../common/post-deployment/IMultiSigWallet.sol";
 import { ICore } from "../../../contracts/diamonds/Core/ICore.sol";
 import { IPerpetualMintEmergencyWithdraw } from "../../../contracts/facets/PerpetualMint/IPerpetualMintEmergencyWithdraw.sol";
 import { PerpetualMintEmergencyWithdraw } from "../../../contracts/facets/PerpetualMint/PerpetualMintEmergencyWithdraw.sol";
 
+import "forge-std/console.sol";
+
 /// @title DeployPerpetualMint_EmergencyWithdraw
 /// @dev deploys the PerpetualMintEmergencyWithdraw facet
-contract DeployPerpetualMint_EmergecnyWithdraw is BatchScript {
+contract DeployPerpetualMint_EmergecnyWithdraw is Script {
     /// @dev runs the script logic
     function run() external {
         // read deployer private key
@@ -35,8 +38,6 @@ contract DeployPerpetualMint_EmergecnyWithdraw is BatchScript {
         PerpetualMintEmergencyWithdraw perpetualMintEmergencyWithdraw = new PerpetualMintEmergencyWithdraw(
                 VRF_ROUTER
             );
-
-        vm.stopBroadcast();
 
         console2.log(
             "New PerpetualMintEmergencyWithdraw Facet Address: ",
@@ -62,9 +63,10 @@ contract DeployPerpetualMint_EmergecnyWithdraw is BatchScript {
             ""
         );
 
-        addToBatch(core, diamondCutTx);
+        console.log("Diamond Cut Tx Data: ");
+        console.logBytes(bytes(diamondCutTx));
 
-        executeBatch(gnosisSafeAddress, true);
+        vm.stopBroadcast();
     }
 
     function getPerpetualMintEmergencyWithdrawFacetCuts(

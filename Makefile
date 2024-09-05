@@ -209,6 +209,10 @@ upgrade-perp-mint-view-arb:
 upgrade-token-arb:
 	@./script/Arbitrum/upgrade/upgrade-token-arb.sh
 
+##### Deploy PerpetualMintEmergencyWithdraw and upgrade Core Arb
+deploy-perp-mint-emergency-withdraw-arb:
+	@./script/Arbitrum/upgrade/deploy-emergency-withdraw-arb.sh
+
 ##### Arbitrum Sepolia
 
 ##### Upgrade & Remove PerpetualMint facet
@@ -269,6 +273,10 @@ upgrade-perp-mint-view-blast:
 upgrade-split-perp-mint-blast:
 	@./script/Blast/upgrade/upgrade-split-perp-mint-blast.sh
 
+##### Deploy PerpetualMintEmergencyWithdraw and upgrade CoreBlast
+deploy-perp-mint-emergency-withdraw-blast:
+	@./script/Blast/upgrade/deploy-emergency-withdraw-blast.sh
+
 ##### Blast Sepolia
 
 ##### Configure Blast Points Operator using ConfigurePointsOperator facet
@@ -290,10 +298,6 @@ upgrade-perp-mint-blast-sepolia:
 ##### Upgrade PerpetualMintAdmin + PerpetualMintAdminBlast facet
 upgrade-perp-mint-admin-blast-sepolia:
 	@./script/Blast/upgrade/upgrade-perp-mint-admin-blast-sepolia.sh
-
-##### Deploy PerpetualMintEmergencyWithdraw and upgrade CoreBlast
-deploy-perp-mint-emergency-withdraw:
-	@./script/Blast/upgrade/deploy-emergency-withdraw.sh
 
 ##### Upgrade PerpetualMintView + PerpetualMintViewSupraBlast facet
 upgrade-perp-mint-view-blast-sepolia:

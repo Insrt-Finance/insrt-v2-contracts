@@ -22,13 +22,13 @@ contract DeployPerpetualMint_EmergencyWithdraw is Script {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_KEY");
 
         // get CoreBlast PerpetualMint diamond address
-        address core = vm.envAddress("CORE_BLAST_ADDRESS");
+        address core = vm.envAddress("CORE_ADDRESS");
 
         // get Gnosis Safe (protocol owner) address
         address gnosisSafeAddress = vm.envAddress("GNOSIS_SAFE");
 
-        // get VRF Router address
-        address VRF_ROUTER = vm.envAddress("VRF_ROUTER");
+        // get VRF Coordinator address
+        address VRF_COORDINATOR = vm.envAddress("VRF_COORDINATOR");
 
         // we only explicitly broadcast facet deployments
         // broadcasting of batch execution gnosis multi-sig transactions is done
@@ -37,15 +37,15 @@ contract DeployPerpetualMint_EmergencyWithdraw is Script {
 
         // deploy new PerpetualMintEmergencyWithdraw facet
         PerpetualMintEmergencyWithdraw perpetualMintEmergencyWithdraw = new PerpetualMintEmergencyWithdraw(
-                VRF_ROUTER
+                VRF_COORDINATOR
             );
 
         console2.log(
             "New PerpetualMintEmergencyWithdraw Facet Address: ",
             address(perpetualMintEmergencyWithdraw)
         );
-        console2.log("CoreBlast Address: ", core);
-        console2.log("VRF Router Address: ", VRF_ROUTER);
+        console2.log("Core Address: ", core);
+        console2.log("VRF Coordinator Address: ", VRF_COORDINATOR);
 
         // get new PerpetualMintEmergencyWithdraw facet cuts
         ICore.FacetCut[]

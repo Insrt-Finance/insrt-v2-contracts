@@ -304,6 +304,15 @@ upgrade-split-perp-mint-blast-sepolia:
 	@./script/Blast/upgrade/upgrade-split-perp-mint-blast-sepolia.sh
 
 
+### Configure Token Bridge 
+
+### Blast
+upgrade-token-bridge-blast:
+	@./script/Blast/upgrade/upgrade-token-bridge-blast.sh
+### Arbitrum
+upgrade-token-bridge-arb:
+	@./script/Arbitrum/upgrade/upgrade-token-bridge-arbitrum.sh
+
 ### Calculations
 
 #### Arbitrum

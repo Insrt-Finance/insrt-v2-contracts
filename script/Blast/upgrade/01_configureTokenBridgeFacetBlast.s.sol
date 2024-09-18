@@ -9,7 +9,6 @@ import { IAxelarExecutable } from "@axelar/interfaces/IAxelarExecutable.sol";
 import { IDiamondWritableInternal } from "@solidstate/contracts/proxy/diamond/writable/IDiamondWritableInternal.sol";
 import { Script, console } from "forge-std/Script.sol";
 import { IToken } from "../../../contracts/facets/Token/IToken.sol";
-import { IMultiSigWallet } from "./IMultiSigWallet.sol";
 import { IDiamondWritable } from "@solidstate/contracts/proxy/diamond/writable/IDiamondWritable.sol";
 
 /// @title ConfigureTokenBridgeFacet
@@ -19,12 +18,6 @@ contract ConfigureTokenBridgeFacet is Script {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_KEY");
         address gateway = vm.envAddress("GATEWAYWAY_ADDRESS");
         address gasService = vm.envAddress("GAS_SERVICE_ADDRESS");
-        address payable tokenProxyAddress = payable(
-            vm.envAddress("TOKEN_PROXY_ADDRESS")
-        );
-        address multiSigWalletAddress = vm.envAddress(
-            "MULTISIG_WALLET_ADDRESS"
-        );
 
         vm.startBroadcast(deployerPrivateKey);
 
